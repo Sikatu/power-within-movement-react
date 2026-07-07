@@ -12,7 +12,8 @@
     "db:check": "node scripts/db-check.cjs",
     "db:migrate": "node scripts/apply-schema.cjs",
     "db:seed-owner": "node scripts/seed-owner.cjs",
-    "launch:check": "node scripts/launch-readiness-check.cjs"
+    "launch:check": "node scripts/launch-readiness-check.cjs",
+    "dev-reset-cherry-portal-password": "node ./scripts/dev-reset-cherry-portal-password.cjs"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
