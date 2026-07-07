@@ -1,0 +1,68 @@
+﻿Detail Audit 06 — Active src only
+Generated: 07/04/2026 21:17:19
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\components\Hero.jsx
+Line: 15
+Text:           <p className="eyebrow">Power Within Collectiveâ„¢</p>
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\pages\Experiences.backup-before-block-3.jsx
+Line: 163
+Text:           <article className="card"><span>01</span><h3>Radiance Reclaimedâ„¢</h3><p>For the woman ready to stop performing her life and start inhabiting it with congruence, aliveness, and visible presence.</p></article>
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\pages\Experiences.backup-before-block-3.jsx
+Line: 297
+Text:             <h3>Radiance Reclaimedâ„¢ addresses the whole woman, not just how she looks.</h3>
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\pages\Home.jsx
+Line: 20
+Text:     title: 'Radiance Reclaimedâ„¢',
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\pages\Home.jsx
+Line: 46
+Text:             <p className="eyebrow">Personal Presenceâ„¢</p>
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\pages\Resources.jsx
+Line: 43
+Text:       'A curated preview of The Vaultâ„¢ created to open warmer conversations, clearer reflection, and more honest self-recognition.',
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\pages\Resources.jsx
+Line: 64
+Text:         text="The Vaultâ„¢ is a curated resource environment for women who want substance, reflection, and practical support for the long return."
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\pages\Resources.jsx
+Line: 74
+Text:             <p className="eyebrow">The Vaultâ„¢</p>
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\pages\Resources.jsx
+Line: 81
+Text:               The Vaultâ„¢ is a curated resource environment built for women who are ready
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\pages\Resources.jsx
+Line: 101
+Text:           <p className="eyebrow">Inside the Vaultâ„¢</p>
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\pages\Resources.jsx
+Line: 135
+Text:                 <Link to={vaultAccessPath} className="btn secondary">Ask About The Vaultâ„¢</Link>
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\pages\Resources.jsx
+Line: 149
+Text:               different questions. The Vaultâ„¢ is built to meet you there.
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\pages\Resources.jsx
+Line: 172
+Text:             The Vaultâ„¢ was created to fill that gap. It is not a collection of quick
+

@@ -1,0 +1,4453 @@
+﻿Detail Audit 01 Report
+Generated: 07/04/2026 20:21:17
+
+[Mojibake: Â]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\components\Hero.jsx
+Line: 15
+Text:           <p className="eyebrow">Power Within Collectiveâ„¢</p>
+
+[Mojibake: â sequence]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\components\Hero.jsx
+Line: 15
+Text:           <p className="eyebrow">Power Within Collectiveâ„¢</p>
+
+[Mojibake: Â]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\pages\Experiences.backup-before-block-3.jsx
+Line: 163
+Text:           <article className="card"><span>01</span><h3>Radiance Reclaimedâ„¢</h3><p>For the woman ready to stop performing her life and start inhabiting it with congruence, aliveness, and visible presence.</p></article>
+
+[Mojibake: â sequence]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\pages\Experiences.backup-before-block-3.jsx
+Line: 163
+Text:           <article className="card"><span>01</span><h3>Radiance Reclaimedâ„¢</h3><p>For the woman ready to stop performing her life and start inhabiting it with congruence, aliveness, and visible presence.</p></article>
+
+[Mojibake: Â]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\pages\Experiences.backup-before-block-3.jsx
+Line: 297
+Text:             <h3>Radiance Reclaimedâ„¢ addresses the whole woman, not just how she looks.</h3>
+
+[Mojibake: â sequence]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\pages\Experiences.backup-before-block-3.jsx
+Line: 297
+Text:             <h3>Radiance Reclaimedâ„¢ addresses the whole woman, not just how she looks.</h3>
+
+[Mojibake: Â]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\pages\Experiences.jsx
+Line: 163
+Text:           <article className="card"><span>01</span><h3>Radiance Reclaimedâ„¢</h3><p>For the woman ready to stop performing her life and start inhabiting it with congruence, aliveness, and visible presence.</p></article>
+
+[Mojibake: â sequence]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\pages\Experiences.jsx
+Line: 163
+Text:           <article className="card"><span>01</span><h3>Radiance Reclaimedâ„¢</h3><p>For the woman ready to stop performing her life and start inhabiting it with congruence, aliveness, and visible presence.</p></article>
+
+[Mojibake: Â]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\pages\Experiences.jsx
+Line: 297
+Text:             <h3>Radiance Reclaimedâ„¢ addresses the whole woman, not just how she looks.</h3>
+
+[Mojibake: â sequence]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\pages\Experiences.jsx
+Line: 297
+Text:             <h3>Radiance Reclaimedâ„¢ addresses the whole woman, not just how she looks.</h3>
+
+[Mojibake: Â]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\pages\Home.jsx
+Line: 20
+Text:     title: 'Radiance Reclaimedâ„¢',
+
+[Mojibake: â sequence]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\pages\Home.jsx
+Line: 20
+Text:     title: 'Radiance Reclaimedâ„¢',
+
+[Mojibake: Â]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\pages\Home.jsx
+Line: 46
+Text:             <p className="eyebrow">Personal Presenceâ„¢</p>
+
+[Mojibake: â sequence]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\pages\Home.jsx
+Line: 46
+Text:             <p className="eyebrow">Personal Presenceâ„¢</p>
+
+[Mojibake: Â]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\pages\Resources.jsx
+Line: 43
+Text:       'A curated preview of The Vaultâ„¢ created to open warmer conversations, clearer reflection, and more honest self-recognition.',
+
+[Mojibake: â sequence]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\pages\Resources.jsx
+Line: 43
+Text:       'A curated preview of The Vaultâ„¢ created to open warmer conversations, clearer reflection, and more honest self-recognition.',
+
+[Mojibake: Â]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\pages\Resources.jsx
+Line: 64
+Text:         text="The Vaultâ„¢ is a curated resource environment for women who want substance, reflection, and practical support for the long return."
+
+[Mojibake: â sequence]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\pages\Resources.jsx
+Line: 64
+Text:         text="The Vaultâ„¢ is a curated resource environment for women who want substance, reflection, and practical support for the long return."
+
+[Mojibake: Â]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\pages\Resources.jsx
+Line: 74
+Text:             <p className="eyebrow">The Vaultâ„¢</p>
+
+[Mojibake: â sequence]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\pages\Resources.jsx
+Line: 74
+Text:             <p className="eyebrow">The Vaultâ„¢</p>
+
+[Mojibake: Â]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\pages\Resources.jsx
+Line: 81
+Text:               The Vaultâ„¢ is a curated resource environment built for women who are ready
+
+[Mojibake: â sequence]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\pages\Resources.jsx
+Line: 81
+Text:               The Vaultâ„¢ is a curated resource environment built for women who are ready
+
+[Mojibake: Â]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\pages\Resources.jsx
+Line: 101
+Text:           <p className="eyebrow">Inside the Vaultâ„¢</p>
+
+[Mojibake: â sequence]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\pages\Resources.jsx
+Line: 101
+Text:           <p className="eyebrow">Inside the Vaultâ„¢</p>
+
+[Mojibake: Â]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\pages\Resources.jsx
+Line: 135
+Text:                 <Link to={vaultAccessPath} className="btn secondary">Ask About The Vaultâ„¢</Link>
+
+[Mojibake: â sequence]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\pages\Resources.jsx
+Line: 135
+Text:                 <Link to={vaultAccessPath} className="btn secondary">Ask About The Vaultâ„¢</Link>
+
+[Mojibake: Â]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\pages\Resources.jsx
+Line: 149
+Text:               different questions. The Vaultâ„¢ is built to meet you there.
+
+[Mojibake: â sequence]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\pages\Resources.jsx
+Line: 149
+Text:               different questions. The Vaultâ„¢ is built to meet you there.
+
+[Mojibake: Â]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\pages\Resources.jsx
+Line: 172
+Text:             The Vaultâ„¢ was created to fill that gap. It is not a collection of quick
+
+[Mojibake: â sequence]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\pages\Resources.jsx
+Line: 172
+Text:             The Vaultâ„¢ was created to fill that gap. It is not a collection of quick
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 223
+Text:   .five-grid,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 224
+Text:   .cards,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 225
+Text:   .split-grid {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 229
+Text:   .nav-links {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 239
+Text: .contact-section .eyebrow,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 244
+Text: .contact-section .primary {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 287
+Text:   .hero {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 291
+Text:   .hero h1 {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 295
+Text:   .hero p,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 296
+Text:   .page-hero p {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 300
+Text:   .section {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 304
+Text:   .card {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 308
+Text:   .portrait-card {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 390
+Text:   .menu-button {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 394
+Text:   .nav-links.open {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 461
+Text:   .hero-stats {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 465
+Text:   .hero-stats div {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 470
+Text:   .hero-stats div:last-child {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 605
+Text: .hero-actions .btn {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 682
+Text: .contact-section .section-header {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 691
+Text: .contact-section .btn {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 715
+Text: .hero + .section::before,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 820
+Text:   .image-grid {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 884
+Text: .hero-v2-copy .hero-actions {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 900
+Text:   .hero-v2-grid {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 904
+Text:   .hero-v2-copy {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 908
+Text:   .hero-v2-copy p {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 912
+Text:   .hero-v2-copy .hero-actions {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 916
+Text:   .hero-v2-image {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 989
+Text:   .hero-v2 {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 993
+Text:   .hero-v2-copy h1 {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 998
+Text:   .hero-v2-copy p {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 1002
+Text:   .hero-v2-image {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 1007
+Text:   .hero-v2-copy::after {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 1051
+Text:   .story-grid {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 1055
+Text:   .story-image {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 1066
+Text: .five-grid .card {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 1073
+Text: .five-grid .card h3 {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 1077
+Text: .five-grid .card p {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 1082
+Text:   .five-grid {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 1088
+Text:   .five-grid {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 1094
+Text: .page-hero + .section {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 1098
+Text: .page-hero + .section .cards {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 1104
+Text: .page-hero + .section .card {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 1108
+Text: .page-hero + .section .card h3 {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 1189
+Text:   .contact-page-grid {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 1245
+Text:   .newsletter-form {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 1301
+Text:   .newsletter-form {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 1430
+Text:   .booking-card {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 1460
+Text:   .footer-grid {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 1464
+Text:   .footer-links {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 1468
+Text:   .social-links {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 1585
+Text:   .section {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 1589
+Text:   .section-header h2,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 1590
+Text:   .story-copy h2 {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 1626
+Text:   .card {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 1645
+Text: .contact-section .section-header p {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 1649
+Text: .contact-section .hero-actions {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 1654
+Text: .contact-section .btn.secondary {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 1660
+Text:   .page-hero {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 1684
+Text:   .hero-actions {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 1689
+Text:   .hero-actions .btn {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 1694
+Text:   .newsletter-card,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 1695
+Text:   .booking-card,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 1696
+Text:   .contact-panel,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 1697
+Text:   .contact-details {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 1736
+Text:   .footer h3 {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 1755
+Text:   .hero-v2-image img {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 1773
+Text:   .story-image img {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 1869
+Text:   .footer-grid {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 1909
+Text: .hero-v2-copy .hero-actions {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 1952
+Text:   .hero-v2-grid {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 1956
+Text:   .hero-v2 {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 1960
+Text:   .footer-grid {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 2001
+Text: .footer .social-links a {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 2020
+Text:   .footer-grid::before {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 2126
+Text:   .footer-premium-grid {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 2133
+Text:   .footer-premium {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 2137
+Text:   .footer-premium-grid {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 2191
+Text:   .footer-brand-block,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 2192
+Text:   .footer-brand-block p {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 2297
+Text:   .navbar-premium {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 2301
+Text:   .premium-logo small {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 2325
+Text:   .premium-logo-image img {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 2336
+Text: .story-section:nth-of-type(even) .story-image img {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 2341
+Text:   .story-image img {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 2452
+Text: .section + .section {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 2475
+Text:   .intro-section::before,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 2476
+Text:   .experiences::before {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 2505
+Text:   .menu-button {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 2514
+Text:   .nav-links.open {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 2522
+Text:   .nav-links.open a {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 2528
+Text: .contact-section .btn.primary {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 2533
+Text: .contact-section .btn.primary:hover {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 2538
+Text: .contact-section .btn.secondary {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 2544
+Text: .contact-section .btn.secondary:hover {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 2549
+Text: .contact-section .btn.secondary {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 2557
+Text: .contact-section .btn.secondary:hover {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 2565
+Text: .contact-section .hero-actions {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 2569
+Text: .contact-section .btn {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 2579
+Text: .contact-section .btn.secondary {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 2585
+Text: .contact-section .btn.secondary:hover {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 2591
+Text: .contact-section .hero-actions {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 2599
+Text: .contact-section .hero-actions .btn {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 2612
+Text: .contact-section .hero-actions .btn:hover {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 2617
+Text: .contact-section .hero-actions {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 2621
+Text: .contact-section .btn {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 2631
+Text: .contact-section .btn.secondary {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 2637
+Text: .contact-section .btn.secondary:hover {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 2643
+Text: .contact-section .hero-actions {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 2650
+Text: .contact-section .hero-actions a.btn,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 2651
+Text: .contact-section .hero-actions a.btn.primary,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 2652
+Text: .contact-section .hero-actions a.btn.secondary {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 2667
+Text: .contact-section .hero-actions a.btn.secondary {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 2756
+Text:   .podcast-library-grid {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 2762
+Text: .story-copy .hero-actions .btn.primary {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 2766
+Text: .story-copy .hero-actions .btn.primary[href="/radiance-reclaimed"] {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 2778
+Text: .story-copy .hero-actions .btn.primary[href="/radiance-reclaimed"]::before {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 2784
+Text: .story-copy .hero-actions .btn.primary[href="/radiance-reclaimed"]:hover {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 2888
+Text: .appointment-callout .btn {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 3072
+Text: .appointment-service-card > .btn {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 3142
+Text:   .appointment-intro-grid,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 3143
+Text:   .appointment-glance-grid,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 3144
+Text:   .appointment-cover-grid,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 3145
+Text:   .appointment-service-grid,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 3146
+Text:   .appointment-choice-grid,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 3147
+Text:   .service-process-grid,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 3148
+Text:   .service-detail-list-grid {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 3152
+Text:   .appointment-subheader {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 3158
+Text:   .appointment-shell {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 3162
+Text:   .appointment-intro-copy,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 3163
+Text:   .appointment-callout,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 3164
+Text:   .appointment-glance-card,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 3165
+Text:   .appointment-cover-card,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 3166
+Text:   .appointment-service-card,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 3167
+Text:   .appointment-choice-card,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 3168
+Text:   .service-process-card,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 3169
+Text:   .service-detail-list {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 3174
+Text:   .appointment-callout .btn {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 3179
+Text:   .appointment-meta-row {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 3271
+Text: .vault-copy-panel .hero-actions,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 3272
+Text: .vault-why-card .hero-actions {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 3365
+Text: .vault-preview-card .btn {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 3419
+Text: .vault-why-card .hero-actions {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 3424
+Text:   .vault-intro-grid,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 3425
+Text:   .vault-long-return-grid,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 3426
+Text:   .vault-content-grid,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 3427
+Text:   .vault-preview-card {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 3431
+Text:   .vault-preview-card {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 3435
+Text:   .vault-preview-mark {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 3440
+Text:   .vault-preview-card .btn {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 3447
+Text:   .vault-image-panel,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 3448
+Text:   .vault-image-panel img {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 3452
+Text:   .vault-copy-panel,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 3453
+Text:   .vault-content-card,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 3454
+Text:   .vault-preview-card,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 3455
+Text:   .vault-list-card,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 3456
+Text:   .vault-why-card {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 3461
+Text:   .vault-copy-panel .hero-actions,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 3462
+Text:   .vault-why-card .hero-actions {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 3466
+Text:   .vault-preview-card .btn,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 3467
+Text:   .vault-why-card .btn {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 3498
+Text: .five-grid .card {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 3505
+Text: .five-grid .card span {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 3509
+Text: .five-grid .card h3 {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 3517
+Text: .five-grid .card p {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 3628
+Text: .contact-section .hero-actions a.btn,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 3629
+Text: .contact-section .hero-actions a.btn.primary,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 3630
+Text: .contact-section .hero-actions a.btn.secondary {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 3640
+Text:   .vault-resource-card {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 3646
+Text:   .vault-resource-card {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 3651
+Text:   .vault-resource-copy p {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 3656
+Text:   .vault-resource-note {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 3662
+Text:   .vault-resource-actions,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 3663
+Text:   .podcast-listen-actions {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 3669
+Text:   .navbar-premium {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 3674
+Text:   .premium-logo-image img {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 3679
+Text:   .nav-cta {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 3685
+Text:   .menu-button {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 3689
+Text:   .experience-story-note {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 3695
+Text:   .vault-resource-image,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 3696
+Text:   .vault-resource-image img {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 3700
+Text:   .vault-resource-actions .btn,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 3701
+Text:   .podcast-listen-actions .btn,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 3702
+Text:   .podcast-library-actions .btn,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 3703
+Text:   .contact-section .hero-actions a.btn {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 3794
+Text: .appointment-service-card > .btn {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 3798
+Text: .appointment-service-card > .btn {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 3804
+Text: .hero-v2 .hero-actions {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 3808
+Text: .hero-v2 .hero-actions .btn {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 3813
+Text: .contact-section .hero-actions {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 3822
+Text: .contact-section .hero-actions a.btn,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 3823
+Text: .contact-section .hero-actions a.btn.primary,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 3824
+Text: .contact-section .hero-actions a.btn.secondary {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 3834
+Text: .contact-section .hero-actions a.btn.primary {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 3839
+Text: .contact-section .hero-actions a.btn.secondary {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 3845
+Text: .contact-section .hero-actions a.btn.secondary:hover {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 3873
+Text: .radiance-private-hero .section-header {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 3887
+Text: .radiance-private-hero .section-header > p:last-of-type {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 3977
+Text: .legal-content .btn {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 4002
+Text: .not-found-section .section-header {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 4019
+Text: .podcast-library-section .spotify-embed {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 4034
+Text:   .radiance-private-hero {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 4039
+Text:   .radiance-back-link {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 4043
+Text:   .radiance-chapter {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 4047
+Text:   .podcast-library-actions,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 4048
+Text:   .podcast-listen-actions {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 4054
+Text:   .hero-v2 .hero-actions .btn,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 4055
+Text:   .contact-section .hero-actions a.btn,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 4056
+Text:   .contact-section .hero-actions a.btn.primary,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 4057
+Text:   .contact-section .hero-actions a.btn.secondary,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 4058
+Text:   .podcast-library-actions .btn,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 4059
+Text:   .podcast-listen-actions .btn {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 4064
+Text:   .radiance-private-hero::before {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 4069
+Text:   .radiance-private-hero h2 {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 4073
+Text:   .legal-content {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 4119
+Text: .begin-card:hover .card-action::after {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 4123
+Text: .booking-card .hero-actions {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 4127
+Text: .booking-card .btn {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 4142
+Text: .professional-grid .card,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 4143
+Text: .professional-pathway-grid .card {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 4148
+Text: .professional-grid .card p,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 4149
+Text: .professional-pathway-grid .card p {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 4207
+Text:   .professional-outcomes-card {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 4213
+Text:   .begin-card {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 4217
+Text:   .booking-card .hero-actions,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 4218
+Text:   .hero-v2-copy .hero-actions {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 4227
+Text: .page-hero + .intro-section,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 4228
+Text: .page-hero + .story-section {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 4329
+Text: .intro-section .cards:not(.five-grid) .card,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 4330
+Text: .professional-grid .card,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 4331
+Text: .professional-pathway-grid .card {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 4337
+Text: .intro-section .cards:not(.five-grid) .card h3,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 4338
+Text: .professional-grid .card h3,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 4339
+Text: .professional-pathway-grid .card h3 {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 4345
+Text: .intro-section .cards:not(.five-grid) .card p,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 4346
+Text: .professional-grid .card p,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 4347
+Text: .professional-pathway-grid .card p {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 4357
+Text: .five-grid .card {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 4367
+Text: .five-grid .card::before {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 4373
+Text: .five-grid .card span {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 4386
+Text: .five-grid .card h3 {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 4396
+Text: .five-grid .card p {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 4434
+Text:   .professional-outcomes-card,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 4435
+Text:   .professional-outcomes {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 4439
+Text:   .intro-section .cards:not(.five-grid) .card h3,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 4440
+Text:   .professional-grid .card h3,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 4441
+Text:   .professional-pathway-grid .card h3 {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 4445
+Text:   .five-grid .card {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 4449
+Text:   .five-grid .card p {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 4455
+Text:   .page-hero + .intro-section,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 4456
+Text:   .page-hero + .story-section {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 4460
+Text:   .professional-outcomes-section {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 4464
+Text:   .professional-outcomes-card,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 4465
+Text:   .professional-outcomes {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 4470
+Text:   .professional-outcomes-card li,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 4471
+Text:   .professional-outcomes li {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 4476
+Text:   .intro-section .cards:not(.five-grid) .card,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 4477
+Text:   .professional-grid .card,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-02-2.css
+Line: 4478
+Text:   .professional-pathway-grid .card {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 223
+Text:   .five-grid,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 224
+Text:   .cards,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 225
+Text:   .split-grid {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 229
+Text:   .nav-links {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 239
+Text: .contact-section .eyebrow,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 244
+Text: .contact-section .primary {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 287
+Text:   .hero {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 291
+Text:   .hero h1 {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 295
+Text:   .hero p,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 296
+Text:   .page-hero p {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 300
+Text:   .section {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 304
+Text:   .card {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 308
+Text:   .portrait-card {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 390
+Text:   .menu-button {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 394
+Text:   .nav-links.open {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 461
+Text:   .hero-stats {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 465
+Text:   .hero-stats div {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 470
+Text:   .hero-stats div:last-child {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 605
+Text: .hero-actions .btn {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 682
+Text: .contact-section .section-header {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 691
+Text: .contact-section .btn {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 715
+Text: .hero + .section::before,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 814
+Text:   .image-grid {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 878
+Text: .hero-v2-copy .hero-actions {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 894
+Text:   .hero-v2-grid {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 898
+Text:   .hero-v2-copy {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 902
+Text:   .hero-v2-copy p {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 906
+Text:   .hero-v2-copy .hero-actions {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 910
+Text:   .hero-v2-image {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 983
+Text:   .hero-v2 {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 987
+Text:   .hero-v2-copy h1 {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 992
+Text:   .hero-v2-copy p {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 996
+Text:   .hero-v2-image {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 1001
+Text:   .hero-v2-copy::after {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 1045
+Text:   .story-grid {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 1049
+Text:   .story-image {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 1060
+Text: .five-grid .card {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 1067
+Text: .five-grid .card h3 {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 1071
+Text: .five-grid .card p {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 1076
+Text:   .five-grid {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 1082
+Text:   .five-grid {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 1088
+Text: .page-hero + .section {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 1092
+Text: .page-hero + .section .cards {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 1098
+Text: .page-hero + .section .card {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 1102
+Text: .page-hero + .section .card h3 {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 1183
+Text:   .contact-page-grid {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 1239
+Text:   .newsletter-form {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 1295
+Text:   .newsletter-form {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 1424
+Text:   .booking-card {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 1454
+Text:   .footer-grid {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 1458
+Text:   .footer-links {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 1462
+Text:   .social-links {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 1579
+Text:   .section {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 1583
+Text:   .section-header h2,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 1584
+Text:   .story-copy h2 {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 1620
+Text:   .card {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 1639
+Text: .contact-section .section-header p {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 1643
+Text: .contact-section .hero-actions {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 1648
+Text: .contact-section .btn.secondary {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 1654
+Text:   .page-hero {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 1678
+Text:   .hero-actions {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 1683
+Text:   .hero-actions .btn {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 1688
+Text:   .newsletter-card,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 1689
+Text:   .booking-card,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 1690
+Text:   .contact-panel,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 1691
+Text:   .contact-details {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 1730
+Text:   .footer h3 {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 1749
+Text:   .hero-v2-image img {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 1767
+Text:   .story-image img {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 1863
+Text:   .footer-grid {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 1903
+Text: .hero-v2-copy .hero-actions {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 1946
+Text:   .hero-v2-grid {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 1950
+Text:   .hero-v2 {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 1954
+Text:   .footer-grid {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 1995
+Text: .footer .social-links a {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 2014
+Text:   .footer-grid::before {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 2120
+Text:   .footer-premium-grid {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 2127
+Text:   .footer-premium {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 2131
+Text:   .footer-premium-grid {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 2185
+Text:   .footer-brand-block,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 2186
+Text:   .footer-brand-block p {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 2291
+Text:   .navbar-premium {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 2295
+Text:   .premium-logo small {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 2319
+Text:   .premium-logo-image img {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 2330
+Text: .story-section:nth-of-type(even) .story-image img {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 2335
+Text:   .story-image img {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 2446
+Text: .section + .section {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 2469
+Text:   .intro-section::before,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 2470
+Text:   .experiences::before {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 2499
+Text:   .menu-button {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 2508
+Text:   .nav-links.open {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 2516
+Text:   .nav-links.open a {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 2522
+Text: .contact-section .btn.primary {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 2527
+Text: .contact-section .btn.primary:hover {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 2532
+Text: .contact-section .btn.secondary {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 2538
+Text: .contact-section .btn.secondary:hover {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 2543
+Text: .contact-section .btn.secondary {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 2551
+Text: .contact-section .btn.secondary:hover {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 2559
+Text: .contact-section .hero-actions {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 2563
+Text: .contact-section .btn {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 2573
+Text: .contact-section .btn.secondary {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 2579
+Text: .contact-section .btn.secondary:hover {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 2585
+Text: .contact-section .hero-actions {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 2593
+Text: .contact-section .hero-actions .btn {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 2606
+Text: .contact-section .hero-actions .btn:hover {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 2611
+Text: .contact-section .hero-actions {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 2615
+Text: .contact-section .btn {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 2625
+Text: .contact-section .btn.secondary {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 2631
+Text: .contact-section .btn.secondary:hover {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 2637
+Text: .contact-section .hero-actions {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 2644
+Text: .contact-section .hero-actions a.btn,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 2645
+Text: .contact-section .hero-actions a.btn.primary,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 2646
+Text: .contact-section .hero-actions a.btn.secondary {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 2661
+Text: .contact-section .hero-actions a.btn.secondary {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 2750
+Text:   .podcast-library-grid {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 2756
+Text: .story-copy .hero-actions .btn.primary {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 2760
+Text: .story-copy .hero-actions .btn.primary[href="/radiance-reclaimed"] {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 2772
+Text: .story-copy .hero-actions .btn.primary[href="/radiance-reclaimed"]::before {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 2778
+Text: .story-copy .hero-actions .btn.primary[href="/radiance-reclaimed"]:hover {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 2882
+Text: .appointment-callout .btn {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 3066
+Text: .appointment-service-card > .btn {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 3136
+Text:   .appointment-intro-grid,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 3137
+Text:   .appointment-glance-grid,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 3138
+Text:   .appointment-cover-grid,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 3139
+Text:   .appointment-service-grid,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 3140
+Text:   .appointment-choice-grid,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 3141
+Text:   .service-process-grid,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 3142
+Text:   .service-detail-list-grid {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 3146
+Text:   .appointment-subheader {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 3152
+Text:   .appointment-shell {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 3156
+Text:   .appointment-intro-copy,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 3157
+Text:   .appointment-callout,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 3158
+Text:   .appointment-glance-card,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 3159
+Text:   .appointment-cover-card,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 3160
+Text:   .appointment-service-card,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 3161
+Text:   .appointment-choice-card,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 3162
+Text:   .service-process-card,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 3163
+Text:   .service-detail-list {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 3168
+Text:   .appointment-callout .btn {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 3173
+Text:   .appointment-meta-row {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 3265
+Text: .vault-copy-panel .hero-actions,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 3266
+Text: .vault-why-card .hero-actions {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 3359
+Text: .vault-preview-card .btn {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 3413
+Text: .vault-why-card .hero-actions {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 3418
+Text:   .vault-intro-grid,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 3419
+Text:   .vault-long-return-grid,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 3420
+Text:   .vault-content-grid,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 3421
+Text:   .vault-preview-card {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 3425
+Text:   .vault-preview-card {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 3429
+Text:   .vault-preview-mark {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 3434
+Text:   .vault-preview-card .btn {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 3441
+Text:   .vault-image-panel,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 3442
+Text:   .vault-image-panel img {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 3446
+Text:   .vault-copy-panel,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 3447
+Text:   .vault-content-card,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 3448
+Text:   .vault-preview-card,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 3449
+Text:   .vault-list-card,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 3450
+Text:   .vault-why-card {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 3455
+Text:   .vault-copy-panel .hero-actions,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 3456
+Text:   .vault-why-card .hero-actions {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 3460
+Text:   .vault-preview-card .btn,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 3461
+Text:   .vault-why-card .btn {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 3492
+Text: .five-grid .card {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 3499
+Text: .five-grid .card span {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 3503
+Text: .five-grid .card h3 {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 3511
+Text: .five-grid .card p {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 3622
+Text: .contact-section .hero-actions a.btn,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 3623
+Text: .contact-section .hero-actions a.btn.primary,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 3624
+Text: .contact-section .hero-actions a.btn.secondary {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 3634
+Text:   .vault-resource-card {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 3640
+Text:   .vault-resource-card {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 3645
+Text:   .vault-resource-copy p {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 3650
+Text:   .vault-resource-note {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 3656
+Text:   .vault-resource-actions,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 3657
+Text:   .podcast-listen-actions {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 3663
+Text:   .navbar-premium {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 3668
+Text:   .premium-logo-image img {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 3673
+Text:   .nav-cta {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 3679
+Text:   .menu-button {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 3683
+Text:   .experience-story-note {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 3689
+Text:   .vault-resource-image,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 3690
+Text:   .vault-resource-image img {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 3694
+Text:   .vault-resource-actions .btn,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 3695
+Text:   .podcast-listen-actions .btn,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 3696
+Text:   .podcast-library-actions .btn,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 3697
+Text:   .contact-section .hero-actions a.btn {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 3788
+Text: .appointment-service-card > .btn {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 3792
+Text: .appointment-service-card > .btn {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 3798
+Text: .hero-v2 .hero-actions {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 3802
+Text: .hero-v2 .hero-actions .btn {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 3807
+Text: .contact-section .hero-actions {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 3816
+Text: .contact-section .hero-actions a.btn,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 3817
+Text: .contact-section .hero-actions a.btn.primary,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 3818
+Text: .contact-section .hero-actions a.btn.secondary {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 3828
+Text: .contact-section .hero-actions a.btn.primary {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 3833
+Text: .contact-section .hero-actions a.btn.secondary {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 3839
+Text: .contact-section .hero-actions a.btn.secondary:hover {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 3867
+Text: .radiance-private-hero .section-header {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 3881
+Text: .radiance-private-hero .section-header > p:last-of-type {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 3971
+Text: .legal-content .btn {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 3996
+Text: .not-found-section .section-header {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 4013
+Text: .podcast-library-section .spotify-embed {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 4028
+Text:   .radiance-private-hero {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 4033
+Text:   .radiance-back-link {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 4037
+Text:   .radiance-chapter {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 4041
+Text:   .podcast-library-actions,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 4042
+Text:   .podcast-listen-actions {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 4048
+Text:   .hero-v2 .hero-actions .btn,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 4049
+Text:   .contact-section .hero-actions a.btn,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 4050
+Text:   .contact-section .hero-actions a.btn.primary,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 4051
+Text:   .contact-section .hero-actions a.btn.secondary,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 4052
+Text:   .podcast-library-actions .btn,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 4053
+Text:   .podcast-listen-actions .btn {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 4058
+Text:   .radiance-private-hero::before {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 4063
+Text:   .radiance-private-hero h2 {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 4067
+Text:   .legal-content {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 4113
+Text: .begin-card:hover .card-action::after {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 4117
+Text: .booking-card .hero-actions {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 4121
+Text: .booking-card .btn {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 4136
+Text: .professional-grid .card,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 4137
+Text: .professional-pathway-grid .card {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 4142
+Text: .professional-grid .card p,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 4143
+Text: .professional-pathway-grid .card p {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 4201
+Text:   .professional-outcomes-card {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 4207
+Text:   .begin-card {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 4211
+Text:   .booking-card .hero-actions,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 4212
+Text:   .hero-v2-copy .hero-actions {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 4221
+Text: .page-hero + .intro-section,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 4222
+Text: .page-hero + .story-section {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 4323
+Text: .intro-section .cards:not(.five-grid) .card,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 4324
+Text: .professional-grid .card,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 4325
+Text: .professional-pathway-grid .card {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 4331
+Text: .intro-section .cards:not(.five-grid) .card h3,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 4332
+Text: .professional-grid .card h3,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 4333
+Text: .professional-pathway-grid .card h3 {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 4339
+Text: .intro-section .cards:not(.five-grid) .card p,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 4340
+Text: .professional-grid .card p,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 4341
+Text: .professional-pathway-grid .card p {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 4351
+Text: .five-grid .card {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 4361
+Text: .five-grid .card::before {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 4367
+Text: .five-grid .card span {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 4380
+Text: .five-grid .card h3 {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 4390
+Text: .five-grid .card p {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 4428
+Text:   .professional-outcomes-card,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 4429
+Text:   .professional-outcomes {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 4433
+Text:   .intro-section .cards:not(.five-grid) .card h3,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 4434
+Text:   .professional-grid .card h3,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 4435
+Text:   .professional-pathway-grid .card h3 {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 4439
+Text:   .five-grid .card {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 4443
+Text:   .five-grid .card p {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 4449
+Text:   .page-hero + .intro-section,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 4450
+Text:   .page-hero + .story-section {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 4454
+Text:   .professional-outcomes-section {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 4458
+Text:   .professional-outcomes-card,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 4459
+Text:   .professional-outcomes {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 4464
+Text:   .professional-outcomes-card li,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 4465
+Text:   .professional-outcomes li {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 4470
+Text:   .intro-section .cards:not(.five-grid) .card,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 4471
+Text:   .professional-grid .card,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 4472
+Text:   .professional-pathway-grid .card {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 4480
+Text: .five-grid .card p {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 4502
+Text:   .professional-outcomes-card,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.backup-before-block-3.css
+Line: 4503
+Text:   .professional-outcomes {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 223
+Text:   .five-grid,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 224
+Text:   .cards,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 225
+Text:   .split-grid {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 229
+Text:   .nav-links {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 239
+Text: .contact-section .eyebrow,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 244
+Text: .contact-section .primary {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 287
+Text:   .hero {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 291
+Text:   .hero h1 {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 295
+Text:   .hero p,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 296
+Text:   .page-hero p {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 300
+Text:   .section {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 304
+Text:   .card {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 308
+Text:   .portrait-card {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 390
+Text:   .menu-button {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 394
+Text:   .nav-links.open {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 461
+Text:   .hero-stats {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 465
+Text:   .hero-stats div {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 470
+Text:   .hero-stats div:last-child {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 605
+Text: .hero-actions .btn {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 682
+Text: .contact-section .section-header {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 691
+Text: .contact-section .btn {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 715
+Text: .hero + .section::before,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 814
+Text:   .image-grid {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 878
+Text: .hero-v2-copy .hero-actions {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 894
+Text:   .hero-v2-grid {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 898
+Text:   .hero-v2-copy {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 902
+Text:   .hero-v2-copy p {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 906
+Text:   .hero-v2-copy .hero-actions {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 910
+Text:   .hero-v2-image {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 983
+Text:   .hero-v2 {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 987
+Text:   .hero-v2-copy h1 {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 992
+Text:   .hero-v2-copy p {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 996
+Text:   .hero-v2-image {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 1001
+Text:   .hero-v2-copy::after {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 1045
+Text:   .story-grid {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 1049
+Text:   .story-image {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 1060
+Text: .five-grid .card {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 1067
+Text: .five-grid .card h3 {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 1071
+Text: .five-grid .card p {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 1076
+Text:   .five-grid {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 1082
+Text:   .five-grid {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 1088
+Text: .page-hero + .section {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 1092
+Text: .page-hero + .section .cards {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 1098
+Text: .page-hero + .section .card {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 1102
+Text: .page-hero + .section .card h3 {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 1183
+Text:   .contact-page-grid {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 1239
+Text:   .newsletter-form {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 1295
+Text:   .newsletter-form {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 1424
+Text:   .booking-card {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 1454
+Text:   .footer-grid {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 1458
+Text:   .footer-links {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 1462
+Text:   .social-links {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 1579
+Text:   .section {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 1583
+Text:   .section-header h2,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 1584
+Text:   .story-copy h2 {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 1620
+Text:   .card {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 1639
+Text: .contact-section .section-header p {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 1643
+Text: .contact-section .hero-actions {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 1648
+Text: .contact-section .btn.secondary {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 1654
+Text:   .page-hero {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 1678
+Text:   .hero-actions {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 1683
+Text:   .hero-actions .btn {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 1688
+Text:   .newsletter-card,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 1689
+Text:   .booking-card,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 1690
+Text:   .contact-panel,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 1691
+Text:   .contact-details {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 1730
+Text:   .footer h3 {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 1749
+Text:   .hero-v2-image img {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 1767
+Text:   .story-image img {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 1863
+Text:   .footer-grid {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 1903
+Text: .hero-v2-copy .hero-actions {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 1946
+Text:   .hero-v2-grid {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 1950
+Text:   .hero-v2 {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 1954
+Text:   .footer-grid {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 1995
+Text: .footer .social-links a {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 2014
+Text:   .footer-grid::before {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 2120
+Text:   .footer-premium-grid {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 2127
+Text:   .footer-premium {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 2131
+Text:   .footer-premium-grid {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 2185
+Text:   .footer-brand-block,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 2186
+Text:   .footer-brand-block p {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 2291
+Text:   .navbar-premium {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 2295
+Text:   .premium-logo small {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 2319
+Text:   .premium-logo-image img {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 2330
+Text: .story-section:nth-of-type(even) .story-image img {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 2335
+Text:   .story-image img {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 2446
+Text: .section + .section {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 2469
+Text:   .intro-section::before,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 2470
+Text:   .experiences::before {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 2499
+Text:   .menu-button {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 2508
+Text:   .nav-links.open {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 2516
+Text:   .nav-links.open a {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 2522
+Text: .contact-section .btn.primary {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 2527
+Text: .contact-section .btn.primary:hover {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 2532
+Text: .contact-section .btn.secondary {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 2538
+Text: .contact-section .btn.secondary:hover {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 2543
+Text: .contact-section .btn.secondary {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 2551
+Text: .contact-section .btn.secondary:hover {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 2559
+Text: .contact-section .hero-actions {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 2563
+Text: .contact-section .btn {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 2573
+Text: .contact-section .btn.secondary {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 2579
+Text: .contact-section .btn.secondary:hover {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 2585
+Text: .contact-section .hero-actions {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 2593
+Text: .contact-section .hero-actions .btn {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 2606
+Text: .contact-section .hero-actions .btn:hover {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 2611
+Text: .contact-section .hero-actions {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 2615
+Text: .contact-section .btn {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 2625
+Text: .contact-section .btn.secondary {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 2631
+Text: .contact-section .btn.secondary:hover {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 2637
+Text: .contact-section .hero-actions {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 2644
+Text: .contact-section .hero-actions a.btn,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 2645
+Text: .contact-section .hero-actions a.btn.primary,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 2646
+Text: .contact-section .hero-actions a.btn.secondary {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 2661
+Text: .contact-section .hero-actions a.btn.secondary {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 2750
+Text:   .podcast-library-grid {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 2756
+Text: .story-copy .hero-actions .btn.primary {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 2760
+Text: .story-copy .hero-actions .btn.primary[href="/radiance-reclaimed"] {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 2772
+Text: .story-copy .hero-actions .btn.primary[href="/radiance-reclaimed"]::before {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 2778
+Text: .story-copy .hero-actions .btn.primary[href="/radiance-reclaimed"]:hover {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 2882
+Text: .appointment-callout .btn {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 3066
+Text: .appointment-service-card > .btn {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 3136
+Text:   .appointment-intro-grid,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 3137
+Text:   .appointment-glance-grid,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 3138
+Text:   .appointment-cover-grid,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 3139
+Text:   .appointment-service-grid,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 3140
+Text:   .appointment-choice-grid,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 3141
+Text:   .service-process-grid,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 3142
+Text:   .service-detail-list-grid {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 3146
+Text:   .appointment-subheader {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 3152
+Text:   .appointment-shell {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 3156
+Text:   .appointment-intro-copy,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 3157
+Text:   .appointment-callout,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 3158
+Text:   .appointment-glance-card,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 3159
+Text:   .appointment-cover-card,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 3160
+Text:   .appointment-service-card,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 3161
+Text:   .appointment-choice-card,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 3162
+Text:   .service-process-card,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 3163
+Text:   .service-detail-list {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 3168
+Text:   .appointment-callout .btn {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 3173
+Text:   .appointment-meta-row {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 3265
+Text: .vault-copy-panel .hero-actions,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 3266
+Text: .vault-why-card .hero-actions {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 3359
+Text: .vault-preview-card .btn {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 3413
+Text: .vault-why-card .hero-actions {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 3418
+Text:   .vault-intro-grid,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 3419
+Text:   .vault-long-return-grid,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 3420
+Text:   .vault-content-grid,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 3421
+Text:   .vault-preview-card {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 3425
+Text:   .vault-preview-card {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 3429
+Text:   .vault-preview-mark {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 3434
+Text:   .vault-preview-card .btn {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 3441
+Text:   .vault-image-panel,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 3442
+Text:   .vault-image-panel img {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 3446
+Text:   .vault-copy-panel,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 3447
+Text:   .vault-content-card,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 3448
+Text:   .vault-preview-card,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 3449
+Text:   .vault-list-card,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 3450
+Text:   .vault-why-card {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 3455
+Text:   .vault-copy-panel .hero-actions,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 3456
+Text:   .vault-why-card .hero-actions {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 3460
+Text:   .vault-preview-card .btn,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 3461
+Text:   .vault-why-card .btn {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 3492
+Text: .five-grid .card {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 3499
+Text: .five-grid .card span {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 3503
+Text: .five-grid .card h3 {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 3511
+Text: .five-grid .card p {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 3622
+Text: .contact-section .hero-actions a.btn,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 3623
+Text: .contact-section .hero-actions a.btn.primary,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 3624
+Text: .contact-section .hero-actions a.btn.secondary {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 3634
+Text:   .vault-resource-card {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 3640
+Text:   .vault-resource-card {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 3645
+Text:   .vault-resource-copy p {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 3650
+Text:   .vault-resource-note {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 3656
+Text:   .vault-resource-actions,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 3657
+Text:   .podcast-listen-actions {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 3663
+Text:   .navbar-premium {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 3668
+Text:   .premium-logo-image img {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 3673
+Text:   .nav-cta {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 3679
+Text:   .menu-button {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 3683
+Text:   .experience-story-note {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 3689
+Text:   .vault-resource-image,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 3690
+Text:   .vault-resource-image img {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 3694
+Text:   .vault-resource-actions .btn,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 3695
+Text:   .podcast-listen-actions .btn,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 3696
+Text:   .podcast-library-actions .btn,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 3697
+Text:   .contact-section .hero-actions a.btn {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 3788
+Text: .appointment-service-card > .btn {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 3792
+Text: .appointment-service-card > .btn {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 3798
+Text: .hero-v2 .hero-actions {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 3802
+Text: .hero-v2 .hero-actions .btn {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 3807
+Text: .contact-section .hero-actions {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 3816
+Text: .contact-section .hero-actions a.btn,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 3817
+Text: .contact-section .hero-actions a.btn.primary,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 3818
+Text: .contact-section .hero-actions a.btn.secondary {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 3828
+Text: .contact-section .hero-actions a.btn.primary {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 3833
+Text: .contact-section .hero-actions a.btn.secondary {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 3839
+Text: .contact-section .hero-actions a.btn.secondary:hover {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 3867
+Text: .radiance-private-hero .section-header {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 3881
+Text: .radiance-private-hero .section-header > p:last-of-type {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 3971
+Text: .legal-content .btn {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 3996
+Text: .not-found-section .section-header {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 4013
+Text: .podcast-library-section .spotify-embed {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 4028
+Text:   .radiance-private-hero {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 4033
+Text:   .radiance-back-link {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 4037
+Text:   .radiance-chapter {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 4041
+Text:   .podcast-library-actions,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 4042
+Text:   .podcast-listen-actions {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 4048
+Text:   .hero-v2 .hero-actions .btn,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 4049
+Text:   .contact-section .hero-actions a.btn,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 4050
+Text:   .contact-section .hero-actions a.btn.primary,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 4051
+Text:   .contact-section .hero-actions a.btn.secondary,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 4052
+Text:   .podcast-library-actions .btn,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 4053
+Text:   .podcast-listen-actions .btn {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 4058
+Text:   .radiance-private-hero::before {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 4063
+Text:   .radiance-private-hero h2 {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 4067
+Text:   .legal-content {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 4113
+Text: .begin-card:hover .card-action::after {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 4117
+Text: .booking-card .hero-actions {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 4121
+Text: .booking-card .btn {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 4136
+Text: .professional-grid .card,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 4137
+Text: .professional-pathway-grid .card {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 4142
+Text: .professional-grid .card p,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 4143
+Text: .professional-pathway-grid .card p {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 4201
+Text:   .professional-outcomes-card {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 4207
+Text:   .begin-card {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 4211
+Text:   .booking-card .hero-actions,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 4212
+Text:   .hero-v2-copy .hero-actions {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 4221
+Text: .page-hero + .intro-section,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 4222
+Text: .page-hero + .story-section {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 4323
+Text: .intro-section .cards:not(.five-grid) .card,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 4324
+Text: .professional-grid .card,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 4325
+Text: .professional-pathway-grid .card {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 4331
+Text: .intro-section .cards:not(.five-grid) .card h3,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 4332
+Text: .professional-grid .card h3,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 4333
+Text: .professional-pathway-grid .card h3 {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 4339
+Text: .intro-section .cards:not(.five-grid) .card p,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 4340
+Text: .professional-grid .card p,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 4341
+Text: .professional-pathway-grid .card p {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 4351
+Text: .five-grid .card {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 4361
+Text: .five-grid .card::before {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 4367
+Text: .five-grid .card span {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 4380
+Text: .five-grid .card h3 {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 4390
+Text: .five-grid .card p {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 4428
+Text:   .professional-outcomes-card,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 4429
+Text:   .professional-outcomes {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 4433
+Text:   .intro-section .cards:not(.five-grid) .card h3,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 4434
+Text:   .professional-grid .card h3,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 4435
+Text:   .professional-pathway-grid .card h3 {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 4439
+Text:   .five-grid .card {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 4443
+Text:   .five-grid .card p {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 4449
+Text:   .page-hero + .intro-section,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 4450
+Text:   .page-hero + .story-section {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 4454
+Text:   .professional-outcomes-section {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 4458
+Text:   .professional-outcomes-card,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 4459
+Text:   .professional-outcomes {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 4464
+Text:   .professional-outcomes-card li,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 4465
+Text:   .professional-outcomes li {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 4470
+Text:   .intro-section .cards:not(.five-grid) .card,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 4471
+Text:   .professional-grid .card,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 4472
+Text:   .professional-pathway-grid .card {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 4480
+Text: .five-grid .card p {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 4502
+Text:   .professional-outcomes-card,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 4503
+Text:   .professional-outcomes {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 4533
+Text: .experience-entry-card .card-action {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 4543
+Text: .experience-entry-card .card-action::after {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 4549
+Text: .experience-entry-card:hover .card-action::after {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 4559
+Text: .appointment-intro-copy .hero-actions {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 4572
+Text: .appointment-callout .btn {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 4681
+Text: .appointment-callout.compact .btn {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 4687
+Text: .appointment-bridge .btn.primary {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 4692
+Text: .appointment-bridge .btn.primary:hover {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 4705
+Text:   .experience-entry-card,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 4706
+Text:   .appointment-glance-card,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 4707
+Text:   .appointment-cover-card,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 4708
+Text:   .appointment-service-card,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 4709
+Text:   .appointment-choice-card {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 4713
+Text:   .appointment-glance-card h4,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 4714
+Text:   .appointment-cover-card h4,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 4715
+Text:   .appointment-service-card h4,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 4716
+Text:   .appointment-choice-card h4,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 4717
+Text:   .appointment-service-card > div:first-child p,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 4718
+Text:   .thinking-note {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 4722
+Text:   .appointment-meta-row div {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 4728
+Text:   .appointment-intro-copy .hero-actions,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 4729
+Text:   .appointment-callout .btn,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 4730
+Text:   .appointment-callout.compact .btn,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 4731
+Text:   .appointment-bridge .btn {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 4735
+Text:   .appointment-callout {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 4739
+Text:   .appointment-callout .btn {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 4743
+Text:   .appointment-service-card .btn {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\styles\global.css
+Line: 4747
+Text:   .experience-entry-card .card-action {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\App.css
+Line: 23
+Text:   .base,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\App.css
+Line: 24
+Text:   .framework,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\App.css
+Line: 25
+Text:   .vite {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\App.css
+Line: 30
+Text:   .base {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\App.css
+Line: 36
+Text:   .framework,
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\App.css
+Line: 37
+Text:   .vite {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\App.css
+Line: 41
+Text:   .framework {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\App.css
+Line: 49
+Text:   .vite {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\App.css
+Line: 86
+Text:   .icon {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\App.css
+Line: 114
+Text:   .logo {
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\App.css
+Line: 133
+Text:     .button-icon {
+
+[Mojibake: Â]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\App.jsx
+Line: 26
+Text:     title: 'Power Within Collectiveâ„¢ | Personal Presence & Transformation',
+
+[Mojibake: â sequence]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\App.jsx
+Line: 26
+Text:     title: 'Power Within Collectiveâ„¢ | Personal Presence & Transformation',
+
+[Mojibake: Â]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\App.jsx
+Line: 31
+Text:     title: 'Experiences | Power Within Collectiveâ„¢',
+
+[Mojibake: â sequence]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\App.jsx
+Line: 31
+Text:     title: 'Experiences | Power Within Collectiveâ„¢',
+
+[Mojibake: Â]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\App.jsx
+Line: 33
+Text:       'Explore clarity sessions, personalized appointments, Radiance Reclaimedâ„¢, and whole-person experiences for confidence, presence, wellness, and style.',
+
+[Mojibake: â sequence]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\App.jsx
+Line: 33
+Text:       'Explore clarity sessions, personalized appointments, Radiance Reclaimedâ„¢, and whole-person experiences for confidence, presence, wellness, and style.',
+
+[Mojibake: Â]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\App.jsx
+Line: 36
+Text:     title: 'Personalized Appointments | Power Within Collectiveâ„¢',
+
+[Mojibake: â sequence]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\App.jsx
+Line: 36
+Text:     title: 'Personalized Appointments | Power Within Collectiveâ„¢',
+
+[Mojibake: Â]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\App.jsx
+Line: 41
+Text:     title: 'Personal Color Alignment | Power Within Collectiveâ„¢',
+
+[Mojibake: â sequence]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\App.jsx
+Line: 41
+Text:     title: 'Personal Color Alignment | Power Within Collectiveâ„¢',
+
+[Mojibake: Â]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\App.jsx
+Line: 46
+Text:     title: 'Personal Style Alignment | Power Within Collectiveâ„¢',
+
+[Mojibake: â sequence]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\App.jsx
+Line: 46
+Text:     title: 'Personal Style Alignment | Power Within Collectiveâ„¢',
+
+[Mojibake: Â]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\App.jsx
+Line: 51
+Text:     title: 'Personalized Beauty Experience | Power Within Collectiveâ„¢',
+
+[Mojibake: â sequence]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\App.jsx
+Line: 51
+Text:     title: 'Personalized Beauty Experience | Power Within Collectiveâ„¢',
+
+[Mojibake: Â]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\App.jsx
+Line: 56
+Text:     title: 'Radiance Reclaimedâ„¢ | Power Within Collectiveâ„¢',
+
+[Mojibake: â sequence]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\App.jsx
+Line: 56
+Text:     title: 'Radiance Reclaimedâ„¢ | Power Within Collectiveâ„¢',
+
+[Mojibake: Â]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\App.jsx
+Line: 61
+Text:     title: 'The Vaultâ„¢ Resources | Power Within Collectiveâ„¢',
+
+[Mojibake: â sequence]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\App.jsx
+Line: 61
+Text:     title: 'The Vaultâ„¢ Resources | Power Within Collectiveâ„¢',
+
+[Mojibake: Â]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\App.jsx
+Line: 66
+Text:     title: 'For Professionals | Power Within Collectiveâ„¢',
+
+[Mojibake: â sequence]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\App.jsx
+Line: 66
+Text:     title: 'For Professionals | Power Within Collectiveâ„¢',
+
+[Mojibake: Â]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\App.jsx
+Line: 71
+Text:     title: 'Teen Programs | Power Within Collectiveâ„¢',
+
+[Mojibake: â sequence]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\App.jsx
+Line: 71
+Text:     title: 'Teen Programs | Power Within Collectiveâ„¢',
+
+[Mojibake: Â]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\App.jsx
+Line: 76
+Text:     title: 'Raising Her Confidence Podcast | Power Within Collectiveâ„¢',
+
+[Mojibake: â sequence]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\App.jsx
+Line: 76
+Text:     title: 'Raising Her Confidence Podcast | Power Within Collectiveâ„¢',
+
+[Mojibake: Â]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\App.jsx
+Line: 81
+Text:     title: 'About | Power Within Collectiveâ„¢',
+
+[Mojibake: â sequence]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\App.jsx
+Line: 81
+Text:     title: 'About | Power Within Collectiveâ„¢',
+
+[Mojibake: Â]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\App.jsx
+Line: 83
+Text:       'Learn about Kim Mittelstadt and the whole-person foundation behind Power Within Collectiveâ„¢.',
+
+[Mojibake: â sequence]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\App.jsx
+Line: 83
+Text:       'Learn about Kim Mittelstadt and the whole-person foundation behind Power Within Collectiveâ„¢.',
+
+[Mojibake: Â]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\App.jsx
+Line: 86
+Text:     title: 'Contact | Power Within Collectiveâ„¢',
+
+[Mojibake: â sequence]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\App.jsx
+Line: 86
+Text:     title: 'Contact | Power Within Collectiveâ„¢',
+
+[Mojibake: Â]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\App.jsx
+Line: 88
+Text:       'Begin a conversation about clarity sessions, Radiance Reclaimedâ„¢, professional education, speaking, podcast, or collaboration.',
+
+[Mojibake: â sequence]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\App.jsx
+Line: 88
+Text:       'Begin a conversation about clarity sessions, Radiance Reclaimedâ„¢, professional education, speaking, podcast, or collaboration.',
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\src\index.css
+Line: 48
+Text:   #social .button-icon {
+
+[Missing space after comma]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\eslint.config.js
+Line: 10
+Text:     files: ['**/*.{js,jsx}'],
+
+[Space before comma/period]
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\package.json
+Line: 9
+Text:     "lint": "eslint .",
+

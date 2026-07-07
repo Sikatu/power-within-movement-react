@@ -1,0 +1,816 @@
+Detail Audit 11 ? Project text audit
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 4
+Text: [Mojibake: Â]
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 7
+Text: Text:           <p className="eyebrow">Power Within Collectiveâ„¢</p>
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 9
+Text: [Mojibake: â sequence]
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 12
+Text: Text:           <p className="eyebrow">Power Within Collectiveâ„¢</p>
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 14
+Text: [Mojibake: Â]
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 17
+Text: Text:           <article className="card"><span>01</span><h3>Radiance Reclaimedâ„¢</h3><p>For the woman ready to stop performing her life and start inhabiting it with congruence, aliveness, and visible presence.</p></article>
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 19
+Text: [Mojibake: â sequence]
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 22
+Text: Text:           <article className="card"><span>01</span><h3>Radiance Reclaimedâ„¢</h3><p>For the woman ready to stop performing her life and start inhabiting it with congruence, aliveness, and visible presence.</p></article>
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 24
+Text: [Mojibake: Â]
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 27
+Text: Text:             <h3>Radiance Reclaimedâ„¢ addresses the whole woman, not just how she looks.</h3>
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 29
+Text: [Mojibake: â sequence]
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 32
+Text: Text:             <h3>Radiance Reclaimedâ„¢ addresses the whole woman, not just how she looks.</h3>
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 34
+Text: [Mojibake: Â]
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 37
+Text: Text:           <article className="card"><span>01</span><h3>Radiance Reclaimedâ„¢</h3><p>For the woman ready to stop performing her life and start inhabiting it with congruence, aliveness, and visible presence.</p></article>
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 39
+Text: [Mojibake: â sequence]
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 42
+Text: Text:           <article className="card"><span>01</span><h3>Radiance Reclaimedâ„¢</h3><p>For the woman ready to stop performing her life and start inhabiting it with congruence, aliveness, and visible presence.</p></article>
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 44
+Text: [Mojibake: Â]
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 47
+Text: Text:             <h3>Radiance Reclaimedâ„¢ addresses the whole woman, not just how she looks.</h3>
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 49
+Text: [Mojibake: â sequence]
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 52
+Text: Text:             <h3>Radiance Reclaimedâ„¢ addresses the whole woman, not just how she looks.</h3>
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 54
+Text: [Mojibake: Â]
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 57
+Text: Text:     title: 'Radiance Reclaimedâ„¢',
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 59
+Text: [Mojibake: â sequence]
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 62
+Text: Text:     title: 'Radiance Reclaimedâ„¢',
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 64
+Text: [Mojibake: Â]
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 67
+Text: Text:             <p className="eyebrow">Personal Presenceâ„¢</p>
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 69
+Text: [Mojibake: â sequence]
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 72
+Text: Text:             <p className="eyebrow">Personal Presenceâ„¢</p>
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 74
+Text: [Mojibake: Â]
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 77
+Text: Text:       'A curated preview of The Vaultâ„¢ created to open warmer conversations, clearer reflection, and more honest self-recognition.',
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 79
+Text: [Mojibake: â sequence]
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 82
+Text: Text:       'A curated preview of The Vaultâ„¢ created to open warmer conversations, clearer reflection, and more honest self-recognition.',
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 84
+Text: [Mojibake: Â]
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 87
+Text: Text:         text="The Vaultâ„¢ is a curated resource environment for women who want substance, reflection, and practical support for the long return."
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 89
+Text: [Mojibake: â sequence]
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 92
+Text: Text:         text="The Vaultâ„¢ is a curated resource environment for women who want substance, reflection, and practical support for the long return."
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 94
+Text: [Mojibake: Â]
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 97
+Text: Text:             <p className="eyebrow">The Vaultâ„¢</p>
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 99
+Text: [Mojibake: â sequence]
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 102
+Text: Text:             <p className="eyebrow">The Vaultâ„¢</p>
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 104
+Text: [Mojibake: Â]
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 107
+Text: Text:               The Vaultâ„¢ is a curated resource environment built for women who are ready
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 109
+Text: [Mojibake: â sequence]
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 112
+Text: Text:               The Vaultâ„¢ is a curated resource environment built for women who are ready
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 114
+Text: [Mojibake: Â]
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 117
+Text: Text:           <p className="eyebrow">Inside the Vaultâ„¢</p>
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 119
+Text: [Mojibake: â sequence]
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 122
+Text: Text:           <p className="eyebrow">Inside the Vaultâ„¢</p>
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 124
+Text: [Mojibake: Â]
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 127
+Text: Text:                 <Link to={vaultAccessPath} className="btn secondary">Ask About The Vaultâ„¢</Link>
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 129
+Text: [Mojibake: â sequence]
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 132
+Text: Text:                 <Link to={vaultAccessPath} className="btn secondary">Ask About The Vaultâ„¢</Link>
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 134
+Text: [Mojibake: Â]
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 137
+Text: Text:               different questions. The Vaultâ„¢ is built to meet you there.
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 139
+Text: [Mojibake: â sequence]
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 142
+Text: Text:               different questions. The Vaultâ„¢ is built to meet you there.
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 144
+Text: [Mojibake: Â]
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 147
+Text: Text:             The Vaultâ„¢ was created to fill that gap. It is not a collection of quick
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 149
+Text: [Mojibake: â sequence]
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 152
+Text: Text:             The Vaultâ„¢ was created to fill that gap. It is not a collection of quick
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 4279
+Text: [Mojibake: Â]
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 4282
+Text: Text:     title: 'Power Within Collectiveâ„¢ | Personal Presence & Transformation',
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 4284
+Text: [Mojibake: â sequence]
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 4287
+Text: Text:     title: 'Power Within Collectiveâ„¢ | Personal Presence & Transformation',
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 4289
+Text: [Mojibake: Â]
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 4292
+Text: Text:     title: 'Experiences | Power Within Collectiveâ„¢',
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 4294
+Text: [Mojibake: â sequence]
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 4297
+Text: Text:     title: 'Experiences | Power Within Collectiveâ„¢',
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 4299
+Text: [Mojibake: Â]
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 4302
+Text: Text:       'Explore clarity sessions, personalized appointments, Radiance Reclaimedâ„¢, and whole-person experiences for confidence, presence, wellness, and style.',
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 4304
+Text: [Mojibake: â sequence]
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 4307
+Text: Text:       'Explore clarity sessions, personalized appointments, Radiance Reclaimedâ„¢, and whole-person experiences for confidence, presence, wellness, and style.',
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 4309
+Text: [Mojibake: Â]
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 4312
+Text: Text:     title: 'Personalized Appointments | Power Within Collectiveâ„¢',
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 4314
+Text: [Mojibake: â sequence]
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 4317
+Text: Text:     title: 'Personalized Appointments | Power Within Collectiveâ„¢',
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 4319
+Text: [Mojibake: Â]
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 4322
+Text: Text:     title: 'Personal Color Alignment | Power Within Collectiveâ„¢',
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 4324
+Text: [Mojibake: â sequence]
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 4327
+Text: Text:     title: 'Personal Color Alignment | Power Within Collectiveâ„¢',
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 4329
+Text: [Mojibake: Â]
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 4332
+Text: Text:     title: 'Personal Style Alignment | Power Within Collectiveâ„¢',
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 4334
+Text: [Mojibake: â sequence]
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 4337
+Text: Text:     title: 'Personal Style Alignment | Power Within Collectiveâ„¢',
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 4339
+Text: [Mojibake: Â]
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 4342
+Text: Text:     title: 'Personalized Beauty Experience | Power Within Collectiveâ„¢',
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 4344
+Text: [Mojibake: â sequence]
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 4347
+Text: Text:     title: 'Personalized Beauty Experience | Power Within Collectiveâ„¢',
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 4349
+Text: [Mojibake: Â]
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 4352
+Text: Text:     title: 'Radiance Reclaimedâ„¢ | Power Within Collectiveâ„¢',
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 4354
+Text: [Mojibake: â sequence]
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 4357
+Text: Text:     title: 'Radiance Reclaimedâ„¢ | Power Within Collectiveâ„¢',
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 4359
+Text: [Mojibake: Â]
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 4362
+Text: Text:     title: 'The Vaultâ„¢ Resources | Power Within Collectiveâ„¢',
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 4364
+Text: [Mojibake: â sequence]
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 4367
+Text: Text:     title: 'The Vaultâ„¢ Resources | Power Within Collectiveâ„¢',
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 4369
+Text: [Mojibake: Â]
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 4372
+Text: Text:     title: 'For Professionals | Power Within Collectiveâ„¢',
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 4374
+Text: [Mojibake: â sequence]
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 4377
+Text: Text:     title: 'For Professionals | Power Within Collectiveâ„¢',
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 4379
+Text: [Mojibake: Â]
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 4382
+Text: Text:     title: 'Teen Programs | Power Within Collectiveâ„¢',
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 4384
+Text: [Mojibake: â sequence]
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 4387
+Text: Text:     title: 'Teen Programs | Power Within Collectiveâ„¢',
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 4389
+Text: [Mojibake: Â]
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 4392
+Text: Text:     title: 'Raising Her Confidence Podcast | Power Within Collectiveâ„¢',
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 4394
+Text: [Mojibake: â sequence]
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 4397
+Text: Text:     title: 'Raising Her Confidence Podcast | Power Within Collectiveâ„¢',
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 4399
+Text: [Mojibake: Â]
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 4402
+Text: Text:     title: 'About | Power Within Collectiveâ„¢',
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 4404
+Text: [Mojibake: â sequence]
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 4407
+Text: Text:     title: 'About | Power Within Collectiveâ„¢',
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 4409
+Text: [Mojibake: Â]
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 4412
+Text: Text:       'Learn about Kim Mittelstadt and the whole-person foundation behind Power Within Collectiveâ„¢.',
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 4414
+Text: [Mojibake: â sequence]
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 4417
+Text: Text:       'Learn about Kim Mittelstadt and the whole-person foundation behind Power Within Collectiveâ„¢.',
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 4419
+Text: [Mojibake: Â]
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 4422
+Text: Text:     title: 'Contact | Power Within Collectiveâ„¢',
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 4424
+Text: [Mojibake: â sequence]
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 4427
+Text: Text:     title: 'Contact | Power Within Collectiveâ„¢',
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 4429
+Text: [Mojibake: Â]
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 4432
+Text: Text:       'Begin a conversation about clarity sessions, Radiance Reclaimedâ„¢, professional education, speaking, podcast, or collaboration.',
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 4434
+Text: [Mojibake: â sequence]
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-01-report.txt
+Line: 4437
+Text: Text:       'Begin a conversation about clarity sessions, Radiance Reclaimedâ„¢, professional education, speaking, podcast, or collaboration.',
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-03-active-src.txt
+Line: 7
+Text: Text:           <p className="eyebrow">Power Within Collectiveâ„¢</p>
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-03-active-src.txt
+Line: 12
+Text: Text:           <article className="card"><span>01</span><h3>Radiance Reclaimedâ„¢</h3><p>For the woman ready to stop performing her life and start inhabiting it with congruence, aliveness, and visible presence.</p></article>
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-03-active-src.txt
+Line: 17
+Text: Text:             <h3>Radiance Reclaimedâ„¢ addresses the whole woman, not just how she looks.</h3>
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-03-active-src.txt
+Line: 22
+Text: Text:     title: 'Radiance Reclaimedâ„¢',
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-03-active-src.txt
+Line: 27
+Text: Text:             <p className="eyebrow">Personal Presenceâ„¢</p>
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-03-active-src.txt
+Line: 32
+Text: Text:       'A curated preview of The Vaultâ„¢ created to open warmer conversations, clearer reflection, and more honest self-recognition.',
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-03-active-src.txt
+Line: 37
+Text: Text:         text="The Vaultâ„¢ is a curated resource environment for women who want substance, reflection, and practical support for the long return."
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-03-active-src.txt
+Line: 42
+Text: Text:             <p className="eyebrow">The Vaultâ„¢</p>
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-03-active-src.txt
+Line: 47
+Text: Text:               The Vaultâ„¢ is a curated resource environment built for women who are ready
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-03-active-src.txt
+Line: 52
+Text: Text:           <p className="eyebrow">Inside the Vaultâ„¢</p>
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-03-active-src.txt
+Line: 57
+Text: Text:                 <Link to={vaultAccessPath} className="btn secondary">Ask About The Vaultâ„¢</Link>
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-03-active-src.txt
+Line: 62
+Text: Text:               different questions. The Vaultâ„¢ is built to meet you there.
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-03-active-src.txt
+Line: 67
+Text: Text:             The Vaultâ„¢ was created to fill that gap. It is not a collection of quick
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-05-active-src.txt
+Line: 7
+Text: Text:           <p className="eyebrow">Power Within Collectiveâ„¢</p>
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-05-active-src.txt
+Line: 12
+Text: Text:           <article className="card"><span>01</span><h3>Radiance Reclaimedâ„¢</h3><p>For the woman ready to stop performing her life and start inhabiting it with congruence, aliveness, and visible presence.</p></article>
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-05-active-src.txt
+Line: 17
+Text: Text:             <h3>Radiance Reclaimedâ„¢ addresses the whole woman, not just how she looks.</h3>
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-05-active-src.txt
+Line: 22
+Text: Text:     title: 'Radiance Reclaimedâ„¢',
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-05-active-src.txt
+Line: 27
+Text: Text:             <p className="eyebrow">Personal Presenceâ„¢</p>
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-05-active-src.txt
+Line: 32
+Text: Text:       'A curated preview of The Vaultâ„¢ created to open warmer conversations, clearer reflection, and more honest self-recognition.',
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-05-active-src.txt
+Line: 37
+Text: Text:         text="The Vaultâ„¢ is a curated resource environment for women who want substance, reflection, and practical support for the long return."
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-05-active-src.txt
+Line: 42
+Text: Text:             <p className="eyebrow">The Vaultâ„¢</p>
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-05-active-src.txt
+Line: 47
+Text: Text:               The Vaultâ„¢ is a curated resource environment built for women who are ready
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-05-active-src.txt
+Line: 52
+Text: Text:           <p className="eyebrow">Inside the Vaultâ„¢</p>
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-05-active-src.txt
+Line: 57
+Text: Text:                 <Link to={vaultAccessPath} className="btn secondary">Ask About The Vaultâ„¢</Link>
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-05-active-src.txt
+Line: 62
+Text: Text:               different questions. The Vaultâ„¢ is built to meet you there.
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-05-active-src.txt
+Line: 67
+Text: Text:             The Vaultâ„¢ was created to fill that gap. It is not a collection of quick
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-06-active-src.txt
+Line: 7
+Text: Text:           <p className="eyebrow">Power Within Collectiveâ„¢</p>
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-06-active-src.txt
+Line: 12
+Text: Text:           <article className="card"><span>01</span><h3>Radiance Reclaimedâ„¢</h3><p>For the woman ready to stop performing her life and start inhabiting it with congruence, aliveness, and visible presence.</p></article>
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-06-active-src.txt
+Line: 17
+Text: Text:             <h3>Radiance Reclaimedâ„¢ addresses the whole woman, not just how she looks.</h3>
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-06-active-src.txt
+Line: 22
+Text: Text:     title: 'Radiance Reclaimedâ„¢',
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-06-active-src.txt
+Line: 27
+Text: Text:             <p className="eyebrow">Personal Presenceâ„¢</p>
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-06-active-src.txt
+Line: 32
+Text: Text:       'A curated preview of The Vaultâ„¢ created to open warmer conversations, clearer reflection, and more honest self-recognition.',
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-06-active-src.txt
+Line: 37
+Text: Text:         text="The Vaultâ„¢ is a curated resource environment for women who want substance, reflection, and practical support for the long return."
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-06-active-src.txt
+Line: 42
+Text: Text:             <p className="eyebrow">The Vaultâ„¢</p>
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-06-active-src.txt
+Line: 47
+Text: Text:               The Vaultâ„¢ is a curated resource environment built for women who are ready
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-06-active-src.txt
+Line: 52
+Text: Text:           <p className="eyebrow">Inside the Vaultâ„¢</p>
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-06-active-src.txt
+Line: 57
+Text: Text:                 <Link to={vaultAccessPath} className="btn secondary">Ask About The Vaultâ„¢</Link>
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-06-active-src.txt
+Line: 62
+Text: Text:               different questions. The Vaultâ„¢ is built to meet you there.
+
+Suspicious text found
+File: C:\Users\Kidd\OneDrive\Desktop\power-within-movement-react\detail-audit-06-active-src.txt
+Line: 67
+Text: Text:             The Vaultâ„¢ was created to fill that gap. It is not a collection of quick
