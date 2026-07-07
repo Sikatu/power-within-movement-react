@@ -83,7 +83,7 @@ function Footer() {
       </div>
 
       <div className="footer-premium-bottom">
-        Â© 2026 Power Within Movement, LLC. Power Within Collective is a brand of Power Within Movement, LLC. All rights reserved.
+        Copyright 2026 Power Within Movement, LLC. Power Within Collective is a brand of Power Within Movement, LLC. All rights reserved.
       </div>
     </footer>
   )

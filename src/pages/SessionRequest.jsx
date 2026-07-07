@@ -731,7 +731,7 @@ export default function SessionRequest() {
               <span>
                 {selectedDurationMinutes} minutes
                 {getAppointmentPrice(selectedAppointment)
-                  ? ` ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚ -  ${getAppointmentPrice(selectedAppointment)}`
+                  ? ` - ${getAppointmentPrice(selectedAppointment)}`
                   : ''}
               </span>
             </div>
@@ -779,7 +779,7 @@ export default function SessionRequest() {
                     )
                   }
                 >
-                  ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ Ãƒâ€šÃ‚Â
+                  Previous
                 </button>
 
                 <strong>{formatMonthLabel(calendarMonthValue)}</strong>
@@ -792,7 +792,7 @@ export default function SessionRequest() {
                     )
                   }
                 >
-                  ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ '
+                  Next
                 </button>
               </div>
 

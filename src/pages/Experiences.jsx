@@ -160,7 +160,7 @@ function Experiences() {
         </div>
 
         <div className="cards">
-          <article className="card"><span>01</span><h3>Radiance Reclaimedâ„¢</h3><p>For the woman ready to stop performing her life and start inhabiting it with congruence, aliveness, and visible presence.</p></article>
+          <article className="card"><span>01</span><h3>Radiance Reclaimed</h3><p>For the woman ready to stop performing her life and start inhabiting it with congruence, aliveness, and visible presence.</p></article>
           <article className="card"><span>02</span><h3>Power Shift Clarity Session</h3><p>A focused whole-person conversation to name what has shifted, locate the gap, and create direction for the next aligned step.</p></article>
           <article className="card"><span>03</span><h3>Personalized Appointments</h3><p>For women who want beauty, color, style, or makeup guidance without committing to a deeper coaching experience.</p></article>
         </div>
@@ -294,7 +294,7 @@ function Experiences() {
 
           <div className="appointment-bridge">
             <p className="eyebrow">Ready for Something Deeper?</p>
-            <h3>Radiance Reclaimedâ„¢ addresses the whole woman, not just how she looks.</h3>
+            <h3>Radiance Reclaimed addresses the whole woman, not just how she looks.</h3>
             <p>
               An appointment can help you feel more confident in how you show up. But if
               you are sensing something deeper, a gap between who you are becoming and

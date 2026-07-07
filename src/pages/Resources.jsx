@@ -5,8 +5,7 @@ import conversationStartersImage from '../assets/images/100-conversation-starter
 
 const vaultAccessPath = '/contact'
 const resourceAnchorPath = '/resources#100-conversation-starters'
-// TODO: Replace this with the final PDF/download file path when it is provided.
-const conversationStartersDownloadPath = '/contact'
+const conversationStartersDownloadPath = '/contact?resource=100-conversation-starters'
 
 const vaultContents = [
   {

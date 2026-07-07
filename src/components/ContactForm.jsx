@@ -1,14 +1,16 @@
 import { useState } from 'react'
 
+const contactEmail = import.meta.env.VITE_CONTACT_EMAIL || 'hello@powerwithinmovement.com'
+
 const interestOptions = [
   'Book a Clarity Session',
-  'Ask About Radiance Reclaimed\u2122',
+  'Ask About Radiance Reclaimed',
   'Request 100 Conversation Starters',
   'Join the Professional Interest List',
   'Book Kim to Speak',
   'Podcast / Collaboration',
-  
-  'Teen Confidence / Mother-Daughter Support','General Message',
+  'Teen Confidence / Mother-Daughter Support',
+  'General Message',
 ]
 
 function ContactForm({ initialInterest = '', initialMessage = '' }) {
@@ -35,7 +37,21 @@ function ContactForm({ initialInterest = '', initialMessage = '' }) {
 
   const handleSubmit = (event) => {
     event.preventDefault()
+
+    const subject = encodeURIComponent(`Power Within Inquiry: ${form.interest || 'General Message'}`)
+    const body = encodeURIComponent(
+      [
+        `Name: ${form.name}`,
+        `Email: ${form.email}`,
+        `Interest: ${form.interest}`,
+        '',
+        'Message:',
+        form.message,
+      ].join('\n'),
+    )
+
     setSubmitted(true)
+    window.location.href = `mailto:${contactEmail}?subject=${subject}&body=${body}`
   }
 
   return (
@@ -91,7 +107,7 @@ function ContactForm({ initialInterest = '', initialMessage = '' }) {
 
       {submitted && (
         <p className="form-success">
-          Thank you - your message has been received.
+          Your email app should open with your message prepared. If it does not, please email {contactEmail}.
         </p>
       )}
     </form>

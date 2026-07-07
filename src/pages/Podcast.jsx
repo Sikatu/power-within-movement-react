@@ -15,11 +15,11 @@ const podcastLinks = [
   },
   {
     label: 'Spotify',
-    href: '#',
+    href: 'https://open.spotify.com/show/4ml9p7e5NLrUVqrd9HxnqT',
   },
   {
     label: 'YouTube',
-    href: '#',
+    href: 'https://www.youtube.com/@PowerWithinCollective',
   },
 ]
 
@@ -106,8 +106,8 @@ function Podcast() {
                   className={link.label === 'Apple Podcasts' ? 'btn primary' : 'btn ghost'}
                   href={link.href}
                   key={link.label}
-                  target={link.href === '#' ? undefined : '_blank'}
-                  rel={link.href === '#' ? undefined : 'noreferrer'}
+                  target="_blank"
+                  rel="noreferrer"
                 >
                   {link.label}
                 </a>
