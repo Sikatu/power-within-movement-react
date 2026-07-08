@@ -1,0 +1,77 @@
+import { useEffect, useRef, useState } from 'react'
+import { NavLink } from 'react-router-dom'
+import logo from '../assets/images/logo.webp'
+
+const navItems = [
+  { to: '/', label: 'Home', end: true },
+  { to: '/experiences', label: 'Experiences' },
+  { to: '/resources', label: 'The Vault' },
+  { to: '/professionals', label: 'Professionals' },
+  { to: '/podcast', label: 'Podcast' },
+  { to: '/about', label: 'About' },
+  { to: '/contact', label: 'Contact' },
+]
+
+function Navbar() {
+  const [isOpen, setIsOpen] = useState(false)
+  const navRef = useRef(null)
+
+  useEffect(() => {
+    if (!isOpen) return undefined
+
+    function handleClickOutside(event) {
+      if (navRef.current && !navRef.current.contains(event.target)) {
+        setIsOpen(false)
+      }
+    }
+
+    document.addEventListener('click', handleClickOutside)
+    return () => document.removeEventListener('click', handleClickOutside)
+  }, [isOpen])
+
+  const closeMenu = () => setIsOpen(false)
+  const linkClassName = ({ isActive }) => (isActive ? 'active' : undefined)
+
+  return (
+    <header className="pw-nav">
+      <div className="pw-nav-in" ref={navRef}>
+        <NavLink to="/" className="pw-brand" onClick={closeMenu}>
+          <img src={logo} alt="Power Within Collective" />
+          <b>Power Within Collective</b>
+        </NavLink>
+
+        <nav
+          className={isOpen ? 'pw-nav-links is-open' : 'pw-nav-links'}
+          aria-label="Primary"
+        >
+          {navItems.map((item) => (
+            <NavLink
+              key={item.to}
+              to={item.to}
+              end={item.end}
+              onClick={closeMenu}
+              className={linkClassName}
+            >
+              {item.label}
+            </NavLink>
+          ))}
+          <NavLink to="/client-portal/login" className="pw-nav-login" onClick={closeMenu}>
+            Client Login
+          </NavLink>
+        </nav>
+
+        <button
+          type="button"
+          className="pw-nav-toggle"
+          aria-label={isOpen ? 'Close navigation menu' : 'Open navigation menu'}
+          aria-expanded={isOpen}
+          onClick={() => setIsOpen((open) => !open)}
+        >
+          ☰
+        </button>
+      </div>
+    </header>
+  )
+}
+
+export default Navbar
