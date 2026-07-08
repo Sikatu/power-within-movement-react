@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import PageHero from '../components/PageHero'
 import ContactCTA from '../components/ContactCTA'
-import professionalsImage from '../assets/images/professionals.webp'
+import styleAnalysisImage from '../assets/images/style-analysis-wardrobe-guidance.webp'
 
 const processSteps = [
   {
@@ -39,7 +39,7 @@ function StyleAnalysis() {
       <section className="section service-detail-section">
         <div className="story-grid">
           <div className="story-image">
-            <img loading="lazy" src={professionalsImage} alt="Personal style alignment experience" />
+            <img loading="lazy" src={styleAnalysisImage} alt="Personal style analysis session with wardrobe and silhouette guidance" />
           </div>
 
           <div className="story-copy">

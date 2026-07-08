@@ -1,5 +1,7 @@
 ﻿import { Link } from 'react-router-dom'
 import PageHero from '../components/PageHero'
+import experiencesImage from '../assets/images/experiences-private-guidance.webp'
+import appointmentsImage from '../assets/images/appointments-private-studio-atmosphere.webp'
 
 const appointmentOptions = [
   {
@@ -149,14 +151,24 @@ function Experiences() {
       />
 
       <section className="section intro-section">
-        <div className="section-header">
-          <p className="eyebrow">Ways to Begin</p>
-          <h2>Every experience begins with the same question: what no longer feels aligned?</h2>
-          <p>
-            Confidence, energy, identity, wellness, color, style, and presence are not
-            separate problems. They are connected expressions of one life, one body,
-            one season, and one woman becoming more honest with herself.
-          </p>
+        <div className="experience-feature-grid">
+          <div className="section-header">
+            <p className="eyebrow">Ways to Begin</p>
+            <h2>Every experience begins with the same question: what no longer feels aligned?</h2>
+            <p>
+              Confidence, energy, identity, wellness, color, style, and presence are not
+              separate problems. They are connected expressions of one life, one body,
+              one season, and one woman becoming more honest with herself.
+            </p>
+          </div>
+
+          <div className="experience-feature-image">
+            <img
+              loading="lazy"
+              src={experiencesImage}
+              alt="Private guidance consultation for confidence, image, and personal presence"
+            />
+          </div>
         </div>
 
         <div className="cards">
@@ -198,6 +210,14 @@ function Experiences() {
             </div>
 
             <ConsultationCallout />
+          </div>
+
+          <div className="appointment-atmosphere-image">
+            <img
+              loading="lazy"
+              src={appointmentsImage}
+              alt="Calm private studio prepared for a personal appointment"
+            />
           </div>
 
           <div className="appointment-subheader">

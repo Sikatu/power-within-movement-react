@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import PageHero from '../components/PageHero'
 import ContactCTA from '../components/ContactCTA'
-import contactImage from '../assets/images/contact.webp'
+import blendCosmeticsImage from '../assets/images/blend-cosmetics-makeup-direction.webp'
 
 const processSteps = [
   {
@@ -37,7 +37,7 @@ function BlendCosmetics() {
       <section className="section service-detail-section">
         <div className="story-grid">
           <div className="story-image">
-            <img loading="lazy" src={contactImage} alt="Personalized beauty consultation" />
+            <img loading="lazy" src={blendCosmeticsImage} alt="Personalized makeup lesson and beauty direction consultation" />
           </div>
 
           <div className="story-copy">

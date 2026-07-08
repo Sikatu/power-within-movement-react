@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import PageHero from '../components/PageHero'
 import ContactCTA from '../components/ContactCTA'
-import vaultImage from '../assets/images/vault.webp'
+import colorAnalysisImage from '../assets/images/color-analysis-swatches-session.webp'
 
 const processSteps = [
   {
@@ -38,7 +38,7 @@ function ColorAnalysis() {
       <section className="section service-detail-section">
         <div className="story-grid">
           <div className="story-image">
-            <img loading="lazy" src={vaultImage} alt="Personal color alignment materials" />
+            <img loading="lazy" src={colorAnalysisImage} alt="Personal color analysis session with refined swatches and palette guidance" />
           </div>
 
           <div className="story-copy">
