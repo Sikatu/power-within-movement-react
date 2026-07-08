@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom'
 import PageHero from '../components/PageHero'
 import ContactCTA from '../components/ContactCTA'
 import podcastImage from '../assets/images/podcast-vibrations.webp'
-import teenImage from '../assets/images/teen.webp'
+import teenImage from '../assets/images/podcast-reflection-conversation.webp'
 import storyImage from '../assets/images/story.webp'
 import vaultImage from '../assets/images/vault.webp'
 

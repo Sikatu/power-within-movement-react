@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import PageHero from '../components/PageHero'
-import vaultImage from '../assets/images/vault.webp'
+import vaultImage from '../assets/images/vault-reflection-journal.webp'
 import conversationStartersImage from '../assets/images/100-conversation-starters.webp'
 
 const vaultAccessPath = '/contact'

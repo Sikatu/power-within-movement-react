@@ -1,6 +1,6 @@
 import PageHero from '../components/PageHero'
 import ContactCTA from '../components/ContactCTA'
-import teenImage from '../assets/images/teen.webp'
+import teenImage from '../assets/images/teen-confidence-conversation.webp'
 
 function TeenPrograms() {
   return (

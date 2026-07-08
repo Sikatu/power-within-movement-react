@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import PageHero from '../components/PageHero'
 import ContactCTA from '../components/ContactCTA'
-import professionalsImage from '../assets/images/professionals.webp'
+import professionalsImage from '../assets/images/professionals-collaboration-studio.webp'
 import professionalConsultationImage from '../assets/images/professional-consultation.webp'
 import professionalToolsImage from '../assets/images/professional-tools.webp'
 

@@ -1,7 +1,7 @@
 ﻿import { Link } from 'react-router-dom'
 import PageHero from '../components/PageHero'
 import experiencesImage from '../assets/images/experiences-private-guidance.webp'
-import appointmentsImage from '../assets/images/appointments-private-studio-atmosphere.webp'
+import appointmentsImage from '../assets/images/appointments-studio-atmosphere.webp'
 
 const appointmentOptions = [
   {
