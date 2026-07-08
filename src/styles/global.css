@@ -28212,3 +28212,319 @@ main.home-page .home-hero .hero-v2-image {
     min-height: 340px;
   }
 }
+
+
+/* FINAL SCREENSHOT POLISH - TEEN EXPERIENCE PROFESSIONALS */
+
+/* =====================================================
+   FINAL TARGETED POLISH
+   Scope:
+   - Teen Programs 2x2 support grid
+   - Experiences appointment card breathing
+   - Professionals card readability
+   No image/copy/layout rewrite.
+===================================================== */
+
+
+/* =========================
+   TEEN PROGRAMS
+   Fix 3+1 card layout into balanced 2x2.
+========================= */
+
+.teen-focus-grid {
+  width: min(760px, calc(100% - 48px)) !important;
+  margin-inline: auto !important;
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 26px !important;
+  align-items: stretch !important;
+}
+
+.teen-focus-card {
+  min-height: 220px !important;
+  padding: 32px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: flex-start !important;
+}
+
+.teen-focus-card span {
+  margin-bottom: 40px !important;
+}
+
+.teen-focus-card h3 {
+  margin: 0 0 14px !important;
+  max-width: 14ch !important;
+  font-size: clamp(23px, 2vw, 30px) !important;
+  line-height: 1.04 !important;
+  letter-spacing: -0.035em !important;
+}
+
+.teen-focus-card p {
+  margin: 0 !important;
+  max-width: 30ch !important;
+  font-size: 14px !important;
+  line-height: 1.55 !important;
+}
+
+.teen-pathway-grid {
+  width: min(860px, calc(100% - 48px)) !important;
+  margin-inline: auto !important;
+  gap: 26px !important;
+}
+
+.teen-pathway-card {
+  min-height: 250px !important;
+  padding: 32px !important;
+}
+
+.teen-pathway-card h3 {
+  font-size: clamp(22px, 1.8vw, 28px) !important;
+  line-height: 1.06 !important;
+}
+
+
+/* =========================
+   EXPERIENCES PAGE
+   Slightly bigger, cleaner appointment rhythm.
+========================= */
+
+.appointment-shell {
+  width: min(1040px, calc(100% - 48px)) !important;
+  margin-inline: auto !important;
+}
+
+.appointment-intro-grid {
+  gap: 32px !important;
+}
+
+.appointment-glance-grid {
+  width: min(980px, 100%) !important;
+  margin-inline: auto !important;
+  gap: 22px !important;
+}
+
+.appointment-glance-card {
+  min-height: 250px !important;
+  padding: 28px !important;
+}
+
+.appointment-glance-card h4 {
+  margin-bottom: 22px !important;
+  font-size: clamp(20px, 1.7vw, 26px) !important;
+  line-height: 1.08 !important;
+}
+
+.appointment-cover-grid {
+  width: min(900px, 100%) !important;
+  margin-inline: auto !important;
+  gap: 24px !important;
+}
+
+.appointment-cover-card {
+  padding: 30px !important;
+  min-height: 230px !important;
+}
+
+.appointment-cover-card h4 {
+  font-size: clamp(21px, 1.8vw, 27px) !important;
+  line-height: 1.08 !important;
+}
+
+.appointment-service-grid {
+  width: min(940px, 100%) !important;
+  margin-inline: auto !important;
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 30px !important;
+  align-items: stretch !important;
+}
+
+.appointment-service-card {
+  min-height: 0 !important;
+  padding: 34px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 22px !important;
+}
+
+.appointment-service-card h4 {
+  margin: 0 0 12px !important;
+  font-size: clamp(22px, 1.8vw, 29px) !important;
+  line-height: 1.06 !important;
+  letter-spacing: -0.035em !important;
+}
+
+.appointment-service-card p,
+.appointment-service-card li {
+  font-size: 14px !important;
+  line-height: 1.55 !important;
+}
+
+.thinking-note {
+  padding: 20px 22px !important;
+  border-radius: 20px !important;
+  background: linear-gradient(135deg, #fff8f4 0%, #f2dfd8 100%) !important;
+  border: 1px solid rgba(152, 95, 86, 0.16) !important;
+}
+
+.thinking-note p {
+  font-size: clamp(17px, 1.45vw, 22px) !important;
+  line-height: 1.15 !important;
+}
+
+.appointment-choice-grid {
+  width: min(860px, 100%) !important;
+  margin-inline: auto !important;
+  gap: 24px !important;
+}
+
+.appointment-choice-card {
+  min-height: 205px !important;
+  padding: 28px 30px !important;
+}
+
+.appointment-choice-card h4 {
+  font-size: clamp(20px, 1.7vw, 26px) !important;
+  line-height: 1.08 !important;
+  margin-bottom: 18px !important;
+}
+
+.appointment-choice-card li {
+  font-size: 14px !important;
+  line-height: 1.5 !important;
+}
+
+
+/* =========================
+   PROFESSIONALS PAGE
+   Improve readability without redesign.
+========================= */
+
+.pwp-fit-grid {
+  width: min(940px, calc(100% - 48px)) !important;
+  margin-inline: auto !important;
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 24px !important;
+}
+
+.pwp-fit-card {
+  min-height: 205px !important;
+  padding: 30px !important;
+}
+
+.pwp-fit-card h3 {
+  margin-bottom: 14px !important;
+  font-size: clamp(22px, 1.9vw, 29px) !important;
+  line-height: 1.05 !important;
+  letter-spacing: -0.035em !important;
+}
+
+.pwp-fit-card p {
+  font-size: 14px !important;
+  line-height: 1.55 !important;
+}
+
+.pwp-check-panel {
+  width: min(860px, calc(100% - 48px)) !important;
+  margin-inline: auto !important;
+  padding: 32px !important;
+}
+
+.pwp-check-list {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 14px 30px !important;
+}
+
+.pwp-check-list li {
+  font-size: 14px !important;
+  line-height: 1.45 !important;
+}
+
+.pwp-build-grid,
+.pwp-work-grid {
+  gap: 14px !important;
+}
+
+.pwp-build-item,
+.pwp-work-item {
+  min-height: 74px !important;
+  padding: 18px 20px !important;
+  font-size: 14px !important;
+  line-height: 1.35 !important;
+}
+
+.pwp-method-grid {
+  width: min(920px, calc(100% - 48px)) !important;
+  margin-inline: auto !important;
+  gap: 20px !important;
+}
+
+.pwp-method-grid article {
+  padding: 26px !important;
+  min-height: 230px !important;
+}
+
+.pwp-method-grid h3 {
+  font-size: clamp(20px, 1.7vw, 26px) !important;
+  line-height: 1.06 !important;
+}
+
+.pwp-method-grid p {
+  font-size: 14px !important;
+  line-height: 1.5 !important;
+}
+
+
+/* =========================
+   Responsive safety
+========================= */
+
+@media (max-width: 900px) {
+  .teen-focus-grid,
+  .teen-pathway-grid,
+  .appointment-service-grid,
+  .appointment-choice-grid,
+  .pwp-fit-grid,
+  .pwp-check-list {
+    grid-template-columns: 1fr !important;
+  }
+
+  .teen-focus-grid,
+  .teen-pathway-grid,
+  .appointment-shell,
+  .pwp-fit-grid,
+  .pwp-check-panel,
+  .pwp-method-grid {
+    width: min(620px, calc(100% - 32px)) !important;
+  }
+
+  .appointment-service-grid,
+  .appointment-choice-grid,
+  .appointment-glance-grid,
+  .appointment-cover-grid {
+    width: 100% !important;
+  }
+}
+
+@media (max-width: 560px) {
+  .teen-focus-grid,
+  .teen-pathway-grid,
+  .appointment-shell,
+  .pwp-fit-grid,
+  .pwp-check-panel,
+  .pwp-method-grid {
+    width: calc(100% - 24px) !important;
+  }
+
+  .teen-focus-card,
+  .teen-pathway-card,
+  .appointment-service-card,
+  .appointment-choice-card,
+  .pwp-fit-card {
+    padding: 26px !important;
+  }
+}
+
