@@ -111,8 +111,12 @@ function Home() {
       </section>
 
       <BookingPreview />
-      <Newsletter />
-      <FAQ />
+      <div id="newsletter" className="home-anchor-target">
+        <Newsletter />
+      </div>
+      <div id="faq" className="home-anchor-target">
+        <FAQ />
+      </div>
       <ContactCTA
         eyebrow="A Thoughtful Place to Begin"
         title="Start with the doorway that fits the season you are in."
