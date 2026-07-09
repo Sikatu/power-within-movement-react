@@ -1,4 +1,4 @@
-﻿import { lazy, Suspense, useEffect } from 'react'
+import { lazy, Suspense, useEffect } from 'react'
 import { BrowserRouter, Routes, Route, useLocation, Navigate } from 'react-router-dom'
 import ScrollToHash from './components/ScrollToHash.jsx'
 import Navbar from './components/Navbar'

@@ -1,4 +1,4 @@
-﻿import PageHero from '../components/PageHero'
+import PageHero from '../components/PageHero'
 import ContactCTA from '../components/ContactCTA'
 import kimImage from '../assets/images/kim.webp'
 import corinneImage from '../assets/images/team/corinne.webp'
