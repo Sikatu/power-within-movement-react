@@ -25692,3 +25692,40 @@ body [class*="client-profile"] {
     animation: none;
   }
 }
+
+
+/* INITIAL BRAND LOADER - first session visit */
+.initial-brand-loader {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(circle at 50% 28%, rgba(255, 255, 255, 0.95), transparent 34rem),
+    linear-gradient(135deg, rgba(251, 245, 238, 0.98), rgba(246, 235, 226, 0.96));
+  opacity: 1;
+  transition: opacity 300ms ease, visibility 300ms ease;
+}
+
+.initial-brand-loader.is-leaving {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.initial-brand-loader .page-loading-screen {
+  width: 100%;
+  min-height: 100vh;
+  background: transparent;
+}
+
+.initial-brand-loader .page-loading-card {
+  transform: translateY(-0.5rem);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .initial-brand-loader {
+    transition: none;
+  }
+}

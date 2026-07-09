@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect } from 'react'
+import { lazy, Suspense, useEffect, useState } from 'react'
 import { BrowserRouter, Routes, Route, useLocation, Navigate } from 'react-router-dom'
 import logoImage from './assets/images/logo.webp'
 import ScrollToHash from './components/ScrollToHash.jsx'
@@ -201,9 +201,46 @@ function PageLoading() {
     </main>
   )
 }
+
+function InitialBrandLoader() {
+  const [isVisible, setIsVisible] = useState(() => {
+    if (typeof window === 'undefined') return false
+    return window.sessionStorage.getItem('pwcInitialLoaderSeen') !== 'true'
+  })
+
+  const [isLeaving, setIsLeaving] = useState(false)
+
+  useEffect(() => {
+    if (!isVisible) return undefined
+
+    const leaveTimer = window.setTimeout(() => {
+      setIsLeaving(true)
+      window.sessionStorage.setItem('pwcInitialLoaderSeen', 'true')
+    }, 750)
+
+    const removeTimer = window.setTimeout(() => {
+      setIsVisible(false)
+    }, 1050)
+
+    return () => {
+      window.clearTimeout(leaveTimer)
+      window.clearTimeout(removeTimer)
+    }
+  }, [isVisible])
+
+  if (!isVisible) return null
+
+  return (
+    <div className={`initial-brand-loader${isLeaving ? ' is-leaving' : ''}`}>
+      <PageLoading />
+    </div>
+  )
+}
+
 function App() {
   return (
     <BrowserRouter>
+      <InitialBrandLoader />
       <ScrollToHash />
       <RouteMetadata />
       <Navbar />
