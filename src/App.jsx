@@ -39,79 +39,79 @@ const SITE_URL = 'https://www.kimmittelstadt.com'
 
 const routeMetadata = {
   '/': {
-    title: 'Power Within Collective | Confidence, Presence & Transformation',
+    title: 'Power Within Collective | Confidence Coaching, Color Analysis & Personal Style',
     description:
-      'Transformational experiences for women ready to reconnect with confidence, presence, style, and the power within.',
+      'Confidence coaching, color analysis, personal style guidance, beauty direction, and whole-person transformation experiences for women ready to reconnect with presence and self-trust.',
   },
   '/experiences': {
-    title: 'Experiences | Power Within Collective',
+    title: 'Confidence, Style & Image Experiences | Power Within Collective',
     description:
-      'Explore clarity sessions, personalized appointments, Radiance Reclaimed, and whole-person experiences for confidence, presence, wellness, and style.',
+      'Explore private confidence coaching, personal style guidance, color analysis, beauty direction, Radiance Reclaimed, and whole-person transformation experiences.',
   },
   '/appointments': {
-    title: 'Personalized Appointments | Power Within Collective',
+    title: 'Personal Image, Color & Style Appointments | Power Within Collective',
     description:
-      'Explore personalized beauty, color, style, makeup, and personal presence appointments for women in a new season of life.',
+      'Book personalized color analysis, style analysis, makeup direction, beauty guidance, and personal presence appointments for women in a new season of life.',
   },
   '/color-analysis': {
-    title: 'Personal Color Alignment | Power Within Collective',
+    title: 'Color Analysis Consultation for Women | Power Within Collective',
     description:
-      'Discover personal color direction for clothing, makeup, accessories, hair direction, and a more confident presence.',
+      'A refined color analysis consultation for women seeking clearer clothing, makeup, accessories, hair direction, and a more confident personal presence.',
   },
   '/style-analysis': {
-    title: 'Personal Style Alignment | Power Within Collective',
+    title: 'Personal Style Analysis & Wardrobe Guidance | Power Within Collective',
     description:
-      'Refine personal style with body shape, proportion, wardrobe structure, and style direction for this season of life.',
+      'Personal style analysis and wardrobe guidance for women seeking body shape clarity, proportion, outfit direction, and style confidence.',
   },
   '/blend-cosmetics': {
-    title: 'Personalized Beauty Experience | Power Within Collective',
+    title: 'Makeup & Beauty Direction Consultation | Power Within Collective',
     description:
-      'Makeup lesson and beauty direction designed around undertones, product choices, application, and natural confidence.',
+      'A personalized makeup and beauty direction consultation designed around undertones, product choices, application, natural confidence, and everyday polish.',
   },
   '/radiance-reclaimed': {
-    title: 'Radiance Reclaimed | Power Within Collective',
+    title: 'Women’s Confidence & Presence Coaching | Radiance Reclaimed',
     description:
-      'A private, whole-person transformation experience for the woman ready to inhabit the life that fits who she has become.',
+      'A private confidence and presence coaching experience for women ready for whole-person transformation, self-trust, image alignment, and renewed identity.',
   },
   '/resources': {
-    title: 'The Vault Resources | Power Within Collective',
+    title: 'Confidence, Style & Self-Reflection Resources | Power Within Collective',
     description:
-      'Curated resources for women seeking reflection, confidence, personal presence, style, wellness, and self-leadership.',
+      'Curated confidence, personal presence, style, wellness, self-reflection, and self-leadership resources for women returning to themselves.',
   },
   '/professionals': {
-    title: 'Power Within Professional | Signature Experience Method for Beauty & Image Professionals',
+    title: 'Image Consultant & Beauty Professional Training | Power Within Professional',
     description:
-      'A professional development experience helping beauty and image professionals turn their expertise into a premium, transformation-centered client experience.',
+      'Professional education for beauty, image, style, and wellness professionals who want to turn their expertise into a premium transformation-centered client experience.',
   },
   '/power-within-professional': {
-    title: 'Power Within Professional | Signature Experience Method for Beauty & Image Professionals',
+    title: 'Image Consultant & Beauty Professional Training | Power Within Professional',
     description:
-      'A professional development experience helping beauty and image professionals turn their expertise into a premium, transformation-centered client experience.',
+      'Professional education for beauty, image, style, and wellness professionals who want to turn their expertise into a premium transformation-centered client experience.',
   },
   '/teen-programs': {
-    title: 'Teen Programs | Power Within Collective',
+    title: 'Teen Confidence Programs for Girls | Power Within Collective',
     description:
-      'Supportive experiences for young women building confidence, identity, emotional awareness, and grounded self-expression.',
+      'Supportive teen confidence programs for girls and young women building identity, emotional awareness, self-expression, and grounded self-trust.',
   },
   '/teens': {
-    title: 'Teen Programs | Power Within Collective',
+    title: 'Teen Confidence Programs for Girls | Power Within Collective',
     description:
-      'Supportive experiences for young women building confidence, identity, emotional awareness, and grounded self-expression.',
+      'Supportive teen confidence programs for girls and young women building identity, emotional awareness, self-expression, and grounded self-trust.',
   },
   '/podcast': {
-    title: 'Raising Her Confidence Podcast | Power Within Collective',
+    title: 'Raising Her Confidence Podcast | Teen Confidence & Mother-Daughter Conversations',
     description:
-      'Thoughtful conversations with Kim Mittelstadt where identity meets confidence, wellness, style, and presence.',
+      'A podcast for mothers, mentors, and adults supporting girls through confidence, identity, emotional wellness, self-expression, and presence.',
   },
   '/about': {
-    title: 'About | Power Within Collective',
+    title: 'About Kim Mittelstadt | Power Within Collective',
     description:
-      'Learn about Kim Mittelstadt and the whole-person foundation behind Power Within Collective.',
+      'Learn about Kim Mittelstadt, founder of Power Within Collective, and the whole-person foundation behind her confidence, style, beauty, and transformation work.',
   },
   '/contact': {
-    title: 'Contact | Power Within Collective',
+    title: 'Contact Power Within Collective | Private Consultations & Speaking',
     description:
-      'Begin a conversation about clarity sessions, Radiance Reclaimed, professional education, speaking, podcast, or collaboration.',
+      'Contact Power Within Collective about private consultations, color analysis, personal style guidance, Radiance Reclaimed, professional education, speaking, podcast, or collaboration.',
   },
   '/privacy-policy': {
     title: 'Privacy Policy | Power Within Movement, LLC',
@@ -317,6 +317,7 @@ function App() {
 }
 
 export default App
+
 
 
 

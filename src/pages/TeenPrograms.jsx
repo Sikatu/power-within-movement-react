@@ -1,4 +1,4 @@
-import PageHero from '../components/PageHero'
+﻿import PageHero from '../components/PageHero'
 import ContactCTA from '../components/ContactCTA'
 import teenImage from '../assets/images/teen-confidence-conversation.webp'
 
@@ -7,7 +7,7 @@ function TeenPrograms() {
     <main>
       <PageHero
         eyebrow="Teen Programs"
-        title="Confidence she can grow into, not perform for."
+        title="Teen Confidence Programs for Girls Becoming Themselves"
         text="Support for teen girls, mothers, mentors, and families who want deeper conversations around identity, confidence, self-image, connection, and presence."
       />
 

@@ -30,7 +30,7 @@ function ColorAnalysis() {
     <main className="color-analysis-page">
       <PageHero
         eyebrow="Color Analysis"
-        title="Personal Color Alignment"
+        title="Color Analysis for Confidence, Style, and Presence"
         text="Discover the colors that naturally align with your features, presence, and personal style."
       />
 
@@ -100,6 +100,7 @@ function ColorAnalysis() {
 }
 
 export default ColorAnalysis
+
 
 
 

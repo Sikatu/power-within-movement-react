@@ -31,7 +31,7 @@ function StyleAnalysis() {
     <main className="style-analysis-page">
       <PageHero
         eyebrow="Style & Body Analysis"
-        title="Personal Style Alignment"
+        title="Personal Style Analysis and Wardrobe Guidance"
         text="Refining your personal style with greater confidence, clarity, and intention."
       />
 
@@ -101,5 +101,6 @@ function StyleAnalysis() {
 }
 
 export default StyleAnalysis
+
 
 

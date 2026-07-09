@@ -29,7 +29,7 @@ function BlendCosmetics() {
     <main className="makeup-direction-page">
       <PageHero
         eyebrow="Makeup Lesson & Direction"
-        title="A Personalized Beauty Experience"
+        title="Makeup and Beauty Direction for Natural Confidence"
         text="Makeup direction designed to feel polished, effortless, and naturally aligned with you."
       />
 
@@ -97,6 +97,7 @@ function BlendCosmetics() {
 }
 
 export default BlendCosmetics
+
 
 
 
