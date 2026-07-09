@@ -1,5 +1,5 @@
 ﻿import { lazy, Suspense, useEffect } from 'react'
-import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, useLocation, Navigate } from 'react-router-dom'
 import ScrollToHash from './components/ScrollToHash.jsx'
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
@@ -200,6 +200,7 @@ function App() {
         <Route path="/contact" element={<Contact />} />
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
         <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
+        <Route path="/client-portal" element={<Navigate to="/client-portal/login" replace />} />
         <Route path="/client-portal/invite/:token" element={<ClientPortalInvite />} />
         <Route path="/client-portal/login" element={<ClientPortalLogin />} />
         <Route path="/client-portal/dashboard" element={<ClientPortalDashboard />} />
@@ -316,4 +317,6 @@ function App() {
 }
 
 export default App
+
+
 

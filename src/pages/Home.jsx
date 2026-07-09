@@ -1,10 +1,12 @@
+﻿import { lazy, Suspense } from 'react'
 import { Link } from 'react-router-dom'
 import Hero from '../components/Hero'
-import ContactCTA from '../components/ContactCTA'
-import FAQ from '../components/FAQ'
-import Newsletter from '../components/Newsletter'
-import BookingPreview from '../components/BookingPreview'
 import storyImage from '../assets/images/story.webp'
+
+const ContactCTA = lazy(() => import('../components/ContactCTA'))
+const FAQ = lazy(() => import('../components/FAQ'))
+const Newsletter = lazy(() => import('../components/Newsletter'))
+const BookingPreview = lazy(() => import('../components/BookingPreview'))
 
 const beginOptions = [
   {
@@ -110,7 +112,8 @@ function Home() {
         </div>
       </section>
 
-      <BookingPreview />
+      <Suspense fallback={null}>
+        <BookingPreview />
       <div id="newsletter" className="home-anchor-target">
         <Newsletter />
       </div>
@@ -126,8 +129,10 @@ function Home() {
           { label: 'Book a Clarity Session', to: '/contact', variant: 'secondary' },
         ]}
       />
+      </Suspense>
     </main>
   )
 }
 
 export default Home
+
