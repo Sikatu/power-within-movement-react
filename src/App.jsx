@@ -1,5 +1,6 @@
 import { lazy, Suspense, useEffect } from 'react'
 import { BrowserRouter, Routes, Route, useLocation, Navigate } from 'react-router-dom'
+import logoImage from './assets/images/logo.webp'
 import ScrollToHash from './components/ScrollToHash.jsx'
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
