@@ -3,6 +3,29 @@ import { Link, useNavigate } from 'react-router-dom'
 import { getClientPortalMe, loginClientPortal } from '../lib/nativeApi'
 
 import './ClientPortal.css'
+function getFriendlyLoginError(message) {
+  const normalizedMessage = String(message || '').toLowerCase()
+
+  if (
+    normalizedMessage.includes('failed to fetch') ||
+    normalizedMessage.includes('network') ||
+    normalizedMessage.includes('load failed')
+  ) {
+    return 'We could not connect to the private portal for a moment. Please check your connection and try again.'
+  }
+
+  if (
+    normalizedMessage.includes('invalid') ||
+    normalizedMessage.includes('incorrect') ||
+    normalizedMessage.includes('unauthorized') ||
+    normalizedMessage.includes('401')
+  ) {
+    return 'The email or password did not match an active client portal account.'
+  }
+
+  return message || 'We could not sign you in yet. Please try again shortly.'
+}
+
 export default function ClientPortalLogin() {
   const navigate = useNavigate()
   const [email, setEmail] = useState('')
@@ -72,6 +95,8 @@ export default function ClientPortalLogin() {
     )
   }
 
+  const displayError = getFriendlyLoginError(error)
+
   return (
     <main className="client-portal-login-page-v1">
       <section className="client-portal-login-shell-v1">
@@ -100,7 +125,7 @@ export default function ClientPortalLogin() {
             </p>
           </div>
 
-          {error && <div className="client-portal-alert-v1">{error}</div>}
+          {error && <div className="client-portal-alert-v1">{displayError}</div>}
 
           {notice && (
             <div className="client-portal-alert-v1 is-success">{notice}</div>
@@ -159,3 +184,4 @@ export default function ClientPortalLogin() {
     </main>
   )
 }
+

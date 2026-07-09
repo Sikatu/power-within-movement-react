@@ -110,6 +110,28 @@ function getInviteHeroCopy(invite, statusCopy) {
   }
 }
 
+function getFriendlyInviteError(message) {
+  const normalizedMessage = String(message || '').toLowerCase()
+
+  if (
+    normalizedMessage.includes('failed to fetch') ||
+    normalizedMessage.includes('network') ||
+    normalizedMessage.includes('load failed')
+  ) {
+    return 'We could not open this invitation for a moment. Please refresh the page or try again shortly.'
+  }
+
+  if (
+    normalizedMessage.includes('expired') ||
+    normalizedMessage.includes('inactive') ||
+    normalizedMessage.includes('revoked')
+  ) {
+    return 'This invitation link is no longer active. Please contact Power Within Collective for a fresh private portal invitation.'
+  }
+
+  return message || 'We could not open this invitation yet. Please try again shortly.'
+}
+
 export default function ClientPortalInvite() {
   const { token } = useParams()
   const [invite, setInvite] = useState(null)
@@ -203,6 +225,8 @@ export default function ClientPortalInvite() {
     }
   }
 
+  const displayError = getFriendlyInviteError(error)
+
   return (
     <main className="client-portal-invite-page-v1">
       <section className="client-portal-invite-shell-v1">
@@ -218,7 +242,7 @@ export default function ClientPortalInvite() {
               Opening your invitation...
             </div>
           ) : error && !invite ? (
-            <div className="client-portal-state-v1 is-error">{error}</div>
+            <div className="client-portal-state-v1 is-error">{displayError}</div>
           ) : (
             <>
               <div className="client-portal-card-heading-v1">
@@ -232,7 +256,7 @@ export default function ClientPortalInvite() {
                 )}
               </div>
 
-              {error && <div className="client-portal-alert-v1">{error}</div>}
+              {error && <div className="client-portal-alert-v1">{displayError}</div>}
 
               {successMessage && (
                 <div className="client-portal-alert-v1 is-success">
@@ -318,3 +342,4 @@ export default function ClientPortalInvite() {
     </main>
   )
 }
+

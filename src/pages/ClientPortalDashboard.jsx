@@ -77,6 +77,30 @@ function groupResourcesByType(resources) {
   }, {})
 }
 
+function getFriendlyClientPortalError(message) {
+  const normalizedMessage = String(message || '').toLowerCase()
+
+  if (
+    normalizedMessage.includes('failed to fetch') ||
+    normalizedMessage.includes('network') ||
+    normalizedMessage.includes('load failed')
+  ) {
+    return 'We could not reach your private portal for a moment. Please refresh the page or try again shortly.'
+  }
+
+  if (
+    normalizedMessage.includes('login required') ||
+    normalizedMessage.includes('unauthorized') ||
+    normalizedMessage.includes('forbidden') ||
+    normalizedMessage.includes('401') ||
+    normalizedMessage.includes('403')
+  ) {
+    return 'Your private session has ended. Please sign in again to continue.'
+  }
+
+  return message || 'We could not load your private portal yet. Please try again shortly.'
+}
+
 export default function ClientPortalDashboard() {
   const navigate = useNavigate()
   const [dashboard, setDashboard] = useState(null)
@@ -113,7 +137,7 @@ export default function ClientPortalDashboard() {
       } catch (loadError) {
         if (!isMounted) return
 
-        setError(loadError.message || 'Unable to load your client portal.')
+        setError(getFriendlyClientPortalError(loadError.message))
 
         const lowerMessage = String(loadError.message || '').toLowerCase()
 
@@ -239,7 +263,7 @@ export default function ClientPortalDashboard() {
 
         {isLoading ? (
           <div className="client-portal-dashboard-message-v1">
-            Loading your private portal...
+            Preparing your private client space...
           </div>
         ) : error ? (
           <div className="client-portal-dashboard-message-v1 is-error">
@@ -480,3 +504,4 @@ export default function ClientPortalDashboard() {
     </main>
   )
 }
+

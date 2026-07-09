@@ -1084,3 +1084,42 @@ body.client-portal-mode .client-portal-dashboard-message-v1.is-error {
 
 /* phase-3-13w-client-portal-dashboard-polish-end */
 
+
+/* client-portal-phase-1-friendly-states-start */
+body.client-portal-mode .client-portal-dashboard-message-v1 strong,
+body.client-portal-mode .client-portal-alert-v1 strong,
+body.client-portal-mode .client-portal-state-v1 strong {
+  display: block;
+  margin-bottom: 0.35rem;
+  color: #4b342b;
+  font-family: var(--font-display, Georgia, serif);
+  font-size: 1.05rem;
+}
+
+body.client-portal-mode .client-portal-dashboard-message-v1 p,
+body.client-portal-mode .client-portal-alert-v1 p,
+body.client-portal-mode .client-portal-state-v1 p {
+  margin: 0.35rem 0 0;
+  color: rgba(72, 49, 42, 0.78);
+  line-height: 1.65;
+}
+
+body.client-portal-mode .client-portal-dashboard-message-v1 a,
+body.client-portal-mode .client-portal-alert-v1 a,
+body.client-portal-mode .client-portal-state-v1 a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 1rem;
+  color: #7a4f42;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+body.client-portal-mode .client-portal-dashboard-message-v1 a:hover,
+body.client-portal-mode .client-portal-alert-v1 a:hover,
+body.client-portal-mode .client-portal-state-v1 a:hover {
+  color: #4b342b;
+  text-decoration: underline;
+}
+/* client-portal-phase-1-friendly-states-end */
