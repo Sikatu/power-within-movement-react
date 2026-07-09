@@ -26046,3 +26046,96 @@ body [class*="client-profile"] {
     animation: none !important;
   }
 }
+
+
+/* BACK TO TOP BUTTON */
+.back-to-top-button {
+  position: fixed;
+  right: clamp(1rem, 2.4vw, 1.75rem);
+  bottom: clamp(1rem, 2.4vw, 1.75rem);
+  z-index: 9000;
+  width: 62px;
+  height: 62px;
+  display: grid;
+  place-items: center;
+  gap: 0;
+  border: 1px solid rgba(200, 169, 106, 0.46);
+  border-radius: 999px;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255, 250, 246, 0.96), rgba(255, 250, 246, 0.82)),
+    linear-gradient(145deg, rgba(255, 250, 246, 0.96), rgba(247, 239, 231, 0.92));
+  color: #4a2831;
+  box-shadow:
+    0 20px 50px rgba(63, 42, 49, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.75);
+  cursor: pointer;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateY(14px) scale(0.96);
+  transition:
+    opacity 220ms ease,
+    visibility 220ms ease,
+    transform 220ms ease,
+    box-shadow 220ms ease,
+    border-color 220ms ease;
+}
+
+.back-to-top-button.is-visible {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translateY(0) scale(1);
+}
+
+.back-to-top-button span {
+  color: #c8a96a;
+  font-size: 1.25rem;
+  line-height: 1;
+  margin-top: 0.15rem;
+}
+
+.back-to-top-button strong {
+  color: #4a2831;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-size: 0.56rem;
+  font-weight: 900;
+  line-height: 1;
+  margin-top: -0.12rem;
+}
+
+.back-to-top-button:hover {
+  border-color: rgba(200, 169, 106, 0.78);
+  box-shadow:
+    0 24px 62px rgba(63, 42, 49, 0.24),
+    0 0 0 6px rgba(200, 169, 106, 0.1);
+  transform: translateY(-3px) scale(1.02);
+}
+
+.back-to-top-button:active {
+  transform: translateY(0) scale(0.98);
+}
+
+@media (max-width: 700px) {
+  .back-to-top-button {
+    width: 54px;
+    height: 54px;
+    right: 1rem;
+    bottom: 1rem;
+  }
+
+  .back-to-top-button span {
+    font-size: 1.1rem;
+  }
+
+  .back-to-top-button strong {
+    font-size: 0.5rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .back-to-top-button {
+    transition: none !important;
+  }
+}
