@@ -218,6 +218,7 @@ function App() {
         <Route path="/blend-cosmetics" element={<BlendCosmetics />} />
         <Route path="/radiance-reclaimed" element={<RadianceReclaimed />} />
         <Route path="/resources" element={<Resources />} />
+        <Route path="/resources/:slug" element={<ResourceArticle />} />
         <Route path="/professionals" element={<Professionals />} />
         <Route path="/power-within-professional" element={<Professionals />} />
         <Route path="/teen-programs" element={<TeenPrograms />} />
@@ -343,6 +344,7 @@ function App() {
 }
 
 export default App
+
 
 
 
