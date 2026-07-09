@@ -1,41 +1,41 @@
-import { useEffect } from 'react'
+﻿import { lazy, Suspense, useEffect } from 'react'
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
 import ScrollToHash from './components/ScrollToHash.jsx'
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
 import ScrollToTop from './components/ScrollToTop'
-import Home from './pages/Home'
-import Experiences from './pages/Experiences'
-import Appointments from './pages/Appointments'
-import ColorAnalysis from './pages/ColorAnalysis'
-import StyleAnalysis from './pages/StyleAnalysis'
-import BlendCosmetics from './pages/BlendCosmetics'
-import RadianceReclaimed from './pages/RadianceReclaimed'
-import Resources from './pages/Resources'
-import Professionals from './pages/Professionals'
-import TeenPrograms from './pages/TeenPrograms'
-import Podcast from './pages/Podcast'
-import About from './pages/About'
-import Contact from './pages/Contact'
-import ClientPortalInvite from './pages/ClientPortalInvite'
-import ClientPortalLogin from './pages/ClientPortalLogin'
-import ClientPortalDashboard from './pages/ClientPortalDashboard'
-import NotFound from './pages/NotFound'
-import PrivacyPolicy from './pages/PrivacyPolicy'
-import TermsAndConditions from './pages/TermsAndConditions'
-import SessionRequest from './pages/SessionRequest'
 import AdminRouteGuard from './components/admin/AdminRouteGuard'
 import AdminOwnerRouteGuard from './components/admin/AdminOwnerRouteGuard'
-import AdminScheduler from './pages/admin/AdminScheduler'
-import AdminAuditLog from './pages/admin/AdminAuditLog'
-import AdminPlaceholder from './pages/admin/AdminPlaceholder'
-import AdminMailStudio from './pages/admin/AdminMailStudio'
-import AdminClients from './pages/admin/AdminClients'
-import AdminDashboard from './pages/admin/AdminDashboard'
-import AdminFoundersView from './pages/admin/AdminFoundersView'
-import AdminLogin from './pages/admin/AdminLogin'
 
-const SITE_URL = 'https://www.kimmittlestadt.com'
+const Home = lazy(() => import('./pages/Home'))
+const Experiences = lazy(() => import('./pages/Experiences'))
+const Appointments = lazy(() => import('./pages/Appointments'))
+const ColorAnalysis = lazy(() => import('./pages/ColorAnalysis'))
+const StyleAnalysis = lazy(() => import('./pages/StyleAnalysis'))
+const BlendCosmetics = lazy(() => import('./pages/BlendCosmetics'))
+const RadianceReclaimed = lazy(() => import('./pages/RadianceReclaimed'))
+const Resources = lazy(() => import('./pages/Resources'))
+const Professionals = lazy(() => import('./pages/Professionals'))
+const TeenPrograms = lazy(() => import('./pages/TeenPrograms'))
+const Podcast = lazy(() => import('./pages/Podcast'))
+const About = lazy(() => import('./pages/About'))
+const Contact = lazy(() => import('./pages/Contact'))
+const ClientPortalInvite = lazy(() => import('./pages/ClientPortalInvite'))
+const ClientPortalLogin = lazy(() => import('./pages/ClientPortalLogin'))
+const ClientPortalDashboard = lazy(() => import('./pages/ClientPortalDashboard'))
+const NotFound = lazy(() => import('./pages/NotFound'))
+const PrivacyPolicy = lazy(() => import('./pages/PrivacyPolicy'))
+const TermsAndConditions = lazy(() => import('./pages/TermsAndConditions'))
+const SessionRequest = lazy(() => import('./pages/SessionRequest'))
+const AdminScheduler = lazy(() => import('./pages/admin/AdminScheduler'))
+const AdminAuditLog = lazy(() => import('./pages/admin/AdminAuditLog'))
+const AdminPlaceholder = lazy(() => import('./pages/admin/AdminPlaceholder'))
+const AdminMailStudio = lazy(() => import('./pages/admin/AdminMailStudio'))
+const AdminClients = lazy(() => import('./pages/admin/AdminClients'))
+const AdminDashboard = lazy(() => import('./pages/admin/AdminDashboard'))
+const AdminFoundersView = lazy(() => import('./pages/admin/AdminFoundersView'))
+const AdminLogin = lazy(() => import('./pages/admin/AdminLogin'))
+const SITE_URL = 'https://www.kimmittelstadt.com'
 
 const routeMetadata = {
   '/': {
@@ -164,6 +164,16 @@ function RouteMetadata() {
   return null
 }
 
+function PageLoading() {
+  return (
+    <main className="page-shell" aria-live="polite">
+      <section className="section-block">
+        <p className="eyebrow">Loading</p>
+        <h1>Preparing your experience...</h1>
+      </section>
+    </main>
+  )
+}
 function App() {
   return (
     <BrowserRouter>
@@ -172,7 +182,8 @@ function App() {
       <Navbar />
       <ScrollToTop />
 
-      <Routes>
+      <Suspense fallback={<PageLoading />}>
+        <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/experiences" element={<Experiences />} />
         <Route path="/appointments" element={<Appointments />} />
@@ -296,7 +307,8 @@ function App() {
         <Route path="/personal-presence-consultation" element={<SessionRequest />} />
         <Route path="/consultation" element={<SessionRequest />} />
         <Route path="*" element={<NotFound />} />
-      </Routes>
+        </Routes>
+      </Suspense>
 
       <Footer />
     </BrowserRouter>
@@ -304,3 +316,4 @@ function App() {
 }
 
 export default App
+
