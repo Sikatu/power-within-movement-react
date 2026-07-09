@@ -1,10 +1,11 @@
-import { useEffect, useMemo, useState } from 'react'
+﻿import { useEffect, useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import {
   acceptPublicClientPortalInvite,
   getPublicClientPortalInvite,
 } from '../lib/nativeApi'
 
+import './ClientPortal.css'
 function formatDateTime(value) {
   if (!value) return 'Not available'
 

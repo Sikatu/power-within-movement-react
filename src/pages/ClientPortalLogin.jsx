@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react'
+﻿import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { getClientPortalMe, loginClientPortal } from '../lib/nativeApi'
 
+import './ClientPortal.css'
 export default function ClientPortalLogin() {
   const navigate = useNavigate()
   const [email, setEmail] = useState('')
