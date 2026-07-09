@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom'
+﻿import { Link } from 'react-router-dom'
 import PageHero from '../components/PageHero'
 import vaultImage from '../assets/images/vault-reflection-journal.webp'
 import conversationStartersImage from '../assets/images/100-conversation-starters.webp'
@@ -39,7 +39,7 @@ const downloadableResources = [
     category: 'Vault Preview',
     title: '100 Conversation Starters',
     description:
-      'A curated preview of The Vault™ created to open warmer conversations, clearer reflection, and more honest self-recognition.',
+      'A curated preview of The Vaultâ„¢ created to open warmer conversations, clearer reflection, and more honest self-recognition.',
     note: 'For women, families, facilitators, and communities who want connection to feel thoughtful instead of forced.',
     image: conversationStartersImage,
     href: conversationStartersDownloadPath,
@@ -60,7 +60,7 @@ function Resources() {
       <PageHero
         eyebrow="Resources"
         title="Not more information. A more intentional place to return to yourself."
-        text="The Vault™ is a curated resource environment for women who want substance, reflection, and practical support for the long return."
+        text="The Vaultâ„¢ is a curated resource environment for women who want substance, reflection, and practical support for the long return."
       />
 
       <section className="section vault-intro-section">
@@ -70,14 +70,14 @@ function Resources() {
           </div>
 
           <div className="vault-copy-panel">
-            <p className="eyebrow">The Vault™</p>
+            <p className="eyebrow">The Vaultâ„¢</p>
             <h2>Most women are not struggling because they lack information.</h2>
             <p>
               They are struggling because the information they have has not been given
               the space to become something real.
             </p>
             <p>
-              The Vault™ is a curated resource environment built for women who are ready
+              The Vaultâ„¢ is a curated resource environment built for women who are ready
               to go deeper, past the inspiration that evaporates, past the advice that
               does not account for a life as complex as theirs, into the kind of thinking
               and tools that actually hold.
@@ -97,7 +97,7 @@ function Resources() {
 
       <section className="section vault-inside-section">
         <div className="vault-section-header">
-          <p className="eyebrow">Inside the Vault™</p>
+          <p className="eyebrow">Inside the Vaultâ„¢</p>
           <h2>Everything here is chosen with one question in mind.</h2>
           <p>
             Does this help a woman become more herself, or does it ask her to perform
@@ -131,7 +131,7 @@ function Resources() {
 
               <div className="hero-actions vault-resource-actions">
                 <Link to={resource.href} className="btn primary">{resource.cta}</Link>
-                <Link to={vaultAccessPath} className="btn secondary">Ask About The Vault™</Link>
+                <Link to={vaultAccessPath} className="btn secondary">Ask About The Vaultâ„¢</Link>
               </div>
             </div>
           </article>
@@ -145,7 +145,7 @@ function Resources() {
             <h2>Real transformation is not an event. It is a direction.</h2>
             <p>
               It is one you orient toward again and again, in different seasons, with
-              different questions. The Vault™ is built to meet you there.
+              different questions. The Vaultâ„¢ is built to meet you there.
             </p>
           </div>
 
@@ -168,7 +168,7 @@ function Resources() {
             how to continue becoming more herself without discarding what she has already built.
           </p>
           <p>
-            The Vault™ was created to fill that gap. It is not a collection of quick
+            The Vaultâ„¢ was created to fill that gap. It is not a collection of quick
             answers. It is a curated space for women who think carefully, live fully,
             and are ready for resources that treat them accordingly, with depth, with
             dignity, and with the understanding that their lives are not problems to be
@@ -185,8 +185,54 @@ function Resources() {
           </div>
         </div>
       </section>
-    </main>
+    
+      {/* seo-phase-3a-resource-articles-start */}
+      <section className="resource-article-cluster-v1">
+        <div className="resource-article-cluster-copy-v1">
+          <p className="eyebrow">Guides & Reflections</p>
+          <h2>Thoughtful resources for confidence, color, style, and presence.</h2>
+          <p>
+            Begin with these foundational guides, then move toward the private experience
+            that fits the season you are in.
+          </p>
+        </div>
+
+        <div className="resource-article-card-grid-v1">
+          <a href="/resources/what-is-color-analysis">
+            <span>Color Analysis Guide</span>
+            <strong>What Is Color Analysis?</strong>
+            <p>Understand how color supports wardrobe, makeup, hair direction, and confidence.</p>
+          </a>
+
+          <a href="/resources/what-is-personal-style-analysis">
+            <span>Style Analysis Guide</span>
+            <strong>What Is Personal Style Analysis?</strong>
+            <p>Learn how style direction clarifies wardrobe, proportion, and personal presence.</p>
+          </a>
+
+          <a href="/resources/fashion-advice-for-women-over-40">
+            <span>Style & Confidence</span>
+            <strong>Fashion Advice for Women Over 40</strong>
+            <p>Move beyond rules and dress for identity, ease, and the woman you are becoming.</p>
+          </a>
+
+          <a href="/resources/rebuild-confidence-through-personal-style">
+            <span>Confidence & Style</span>
+            <strong>How to Rebuild Confidence Through Personal Style</strong>
+            <p>See how style can support alignment, recognition, and renewed self-trust.</p>
+          </a>
+
+          <a href="/resources/confidence-coaching-for-women">
+            <span>Confidence Coaching</span>
+            <strong>Confidence Coaching for Women in a New Season of Life</strong>
+            <p>Explore confidence as identity, presence, self-trust, and whole-person alignment.</p>
+          </a>
+        </div>
+      </section>
+      {/* seo-phase-3a-resource-articles-end */}
+</main>
   )
 }
 
 export default Resources
+

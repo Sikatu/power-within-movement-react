@@ -15,6 +15,7 @@ const StyleAnalysis = lazy(() => import('./pages/StyleAnalysis'))
 const BlendCosmetics = lazy(() => import('./pages/BlendCosmetics'))
 const RadianceReclaimed = lazy(() => import('./pages/RadianceReclaimed'))
 const Resources = lazy(() => import('./pages/Resources'))
+const ResourceArticle = lazy(() => import('./pages/ResourceArticle'))
 const Professionals = lazy(() => import('./pages/Professionals'))
 const TeenPrograms = lazy(() => import('./pages/TeenPrograms'))
 const Podcast = lazy(() => import('./pages/Podcast'))
@@ -112,6 +113,31 @@ const routeMetadata = {
     title: 'Contact Power Within Collective | Private Consultations & Speaking',
     description:
       'Contact Power Within Collective about private consultations, color analysis, personal style guidance, Radiance Reclaimed, professional education, speaking, podcast, or collaboration.',
+  },
+  '/resources/what-is-color-analysis': {
+    title: 'What Is Color Analysis? | Power Within Collective',
+    description:
+      'Learn what color analysis is and how it supports clothing, makeup, accessories, hair direction, personal presence, and confidence.',
+  },
+  '/resources/what-is-personal-style-analysis': {
+    title: 'What Is Personal Style Analysis? | Power Within Collective',
+    description:
+      'Learn how personal style analysis supports wardrobe clarity, body shape, proportion, outfit direction, and confidence for women.',
+  },
+  '/resources/fashion-advice-for-women-over-40': {
+    title: 'Fashion Advice for Women Over 40 | Power Within Collective',
+    description:
+      'Fashion advice for women over 40 focused on identity, body confidence, wardrobe clarity, color, proportion, and personal presence.',
+  },
+  '/resources/rebuild-confidence-through-personal-style': {
+    title: 'How to Rebuild Confidence Through Personal Style | Power Within Collective',
+    description:
+      'Learn how personal style, color, wardrobe direction, and image alignment can help women rebuild confidence and self-trust.',
+  },
+  '/resources/confidence-coaching-for-women': {
+    title: 'Confidence Coaching for Women | Power Within Collective',
+    description:
+      'Confidence coaching for women in a new season of life, with support for identity, presence, image alignment, self-trust, and transformation.',
   },
   '/privacy-policy': {
     title: 'Privacy Policy | Power Within Movement, LLC',
@@ -317,6 +343,7 @@ function App() {
 }
 
 export default App
+
 
 
 
