@@ -194,24 +194,16 @@ function RouteMetadata() {
 function PageLoading() {
   return (
     <div className="page-loading-screen" role="status" aria-live="polite" aria-label="Preparing your experience">
-      <div className="page-loading-card">
-        <div className="page-loading-logo-shell">
-          <img className="page-loading-logo" src={logoImage} alt="Power Within Collective" />
-        </div>
-
-        <div className="page-loading-ornament" aria-hidden="true">
-          <span></span>
-          <strong></strong>
-          <span></span>
-        </div>
-
+      <div className="page-loading-minimal">
+        <img className="page-loading-logo" src={logoImage} alt="Power Within Collective" />
         <p className="page-loading-kicker">Power Within Collective</p>
         <h1>Preparing your experience</h1>
-        <p className="page-loading-subtext">A premium space for confidence, color, style, and presence.</p>
       </div>
     </div>
   )
 }
+
+
 
 
 function InitialBrandLoader() {
