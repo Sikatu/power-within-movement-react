@@ -1,4 +1,4 @@
-﻿import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { submitPublicContactInquiry } from '../lib/nativeApi'
 
 const interestOptions = [

@@ -1,4 +1,4 @@
-﻿import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import AdminFrame from '../../components/admin/AdminFrame'
 import {
   checkAdminAccess,

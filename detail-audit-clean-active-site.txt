@@ -1,3 +1,0 @@
-Clean Active Site Audit
-
-No suspicious mojibake characters found in active site files.

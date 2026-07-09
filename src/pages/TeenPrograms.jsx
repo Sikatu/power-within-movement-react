@@ -1,4 +1,4 @@
-﻿import PageHero from '../components/PageHero'
+import PageHero from '../components/PageHero'
 import ContactCTA from '../components/ContactCTA'
 import teenImage from '../assets/images/teen-confidence-conversation.webp'
 

@@ -1,4 +1,4 @@
-﻿import { Link } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import PageHero from '../components/PageHero'
 import blendCosmeticsImage from '../assets/images/blend-cosmetics-makeup-direction.webp'
 

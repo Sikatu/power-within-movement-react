@@ -1,4 +1,4 @@
-﻿Place the real downloadable PDF here later.
+Place the real downloadable PDF here later.
 
 Recommended filename:
 100-conversation-starters.pdf
