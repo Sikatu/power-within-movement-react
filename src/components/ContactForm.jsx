@@ -1,26 +1,51 @@
-import { useState } from 'react'
-
-const contactEmail = import.meta.env.VITE_CONTACT_EMAIL || 'hello@powerwithinmovement.com'
+﻿import { useEffect, useRef, useState } from 'react'
+import { submitPublicContactInquiry } from '../lib/nativeApi'
 
 const interestOptions = [
-  'Book a Clarity Session',
   'Ask About Radiance Reclaimed',
-  'Request 100 Conversation Starters',
-  'Join the Professional Interest List',
+  'Book a Clarity Session',
   'Book Kim to Speak',
-  'Podcast / Collaboration',
-  'Teen Confidence / Mother-Daughter Support',
   'General Message',
+  'Join the Professional Interest List',
+  'Podcast / Collaboration',
+  'Request 100 Conversation Starters',
+  'Reserve a Color Analysis Experience',
+  'Reserve a Makeup Lesson & Direction Experience',
+  'Reserve a Style & Body Analysis Experience',
+  'Teen Confidence / Mother-Daughter Support',
 ]
 
-function ContactForm({ initialInterest = '', initialMessage = '' }) {
+function ContactForm({
+  initialInterest = '',
+  initialMessage = '',
+  contextLabel = '',
+  isDirectedInquiry = false,
+}) {
+  const dropdownRef = useRef(null)
   const [submitted, setSubmitted] = useState(false)
+  const [submitStatus, setSubmitStatus] = useState({ loading: false, error: '' })
+  const [interestOpen, setInterestOpen] = useState(false)
+  const [interestError, setInterestError] = useState(false)
   const [form, setForm] = useState(() => ({
     name: '',
     email: '',
     interest: initialInterest,
     message: initialMessage,
   }))
+
+  useEffect(() => {
+    const handleOutsideClick = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setInterestOpen(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleOutsideClick)
+
+    return () => {
+      document.removeEventListener('mousedown', handleOutsideClick)
+    }
+  }, [])
 
   const handleChange = (event) => {
     const { name, value } = event.target
@@ -35,23 +60,50 @@ function ContactForm({ initialInterest = '', initialMessage = '' }) {
     }
   }
 
-  const handleSubmit = (event) => {
+  const handleInterestSelect = (interest) => {
+    setForm((current) => ({
+      ...current,
+      interest,
+    }))
+
+    setInterestOpen(false)
+    setInterestError(false)
+
+    if (submitted) {
+      setSubmitted(false)
+    }
+  }
+
+  const handleSubmit = async (event) => {
     event.preventDefault()
 
-    const subject = encodeURIComponent(`Power Within Inquiry: ${form.interest || 'General Message'}`)
-    const body = encodeURIComponent(
-      [
-        `Name: ${form.name}`,
-        `Email: ${form.email}`,
-        `Interest: ${form.interest}`,
-        '',
-        'Message:',
-        form.message,
-      ].join('\n'),
-    )
+    if (!isDirectedInquiry && !form.interest) {
+      setInterestError(true)
+      return
+    }
 
-    setSubmitted(true)
-    window.location.href = `mailto:${contactEmail}?subject=${subject}&body=${body}`
+    try {
+      setSubmitStatus({ loading: true, error: '' })
+      setSubmitted(false)
+
+      await submitPublicContactInquiry({
+        name: form.name.trim(),
+        email: form.email.trim(),
+        interest: form.interest || 'General Message',
+        message: form.message.trim(),
+        contextLabel,
+        sourcePath: `${window.location.pathname}${window.location.search}`,
+      })
+
+      setSubmitted(true)
+      setSubmitStatus({ loading: false, error: '' })
+    } catch {
+      setSubmitted(false)
+      setSubmitStatus({
+        loading: false,
+        error: 'We could not send this message into the admin system yet. Please try again in a moment.',
+      })
+    }
   }
 
   return (
@@ -78,36 +130,80 @@ function ContactForm({ initialInterest = '', initialMessage = '' }) {
         required
       />
 
-      <label className="sr-only" htmlFor="contact-interest">What would you like to explore?</label>
-      <select
-        id="contact-interest"
-        name="interest"
-        value={form.interest}
-        onChange={handleChange}
-        required
-      >
-        <option value="">What would you like to explore?</option>
-        {interestOptions.map((option) => (
-          <option key={option} value={option}>{option}</option>
-        ))}
-      </select>
+      {!isDirectedInquiry && (
+        <div className="custom-select-field" ref={dropdownRef}>
+          <label className="sr-only" htmlFor="contact-interest-trigger">
+            What would you like to explore?
+          </label>
+
+          <button
+            id="contact-interest-trigger"
+            type="button"
+            className={`custom-select-trigger ${form.interest ? 'has-value' : ''}`}
+            aria-haspopup="listbox"
+            aria-expanded={interestOpen}
+            onClick={() => setInterestOpen((current) => !current)}
+            onKeyDown={(event) => {
+              if (event.key === 'Escape') {
+                setInterestOpen(false)
+              }
+            }}
+          >
+            <span>{form.interest || 'What would you like to explore?'}</span>
+            <svg aria-hidden="true" viewBox="0 0 24 24">
+              <path d="M7 10l5 5 5-5" />
+            </svg>
+          </button>
+
+          {interestOpen && (
+            <div className="custom-select-menu" role="listbox" aria-label="Inquiry type">
+              {interestOptions.map((option) => (
+                <button
+                  key={option}
+                  type="button"
+                  role="option"
+                  aria-selected={form.interest === option}
+                  className={`custom-select-option ${form.interest === option ? 'selected' : ''}`}
+                  onClick={() => handleInterestSelect(option)}
+                >
+                  {option}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {interestError && (
+            <p className="form-field-note">Please choose the doorway that feels most aligned.</p>
+          )}
+        </div>
+      )}
 
       <label className="sr-only" htmlFor="contact-message">Message</label>
       <textarea
         id="contact-message"
         name="message"
-        placeholder="Tell us a little about your current season or what you are looking for."
+        placeholder={
+          isDirectedInquiry
+            ? 'Add any timing, goals, questions, or details you would like us to know.'
+            : 'Tell us a little about your current season or what you are looking for.'
+        }
         rows="5"
         value={form.message}
         onChange={handleChange}
         required
       />
 
-      <button type="submit">Send Message</button>
+      <button type="submit" disabled={submitStatus.loading}>{submitStatus.loading ? 'Sending...' : 'Send Message'}</button>
+
+      {submitStatus.error && (
+        <p className="form-error">
+          {submitStatus.error}
+        </p>
+      )}
 
       {submitted && (
         <p className="form-success">
-          Your email app should open with your message prepared. If it does not, please email {contactEmail}.
+          Thank you. Your message was received and sent into the Power Within admin system.
         </p>
       )}
     </form>
@@ -115,3 +211,6 @@ function ContactForm({ initialInterest = '', initialMessage = '' }) {
 }
 
 export default ContactForm
+
+
+

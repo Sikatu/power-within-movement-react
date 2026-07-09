@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+﻿import { useEffect, useState } from 'react'
 import { NavLink } from 'react-router-dom'
 import headerLogo from '../assets/images/logo.webp'
 
@@ -28,7 +28,7 @@ function Navbar() {
   return (
     <header className="site-header">
       <nav className="navbar navbar-premium">
-        <NavLink to="/" className="premium-logo-image" onClick={closeMenu}>
+                        <NavLink to="/" className="premium-logo-image" onClick={closeMenu}>
           <img src={headerLogo} alt="Power Within Collective" />
         </NavLink>
 
@@ -78,3 +78,10 @@ function Navbar() {
 }
 
 export default Navbar
+
+
+
+
+
+
+

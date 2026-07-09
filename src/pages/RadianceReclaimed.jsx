@@ -1,5 +1,21 @@
 ﻿import { Link } from 'react-router-dom'
 import radianceImage from '../assets/images/radiance.webp'
+import privateGuidanceImage from '../assets/images/experiences-private-guidance.webp'
+
+const fitCards = [
+  {
+    title: 'The Woman in Transition',
+    text: 'Navigating a divorce, an empty nest, a career change, or a season that no longer matches who she has become.',
+  },
+  {
+    title: 'The Woman Who Has "Done the Work"',
+    text: 'She has read the books and tried the routines. Real progress has been made, yet something still feels incomplete or disconnected.',
+  },
+  {
+    title: 'The Woman Ready to Stop Managing and Start Living',
+    text: 'Done performing composure. Ready to actually inhabit her life, not just maintain it from the outside.',
+  },
+]
 
 function RadianceReclaimed() {
   return (
@@ -43,7 +59,39 @@ function RadianceReclaimed() {
         </div>
       </section>
 
+      <section className="section experiences">
+        <div className="section-header">
+          <p className="eyebrow">Who This Is For</p>
+          <h2>This is not for every woman. It is for the one who is ready.</h2>
+          <p>
+            Radiance Reclaimed™ is a private, application-only experience for
+            women who sense they are ready for something more integrated than
+            another fix.
+          </p>
+        </div>
+
+        <div className="cards">
+          {fitCards.map((card, index) => (
+            <article className="card" key={card.title}>
+              <span>{String(index + 1).padStart(2, '0')}</span>
+              <h3>{card.title}</h3>
+              <p>{card.text}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+
       <section className="section intro-section">
+        <div className="section-header">
+          <p className="eyebrow">Inside the Experience</p>
+          <h2>Six sessions. One integrated process.</h2>
+          <p>
+            Radiance Reclaimed™ moves through three intentional phases —
+            personal, whole-person, and forward-facing — so change has room
+            to actually take hold.
+          </p>
+        </div>
+
         <div className="radiance-chapters">
           <article className="radiance-chapter">
             <span>01</span>
@@ -68,6 +116,35 @@ function RadianceReclaimed() {
               <p>Resources, guidance, and support are shaped around your season, your identity, and what this transition is asking of you.</p>
             </div>
           </article>
+        </div>
+      </section>
+
+      <section className="section testimonial-section">
+        <div className="testimonial-card">
+          <p>“You do not need to become someone new. You need permission to stop abandoning who you already are.”</p>
+          <span>Power Within Collective™</span>
+        </div>
+      </section>
+
+      <section className="section story-section">
+        <div className="story-grid">
+          <div className="story-image">
+            <img loading="lazy" src={privateGuidanceImage} alt="Private, guided Radiance Reclaimed session" />
+          </div>
+
+          <div className="story-copy">
+            <p className="eyebrow">A Private, Guided Process</p>
+            <h2>Paced for real integration, not rushed transformation.</h2>
+            <p>
+              Radiance Reclaimed™ is intentionally spaced so insight has time
+              to become practice, and practice has time to become identity.
+            </p>
+            <p>
+              You are guided personally through color, style, wellness,
+              confidence, and presence — not as separate services, but as one
+              integrated return to yourself.
+            </p>
+          </div>
         </div>
       </section>
 

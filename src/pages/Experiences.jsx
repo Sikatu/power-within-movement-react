@@ -1,6 +1,7 @@
 ﻿import { Link } from 'react-router-dom'
 import PageHero from '../components/PageHero'
 import experiencesImage from '../assets/images/experiences-private-guidance.webp'
+import consultationDetailImage from '../assets/images/consultation-detail.webp'
 import appointmentsImage from '../assets/images/appointments-studio-atmosphere.webp'
 
 const appointmentOptions = [
@@ -133,7 +134,13 @@ const chooseGuides = [
 function ConsultationCallout({ compact = false }) {
   return (
     <div className={compact ? 'appointment-callout compact' : 'appointment-callout'}>
-      <p>Not sure which appointment is right for you?</p>
+      <img
+              className="appointment-consultation-image"
+              loading="lazy"
+              src={consultationDetailImage}
+              alt="Notebook, color swatches, and consultation details for a personal presence session"
+            />
+            <p>Not sure which appointment is right for you?</p>
       <h3>Start with a complimentary Personal Presence Consultation.</h3>
       <span>No charge, no obligation.</span>
       <Link to="/contact" className="btn secondary">Schedule Complimentary Consultation</Link>
@@ -335,4 +342,7 @@ function Experiences() {
 }
 
 export default Experiences
+
+
+
 

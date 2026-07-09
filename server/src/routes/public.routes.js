@@ -1,10 +1,11 @@
-const express = require('express')
+﻿const express = require('express')
 const { z } = require('zod')
 
 const { pool } = require('../db/pool')
 const { env } = require('../config/env')
 
 const router = express.Router()
+const contactDbModule = require('../db/pool')
 
 
 // phase-3-12d-smart-time-slot-protection-start
@@ -1342,4 +1343,307 @@ router.get('/client-portal/resources', requireClientPortalUser, async (req, res,
 // phase-3-9d-client-portal-resources-public-end
 
 
+
+
+// TRIAL CONTACT INQUIRIES ENDPOINT - SAVE TO ADMIN CLIENT CIRCLE
+async function contactDbQuery(sql, params = []) {
+  if (contactDbModule && typeof contactDbModule.query === 'function') {
+    return contactDbModule.query(sql, params)
+  }
+
+  if (contactDbModule?.pool && typeof contactDbModule.pool.query === 'function') {
+    return contactDbModule.pool.query(sql, params)
+  }
+
+  if (contactDbModule?.default && typeof contactDbModule.default.query === 'function') {
+    return contactDbModule.default.query(sql, params)
+  }
+
+  throw new Error('Database pool query function was not found.')
+}
+
+function quoteContactIdentifier(value) {
+  return `"${String(value).replaceAll('"', '""')}"`
+}
+
+async function getContactTableColumns(tableName) {
+  const result = await contactDbQuery(
+    `
+      SELECT column_name
+      FROM information_schema.columns
+      WHERE table_schema = 'public'
+        AND table_name = $1
+      ORDER BY ordinal_position
+    `,
+    [tableName],
+  )
+
+  return result.rows.map((row) => row.column_name)
+}
+
+async function findClientLeadTable() {
+  const possibleTables = ['client_profiles', 'clients']
+
+  for (const tableName of possibleTables) {
+    const columns = await getContactTableColumns(tableName)
+
+    if (columns.length > 0) {
+      return {
+        tableName,
+        columns,
+      }
+    }
+  }
+
+  return null
+}
+
+function splitContactName(name) {
+  const cleanedName = String(name || '').trim()
+  const parts = cleanedName.split(/\s+/).filter(Boolean)
+
+  if (parts.length <= 1) {
+    return {
+      firstName: cleanedName || 'Website Inquiry',
+      lastName: '',
+    }
+  }
+
+  return {
+    firstName: parts.slice(0, -1).join(' '),
+    lastName: parts.at(-1),
+  }
+}
+
+function buildContactLeadNotes({ name, email, interest, message, contextLabel, sourcePath, receivedAt }) {
+  return [
+    `Public website inquiry received: ${receivedAt}`,
+    `Name: ${name}`,
+    `Email: ${email}`,
+    `Interest: ${interest}`,
+    `Context: ${contextLabel || 'General contact form'}`,
+    `Source: ${sourcePath || '/contact'}`,
+    '',
+    'Message:',
+    message,
+  ].join('\n')
+}
+
+async function saveContactInquiryAsClientLead(inquiry) {
+  const tableMeta = await findClientLeadTable()
+
+  if (!tableMeta) {
+    throw new Error('No admin client table found. Expected client_profiles or clients.')
+  }
+
+  const { tableName, columns } = tableMeta
+  const columnSet = new Set(columns)
+  const now = inquiry.receivedAt
+  const { firstName, lastName } = splitContactName(inquiry.name)
+  const notes = buildContactLeadNotes(inquiry)
+
+  const emailColumn = columnSet.has('public_contact_email') ? 'public_contact_email' : columnSet.has('email') ? 'email' : null
+
+  if (emailColumn) {
+    const existing = await contactDbQuery(
+      `SELECT * FROM ${quoteContactIdentifier(tableName)} WHERE ${quoteContactIdentifier(emailColumn)} = $1 LIMIT 1`,
+      [inquiry.email],
+    )
+
+    if (existing.rows.length > 0) {
+      const existingClient = existing.rows[0]
+      const updateSets = []
+      const updateValues = []
+      let paramIndex = 1
+
+      if (columnSet.has('private_admin_notes')) {
+        updateSets.push(`${quoteContactIdentifier('private_admin_notes')} = ${paramIndex}`)
+        updateValues.push(
+          [
+            notes,
+            existingClient.private_admin_notes
+              ? `Existing admin notes:\n${existingClient.private_admin_notes}`
+              : '',
+          ].filter(Boolean).join('\n\n---\n\n'),
+        )
+        paramIndex += 1
+      } else if (columnSet.has('admin_notes')) {
+        updateSets.push(`${quoteContactIdentifier('admin_notes')} = ${paramIndex}`)
+        updateValues.push(
+          [
+            notes,
+            existingClient.admin_notes
+              ? `Existing admin notes:\n${existingClient.admin_notes}`
+              : '',
+          ].filter(Boolean).join('\n\n---\n\n'),
+        )
+        paramIndex += 1
+      } else if (columnSet.has('notes')) {
+        updateSets.push(`${quoteContactIdentifier('notes')} = ${paramIndex}`)
+        updateValues.push(
+          [
+            notes,
+            existingClient.notes
+              ? `Existing notes:\n${existingClient.notes}`
+              : '',
+          ].filter(Boolean).join('\n\n---\n\n'),
+        )
+        paramIndex += 1
+      }
+
+      if (columnSet.has('updated_at')) {
+        updateSets.push(`${quoteContactIdentifier('updated_at')} = ${paramIndex}`)
+        updateValues.push(now)
+        paramIndex += 1
+      }
+
+      if (updateSets.length > 0) {
+        updateValues.push(existingClient.id)
+
+        const updated = await contactDbQuery(
+          `
+            UPDATE ${quoteContactIdentifier(tableName)}
+            SET ${updateSets.join(', ')}
+            WHERE id = ${paramIndex}
+            RETURNING *
+          `,
+          updateValues,
+        )
+
+        return {
+          mode: 'updated_existing_client',
+          tableName,
+          client: updated.rows[0],
+        }
+      }
+
+      return {
+        mode: 'existing_client_found_no_update_columns',
+        tableName,
+        client: existingClient,
+      }
+    }
+  }
+
+  const candidateValues = {
+    first_name: firstName,
+    last_name: lastName,
+    name: inquiry.name,
+    full_name: inquiry.name,
+    display_name: inquiry.name,
+    full_name: inquiry.name,
+    email: inquiry.email,
+    public_contact_email: inquiry.email,
+    lead_interest: inquiry.interest,
+    lead_source: 'Public Contact Form',
+    inquiry_received_at: inquiry.receivedAt,
+    primary_email: inquiry.email,
+    user_email: inquiry.email,
+    contact_email: inquiry.email,
+    phone: '',
+    client_status: 'lead',
+    clientStatus: 'lead',
+    status: 'lead',
+    portal_status: 'invited',
+    portalStatus: 'invited',
+    private_admin_notes: notes,
+    admin_notes: notes,
+    notes,
+    client_visible_notes: '',
+    lead_source: 'Public Contact Form',
+    source: 'Public Contact Form',
+    inquiry_source: inquiry.sourcePath || '/contact',
+  }
+
+  const insertColumns = Object.keys(candidateValues).filter(
+    (column) =>
+      columnSet.has(column) &&
+      column !== 'created_at' &&
+      column !== 'updated_at',
+  )
+
+  if (!insertColumns.length) {
+    throw new Error(`No matching insert columns found for ${tableName}.`)
+  }
+
+  const values = insertColumns.map((column) => candidateValues[column])
+  const placeholders = insertColumns.map((_, index) => `$${index + 1}`)
+
+  const inserted = await contactDbQuery(
+    `
+      INSERT INTO ${quoteContactIdentifier(tableName)}
+        (${insertColumns.map(quoteContactIdentifier).join(', ')})
+      VALUES
+        (${placeholders.join(', ')})
+      RETURNING *
+    `,
+    values,
+  )
+
+  return {
+    mode: 'created_new_client_lead',
+    tableName,
+    client: inserted.rows[0],
+  }
+}
+
+router.post('/contact-inquiries', async (req, res, next) => {
+  try {
+    const name = String(req.body?.name || '').trim()
+    const email = String(req.body?.email || '').trim().toLowerCase()
+    const interest = String(req.body?.interest || 'General Message').trim()
+    const message = String(req.body?.message || '').trim()
+    const contextLabel = String(req.body?.contextLabel || '').trim()
+    const sourcePath = String(req.body?.sourcePath || '').trim()
+    const receivedAt = new Date().toISOString()
+
+    if (!name || !email || !message) {
+      return res.status(400).json({
+        ok: false,
+        error: 'Name, email, and message are required.',
+      })
+    }
+
+    const inquiry = {
+      id: `contact-${Date.now()}`,
+      name,
+      email,
+      interest,
+      message,
+      contextLabel,
+      sourcePath,
+      receivedAt,
+    }
+
+    const adminSaveResult = await saveContactInquiryAsClientLead(inquiry)
+
+    console.log('\n[PUBLIC CONTACT INQUIRY SAVED TO ADMIN]')
+    console.log(JSON.stringify({
+      inquiry,
+      adminSaveResult: {
+        mode: adminSaveResult.mode,
+        tableName: adminSaveResult.tableName,
+        clientId: adminSaveResult.client?.id,
+      },
+    }, null, 2))
+
+    return res.status(201).json({
+      ok: true,
+      message: 'Inquiry received and saved into the Power Within admin system.',
+      inquiry,
+      adminSaveResult: {
+        mode: adminSaveResult.mode,
+        tableName: adminSaveResult.tableName,
+        client: adminSaveResult.client,
+      },
+    })
+  } catch (error) {
+    next(error)
+  }
+})
+
 module.exports = router
+
+
+
+

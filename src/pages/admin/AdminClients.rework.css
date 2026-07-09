@@ -1,0 +1,1500 @@
+﻿/*
+  ADMIN CLIENTS REWORK
+  Route target: /admin/clients
+  Purpose: clean page-scoped authority layer for Client Circle UI.
+  This file intentionally overrides older Client Circle experiments in global.css.
+*/
+
+body.admin-app-mode .client-circle-page-v2,
+body:has(.client-circle-page-v2) .client-circle-page-v2 {
+  width: 100% !important;
+  max-width: 1560px !important;
+  margin: 0 auto !important;
+  padding: clamp(1.25rem, 2vw, 2rem) !important;
+  color: rgba(67, 42, 45, 0.94) !important;
+}
+
+/* Page header */
+body.admin-app-mode .client-circle-page-v2 .client-circle-hero-v2 {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: flex-start !important;
+  gap: 1.5rem !important;
+  margin-bottom: 1.35rem !important;
+}
+
+body.admin-app-mode .client-circle-page-v2 .client-circle-hero-v2 h1 {
+  margin: 0 !important;
+  color: rgba(67, 42, 45, 0.96) !important;
+  font-family: Georgia, 'Times New Roman', serif !important;
+  font-size: clamp(2.35rem, 4vw, 4.25rem) !important;
+  line-height: 0.94 !important;
+  letter-spacing: -0.055em !important;
+}
+
+body.admin-app-mode .client-circle-page-v2 .client-circle-hero-v2 p {
+  color: rgba(67, 42, 45, 0.64) !important;
+  line-height: 1.56 !important;
+}
+
+/* Main workspace: records first */
+body.admin-app-mode .client-circle-page-v2 .client-circle-workspace-v2 {
+  display: block !important;
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* Base cards */
+body.admin-app-mode .client-circle-page-v2 .client-circle-card-v2,
+body.admin-app-mode .client-circle-page-v2 .client-records-card-v2,
+body.admin-app-mode .client-circle-page-v2 .client-detail-card-v2,
+body.admin-app-mode .client-circle-page-v2 .client-form-card-v2 {
+  border: 1px solid rgba(198, 164, 93, 0.18) !important;
+  border-radius: 28px !important;
+  background:
+    radial-gradient(circle at 96% 0%, rgba(198, 164, 93, 0.08), transparent 32%),
+    linear-gradient(145deg, rgba(255, 250, 246, 0.40), rgba(248, 238, 232, 0.20)) !important;
+  box-shadow: 0 18px 48px rgba(67, 42, 45, 0.055) !important;
+  backdrop-filter: blur(12px) !important;
+}
+
+/* Records control center */
+body.admin-app-mode .client-circle-page-v2 .client-records-card-v2 {
+  position: relative !important;
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  max-height: calc(100vh - 8.25rem) !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+/* Override older right-lane/action-menu experiments */
+body.admin-app-mode:has(.client-circle-page-v2) .client-records-card-v2,
+body:has(.client-circle-page-v2) .client-records-card-v2 {
+  margin-right: 0 !important;
+  padding-right: 0 !important;
+  max-width: none !important;
+}
+
+/* Records header */
+body.admin-app-mode .client-circle-page-v2 .client-records-card-v2 > .client-card-header-v2 {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 7 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 1rem !important;
+  padding: 1.2rem 1.35rem !important;
+  border-bottom: 1px solid rgba(198, 164, 93, 0.14) !important;
+  background: rgba(255, 250, 246, 0.88) !important;
+  backdrop-filter: blur(14px) !important;
+}
+
+body.admin-app-mode .client-circle-page-v2 .client-card-header-v2 h2 {
+  margin: 0 !important;
+  color: rgba(67, 42, 45, 0.96) !important;
+  font-family: Georgia, 'Times New Roman', serif !important;
+  font-size: clamp(1.55rem, 2vw, 2.05rem) !important;
+  letter-spacing: -0.04em !important;
+}
+
+body.admin-app-mode .client-circle-page-v2 .admin-eyebrow {
+  color: rgba(122, 86, 40, 0.78) !important;
+  font-size: 0.68rem !important;
+  font-weight: 850 !important;
+  letter-spacing: 0.12em !important;
+  text-transform: uppercase !important;
+}
+
+/* Filters */
+body.admin-app-mode .client-circle-page-v2 .client-circle-filter-bar-v2 {
+  position: sticky !important;
+  top: 5.1rem !important;
+  z-index: 6 !important;
+  display: grid !important;
+  grid-template-columns: minmax(240px, 1.35fr) minmax(160px, 0.8fr) minmax(150px, 0.7fr) minmax(150px, 0.7fr) auto !important;
+  gap: 0.8rem !important;
+  align-items: end !important;
+  padding: 1rem 1.35rem !important;
+  border-bottom: 1px solid rgba(198, 164, 93, 0.12) !important;
+  background: rgba(255, 250, 246, 0.76) !important;
+  backdrop-filter: blur(14px) !important;
+}
+
+body.admin-app-mode .client-circle-page-v2 label span,
+body.admin-app-mode .client-circle-page-v2 .client-circle-filter-bar-v2 span {
+  display: block !important;
+  margin-bottom: 0.42rem !important;
+  color: rgba(67, 42, 45, 0.54) !important;
+  font-size: 0.68rem !important;
+  font-weight: 850 !important;
+  letter-spacing: 0.08em !important;
+  text-transform: uppercase !important;
+}
+
+body.admin-app-mode .client-circle-page-v2 input,
+body.admin-app-mode .client-circle-page-v2 select,
+body.admin-app-mode .client-circle-page-v2 textarea {
+  width: 100% !important;
+  border: 1px solid rgba(67, 42, 45, 0.14) !important;
+  border-radius: 16px !important;
+  background: rgba(255, 250, 246, 0.72) !important;
+  color: rgba(67, 42, 45, 0.92) !important;
+  font-family: inherit !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+body.admin-app-mode .client-circle-page-v2 input,
+body.admin-app-mode .client-circle-page-v2 select {
+  min-height: 42px !important;
+  padding: 0 0.9rem !important;
+}
+
+body.admin-app-mode .client-circle-page-v2 textarea {
+  min-height: 112px !important;
+  padding: 0.85rem 0.95rem !important;
+  line-height: 1.5 !important;
+}
+
+/* Quick filter strip */
+body.admin-app-mode .client-circle-page-v2 .client-quick-filter-strip-v2 {
+  position: sticky !important;
+  top: 10.65rem !important;
+  z-index: 5 !important;
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 0.5rem !important;
+  padding: 0.85rem 1.35rem 1rem !important;
+  border-bottom: 1px solid rgba(198, 164, 93, 0.12) !important;
+  background: rgba(255, 250, 246, 0.72) !important;
+  backdrop-filter: blur(14px) !important;
+}
+
+body.admin-app-mode .client-circle-page-v2 .client-quick-filter-chip-v2 {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 0.45rem !important;
+  min-height: 34px !important;
+  padding: 0 0.72rem !important;
+  border: 1px solid rgba(198, 164, 93, 0.22) !important;
+  border-radius: 999px !important;
+  background: rgba(255, 250, 246, 0.58) !important;
+  color: rgba(67, 42, 45, 0.78) !important;
+  font-size: 0.78rem !important;
+  font-weight: 760 !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+body.admin-app-mode .client-circle-page-v2 .client-quick-filter-chip-v2.is-active {
+  border-color: rgba(198, 164, 93, 0.48) !important;
+  background: linear-gradient(145deg, rgba(198, 164, 93, 0.20), rgba(255, 250, 246, 0.78)) !important;
+  color: rgba(67, 42, 45, 0.96) !important;
+}
+
+body.admin-app-mode .client-circle-page-v2 .client-quick-filter-chip-v2 strong {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-width: 1.45rem !important;
+  height: 1.45rem !important;
+  border-radius: 999px !important;
+  background: rgba(255, 250, 246, 0.88) !important;
+  font-size: 0.68rem !important;
+}
+
+/* Table */
+body.admin-app-mode .client-circle-page-v2 .client-record-table-wrap-v2 {
+  flex: 1 1 auto !important;
+  min-height: 320px !important;
+  overflow: auto !important;
+  background: transparent !important;
+}
+
+body.admin-app-mode .client-circle-page-v2 .client-record-table-v2 {
+  width: 100% !important;
+  min-width: 980px !important;
+  border-collapse: collapse !important;
+  table-layout: fixed !important;
+  background: transparent !important;
+}
+
+body.admin-app-mode .client-circle-page-v2 .client-record-table-v2 th,
+body.admin-app-mode .client-circle-page-v2 .client-record-table-v2 td {
+  padding: 1rem !important;
+  border-bottom: 1px solid rgba(198, 164, 93, 0.12) !important;
+  background: transparent !important;
+  color: rgba(67, 42, 45, 0.76) !important;
+  font-size: 0.88rem !important;
+  vertical-align: middle !important;
+}
+
+body.admin-app-mode .client-circle-page-v2 .client-record-table-v2 th {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 3 !important;
+  background: rgba(255, 250, 246, 0.94) !important;
+  color: rgba(67, 42, 45, 0.55) !important;
+  font-size: 0.68rem !important;
+  font-weight: 850 !important;
+  letter-spacing: 0.08em !important;
+  text-transform: uppercase !important;
+}
+
+body.admin-app-mode .client-circle-page-v2 .client-record-table-v2 tbody tr {
+  cursor: pointer !important;
+}
+
+body.admin-app-mode .client-circle-page-v2 .client-record-table-v2 tbody tr:hover {
+  background: rgba(255, 250, 246, 0.32) !important;
+}
+
+body.admin-app-mode .client-circle-page-v2 .client-record-table-v2 tbody tr.is-selected,
+body.admin-app-mode .client-circle-page-v2 .client-record-table-v2 tbody tr[aria-selected='true'] {
+  background: linear-gradient(90deg, rgba(198, 164, 93, 0.16), rgba(255, 250, 246, 0.18)) !important;
+  box-shadow: inset 3px 0 0 rgba(198, 164, 93, 0.66) !important;
+}
+
+/* Action dropdown: compact, contained, stable */
+body.admin-app-mode .client-circle-page-v2 .client-action-menu-cell-v1 {
+  position: relative !important;
+  text-align: center !important;
+  overflow: visible !important;
+}
+
+body.admin-app-mode .client-circle-page-v2 .client-action-menu-v1 {
+  position: relative !important;
+  display: inline-flex !important;
+  justify-content: center !important;
+  overflow: visible !important;
+}
+
+body.admin-app-mode .client-circle-page-v2 .client-action-menu-button-v1 {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 2.05rem !important;
+  height: 2.05rem !important;
+  min-height: 2.05rem !important;
+  padding: 0 !important;
+  border: 1px solid rgba(198, 164, 93, 0.28) !important;
+  border-radius: 999px !important;
+  background: rgba(255, 250, 246, 0.6) !important;
+  color: rgba(67, 42, 45, 0.86) !important;
+  font-size: 1.15rem !important;
+  line-height: 1 !important;
+  cursor: pointer !important;
+  list-style: none !important;
+}
+
+body.admin-app-mode .client-circle-page-v2 .client-action-menu-button-v1::-webkit-details-marker {
+  display: none !important;
+}
+
+body.admin-app-mode .client-circle-page-v2 .client-action-menu-button-v1::marker {
+  content: '' !important;
+  display: none !important;
+}
+
+body.admin-app-mode .client-circle-page-v2 .client-action-menu-button-v1:hover {
+  background: rgba(246, 229, 222, 0.6) !important;
+}
+
+body.admin-app-mode .client-circle-page-v2 .client-action-menu-panel-v1 {
+  position: absolute !important;
+  top: calc(100% + 0.45rem) !important;
+  right: 0 !important;
+  z-index: 60 !important;
+  width: 150px !important;
+  min-width: 150px !important;
+  padding: 0.4rem !important;
+  border: 1px solid rgba(198, 164, 93, 0.22) !important;
+  border-radius: 16px !important;
+  background: rgba(255, 250, 246, 0.98) !important;
+  box-shadow: 0 18px 38px rgba(67, 42, 45, 0.14) !important;
+  backdrop-filter: blur(14px) !important;
+}
+
+body.admin-app-mode .client-circle-page-v2 .client-action-menu-panel-v1 button {
+  display: flex !important;
+  width: 100% !important;
+  min-height: 34px !important;
+  justify-content: flex-start !important;
+  align-items: center !important;
+  padding: 0 0.7rem !important;
+  border: 0 !important;
+  border-radius: 12px !important;
+  background: transparent !important;
+  color: rgba(67, 42, 45, 0.86) !important;
+  font-size: 0.78rem !important;
+  font-weight: 760 !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+/* Shared buttons inside Client Circle only */
+body.admin-app-mode .client-circle-page-v2 button {
+  font-family: inherit !important;
+  letter-spacing: 0 !important;
+  border-radius: 999px !important;
+}
+
+body.admin-app-mode .client-circle-page-v2 button:not(:disabled) {
+  cursor: pointer !important;
+}
+
+body.admin-app-mode .client-circle-page-v2 button:disabled {
+  opacity: 0.58 !important;
+  cursor: not-allowed !important;
+}
+
+/* New/Edit form drawer */
+body.admin-app-mode .client-circle-page-v2 .client-form-drawer-v2 {
+  position: fixed !important;
+  top: 1.25rem !important;
+  right: 1.25rem !important;
+  bottom: 1.25rem !important;
+  z-index: 80 !important;
+  width: min(540px, calc(100vw - 2.5rem)) !important;
+  max-height: calc(100vh - 2.5rem) !important;
+  overflow: auto !important;
+  padding: 0 !important;
+  border-radius: 30px !important;
+  border: 1px solid rgba(198, 164, 93, 0.30) !important;
+  background:
+    radial-gradient(circle at 92% 7%, rgba(198, 164, 93, 0.12), transparent 28%),
+    linear-gradient(145deg, rgba(255, 250, 246, 0.99), rgba(248, 238, 232, 0.97)) !important;
+  box-shadow: 0 24px 70px rgba(67, 42, 45, 0.16) !important;
+}
+
+body.admin-app-mode .client-circle-page-v2 .client-form-drawer-header-v2 {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 3 !important;
+  padding: 1.2rem 1.35rem !important;
+  border-bottom: 1px solid rgba(198, 164, 93, 0.14) !important;
+  background: rgba(255, 250, 246, 0.92) !important;
+  backdrop-filter: blur(14px) !important;
+}
+
+body.admin-app-mode .client-circle-page-v2 .client-form-card-v2 form {
+  padding: 1.2rem 1.35rem 1.45rem !important;
+}
+
+body.admin-app-mode .client-circle-page-v2 .client-form-actions-v2 {
+  display: flex !important;
+  justify-content: flex-end !important;
+  gap: 0.7rem !important;
+  flex-wrap: wrap !important;
+  padding-top: 0.5rem !important;
+}
+
+body.admin-app-mode .client-circle-page-v2 .client-form-actions-v2 button {
+  min-height: 2.35rem !important;
+  padding: 0.64rem 1.1rem !important;
+  border-radius: 999px !important;
+  font-family: inherit !important;
+  font-size: 0.8rem !important;
+  font-weight: 750 !important;
+  cursor: pointer !important;
+}
+
+body.admin-app-mode .client-circle-page-v2 .client-form-actions-v2 button[type='button'] {
+  border: 1px solid rgba(198, 164, 93, 0.28) !important;
+  background: rgba(255, 250, 246, 0.86) !important;
+  color: rgba(67, 42, 45, 0.88) !important;
+  box-shadow: none !important;
+}
+
+body.admin-app-mode .client-circle-page-v2 .client-form-actions-v2 button[type='button']:hover {
+  background: rgba(246, 229, 222, 0.52) !important;
+  border-color: rgba(198, 164, 93, 0.42) !important;
+}
+
+body.admin-app-mode .client-circle-page-v2 .client-form-actions-v2 button[type='submit'] {
+  border: 1px solid rgba(67, 42, 45, 0.92) !important;
+  background: rgba(67, 42, 45, 0.94) !important;
+  color: rgba(255, 250, 246, 0.96) !important;
+  box-shadow: 0 14px 30px rgba(67, 42, 45, 0.18) !important;
+}
+
+body.admin-app-mode .client-circle-page-v2 .client-form-actions-v2 button[type='submit']:hover {
+  background: rgba(67, 42, 45, 1) !important;
+}
+
+body.admin-app-mode .client-circle-page-v2 .client-form-actions-v2 button:disabled {
+  opacity: 0.6 !important;
+  cursor: not-allowed !important;
+}
+
+/* Hide read-only profile while edit drawer is open */
+body.admin-app-mode .client-circle-page-v2.is-client-form-open-v2 .client-circle-detail-v2 {
+  display: none !important;
+}
+
+/* Profile drawer */
+body.admin-app-mode .client-circle-page-v2 .client-circle-detail-v2 {
+  margin: 0 !important;
+}
+
+body.admin-app-mode .client-circle-page-v2 .client-circle-detail-v2:has(.client-detail-grid-v2) {
+  position: fixed !important;
+  top: 1.25rem !important;
+  right: 1.25rem !important;
+  bottom: 1.25rem !important;
+  z-index: 70 !important;
+  width: min(580px, calc(100vw - 2.5rem)) !important;
+  max-height: calc(100vh - 2.5rem) !important;
+  overflow: hidden !important;
+  display: block !important;
+}
+
+body.admin-app-mode .client-circle-page-v2 .client-circle-detail-v2:not(:has(.client-detail-grid-v2)) {
+  display: none !important;
+}
+
+body.admin-app-mode .client-circle-page-v2 .client-detail-card-v2 {
+  height: 100% !important;
+  max-height: 100% !important;
+  overflow: auto !important;
+  padding: 0 !important;
+  border-radius: 30px !important;
+  border: 1px solid rgba(198, 164, 93, 0.30) !important;
+  background:
+    radial-gradient(circle at 92% 7%, rgba(198, 164, 93, 0.12), transparent 28%),
+    linear-gradient(145deg, rgba(255, 250, 246, 0.99), rgba(248, 238, 232, 0.97)) !important;
+  box-shadow: 0 24px 70px rgba(67, 42, 45, 0.15) !important;
+}
+
+body.admin-app-mode .client-circle-page-v2 .client-detail-card-v2 > .client-card-header-v2 {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 5 !important;
+  padding: 1.2rem 1.35rem !important;
+  border-bottom: 1px solid rgba(198, 164, 93, 0.14) !important;
+  background: rgba(255, 250, 246, 0.92) !important;
+  backdrop-filter: blur(14px) !important;
+}
+
+body.admin-app-mode .client-circle-page-v2 .client-detail-header-actions-v2 {
+  display: flex !important;
+  justify-content: flex-end !important;
+  align-items: center !important;
+  gap: 0.45rem !important;
+  flex-wrap: wrap !important;
+}
+
+body.admin-app-mode .client-circle-page-v2 .client-detail-header-actions-v2 button,
+body.admin-app-mode .client-circle-page-v2 .client-profile-quick-actions-v2 button,
+body.admin-app-mode .client-circle-page-v2 .client-detail-jump-nav-v2 button {
+  min-height: 34px !important;
+  padding: 0 0.72rem !important;
+  border: 1px solid rgba(198, 164, 93, 0.24) !important;
+  background: rgba(255, 250, 246, 0.66) !important;
+  color: rgba(67, 42, 45, 0.80) !important;
+  font-size: 0.76rem !important;
+  font-weight: 760 !important;
+  box-shadow: none !important;
+  transform: none !important;
+  white-space: nowrap !important;
+}
+
+body.admin-app-mode .client-circle-page-v2 .client-detail-edit-shortcut-v2 {
+  border-color: rgba(198, 164, 93, 0.48) !important;
+  background: linear-gradient(145deg, rgba(198, 164, 93, 0.20), rgba(255, 250, 246, 0.80)) !important;
+  color: rgba(67, 42, 45, 0.96) !important;
+}
+
+/* Drawer tabs and quick actions */
+body.admin-app-mode .client-circle-page-v2 .client-detail-jump-nav-v2,
+body.admin-app-mode .client-circle-page-v2 .client-profile-quick-actions-v2 {
+  position: sticky !important;
+  z-index: 4 !important;
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 0.45rem !important;
+  padding: 0.85rem 1.35rem !important;
+  border-bottom: 1px solid rgba(198, 164, 93, 0.12) !important;
+  background: rgba(255, 250, 246, 0.84) !important;
+  backdrop-filter: blur(14px) !important;
+}
+
+body.admin-app-mode .client-circle-page-v2 .client-detail-jump-nav-v2 {
+  top: 5.15rem !important;
+}
+
+body.admin-app-mode .client-circle-page-v2 .client-profile-quick-actions-v2 {
+  top: 8.75rem !important;
+}
+
+body.admin-app-mode .client-circle-page-v2 .client-detail-jump-nav-v2 button.is-active {
+  border-color: rgba(198, 164, 93, 0.52) !important;
+  background: linear-gradient(145deg, rgba(198, 164, 93, 0.22), rgba(255, 250, 246, 0.82)) !important;
+  color: rgba(67, 42, 45, 0.96) !important;
+}
+
+/* Profile body sections */
+body.admin-app-mode .client-circle-page-v2 .client-detail-grid-v2,
+body.admin-app-mode .client-circle-page-v2 .client-care-highlights-v2,
+body.admin-app-mode .client-circle-page-v2 .client-care-summary-v2,
+body.admin-app-mode .client-circle-page-v2 .client-notes-grid-v2 {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 0.75rem !important;
+  padding: 1rem 1.35rem 0 !important;
+}
+
+body.admin-app-mode .client-circle-page-v2 .client-detail-grid-v2 > div,
+body.admin-app-mode .client-circle-page-v2 .client-care-highlights-v2 > article,
+body.admin-app-mode .client-circle-page-v2 .client-care-summary-v2 > article,
+body.admin-app-mode .client-circle-page-v2 .client-notes-grid-v2 > section,
+body.admin-app-mode .client-circle-page-v2 .client-portal-invite-v2,
+body.admin-app-mode .client-circle-page-v2 .client-portal-invite-history-v2,
+body.admin-app-mode .client-circle-page-v2 .client-portal-resources-v2,
+body.admin-app-mode .client-circle-page-v2 .client-service-records-v2,
+body.admin-app-mode .client-circle-page-v2 .client-timeline-v2,
+body.admin-app-mode .client-circle-page-v2 .client-timeline-list-v2,
+body.admin-app-mode .client-circle-page-v2 .client-portal-email-draft-v2,
+body.admin-app-mode .client-circle-page-v2 .client-portal-email-logs-v2 {
+  border: 1px solid rgba(198, 164, 93, 0.18) !important;
+  border-radius: 20px !important;
+  background: linear-gradient(145deg, rgba(255, 250, 246, 0.62), rgba(248, 238, 232, 0.34)) !important;
+  box-shadow: 0 12px 30px rgba(67, 42, 45, 0.045) !important;
+}
+
+body.admin-app-mode .client-circle-page-v2 .client-detail-grid-v2 > div,
+body.admin-app-mode .client-circle-page-v2 .client-care-highlights-v2 > article,
+body.admin-app-mode .client-circle-page-v2 .client-care-summary-v2 > article,
+body.admin-app-mode .client-circle-page-v2 .client-notes-grid-v2 > section {
+  padding: 0.95rem !important;
+}
+
+body.admin-app-mode .client-circle-page-v2 .client-detail-card-v2 span {
+  color: rgba(67, 42, 45, 0.54) !important;
+  font-size: 0.68rem !important;
+  font-weight: 850 !important;
+  letter-spacing: 0.07em !important;
+  text-transform: uppercase !important;
+}
+
+body.admin-app-mode .client-circle-page-v2 .client-detail-card-v2 strong {
+  color: rgba(67, 42, 45, 0.94) !important;
+  font-weight: 850 !important;
+  overflow-wrap: anywhere !important;
+}
+
+body.admin-app-mode .client-circle-page-v2 .client-detail-card-v2 p {
+  color: rgba(67, 42, 45, 0.66) !important;
+  line-height: 1.55 !important;
+}
+
+/* Large profile sections */
+body.admin-app-mode .client-circle-page-v2 .client-portal-invite-v2,
+body.admin-app-mode .client-circle-page-v2 .client-portal-invite-history-v2,
+body.admin-app-mode .client-circle-page-v2 .client-portal-resources-v2,
+body.admin-app-mode .client-circle-page-v2 .client-service-records-v2,
+body.admin-app-mode .client-circle-page-v2 .client-timeline-v2,
+body.admin-app-mode .client-circle-page-v2 .client-timeline-list-v2,
+body.admin-app-mode .client-circle-page-v2 .client-portal-email-draft-v2,
+body.admin-app-mode .client-circle-page-v2 .client-portal-email-logs-v2 {
+  margin: 1rem 1.35rem 0 !important;
+  padding: 1rem !important;
+}
+
+/* Profile tabs: one section group at a time */
+body.admin-app-mode .client-circle-page-v2:is(.is-client-detail-overview-v2, .is-client-detail-notes-v2, .is-client-detail-portal-v2, .is-client-detail-activity-v2)
+  .client-detail-card-v2
+  .client-detail-grid-v2,
+body.admin-app-mode .client-circle-page-v2:is(.is-client-detail-overview-v2, .is-client-detail-notes-v2, .is-client-detail-portal-v2, .is-client-detail-activity-v2)
+  .client-detail-card-v2
+  .client-care-highlights-v2,
+body.admin-app-mode .client-circle-page-v2:is(.is-client-detail-overview-v2, .is-client-detail-notes-v2, .is-client-detail-portal-v2, .is-client-detail-activity-v2)
+  .client-detail-card-v2
+  .client-care-summary-v2,
+body.admin-app-mode .client-circle-page-v2:is(.is-client-detail-overview-v2, .is-client-detail-notes-v2, .is-client-detail-portal-v2, .is-client-detail-activity-v2)
+  .client-detail-card-v2
+  .client-notes-grid-v2,
+body.admin-app-mode .client-circle-page-v2:is(.is-client-detail-overview-v2, .is-client-detail-notes-v2, .is-client-detail-portal-v2, .is-client-detail-activity-v2)
+  .client-detail-card-v2
+  .client-portal-invite-v2,
+body.admin-app-mode .client-circle-page-v2:is(.is-client-detail-overview-v2, .is-client-detail-notes-v2, .is-client-detail-portal-v2, .is-client-detail-activity-v2)
+  .client-detail-card-v2
+  .client-portal-invite-history-v2,
+body.admin-app-mode .client-circle-page-v2:is(.is-client-detail-overview-v2, .is-client-detail-notes-v2, .is-client-detail-portal-v2, .is-client-detail-activity-v2)
+  .client-detail-card-v2
+  .client-portal-resources-v2,
+body.admin-app-mode .client-circle-page-v2:is(.is-client-detail-overview-v2, .is-client-detail-notes-v2, .is-client-detail-portal-v2, .is-client-detail-activity-v2)
+  .client-detail-card-v2
+  .client-portal-email-draft-v2,
+body.admin-app-mode .client-circle-page-v2:is(.is-client-detail-overview-v2, .is-client-detail-notes-v2, .is-client-detail-portal-v2, .is-client-detail-activity-v2)
+  .client-detail-card-v2
+  .client-portal-email-logs-v2,
+body.admin-app-mode .client-circle-page-v2:is(.is-client-detail-overview-v2, .is-client-detail-notes-v2, .is-client-detail-portal-v2, .is-client-detail-activity-v2)
+  .client-detail-card-v2
+  .client-service-records-v2,
+body.admin-app-mode .client-circle-page-v2:is(.is-client-detail-overview-v2, .is-client-detail-notes-v2, .is-client-detail-portal-v2, .is-client-detail-activity-v2)
+  .client-detail-card-v2
+  .client-timeline-v2,
+body.admin-app-mode .client-circle-page-v2:is(.is-client-detail-overview-v2, .is-client-detail-notes-v2, .is-client-detail-portal-v2, .is-client-detail-activity-v2)
+  .client-detail-card-v2
+  .client-timeline-list-v2 {
+  display: none !important;
+}
+
+body.admin-app-mode .client-circle-page-v2.is-client-detail-overview-v2 .client-detail-card-v2 .client-detail-grid-v2,
+body.admin-app-mode .client-circle-page-v2.is-client-detail-overview-v2 .client-detail-card-v2 .client-care-highlights-v2,
+body.admin-app-mode .client-circle-page-v2.is-client-detail-overview-v2 .client-detail-card-v2 .client-care-summary-v2 {
+  display: grid !important;
+}
+
+body.admin-app-mode .client-circle-page-v2.is-client-detail-notes-v2 .client-detail-card-v2 .client-notes-grid-v2 {
+  display: grid !important;
+}
+
+body.admin-app-mode .client-circle-page-v2.is-client-detail-portal-v2 .client-detail-card-v2 .client-portal-invite-v2,
+body.admin-app-mode .client-circle-page-v2.is-client-detail-portal-v2 .client-detail-card-v2 .client-portal-invite-history-v2,
+body.admin-app-mode .client-circle-page-v2.is-client-detail-portal-v2 .client-detail-card-v2 .client-portal-resources-v2,
+body.admin-app-mode .client-circle-page-v2.is-client-detail-portal-v2 .client-detail-card-v2 .client-portal-email-draft-v2,
+body.admin-app-mode .client-circle-page-v2.is-client-detail-portal-v2 .client-detail-card-v2 .client-portal-email-logs-v2 {
+  display: block !important;
+}
+
+body.admin-app-mode .client-circle-page-v2.is-client-detail-activity-v2 .client-detail-card-v2 .client-service-records-v2,
+body.admin-app-mode .client-circle-page-v2.is-client-detail-activity-v2 .client-detail-card-v2 .client-timeline-v2,
+body.admin-app-mode .client-circle-page-v2.is-client-detail-activity-v2 .client-detail-card-v2 .client-timeline-list-v2 {
+  display: block !important;
+}
+
+/* Responsive */
+@media (max-width: 1100px) {
+  body.admin-app-mode .client-circle-page-v2 .client-circle-hero-v2 {
+    flex-direction: column !important;
+  }
+
+  body.admin-app-mode .client-circle-page-v2 .client-circle-filter-bar-v2 {
+    grid-template-columns: 1fr 1fr !important;
+    top: 0 !important;
+    position: relative !important;
+  }
+
+  body.admin-app-mode .client-circle-page-v2 .client-quick-filter-strip-v2 {
+    top: 0 !important;
+    position: relative !important;
+  }
+
+  body.admin-app-mode .client-circle-page-v2 .client-records-card-v2 {
+    max-height: none !important;
+    overflow: visible !important;
+  }
+}
+
+@media (max-width: 720px) {
+  body.admin-app-mode .client-circle-page-v2 {
+    padding: 1rem !important;
+  }
+
+  body.admin-app-mode .client-circle-page-v2 .client-circle-filter-bar-v2 {
+    grid-template-columns: 1fr !important;
+  }
+
+  body.admin-app-mode .client-circle-page-v2 .client-form-drawer-v2,
+  body.admin-app-mode .client-circle-page-v2 .client-circle-detail-v2:has(.client-detail-grid-v2) {
+    top: 0.75rem !important;
+    right: 0.75rem !important;
+    bottom: 0.75rem !important;
+    left: 0.75rem !important;
+    width: auto !important;
+    max-height: calc(100vh - 1.5rem) !important;
+  }
+
+  body.admin-app-mode .client-circle-page-v2 .client-detail-grid-v2,
+  body.admin-app-mode .client-circle-page-v2 .client-care-highlights-v2,
+  body.admin-app-mode .client-circle-page-v2 .client-care-summary-v2,
+  body.admin-app-mode .client-circle-page-v2 .client-notes-grid-v2 {
+    grid-template-columns: 1fr !important;
+  }
+
+  body.admin-app-mode .client-circle-page-v2 .client-detail-header-actions-v2 button,
+  body.admin-app-mode .client-circle-page-v2 .client-detail-jump-nav-v2 button,
+  body.admin-app-mode .client-circle-page-v2 .client-profile-quick-actions-v2 button {
+    flex: 1 1 calc(50% - 0.45rem) !important;
+  }
+}
+
+/* ADMIN CLIENTS REWORK: isolation shield against older global.css experiments */
+body.admin-app-mode .client-circle-page-v2.admin-clients-rework-v1,
+body:has(.client-circle-page-v2.admin-clients-rework-v1) .client-circle-page-v2.admin-clients-rework-v1 {
+  isolation: isolate !important;
+}
+
+/* Kill old decorative overlays that were creating visual noise */
+body.admin-app-mode .admin-clients-rework-v1.client-circle-page-v2::before,
+body.admin-app-mode .admin-clients-rework-v1.client-circle-page-v2::after,
+body.admin-app-mode .admin-clients-rework-v1 .client-circle-workspace-v2::before,
+body.admin-app-mode .admin-clients-rework-v1 .client-circle-workspace-v2::after,
+body.admin-app-mode .admin-clients-rework-v1 .client-circle-card-v2::before,
+body.admin-app-mode .admin-clients-rework-v1 .client-circle-card-v2::after,
+body.admin-app-mode .admin-clients-rework-v1 .client-form-card-v2::before,
+body.admin-app-mode .admin-clients-rework-v1 .client-form-card-v2::after,
+body.admin-app-mode .admin-clients-rework-v1 .client-records-card-v2::before,
+body.admin-app-mode .admin-clients-rework-v1 .client-records-card-v2::after,
+body.admin-app-mode .admin-clients-rework-v1 .client-circle-detail-v2::before,
+body.admin-app-mode .admin-clients-rework-v1 .client-circle-detail-v2::after {
+  content: none !important;
+  display: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+/* Force records area to remain the primary control center */
+body.admin-app-mode .client-circle-page-v2.admin-clients-rework-v1 .client-records-card-v2,
+body.admin-app-mode:has(.client-circle-page-v2.admin-clients-rework-v1) .client-records-card-v2,
+body:has(.client-circle-page-v2.admin-clients-rework-v1) .client-records-card-v2 {
+  width: 100% !important;
+  max-width: none !important;
+  min-width: 0 !important;
+  margin: 0 !important;
+  margin-right: 0 !important;
+  padding: 0 !important;
+  padding-right: 0 !important;
+  transform: none !important;
+}
+
+/* Do not shrink records table just because profile drawer is open */
+@media (min-width: 1280px) {
+  body.admin-app-mode:has(.client-circle-page-v2.admin-clients-rework-v1 .client-circle-detail-v2 .client-detail-card-v2) .client-records-card-v2,
+  body:has(.client-circle-page-v2.admin-clients-rework-v1 .client-circle-detail-v2 .client-detail-card-v2) .client-records-card-v2 {
+    max-width: none !important;
+    width: 100% !important;
+  }
+}
+
+/* Stable table column sizing */
+body.admin-app-mode .admin-clients-rework-v1 .client-record-table-v2 th:nth-child(1),
+body.admin-app-mode .admin-clients-rework-v1 .client-record-table-v2 td:nth-child(1) {
+  width: 15% !important;
+}
+
+body.admin-app-mode .admin-clients-rework-v1 .client-record-table-v2 th:nth-child(2),
+body.admin-app-mode .admin-clients-rework-v1 .client-record-table-v2 td:nth-child(2) {
+  width: 21% !important;
+}
+
+body.admin-app-mode .admin-clients-rework-v1 .client-record-table-v2 th:nth-child(3),
+body.admin-app-mode .admin-clients-rework-v1 .client-record-table-v2 td:nth-child(3) {
+  width: 29% !important;
+}
+
+body.admin-app-mode .admin-clients-rework-v1 .client-record-table-v2 th:nth-child(4),
+body.admin-app-mode .admin-clients-rework-v1 .client-record-table-v2 td:nth-child(4),
+body.admin-app-mode .admin-clients-rework-v1 .client-record-table-v2 th:nth-child(5),
+body.admin-app-mode .admin-clients-rework-v1 .client-record-table-v2 td:nth-child(5) {
+  width: 13% !important;
+}
+
+body.admin-app-mode .admin-clients-rework-v1 .client-record-table-v2 th:nth-child(6),
+body.admin-app-mode .admin-clients-rework-v1 .client-record-table-v2 td:nth-child(6) {
+  width: 9% !important;
+  text-align: center !important;
+}
+
+/* Normalize selected row state regardless of older row styling */
+body.admin-app-mode .admin-clients-rework-v1 .client-record-table-v2 tbody tr.is-selected,
+body.admin-app-mode .admin-clients-rework-v1 .client-record-table-v2 tbody tr[aria-selected='true'],
+body.admin-app-mode .admin-clients-rework-v1 .client-record-table-v2 tbody tr[data-selected='true'] {
+  background:
+    linear-gradient(90deg, rgba(198, 164, 93, 0.17), rgba(255, 250, 246, 0.22)) !important;
+  box-shadow: inset 3px 0 0 rgba(198, 164, 93, 0.68) !important;
+}
+
+/* Compact action menu must stay inside the Action column */
+body.admin-app-mode .admin-clients-rework-v1 .client-action-menu-cell-v1,
+body.admin-app-mode .admin-clients-rework-v1 .client-action-menu-v1,
+body.admin-app-mode .admin-clients-rework-v1 .client-record-table-v2 td:last-child {
+  overflow: visible !important;
+  position: relative !important;
+  text-align: center !important;
+}
+
+body.admin-app-mode .admin-clients-rework-v1 .client-action-menu-panel-v1 {
+  top: calc(100% + 0.45rem) !important;
+  right: 0 !important;
+  left: auto !important;
+  bottom: auto !important;
+  width: 150px !important;
+  min-width: 150px !important;
+  max-width: 150px !important;
+  transform: none !important;
+}
+
+/* Drawers should visually match the preview target */
+body.admin-app-mode .admin-clients-rework-v1 .client-form-drawer-v2,
+body.admin-app-mode .admin-clients-rework-v1 .client-circle-detail-v2:has(.client-detail-grid-v2) .client-detail-card-v2 {
+  border-radius: 30px !important;
+  border: 1px solid rgba(198, 164, 93, 0.30) !important;
+  background:
+    radial-gradient(circle at 92% 7%, rgba(198, 164, 93, 0.12), transparent 28%),
+    linear-gradient(145deg, rgba(255, 250, 246, 0.99), rgba(248, 238, 232, 0.97)) !important;
+  box-shadow: 0 24px 70px rgba(67, 42, 45, 0.16) !important;
+}
+
+/* Prevent old button hover effects from making the UI jump */
+body.admin-app-mode .admin-clients-rework-v1 button:hover {
+  transform: none !important;
+}
+
+/* Smooth premium hover without layout shift */
+body.admin-app-mode .admin-clients-rework-v1 .client-record-table-v2 button:hover,
+body.admin-app-mode .admin-clients-rework-v1 .client-detail-card-v2 button:hover,
+body.admin-app-mode .admin-clients-rework-v1 .client-form-drawer-v2 button:hover {
+  background: rgba(246, 229, 222, 0.50) !important;
+  border-color: rgba(198, 164, 93, 0.38) !important;
+  box-shadow: none !important;
+}
+
+/* Keep drawer content calm and readable */
+body.admin-app-mode .admin-clients-rework-v1 .client-detail-card-v2 h2,
+body.admin-app-mode .admin-clients-rework-v1 .client-form-drawer-v2 h2 {
+  font-family: Georgia, 'Times New Roman', serif !important;
+  letter-spacing: -0.04em !important;
+}
+
+/* Mobile drawer sanity */
+@media (max-width: 720px) {
+  body.admin-app-mode .admin-clients-rework-v1 .client-record-table-v2 {
+    min-width: 920px !important;
+  }
+
+  body.admin-app-mode .admin-clients-rework-v1 .client-detail-header-actions-v2 {
+    justify-content: flex-start !important;
+  }
+}
+
+
+/* ADMIN CLIENTS REWORK: explicit drawer state, no visual dependency on old :has() behavior */
+body.admin-app-mode .client-circle-page-v2.admin-clients-rework-v1 .client-circle-detail-v2 {
+  display: none !important;
+  margin: 0 !important;
+}
+
+/* View Profile drawer opens only when React says a client is selected */
+body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1.is-client-detail-open-v2:not(.is-client-form-open-v2)
+  .client-circle-detail-v2 {
+  position: fixed !important;
+  top: 1.25rem !important;
+  right: 1.25rem !important;
+  bottom: 1.25rem !important;
+  left: auto !important;
+  z-index: 70 !important;
+
+  display: block !important;
+  width: min(580px, calc(100vw - 2.5rem)) !important;
+  max-height: calc(100vh - 2.5rem) !important;
+  overflow: hidden !important;
+  padding: 0 !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+/* Form drawer always wins over read-only profile drawer */
+body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1.is-client-form-open-v2
+  .client-circle-detail-v2 {
+  display: none !important;
+}
+
+/* Drawer card authority */
+body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1.is-client-detail-open-v2
+  .client-circle-detail-v2
+  .client-detail-card-v2 {
+  height: 100% !important;
+  max-height: 100% !important;
+  overflow: auto !important;
+  padding: 0 !important;
+  border-radius: 30px !important;
+  border: 1px solid rgba(198, 164, 93, 0.30) !important;
+  background:
+    radial-gradient(circle at 92% 7%, rgba(198, 164, 93, 0.12), transparent 28%),
+    linear-gradient(145deg, rgba(255, 250, 246, 0.99), rgba(248, 238, 232, 0.97)) !important;
+  box-shadow: 0 24px 70px rgba(67, 42, 45, 0.16) !important;
+}
+
+/* Keep the records control center full width while drawer floats over it */
+body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1.is-client-detail-open-v2
+  .client-records-card-v2 {
+  width: 100% !important;
+  max-width: none !important;
+  margin-right: 0 !important;
+  padding-right: 0 !important;
+}
+
+/* Add a subtle backdrop only when a profile drawer is open */
+body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1.is-client-detail-open-v2:not(.is-client-form-open-v2)::after {
+  content: "" !important;
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 60 !important;
+  pointer-events: none !important;
+  background:
+    linear-gradient(90deg, transparent 0%, transparent 58%, rgba(67, 42, 45, 0.045) 100%) !important;
+}
+
+/* Keep selected profile drawer above the backdrop */
+body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1.is-client-detail-open-v2
+  .client-circle-detail-v2 {
+  z-index: 70 !important;
+}
+
+/* Drawer header should stay elegant and steady */
+body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1
+  .client-detail-card-v2
+  > .client-card-header-v2 {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 8 !important;
+  padding: 1.15rem 1.35rem !important;
+  border-bottom: 1px solid rgba(198, 164, 93, 0.14) !important;
+  background: rgba(255, 250, 246, 0.94) !important;
+  backdrop-filter: blur(14px) !important;
+}
+
+/* Compact the tab and quick-action bars */
+body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1
+  .client-detail-jump-nav-v2 {
+  top: 5.05rem !important;
+  z-index: 7 !important;
+}
+
+body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1
+  .client-profile-quick-actions-v2 {
+  top: 8.45rem !important;
+  z-index: 6 !important;
+}
+
+/* Mobile class-driven drawer */
+@media (max-width: 720px) {
+  body.admin-app-mode
+    .client-circle-page-v2.admin-clients-rework-v1.is-client-detail-open-v2:not(.is-client-form-open-v2)
+    .client-circle-detail-v2 {
+    top: 0.75rem !important;
+    right: 0.75rem !important;
+    bottom: 0.75rem !important;
+    left: 0.75rem !important;
+    width: auto !important;
+    max-height: calc(100vh - 1.5rem) !important;
+  }
+
+  body.admin-app-mode
+    .client-circle-page-v2.admin-clients-rework-v1.is-client-detail-open-v2:not(.is-client-form-open-v2)::after {
+    background: rgba(67, 42, 45, 0.08) !important;
+  }
+}
+
+
+/* ADMIN CLIENTS REWORK: selected row + inactive drawer cleanup */
+body.admin-app-mode .client-circle-page-v2.admin-clients-rework-v1 .client-circle-detail-v2[hidden] {
+  display: none !important;
+}
+
+body.admin-app-mode .client-circle-page-v2.admin-clients-rework-v1 .client-record-table-v2 tbody tr.is-selected td,
+body.admin-app-mode .client-circle-page-v2.admin-clients-rework-v1 .client-record-table-v2 tbody tr[aria-selected='true'] td {
+  color: rgba(67, 42, 45, 0.92) !important;
+}
+
+body.admin-app-mode .client-circle-page-v2.admin-clients-rework-v1 .client-record-table-v2 tbody tr.is-selected td:first-child strong,
+body.admin-app-mode .client-circle-page-v2.admin-clients-rework-v1 .client-record-table-v2 tbody tr[aria-selected='true'] td:first-child strong {
+  color: rgba(67, 42, 45, 0.98) !important;
+}
+
+body.admin-app-mode .client-circle-page-v2.admin-clients-rework-v1 .client-record-table-v2 tbody tr.is-selected .client-portal-status-pill-v2,
+body.admin-app-mode .client-circle-page-v2.admin-clients-rework-v1 .client-record-table-v2 tbody tr[aria-selected='true'] .client-portal-status-pill-v2 {
+  border-color: rgba(198, 164, 93, 0.42) !important;
+  background: rgba(255, 250, 246, 0.82) !important;
+}
+
+/* Make click-to-view feel intentional without making the table noisy */
+body.admin-app-mode .client-circle-page-v2.admin-clients-rework-v1 .client-record-table-v2 tbody tr {
+  transition:
+    background 160ms ease,
+    box-shadow 160ms ease,
+    color 160ms ease !important;
+}
+
+body.admin-app-mode .client-circle-page-v2.admin-clients-rework-v1 .client-record-table-v2 tbody tr:hover td:first-child strong {
+  color: rgba(67, 42, 45, 0.98) !important;
+}
+
+
+/* ADMIN CLIENTS REWORK: scroll + table polish based on live UI review */
+
+/* Stop the whole browser page from fighting the records card scroll */
+body:has(.client-circle-page-v2.admin-clients-rework-v1) {
+  overflow: hidden !important;
+}
+
+/* Keep this route behaving like a focused admin app screen */
+body.admin-app-mode .client-circle-page-v2.admin-clients-rework-v1 {
+  height: 100vh !important;
+  max-height: 100vh !important;
+  overflow: hidden !important;
+  display: flex !important;
+  flex-direction: column !important;
+  padding-top: 1.35rem !important;
+  padding-bottom: 1.1rem !important;
+}
+
+/* Make the hero more compact so the table has breathing room */
+body.admin-app-mode .client-circle-page-v2.admin-clients-rework-v1 .client-circle-hero-v2 {
+  flex: 0 0 auto !important;
+  margin-bottom: 1rem !important;
+  gap: 1.25rem !important;
+}
+
+body.admin-app-mode .client-circle-page-v2.admin-clients-rework-v1 .client-circle-hero-v2 h1 {
+  font-size: clamp(2.15rem, 3.35vw, 3.65rem) !important;
+}
+
+body.admin-app-mode .client-circle-page-v2.admin-clients-rework-v1 .client-circle-hero-v2 p {
+  max-width: 620px !important;
+  font-size: 0.96rem !important;
+}
+
+/* Workspace should fill the remaining screen, not create another page scroll */
+body.admin-app-mode .client-circle-page-v2.admin-clients-rework-v1 .client-circle-workspace-v2 {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+}
+
+/* Records card owns the scroll */
+body.admin-app-mode .client-circle-page-v2.admin-clients-rework-v1 .client-records-card-v2 {
+  height: 100% !important;
+  max-height: none !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+}
+
+/* Stronger premium surfaces for sticky areas so text underneath does not ghost through */
+body.admin-app-mode .client-circle-page-v2.admin-clients-rework-v1 .client-records-card-v2 > .client-card-header-v2 {
+  background:
+    linear-gradient(145deg, rgba(255, 250, 246, 0.98), rgba(250, 242, 236, 0.96)) !important;
+  border-bottom: 1px solid rgba(198, 164, 93, 0.16) !important;
+}
+
+body.admin-app-mode .client-circle-page-v2.admin-clients-rework-v1 .client-circle-filter-bar-v2 {
+  background:
+    linear-gradient(145deg, rgba(255, 250, 246, 0.97), rgba(250, 242, 236, 0.94)) !important;
+  border-bottom: 1px solid rgba(198, 164, 93, 0.14) !important;
+}
+
+body.admin-app-mode .client-circle-page-v2.admin-clients-rework-v1 .client-quick-filter-strip-v2 {
+  background:
+    linear-gradient(145deg, rgba(255, 250, 246, 0.96), rgba(250, 242, 236, 0.93)) !important;
+  border-bottom: 1px solid rgba(198, 164, 93, 0.14) !important;
+}
+
+/* Let the table area scroll cleanly under the sticky header/filter/chips */
+body.admin-app-mode .client-circle-page-v2.admin-clients-rework-v1 .client-record-table-wrap-v2 {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  overflow: auto !important;
+  overscroll-behavior: contain !important;
+  scrollbar-gutter: stable !important;
+}
+
+/* Make table header feel solid and premium, not faded */
+body.admin-app-mode .client-circle-page-v2.admin-clients-rework-v1 .client-record-table-v2 thead th {
+  background:
+    linear-gradient(145deg, rgba(255, 250, 246, 0.99), rgba(250, 242, 236, 0.97)) !important;
+  backdrop-filter: blur(14px) !important;
+  box-shadow:
+    0 1px 0 rgba(198, 164, 93, 0.13),
+    0 10px 22px rgba(67, 42, 45, 0.025) !important;
+}
+
+/* Slightly cleaner row height and text weight */
+body.admin-app-mode .client-circle-page-v2.admin-clients-rework-v1 .client-record-table-v2 th,
+body.admin-app-mode .client-circle-page-v2.admin-clients-rework-v1 .client-record-table-v2 td {
+  padding-top: 0.9rem !important;
+  padding-bottom: 0.9rem !important;
+}
+
+body.admin-app-mode .client-circle-page-v2.admin-clients-rework-v1 .client-record-table-v2 td:first-child strong {
+  color: rgba(67, 42, 45, 0.94) !important;
+  font-weight: 850 !important;
+}
+
+/* Make selected row elegant, not too yellow */
+body.admin-app-mode .client-circle-page-v2.admin-clients-rework-v1 .client-record-table-v2 tbody tr.is-selected,
+body.admin-app-mode .client-circle-page-v2.admin-clients-rework-v1 .client-record-table-v2 tbody tr[aria-selected='true'] {
+  background:
+    linear-gradient(90deg, rgba(198, 164, 93, 0.12), rgba(255, 250, 246, 0.20)) !important;
+  box-shadow: inset 3px 0 0 rgba(198, 164, 93, 0.62) !important;
+}
+
+/* Action dropdown polish from the video */
+body.admin-app-mode .client-circle-page-v2.admin-clients-rework-v1 .client-action-menu-panel-v1 {
+  overflow: hidden !important;
+  border-radius: 18px !important;
+  background: rgba(255, 250, 246, 0.99) !important;
+  box-shadow:
+    0 18px 38px rgba(67, 42, 45, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.70) !important;
+}
+
+body.admin-app-mode .client-circle-page-v2.admin-clients-rework-v1 .client-action-menu-panel-v1 button:hover {
+  background: rgba(246, 229, 222, 0.45) !important;
+  color: rgba(67, 42, 45, 0.96) !important;
+}
+
+/* Make the internal scrollbar look intentional */
+body.admin-app-mode .client-circle-page-v2.admin-clients-rework-v1 .client-record-table-wrap-v2::-webkit-scrollbar {
+  width: 10px !important;
+  height: 10px !important;
+}
+
+body.admin-app-mode .client-circle-page-v2.admin-clients-rework-v1 .client-record-table-wrap-v2::-webkit-scrollbar-track {
+  background: rgba(255, 250, 246, 0.48) !important;
+  border-radius: 999px !important;
+}
+
+body.admin-app-mode .client-circle-page-v2.admin-clients-rework-v1 .client-record-table-wrap-v2::-webkit-scrollbar-thumb {
+  background: rgba(198, 164, 93, 0.38) !important;
+  border-radius: 999px !important;
+  border: 2px solid rgba(255, 250, 246, 0.70) !important;
+}
+
+/* Mobile/tablet should still allow natural page scroll */
+@media (max-width: 1100px) {
+  body:has(.client-circle-page-v2.admin-clients-rework-v1) {
+    overflow: auto !important;
+  }
+
+  body.admin-app-mode .client-circle-page-v2.admin-clients-rework-v1 {
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+  }
+
+  body.admin-app-mode .client-circle-page-v2.admin-clients-rework-v1 .client-circle-workspace-v2 {
+    overflow: visible !important;
+  }
+
+  body.admin-app-mode .client-circle-page-v2.admin-clients-rework-v1 .client-records-card-v2 {
+    height: auto !important;
+    max-height: none !important;
+  }
+}
+
+
+/* ADMIN CLIENTS REWORK: View/Edit profile behavior repair */
+
+/* Default: no selected profile drawer visible */
+body.admin-app-mode .client-circle-page-v2.admin-clients-rework-v1:not(.is-client-detail-open-v2) .client-circle-detail-v2 {
+  display: none !important;
+}
+
+/* View Profile drawer: open when selectedClient exists */
+body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1.is-client-detail-open-v2:not(.is-client-form-open-v2)
+  .client-circle-detail-v2 {
+  position: fixed !important;
+  top: 1.25rem !important;
+  right: 1.25rem !important;
+  bottom: 1.25rem !important;
+  left: auto !important;
+  z-index: 70 !important;
+  display: block !important;
+  width: min(580px, calc(100vw - 2.5rem)) !important;
+  max-height: calc(100vh - 2.5rem) !important;
+  overflow: hidden !important;
+  pointer-events: auto !important;
+}
+
+/* View Profile drawer card */
+body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1.is-client-detail-open-v2:not(.is-client-form-open-v2)
+  .client-circle-detail-v2
+  .client-detail-card-v2 {
+  display: block !important;
+  height: 100% !important;
+  max-height: 100% !important;
+  overflow: auto !important;
+  pointer-events: auto !important;
+}
+
+/* Edit/New Profile drawer: open when isClientFormOpen is true */
+body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1.is-client-form-open-v2
+  .client-form-drawer-v2 {
+  position: fixed !important;
+  top: 1.25rem !important;
+  right: 1.25rem !important;
+  bottom: 1.25rem !important;
+  left: auto !important;
+  z-index: 90 !important;
+  display: block !important;
+  width: min(540px, calc(100vw - 2.5rem)) !important;
+  max-height: calc(100vh - 2.5rem) !important;
+  overflow: auto !important;
+  pointer-events: auto !important;
+}
+
+/* Edit drawer should hide read-only profile drawer */
+body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1.is-client-form-open-v2
+  .client-circle-detail-v2 {
+  display: none !important;
+}
+
+/* Prevent decorative overlay from blocking clicks */
+body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1::after {
+  pointer-events: none !important;
+}
+
+/* Mobile drawer fallback */
+@media (max-width: 720px) {
+  body.admin-app-mode
+    .client-circle-page-v2.admin-clients-rework-v1.is-client-detail-open-v2:not(.is-client-form-open-v2)
+    .client-circle-detail-v2,
+  body.admin-app-mode
+    .client-circle-page-v2.admin-clients-rework-v1.is-client-form-open-v2
+    .client-form-drawer-v2 {
+    top: 0.75rem !important;
+    right: 0.75rem !important;
+    bottom: 0.75rem !important;
+    left: 0.75rem !important;
+    width: auto !important;
+    max-height: calc(100vh - 1.5rem) !important;
+  }
+}
+
+
+/* ADMIN CLIENTS REWORK: exact View Profile display repair
+   Based on browser state:
+   page has is-client-detail-overview-v2, but not is-client-detail-open-v2.
+   So the drawer must open from the actual detail section class. */
+
+body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1:is(
+    .is-client-detail-overview-v2,
+    .is-client-detail-notes-v2,
+    .is-client-detail-portal-v2,
+    .is-client-detail-activity-v2
+  ):not(.is-client-form-open-v2)
+  .client-circle-detail-v2 {
+  position: fixed !important;
+  top: 1.25rem !important;
+  right: 1.25rem !important;
+  bottom: 1.25rem !important;
+  left: auto !important;
+  z-index: 70 !important;
+
+  display: block !important;
+  width: min(580px, calc(100vw - 2.5rem)) !important;
+  max-height: calc(100vh - 2.5rem) !important;
+  overflow: hidden !important;
+
+  visibility: visible !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1:is(
+    .is-client-detail-overview-v2,
+    .is-client-detail-notes-v2,
+    .is-client-detail-portal-v2,
+    .is-client-detail-activity-v2
+  ):not(.is-client-form-open-v2)
+  .client-circle-detail-v2
+  .client-detail-card-v2 {
+  display: block !important;
+  height: 100% !important;
+  max-height: 100% !important;
+  overflow: auto !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+}
+
+/* Edit drawer display repair if isClientFormOpen is being set */
+body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1.is-client-form-open-v2
+  .client-form-drawer-v2 {
+  position: fixed !important;
+  top: 1.25rem !important;
+  right: 1.25rem !important;
+  bottom: 1.25rem !important;
+  left: auto !important;
+  z-index: 90 !important;
+
+  display: block !important;
+  width: min(540px, calc(100vw - 2.5rem)) !important;
+  max-height: calc(100vh - 2.5rem) !important;
+  overflow: auto !important;
+
+  visibility: visible !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+}
+
+/* Form drawer must hide profile drawer */
+body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1.is-client-form-open-v2
+  .client-circle-detail-v2 {
+  display: none !important;
+}
+
+/* Mobile fallback */
+@media (max-width: 720px) {
+  body.admin-app-mode
+    .client-circle-page-v2.admin-clients-rework-v1:is(
+      .is-client-detail-overview-v2,
+      .is-client-detail-notes-v2,
+      .is-client-detail-portal-v2,
+      .is-client-detail-activity-v2
+    ):not(.is-client-form-open-v2)
+    .client-circle-detail-v2,
+  body.admin-app-mode
+    .client-circle-page-v2.admin-clients-rework-v1.is-client-form-open-v2
+    .client-form-drawer-v2 {
+    top: 0.75rem !important;
+    right: 0.75rem !important;
+    bottom: 0.75rem !important;
+    left: 0.75rem !important;
+    width: auto !important;
+    max-height: calc(100vh - 1.5rem) !important;
+  }
+}
+
+
+/* ADMIN CLIENTS REWORK: lift main Client Circle layout upward */
+body.admin-app-mode .client-circle-page-v2.admin-clients-rework-v1 {
+  --admin-clients-layout-lift: 1.85rem;
+
+  margin-top: calc(var(--admin-clients-layout-lift) * -1) !important;
+  height: calc(100vh + var(--admin-clients-layout-lift)) !important;
+  max-height: calc(100vh + var(--admin-clients-layout-lift)) !important;
+
+  padding-top: 0.25rem !important;
+}
+
+/* Tighten the hero spacing after lifting */
+body.admin-app-mode .client-circle-page-v2.admin-clients-rework-v1 .client-circle-hero-v2 {
+  margin-bottom: 0.75rem !important;
+}
+
+/* Keep the records panel close to the header */
+body.admin-app-mode .client-circle-page-v2.admin-clients-rework-v1 .client-records-card-v2 {
+  margin-top: 0 !important;
+}
+
+/* Slightly reduce the records card header height so it feels more premium */
+body.admin-app-mode .client-circle-page-v2.admin-clients-rework-v1 .client-records-card-v2 > .client-card-header-v2 {
+  padding-top: 1rem !important;
+  padding-bottom: 1rem !important;
+}
+
+/* Keep tablet/mobile natural */
+@media (max-width: 1100px) {
+  body.admin-app-mode .client-circle-page-v2.admin-clients-rework-v1 {
+    margin-top: 0 !important;
+    height: auto !important;
+    max-height: none !important;
+    padding-top: 1rem !important;
+  }
+}
+
+
+
+/* ADMIN CLIENTS REWORK: shorten records table slightly */
+body.admin-app-mode .client-circle-page-v2.admin-clients-rework-v1 {
+  --admin-clients-table-trim: 1.35rem;
+}
+
+/* Shorten the records card without changing the overall look */
+body.admin-app-mode .client-circle-page-v2.admin-clients-rework-v1 .client-records-card-v2 {
+  height: calc(100% - var(--admin-clients-table-trim)) !important;
+  max-height: calc(100vh - 10.5rem) !important;
+}
+
+/* Slightly reduce row height so the table feels cleaner */
+body.admin-app-mode .client-circle-page-v2.admin-clients-rework-v1 .client-record-table-v2 th,
+body.admin-app-mode .client-circle-page-v2.admin-clients-rework-v1 .client-record-table-v2 td {
+  padding-top: 0.72rem !important;
+  padding-bottom: 0.72rem !important;
+}
+
+/* Keep the internal scroll clean after shortening */
+body.admin-app-mode .client-circle-page-v2.admin-clients-rework-v1 .client-record-table-wrap-v2 {
+  min-height: 0 !important;
+  overflow: auto !important;
+}
+
+
+/* ADMIN CLIENTS REWORK: restore bottom breathing space */
+body.admin-app-mode .client-circle-page-v2.admin-clients-rework-v1 {
+  --admin-clients-bottom-gap: 1.35rem;
+
+  height: calc(100vh + var(--admin-clients-layout-lift, 0rem) - var(--admin-clients-bottom-gap)) !important;
+  max-height: calc(100vh + var(--admin-clients-layout-lift, 0rem) - var(--admin-clients-bottom-gap)) !important;
+  padding-bottom: var(--admin-clients-bottom-gap) !important;
+}
+
+/* Let the workspace respect the bottom padding */
+body.admin-app-mode .client-circle-page-v2.admin-clients-rework-v1 .client-circle-workspace-v2 {
+  min-height: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+/* Shorten the records card cleanly instead of letting it hit the bottom edge */
+body.admin-app-mode .client-circle-page-v2.admin-clients-rework-v1 .client-records-card-v2 {
+  height: calc(100% - 0.85rem) !important;
+  max-height: calc(100% - 0.85rem) !important;
+  margin-bottom: 0.85rem !important;
+}
+
+/* Keep table scroll inside the shorter card */
+body.admin-app-mode .client-circle-page-v2.admin-clients-rework-v1 .client-record-table-wrap-v2 {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  overflow: auto !important;
+}
+
+/* Mobile/tablet should not be locked */
+@media (max-width: 1100px) {
+  body.admin-app-mode .client-circle-page-v2.admin-clients-rework-v1 {
+    height: auto !important;
+    max-height: none !important;
+    padding-bottom: 1rem !important;
+  }
+
+  body.admin-app-mode .client-circle-page-v2.admin-clients-rework-v1 .client-records-card-v2 {
+    height: auto !important;
+    max-height: none !important;
+    margin-bottom: 1rem !important;
+  }
+}
+

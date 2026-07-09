@@ -1,4 +1,4 @@
-const crypto = require('crypto')
+﻿const crypto = require('crypto')
 const express = require('express')
 const bcrypt = require('bcryptjs')
 const { z } = require('zod')
@@ -97,6 +97,21 @@ async function getCount(tableName) {
   return result.rows[0]?.count || 0
 }
 
+
+function extractEmailFromPrivateAdminNotes(notes) {
+  const match = String(notes || '').match(/(?:^|\n)Email:\s*([A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,})/i)
+  return match?.[1] || ''
+}
+
+function attachPublicInquiryEmail(client) {
+  if (!client) return client
+
+  return {
+    ...client,
+    email: client.email || extractEmailFromPrivateAdminNotes(client.private_admin_notes),
+  }
+}
+
 async function getClients() {
   const result = await pool.query(
     `
@@ -107,7 +122,12 @@ async function getClients() {
       cp.phone,
       cp.birthday,
       cp.client_status,
-      cp.intake_completed_at,
+      
+      cp.private_admin_notes,
+      cp.public_contact_email,
+      cp.lead_interest,
+      cp.lead_source,
+      cp.inquiry_received_at,cp.intake_completed_at,
       cp.created_at,
       cp.updated_at,
       su.email,
@@ -138,8 +158,7 @@ async function getClients() {
     LIMIT 100
     `,
   )
-
-  return result.rows
+  return result.rows.map(attachPublicInquiryEmail)
 }
 
 async function getClientById(clientId) {
@@ -154,6 +173,10 @@ async function getClientById(clientId) {
       cp.birthday,
       cp.client_status,
       cp.private_admin_notes,
+      cp.public_contact_email,
+      cp.lead_interest,
+      cp.lead_source,
+      cp.inquiry_received_at,
       cp.client_visible_notes,
       cp.intake_completed_at,
       cp.created_at,
@@ -256,6 +279,26 @@ router.get('/overview', requireAdmin, async (req, res, next) => {
   }
 })
 
+
+function extractPublicContactEmailFromNotesV2(notes) {
+  const match = String(notes || '').match(/(?:^|\n)Email:\s*([A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,})/i)
+  return match?.[1]?.trim() || ''
+}
+
+function attachAdminClientDisplayEmailV2(client) {
+  if (!client) return client
+
+  const noteEmail = extractPublicContactEmailFromNotesV2(
+    client.private_admin_notes || client.privateAdminNotes || client.privateAdminNotes || client.private_admin_notes || '',
+  )
+
+  return {
+    ...client,
+    email: client.email || client.client_email || client.public_contact_email || noteEmail || '',
+    public_contact_email: noteEmail,
+  }
+}
+
 router.get('/clients', requireAdmin, async (req, res, next) => {
   try {
     if (!pool) {
@@ -265,7 +308,7 @@ router.get('/clients', requireAdmin, async (req, res, next) => {
       })
     }
 
-    const clients = await getClients()
+        const clients = (await getClients()).map(attachAdminClientDisplayEmailV2)
 
     res.json({
       ok: true,
@@ -1673,7 +1716,7 @@ router.get('/clients/:clientId/care-timeline', requireAdmin, async (req, res, ne
       `
       SELECT
         cp.*,
-        su.email AS email,
+        su.email,
         su.role AS user_role,
         su.status AS portal_status,
         su.created_at AS user_created_at,
@@ -2444,7 +2487,7 @@ router.post('/clients/:clientId/portal-invite', requireAdmin, async (req, res, n
       `
       SELECT
         cp.*,
-        su.email AS email,
+        su.email,
         su.id AS existing_user_id,
         su.status AS portal_status
       FROM client_profiles cp
@@ -4862,3 +4905,11 @@ router.patch('/founders-view/availability-exceptions/:exceptionId', requireFound
 
 
 module.exports = router
+
+
+
+
+
+
+
+

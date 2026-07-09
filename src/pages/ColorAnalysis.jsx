@@ -1,6 +1,5 @@
-import { Link } from 'react-router-dom'
+﻿import { Link } from 'react-router-dom'
 import PageHero from '../components/PageHero'
-import ContactCTA from '../components/ContactCTA'
 import colorAnalysisImage from '../assets/images/color-analysis-swatches-session.webp'
 
 const processSteps = [
@@ -28,7 +27,7 @@ const colorDirections = [
 
 function ColorAnalysis() {
   return (
-    <main>
+    <main className="color-analysis-page">
       <PageHero
         eyebrow="Color Analysis"
         title="Personal Color Alignment"
@@ -42,20 +41,15 @@ function ColorAnalysis() {
           </div>
 
           <div className="story-copy">
-            <p className="eyebrow">Color With Intention</p>
-            <h2>Personal Color Alignment creates greater clarity, confidence, and harmony in the way you show up.</h2>
-            <p>
-              Personal color analysis goes beyond clothing. It helps clarify the colors
-              that naturally complement your features, wardrobe, makeup, accessories,
-              and overall personal presence.
+            <p className="eyebrow">Color Clarity</p>
+            <h2>Color that feels clear, refined, and fully you.</h2>
+            <p className="color-intro-lead">
+              A personalized palette that brings clear direction to your wardrobe,
+              makeup, accessories, and everyday styling.
             </p>
-            <p>
-              The right colors do not ask you to perform. They support what is already
-              present, helping you feel more refined, current, and at home in your own expression.
+            <p className="color-intro-note">
+              So every choice feels easier, more cohesive, and naturally aligned with you.
             </p>
-            <div className="hero-actions">
-              <Link to="/contact" className="btn primary">Reserve Your Color Experience</Link>
-            </div>
           </div>
         </div>
       </section>
@@ -78,7 +72,7 @@ function ColorAnalysis() {
       </section>
 
       <section className="section service-detail-list-section">
-        <div className="service-detail-list-grid">
+        <div className="service-detail-list-grid color-direction-grid">
           <div>
             <p className="eyebrow">Color & Presence</p>
             <h2>The right colors change the way you show up.</h2>
@@ -88,18 +82,31 @@ function ColorAnalysis() {
             </p>
           </div>
 
-          <div className="service-detail-list">
+          <div className="service-detail-list color-direction-card">
             <h3>Inside Your Personalized Color Direction</h3>
             <ul>
               {colorDirections.map((item) => <li key={item}>{item}</li>)}
             </ul>
+            <div className="color-direction-card-actions">
+              <Link to="/contact?interest=color-analysis" className="btn primary">
+                Reserve Your Color Direction
+              </Link>
+            </div>
           </div>
         </div>
       </section>
-
-      <ContactCTA />
     </main>
   )
 }
 
 export default ColorAnalysis
+
+
+
+
+
+
+
+
+
+

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+﻿import { useEffect, useMemo, useState } from 'react'
 import AdminFrame from '../../components/admin/AdminFrame'
 import {
   createAdminClient,
@@ -18,6 +18,7 @@ import {
   updateAdminClient,
   updateAdminServiceRecord,
 } from '../../lib/nativeApi'
+import './AdminClients.rework.css'
 
 const emptyClientForm = {
   firstName: '',
@@ -168,20 +169,27 @@ function normalizeStatusValue(status) {
 }
 
 function formatStatus(status) {
-  const value = normalizeStatusValue(status)
+  const value = String(status || 'lead')
+    .replaceAll('_', ' ')
+    .replaceAll('-', ' ')
+    .trim()
+    .toLowerCase()
 
-  if (value === 'active') return 'active client'
-  if (value === 'member') return 'member'
-  if (value === 'archived') return 'archived'
+  if (!value) return 'Lead'
 
-  return 'lead'
+  return value.replace(/\b\w/g, (letter) => letter.toUpperCase())
 }
 
 function formatPortalStatus(status) {
-  return String(status || 'invited')
+  const value = String(status || 'invited')
     .replaceAll('_', ' ')
+    .replaceAll('-', ' ')
     .trim()
     .toLowerCase()
+
+  if (!value) return 'Invited'
+
+  return value.replace(/\b\w/g, (letter) => letter.toUpperCase())
 }
 
 function getPortalStatusTone(status) {
@@ -209,6 +217,62 @@ function getClientSearchText(client) {
     .toLowerCase()
 }
 
+
+function extractEmailFromClientNotes(client) {
+  const notes = [
+    client?.privateAdminNotes,
+    client?.private_admin_notes,
+    client?.admin_notes,
+    client?.notes,
+  ]
+    .filter(Boolean)
+    .join('\n')
+
+  const match = notes.match(/(?:^|\n)Email:\s*([A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,})/i)
+
+  return match?.[1]?.trim() || ''
+}
+
+function getClientEmailDisplay(client) {
+  return (
+    client?.email ||
+    client?.primary_email ||
+    client?.user_email ||
+    client?.contact_email ||
+    client?.email_address ||
+    client?.primaryEmail ||
+    client?.userEmail ||
+    client?.contactEmail ||
+    client?.emailAddress ||
+    extractEmailFromClientNotes(client) ||
+    ''
+  )
+}
+
+
+function getLeadInterestLabel(client) {
+  const notes = [
+    client?.privateAdminNotes,
+    client?.private_admin_notes,
+    client?.admin_notes,
+    client?.notes,
+  ]
+    .filter(Boolean)
+    .join('\n')
+
+  const noteMatch = notes.match(/(?:^|\n)Interest:\s*([^\n]+)/i)
+  const value =
+    client?.leadInterest ||
+    client?.lead_interest ||
+    client?.interest ||
+    client?.leadCategory ||
+    client?.lead_category ||
+    noteMatch?.[1] ||
+    ''
+
+  return String(value || 'General Message').trim()
+}
+
 function normalizeClient(client) {
   const firstName = client.firstName || client.first_name || ''
   const lastName = client.lastName || client.last_name || ''
@@ -221,9 +285,10 @@ function normalizeClient(client) {
     firstName,
     lastName,
     name: fullName,
-    email: client.email || client.primary_email || client.user_email || '',
+    email: getClientEmailDisplay(client),
     phone: client.phone || client.primary_phone || '',
     clientStatus: normalizeStatusValue(client.clientStatus || client.client_status),
+    leadInterest: getLeadInterestLabel(client),
     portalStatus: formatPortalStatus(
       client.portalStatus ||
         client.portal_status ||
@@ -253,10 +318,10 @@ function clientToForm(client) {
   return {
     firstName: client.firstName || '',
     lastName: client.lastName || '',
-    email: client.email || '',
-    phone: client.phone || '',
+    email: getClientEmailDisplay(client),
     clientStatus: normalizeStatusValue(client.clientStatus),
-    privateAdminNotes: client.privateAdminNotes || '',
+    leadInterest: getLeadInterestLabel(client),
+    privateAdminNotes: client.privateAdminNotes || client.private_admin_notes || client.admin_notes || client.notes || '',
     clientVisibleNotes: client.clientVisibleNotes || '',
   }
 }
@@ -365,8 +430,12 @@ export default function AdminClients() {
   const [clients, setClients] = useState([])
   const [clientSearchTerm, setClientSearchTerm] = useState('')
   const [clientStatusFilter, setClientStatusFilter] = useState('all')
+  const [clientInterestFilter, setClientInterestFilter] = useState('all')
   const [portalStatusFilter, setPortalStatusFilter] = useState('all')
   const [selectedClient, setSelectedClient] = useState(null)
+  const [editingClient, setEditingClient] = useState(null)
+  const [isClientFormOpen, setIsClientFormOpen] = useState(false)
+  const [clientDetailSection, setClientDetailSection] = useState('overview')
   const [careTimeline, setCareTimeline] = useState(null)
   const [portalInvite, setPortalInvite] = useState(null)
   const [portalInvites, setPortalInvites] = useState([])
@@ -394,6 +463,24 @@ export default function AdminClients() {
   const [notice, setNotice] = useState('')
   const [error, setError] = useState('')
 
+  useEffect(() => {
+    function handleDocumentClientActionMenuClose(event) {
+      if (event.target.closest?.('.client-action-menu-v1')) return
+
+      document
+        .querySelectorAll('.client-action-menu-v1[open]')
+        .forEach((menu) => {
+          menu.removeAttribute('open')
+        })
+    }
+
+    document.addEventListener('mousedown', handleDocumentClientActionMenuClose)
+
+    return () => {
+      document.removeEventListener('mousedown', handleDocumentClientActionMenuClose)
+    }
+  }, [])
+
   async function loadClients() {
     const response = await getAdminClients()
     const normalizedClients = getClientList(response).map(normalizeClient)
@@ -401,6 +488,12 @@ export default function AdminClients() {
     setClients(normalizedClients)
 
     setSelectedClient((currentClient) => {
+      if (!currentClient) return null
+
+      return normalizedClients.find((client) => client.id === currentClient.id) || null
+    })
+
+    setEditingClient((currentClient) => {
       if (!currentClient) return null
 
       return normalizedClients.find((client) => client.id === currentClient.id) || null
@@ -534,15 +627,28 @@ export default function AdminClients() {
     return ['all', ...Array.from(new Set(statuses)).sort()]
   }, [clients])
 
+  const clientInterestOptions = useMemo(() => {
+    const interests = clients
+      .map((client) => getLeadInterestLabel(client))
+      .filter(Boolean)
+      .filter((interest) => interest !== 'No interest saved')
+
+    return ['all', ...Array.from(new Set(interests)).sort((a, b) => a.localeCompare(b))]
+  }, [clients])
+
   const filteredClients = useMemo(() => {
     const searchValue = clientSearchTerm.trim().toLowerCase()
 
     return clients.filter((client) => {
       const clientStatus = normalizeStatusValue(client.clientStatus)
       const portalStatus = formatPortalStatus(client.portalStatus)
+      const leadInterest = getLeadInterestLabel(client)
 
       const matchesSearch =
         !searchValue || getClientSearchText(client).includes(searchValue)
+
+      const matchesInterest =
+        clientInterestFilter === 'all' || leadInterest === clientInterestFilter
 
       const matchesClientStatus =
         clientStatusFilter === 'all' || clientStatus === clientStatusFilter
@@ -550,12 +656,18 @@ export default function AdminClients() {
       const matchesPortalStatus =
         portalStatusFilter === 'all' || portalStatus === portalStatusFilter
 
-      return matchesSearch && matchesClientStatus && matchesPortalStatus
+      return (
+        matchesSearch &&
+        matchesInterest &&
+        matchesClientStatus &&
+        matchesPortalStatus
+      )
     })
-  }, [clients, clientSearchTerm, clientStatusFilter, portalStatusFilter])
+  }, [clients, clientSearchTerm, clientInterestFilter, clientStatusFilter, portalStatusFilter])
 
   const hasClientFilters =
     clientSearchTerm.trim() ||
+    clientInterestFilter !== 'all' ||
     clientStatusFilter !== 'all' ||
     portalStatusFilter !== 'all'
 
@@ -587,6 +699,26 @@ export default function AdminClients() {
     [clients.length, filteredClients.length, selectedName],
   )
 
+  const quickClientFilterStats = useMemo(() => {
+    const getPortalStatusValue = (client) =>
+      String(client.portalStatus || '').toLowerCase()
+
+    return {
+      all: clients.length,
+      leads: clients.filter(
+        (client) => normalizeStatusValue(client.clientStatus) === 'lead',
+      ).length,
+      active: clients.filter(
+        (client) => normalizeStatusValue(client.clientStatus) === 'active',
+      ).length,
+      invited: clients.filter(
+        (client) => getPortalStatusValue(client) === 'invited',
+      ).length,
+      portalActive: clients.filter(
+        (client) => getPortalStatusValue(client) === 'active',
+      ).length,
+    }
+  }, [clients])
   function updateForm(field, value) {
     setForm((currentForm) => ({
       ...currentForm,
@@ -601,8 +733,23 @@ export default function AdminClients() {
     }))
   }
 
-  async function handleSelectClient(client) {
+  async function handleViewClient(client) {
     setSelectedClient(client)
+    setIsClientFormOpen(false)
+    setClientDetailSection('overview')
+    setEditingClient(null)
+    setForm(emptyClientForm)
+    setNotice('')
+    setError('')
+    await loadCareTimeline(client)
+    await loadPortalInvites(client)
+  }
+
+  async function handleEditClient(client) {
+    setSelectedClient(client)
+    setIsClientFormOpen(true)
+    setClientDetailSection('overview')
+    setEditingClient(client)
     setForm(clientToForm(client))
     setNotice('')
     setError('')
@@ -610,8 +757,111 @@ export default function AdminClients() {
     await loadPortalInvites(client)
   }
 
+  function handleClientActionMenuToggle(event) {
+    const currentMenu = event.currentTarget
+
+    if (!currentMenu.open) return
+
+    document
+      .querySelectorAll('.client-action-menu-v1[open]')
+      .forEach((menu) => {
+        if (menu !== currentMenu) {
+          menu.removeAttribute('open')
+        }
+      })
+  }
+
+  function handleBackToClientRecords() {
+    document
+      .querySelector('.client-records-card-v2')
+      ?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }
+
+  async function handleCopySelectedClientEmail() {
+    const email = getClientEmailDisplay(selectedClient)
+
+    if (!email) {
+      setNotice('No email is saved for this client yet.')
+      return
+    }
+
+    try {
+      await navigator.clipboard.writeText(email)
+      setNotice('Client email copied.')
+    } catch {
+      setNotice('Copy the client email manually from the profile.')
+    }
+  }
+
+  function handleEmailSelectedClient() {
+    const email = getClientEmailDisplay(selectedClient)
+
+    if (!email) {
+      setNotice('No email is saved for this client yet.')
+      return
+    }
+
+    window.location.href = `mailto:${encodeURIComponent(email)}`
+  }
+
+  async function handleCopySelectedClientPhone() {
+    const phone = selectedClient?.phone || ''
+
+    if (!phone) {
+      setNotice('No phone number is saved for this client yet.')
+      return
+    }
+
+    try {
+      await navigator.clipboard.writeText(phone)
+      setNotice('Client phone number copied.')
+    } catch {
+      setNotice('Copy the client phone manually from the profile.')
+    }
+  }
+
+  function handleOpenNewClientForm() {
+    setSelectedClient(null)
+    setEditingClient(null)
+    setIsClientFormOpen(true)
+    setForm(emptyClientForm)
+    setNotice('')
+    setError('')
+  }
+
+  function handleCloseClientForm() {
+    setEditingClient(null)
+    setIsClientFormOpen(false)
+    setForm(emptyClientForm)
+    setNotice('')
+    setError('')
+  }
+
+  function handleClearClientFilters() {
+    setClientSearchTerm('')
+    setClientInterestFilter('all')
+    setClientStatusFilter('all')
+    setPortalStatusFilter('all')
+  }
+
+  function handleQuickClientStatusFilter(status) {
+    setClientSearchTerm('')
+    setClientInterestFilter('all')
+    setClientStatusFilter(status)
+    setPortalStatusFilter('all')
+  }
+
+  function handleQuickPortalStatusFilter(status) {
+    setClientSearchTerm('')
+    setClientInterestFilter('all')
+    setClientStatusFilter('all')
+    setPortalStatusFilter(status)
+  }
   function handleNewProfile() {
     setSelectedClient(null)
+    setClientDetailSection('overview')
+    setEditingClient(null)
+    setIsClientFormOpen(false)
     setCareTimeline(null)
     setForm(emptyClientForm)
     setServiceForm(emptyServiceRecordForm)
@@ -636,8 +886,8 @@ export default function AdminClients() {
     setError('')
 
     try {
-      if (selectedClient) {
-        await updateAdminClient(selectedClient.id, {
+      if (editingClient) {
+        await updateAdminClient(editingClient.id, {
           firstName: form.firstName,
           lastName: form.lastName,
           phone: form.phone,
@@ -647,6 +897,8 @@ export default function AdminClients() {
         })
 
         setNotice('Client profile updated.')
+        setIsClientFormOpen(false)
+        setEditingClient(null)
       } else {
         await createAdminClient({
           firstName: form.firstName,
@@ -664,7 +916,7 @@ export default function AdminClients() {
 
       await loadClients()
 
-      if (selectedClient) {
+      if (editingClient) {
         await loadCareTimeline(selectedClient)
       }
     } catch (saveError) {
@@ -1044,9 +1296,19 @@ export default function AdminClients() {
     }
   }
 
+  const clientCirclePageClassName = [
+    'client-circle-page-v2',
+    'admin-clients-rework-v1',
+    isClientFormOpen ? 'is-client-form-open-v2' : '',
+    selectedClient ? 'is-client-detail-open-v2' : '',
+    selectedClient ? `is-client-detail-${clientDetailSection}-v2` : '',
+  ]
+    .filter(Boolean)
+    .join(' ')
+
   return (
     <AdminFrame>
-      <div className="client-circle-page-v2">
+      <div className={clientCirclePageClassName}>
         <header className="client-circle-hero-v2">
           <div>
             <p className="admin-eyebrow">Client Circle</p>
@@ -1081,10 +1343,21 @@ export default function AdminClients() {
         )}
 
         <section className="client-circle-workspace-v2">
-          <article className="client-circle-card-v2 client-form-card-v2">
-            <div className="client-card-header-v2">
-              <p className="admin-eyebrow">Welcome someone in</p>
-              <h2>{selectedClient ? 'Edit Client Profile' : 'New Client Profile'}</h2>
+          {isClientFormOpen && (
+          <article className="client-circle-card-v2 client-form-card-v2 client-form-drawer-v2">
+            <div className="client-card-header-v2 is-horizontal client-form-drawer-header-v2">
+              <div>
+                <p className="admin-eyebrow">Welcome someone in</p>
+                <h2>{editingClient ? 'Edit Client Profile' : 'New Client Profile'}</h2>
+              </div>
+
+              <button
+                type="button"
+                className="client-form-close-v2"
+                onClick={handleCloseClientForm}
+              >
+                Close
+              </button>
             </div>
 
             <form className="client-circle-form-v2" onSubmit={handleSubmit}>
@@ -1116,8 +1389,8 @@ export default function AdminClients() {
                     value={form.email}
                     onChange={(event) => updateForm('email', event.target.value)}
                     placeholder="client@email.com"
-                    disabled={Boolean(selectedClient)}
-                    required={!selectedClient}
+                    disabled={Boolean(editingClient)}
+                    required={!editingClient}
                   />
                 </label>
 
@@ -1170,11 +1443,9 @@ export default function AdminClients() {
               </label>
 
               <div className="client-form-actions-v2">
-                {selectedClient && (
-                  <button type="button" onClick={handleNewProfile}>
-                    New Profile
-                  </button>
-                )}
+                <button type="button" onClick={handleCloseClientForm}>
+                  {editingClient ? 'Cancel Edit' : 'Close Form'}
+                </button>
 
                 <button type="submit" disabled={isSaving}>
                   {isSaving
@@ -1186,6 +1457,7 @@ export default function AdminClients() {
               </div>
             </form>
           </article>
+          )}
 
           <article className="client-circle-card-v2 client-records-card-v2">
             <div className="client-card-header-v2 is-horizontal">
@@ -1194,11 +1466,17 @@ export default function AdminClients() {
                 <h2>Private Client Records</h2>
               </div>
 
-              <span>
-                {hasClientFilters
-                  ? `${filteredClients.length} of ${clients.length} shown`
-                  : `${clients.length} record(s)`}
-              </span>
+              <div className="client-record-header-actions-v2">
+                <span>
+                  {hasClientFilters
+                    ? `${filteredClients.length} of ${clients.length} shown`
+                    : `${clients.length} record(s)`}
+                </span>
+
+                <button type="button" onClick={handleOpenNewClientForm}>
+                  + New Client
+                </button>
+              </div>
             </div>
 
             <div className="client-circle-filter-bar-v2">
@@ -1210,6 +1488,23 @@ export default function AdminClients() {
                   onChange={(event) => setClientSearchTerm(event.target.value)}
                   placeholder="Search name, email, phone, or status..."
                 />
+              </label>
+
+              <label>
+                <span>Interest</span>
+                <select
+                  value={clientInterestFilter}
+                  onChange={(event) => setClientInterestFilter(event.target.value)}
+                >
+                  <option value="all">All interests</option>
+                  {clientInterestOptions
+                    .filter((interest) => interest !== 'all')
+                    .map((interest) => (
+                      <option key={interest} value={interest}>
+                        {interest}
+                      </option>
+                    ))}
+                </select>
               </label>
 
               <label>
@@ -1244,19 +1539,58 @@ export default function AdminClients() {
               </label>
 
               {hasClientFilters && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    setClientSearchTerm('')
-                    setClientStatusFilter('all')
-                    setPortalStatusFilter('all')
-                  }}
-                >
+                                <button type="button" onClick={handleClearClientFilters}>
                   Clear Filters
                 </button>
               )}
             </div>
 
+            <div className="client-quick-filter-strip-v2" aria-label="Quick client filters">
+              <button
+                type="button"
+                className={(!hasClientFilters ? 'is-active ' : '') + 'client-quick-filter-chip-v2'}
+                onClick={handleClearClientFilters}
+              >
+                <span>All</span>
+                <strong>{quickClientFilterStats.all}</strong>
+              </button>
+
+              <button
+                type="button"
+                className={(clientStatusFilter === 'lead' && portalStatusFilter === 'all' && clientInterestFilter === 'all' ? 'is-active ' : '') + 'client-quick-filter-chip-v2'}
+                onClick={() => handleQuickClientStatusFilter('lead')}
+              >
+                <span>Leads</span>
+                <strong>{quickClientFilterStats.leads}</strong>
+              </button>
+
+              <button
+                type="button"
+                className={(clientStatusFilter === 'active' && portalStatusFilter === 'all' && clientInterestFilter === 'all' ? 'is-active ' : '') + 'client-quick-filter-chip-v2'}
+                onClick={() => handleQuickClientStatusFilter('active')}
+              >
+                <span>Active</span>
+                <strong>{quickClientFilterStats.active}</strong>
+              </button>
+
+              <button
+                type="button"
+                className={(clientStatusFilter === 'all' && portalStatusFilter === 'invited' && clientInterestFilter === 'all' ? 'is-active ' : '') + 'client-quick-filter-chip-v2'}
+                onClick={() => handleQuickPortalStatusFilter('invited')}
+              >
+                <span>Invited</span>
+                <strong>{quickClientFilterStats.invited}</strong>
+              </button>
+
+              <button
+                type="button"
+                className={(clientStatusFilter === 'all' && portalStatusFilter === 'active' && clientInterestFilter === 'all' ? 'is-active ' : '') + 'client-quick-filter-chip-v2'}
+                onClick={() => handleQuickPortalStatusFilter('active')}
+              >
+                <span>Portal Active</span>
+                <strong>{quickClientFilterStats.portalActive}</strong>
+              </button>
+            </div>
             {selectedClientIsHiddenByFilters && (
               <p className="client-circle-filter-note-v2">
                 {selectedClient.name} is still open below, but hidden from this
@@ -1283,6 +1617,7 @@ export default function AdminClients() {
                     <tr>
                       <th>Name</th>
                       <th>Email</th>
+                      <th>Interest</th>
                       <th>Client Status</th>
                       <th>Portal Status</th>
                       <th>Action</th>
@@ -1296,11 +1631,20 @@ export default function AdminClients() {
                         className={
                           selectedClient?.id === client.id ? 'is-selected' : ''
                         }
+                        onClick={(event) => {
+                          if (event.target.closest('.client-action-menu-v1')) return
+                          handleViewClient(client)
+                        }}
                       >
                         <td data-label="Name">
                           <strong>{client.name}</strong>
                         </td>
-                        <td data-label="Email">{client.email || 'No email'}</td>
+                        <td data-label="Email">{getClientEmailDisplay(client) || 'No email'}</td>
+                        <td data-label="Interest">
+                          <span className="client-interest-pill-v1">
+                            {getLeadInterestLabel(client)}
+                          </span>
+                        </td>
                         <td data-label="Client Status">
                           {formatStatus(client.clientStatus)}
                         </td>
@@ -1314,13 +1658,34 @@ export default function AdminClients() {
                             {client.portalStatus}
                           </span>
                         </td>
-                        <td data-label="Action">
-                          <button
-                            type="button"
-                            onClick={() => handleSelectClient(client)}
-                          >
-                            View / Edit
-                          </button>
+                        <td data-label="Action" className="client-action-cell-v1">
+                          <details className="client-action-menu-v1" onToggle={handleClientActionMenuToggle}>
+                            <summary className="client-action-menu-button-v1" aria-label="Open client menu">
+                              <span aria-hidden="true">⋯</span>
+                            </summary>
+
+                            <div className="client-action-menu-panel-v1">
+                              <button
+                                type="button"
+                                onClick={(event) => {
+                                  event.currentTarget.closest('details')?.removeAttribute('open')
+                                  handleViewClient(client)
+                                }}
+                              >
+                                View Profile
+                              </button>
+
+                              <button
+                                type="button"
+                                onClick={(event) => {
+                                  event.currentTarget.closest('details')?.removeAttribute('open')
+                                  handleEditClient(client)
+                                }}
+                              >
+                                Edit Profile
+                              </button>
+                            </div>
+                          </details>
                         </td>
                       </tr>
                     ))}
@@ -1331,7 +1696,7 @@ export default function AdminClients() {
           </article>
         </section>
 
-        <section className="client-circle-detail-v2">
+        <section className="client-circle-detail-v2" aria-hidden={!selectedClient}>
           {selectedClient ? (
             <article className="client-circle-card-v2 client-detail-card-v2">
               <div className="client-card-header-v2 is-horizontal">
@@ -1340,8 +1705,70 @@ export default function AdminClients() {
                   <h2>{selectedClient.name}</h2>
                 </div>
 
-                <button type="button" onClick={handleNewProfile}>
-                  Clear Selection
+                <div className="client-detail-header-actions-v2">
+                  <button
+                    type="button"
+                    className="client-detail-edit-shortcut-v2"
+                    onClick={() => handleEditClient(selectedClient)}
+                  >
+                    Edit Profile
+                  </button>
+
+                  <button type="button" onClick={handleBackToClientRecords}>
+                    Back to Records
+                  </button>
+
+                  <button type="button" onClick={handleNewProfile}>
+                    Close
+                  </button>
+                </div>
+              </div>
+
+                            <nav className="client-detail-jump-nav-v2" aria-label="Client profile sections">
+                <button
+                  type="button"
+                  className={clientDetailSection === 'overview' ? 'is-active' : ''}
+                  onClick={() => setClientDetailSection('overview')}
+                >
+                  Overview
+                </button>
+
+                <button
+                  type="button"
+                  className={clientDetailSection === 'notes' ? 'is-active' : ''}
+                  onClick={() => setClientDetailSection('notes')}
+                >
+                  Notes
+                </button>
+
+                <button
+                  type="button"
+                  className={clientDetailSection === 'portal' ? 'is-active' : ''}
+                  onClick={() => setClientDetailSection('portal')}
+                >
+                  Portal
+                </button>
+
+                <button
+                  type="button"
+                  className={clientDetailSection === 'activity' ? 'is-active' : ''}
+                  onClick={() => setClientDetailSection('activity')}
+                >
+                  Activity
+                </button>
+              </nav>
+
+              <div className="client-profile-quick-actions-v2" aria-label="Client quick actions">
+                <button type="button" onClick={handleCopySelectedClientEmail}>
+                  Copy Email
+                </button>
+
+                <button type="button" onClick={handleEmailSelectedClient}>
+                  Email Client
+                </button>
+
+                <button type="button" onClick={handleCopySelectedClientPhone}>
+                  Copy Phone
                 </button>
               </div>
 
@@ -1661,7 +2088,7 @@ export default function AdminClients() {
               {/* phase-3-9h-portal-invite-management-ui-end */}
 
               {/* phase-3-9i-portal-invite-email-ui-start */}
-              <div className="client-portal-email-composer-v2">
+              <div className="client-portal-email-draft-v2">
                 <div className="client-timeline-header-v2">
                   <div>
                     <p className="admin-eyebrow">Client Portal</p>
@@ -1677,7 +2104,7 @@ export default function AdminClients() {
                     prepare a branded setup message.
                   </p>
                 ) : (
-                  <div className="client-portal-email-draft-v2">
+                  <div className="client-portal-email-compose-fields-v2">
                     <label>
                       <span>To</span>
                       <input value={portalEmailDraft.draft.to} readOnly />
@@ -2220,3 +2647,27 @@ export default function AdminClients() {
     </AdminFrame>
   )
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

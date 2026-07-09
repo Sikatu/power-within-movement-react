@@ -1,6 +1,5 @@
-import { Link } from 'react-router-dom'
+﻿import { Link } from 'react-router-dom'
 import PageHero from '../components/PageHero'
-import ContactCTA from '../components/ContactCTA'
 import styleAnalysisImage from '../assets/images/style-analysis-wardrobe-guidance.webp'
 
 const processSteps = [
@@ -29,7 +28,7 @@ const styleDirections = [
 
 function StyleAnalysis() {
   return (
-    <main>
+    <main className="style-analysis-page">
       <PageHero
         eyebrow="Style & Body Analysis"
         title="Personal Style Alignment"
@@ -43,20 +42,14 @@ function StyleAnalysis() {
           </div>
 
           <div className="story-copy">
-            <p className="eyebrow">Style With Presence</p>
-            <h2>Personal style is more than clothing alone.</h2>
-            <p>
-              It is an extension of identity, confidence, and personal presence. Style
-              Alignment helps create a wardrobe that reflects who you are today and
-              supports how you want to move through the world.
+            <p className="eyebrow">Style Clarity</p>
+            <h2>Style that honors your body, season, and presence.</h2>
+            <p className="service-intro-lead">
+              A practical direction for proportion, fit, wardrobe choices, and everyday confidence.
             </p>
-            <p>
-              This work is practical and personal: body shape, proportion, silhouette,
-              lifestyle, and the quiet confidence of feeling current in your own skin.
+            <p className="service-intro-note">
+              Less forcing. More ease in how you dress and show up.
             </p>
-            <div className="hero-actions">
-              <Link to="/contact" className="btn primary">Reserve Your Style Experience</Link>
-            </div>
           </div>
         </div>
       </section>
@@ -79,7 +72,7 @@ function StyleAnalysis() {
       </section>
 
       <section className="section service-detail-list-section">
-        <div className="service-detail-list-grid">
+        <div className="service-detail-list-grid style-direction-grid">
           <div>
             <p className="eyebrow">Wardrobe Clarity</p>
             <h2>Personal style creates greater confidence in the way you show up.</h2>
@@ -90,18 +83,23 @@ function StyleAnalysis() {
             </p>
           </div>
 
-          <div className="service-detail-list">
+          <div className="service-detail-list style-direction-card">
             <h3>Inside Your Personalized Style Direction</h3>
             <ul>
               {styleDirections.map((item) => <li key={item}>{item}</li>)}
             </ul>
+            <div className="style-direction-card-actions service-detail-card-actions">
+              <Link to="/contact?interest=style-analysis" className="btn primary">
+                Reserve Your Style Direction
+              </Link>
+            </div>
           </div>
         </div>
       </section>
-
-      <ContactCTA />
     </main>
   )
 }
 
 export default StyleAnalysis
+
+

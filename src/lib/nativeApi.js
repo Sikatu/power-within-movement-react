@@ -1,4 +1,4 @@
-const API_BASE_URL =
+﻿const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL ||
   (import.meta.env.PROD ? '' : 'http://localhost:8787')
 
@@ -378,3 +378,11 @@ export async function getPublicBookedTimes(start, end) {
     `/api/public/booked-times${query ? `?${query}` : ''}`,
   )
 }
+
+export async function submitPublicContactInquiry(payload) {
+  return apiRequest('/api/public/contact-inquiries', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  })
+}
+

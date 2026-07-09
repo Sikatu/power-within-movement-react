@@ -1,6 +1,5 @@
-import { Link } from 'react-router-dom'
+﻿import { Link } from 'react-router-dom'
 import PageHero from '../components/PageHero'
-import ContactCTA from '../components/ContactCTA'
 import blendCosmeticsImage from '../assets/images/blend-cosmetics-makeup-direction.webp'
 
 const processSteps = [
@@ -27,7 +26,7 @@ const professionalSupport = [
 
 function BlendCosmetics() {
   return (
-    <main>
+    <main className="makeup-direction-page">
       <PageHero
         eyebrow="Makeup Lesson & Direction"
         title="A Personalized Beauty Experience"
@@ -41,20 +40,14 @@ function BlendCosmetics() {
           </div>
 
           <div className="story-copy">
-            <p className="eyebrow">Beauty With Clarity</p>
-            <h2>No trends. No guesswork. Just color that enhances what is already beautifully yours.</h2>
-            <p>
-              At the Power Within Collective Studio, color is taken personally. With
-              years of expertise in image and beauty, this experience guides you toward
-              cosmetics that harmonize with your natural undertones, skin, eyes, and hair.
+            <p className="eyebrow">Makeup Clarity</p>
+            <h2>Makeup that feels polished, natural, and fully you.</h2>
+            <p className="service-intro-lead">
+              Simple direction for shades, technique, products, and an everyday routine you can repeat.
             </p>
-            <p>
-              Every shade should work with you, not against you, so your makeup feels
-              polished, natural, current, and repeatable.
+            <p className="service-intro-note">
+              Less overwhelm. More confidence in your face, color, and finish.
             </p>
-            <div className="hero-actions">
-              <Link to="/contact" className="btn primary">Book Your Makeup Confidence Lesson</Link>
-            </div>
           </div>
         </div>
       </section>
@@ -77,29 +70,35 @@ function BlendCosmetics() {
       </section>
 
       <section className="section service-detail-list-section">
-        <div className="service-detail-list-grid">
+        <div className="service-detail-list-grid makeup-direction-grid">
           <div>
             <p className="eyebrow">For Clients & Professionals</p>
-            <h2>Beauty direction that can support personal use or professional work.</h2>
+            <h2>Beauty direction with clarity, confidence, and ease.</h2>
             <p>
-              This experience can support women seeking a personal makeup routine and
-              professionals who want to bring more confidence, clarity, and color wisdom
-              into their client work.
+              Support for women refining their own routine and professionals guiding clients with more confidence and color clarity.
             </p>
           </div>
 
-          <div className="service-detail-list">
+          <div className="service-detail-list makeup-direction-card">
             <h3>Support May Include</h3>
             <ul>
               {professionalSupport.map((item) => <li key={item}>{item}</li>)}
             </ul>
+            <div className="makeup-direction-card-actions service-detail-card-actions">
+              <Link to="/contact?interest=makeup-lesson" className="btn primary">
+                Reserve Your Makeup Direction
+              </Link>
+            </div>
           </div>
         </div>
       </section>
-
-      <ContactCTA />
     </main>
   )
 }
 
 export default BlendCosmetics
+
+
+
+
+
