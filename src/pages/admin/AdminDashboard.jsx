@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+﻿import { useEffect, useMemo, useState } from 'react'
 import AdminFrame from '../../components/admin/AdminFrame'
 import {
   checkAdminAccess,
@@ -9,6 +9,7 @@ import {
   getAdminOverview,
 } from '../../lib/nativeApi'
 
+import './Admin.css'
 function getList(response, keys) {
   if (Array.isArray(response)) return response
 

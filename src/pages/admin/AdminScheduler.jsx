@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+﻿import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import AdminFrame from '../../components/admin/AdminFrame'
 import {
@@ -14,6 +14,7 @@ import {
   welcomeBookingIntoClientCircle,
 } from '../../lib/nativeApi'
 
+import './Admin.css'
 const defaultTypeForm = {
   name: '',
   description: '',

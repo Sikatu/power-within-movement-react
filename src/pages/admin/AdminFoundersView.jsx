@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+﻿import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import {
   createAdminFounderAvailabilityException,
@@ -6,6 +6,7 @@ import {
   updateAdminFounderAvailabilityException,
 } from '../../lib/nativeApi'
 
+import './Admin.css'
 function formatDate(value) {
   if (!value) return 'Not recorded'
 

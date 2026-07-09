@@ -20,6 +20,7 @@ import {
 } from '../../lib/nativeApi'
 import './AdminClients.rework.css'
 
+import './Admin.css'
 const emptyClientForm = {
   firstName: '',
   lastName: '',

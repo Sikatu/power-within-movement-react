@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+﻿import { useEffect, useMemo, useState } from 'react'
 import AdminFrame from '../../components/admin/AdminFrame'
 import {
   createAdminMailStudioEmailDraft,
@@ -12,6 +12,7 @@ import {
   updateAdminMailStudioTemplate,
 } from '../../lib/nativeApi'
 
+import './Admin.css'
 const emptyTemplateForm = {
   name: '',
   category: 'general',

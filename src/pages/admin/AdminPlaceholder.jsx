@@ -1,6 +1,7 @@
-import { Link } from 'react-router-dom'
+﻿import { Link } from 'react-router-dom'
 import AdminFrame from '../../components/admin/AdminFrame'
 
+import './Admin.css'
 function AdminPlaceholder({ title, eyebrow = 'Studio Space', description }) {
   return (
     <AdminFrame>
