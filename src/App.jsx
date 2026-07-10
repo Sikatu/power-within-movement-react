@@ -37,6 +37,7 @@ const AdminClients = lazy(() => import('./pages/admin/AdminClients'))
 const AdminDashboard = lazy(() => import('./pages/admin/AdminDashboard'))
 const AdminFoundersView = lazy(() => import('./pages/admin/AdminFoundersView'))
 const AdminFounderCalendar = lazy(() => import('./pages/admin/AdminFounderCalendar'))
+const AdminFounderAvailability = lazy(() => import('./pages/admin/AdminFounderAvailability'))
 const AdminLogin = lazy(() => import('./pages/admin/AdminLogin'))
 const AdminChangePassword = lazy(() => import('./pages/admin/AdminChangePassword'))
 const SITE_URL = 'https://www.kimmittelstadt.com'
@@ -342,6 +343,16 @@ function App() {
           element={
             <AdminOwnerRouteGuard>
               <AdminFounderCalendar />
+            </AdminOwnerRouteGuard>
+          }
+        />
+
+
+        <Route
+          path="/admin/founders-availability"
+          element={
+            <AdminOwnerRouteGuard>
+              <AdminFounderAvailability />
             </AdminOwnerRouteGuard>
           }
         />

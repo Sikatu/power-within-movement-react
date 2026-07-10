@@ -3,6 +3,11 @@ const { z } = require('zod')
 
 const { pool } = require('../db/pool')
 const { env } = require('../config/env')
+const {
+  buildAvailabilityDays,
+  isRequestedSlotAvailable,
+  addDateKey: addFounderDateKey,
+} = require('../services/founderAvailability.service')
 
 const router = express.Router()
 const contactDbModule = require('../db/pool')
@@ -282,8 +287,86 @@ async function phase312bPreventBlockedBookingTimes(req, res, next) {
   }
 }
 
-router.use('/booking-requests', phase312bPreventBlockedBookingTimes)
+// Final booking validation now uses the complete founder availability engine.
 // phase-3-12b-hotfix-2-safe-public-availability-end
+
+
+router.get('/availability-slots', async (req, res, next) => {
+  if (!pool) {
+    return res.status(503).json({
+      ok: false,
+      error: 'Database is not configured.',
+    })
+  }
+
+  try {
+    const appointmentTypeId = String(req.query.appointmentTypeId || '').trim()
+    const startDate = String(req.query.start || '').trim()
+    const endDate = String(req.query.end || '').trim()
+
+    if (!z.string().uuid().safeParse(appointmentTypeId).success) {
+      return res.status(400).json({
+        ok: false,
+        error: 'Choose a valid appointment type.',
+      })
+    }
+
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(startDate)) {
+      return res.status(400).json({
+        ok: false,
+        error: 'Availability start date must use YYYY-MM-DD format.',
+      })
+    }
+
+    const safeEndDate = /^\d{4}-\d{2}-\d{2}$/.test(endDate)
+      ? endDate
+      : addFounderDateKey(startDate, 45)
+
+    const appointmentTypeResult = await pool.query(
+      `
+      SELECT
+        id,
+        name,
+        duration_minutes,
+        buffer_before_minutes,
+        buffer_after_minutes,
+        is_active
+      FROM appointment_types
+      WHERE id = $1
+      LIMIT 1
+      `,
+      [appointmentTypeId],
+    )
+
+    const appointmentType = appointmentTypeResult.rows[0]
+
+    if (!appointmentType || !appointmentType.is_active) {
+      return res.status(404).json({
+        ok: false,
+        error: 'Appointment type is not available.',
+      })
+    }
+
+    const availability = await buildAvailabilityDays({
+      pool,
+      appointmentType,
+      startDate,
+      endDate: safeEndDate,
+    })
+
+    return res.json({
+      ok: true,
+      timezone: availability.settings.timezone,
+      slotIntervalMinutes: availability.settings.slotIntervalMinutes,
+      minimumNoticeMinutes: availability.settings.minimumNoticeMinutes,
+      bookingWindowDays: availability.settings.bookingWindowDays,
+      scheduleEnabled: availability.settings.scheduleEnabled,
+      days: availability.days,
+    })
+  } catch (error) {
+    return next(error)
+  }
+})
 
 
 const publicBookingSchema = z.object({
@@ -520,6 +603,8 @@ router.post('/booking-requests', async (req, res, next) => {
         id,
         name,
         duration_minutes,
+        buffer_before_minutes,
+        buffer_after_minutes,
         requires_approval,
         is_active
       FROM appointment_types
@@ -548,6 +633,22 @@ router.post('/booking-requests', async (req, res, next) => {
     }
 
     const endsAt = new Date(startsAt.getTime() + Number(appointmentType.duration_minutes) * 60 * 1000)
+
+    const slotAvailability = await isRequestedSlotAvailable({
+      pool,
+      appointmentType,
+      startsAt,
+    })
+
+    if (!slotAvailability.available) {
+      return res.status(409).json({
+        ok: false,
+        availabilityBlocked: true,
+        error:
+          'This time is outside Kim’s current availability or is no longer open. Please choose another time.',
+      })
+    }
+
     const status = appointmentType.requires_approval ? 'requested' : 'confirmed'
 
     const inserted = await pool.query(

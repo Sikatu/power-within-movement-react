@@ -158,6 +158,29 @@ BEFORE UPDATE ON availability_blocks
 FOR EACH ROW
 EXECUTE FUNCTION set_updated_at();
 
+
+CREATE TABLE IF NOT EXISTS founder_availability_settings (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  owner_user_id UUID UNIQUE REFERENCES system_users(id) ON DELETE SET NULL,
+  timezone TEXT NOT NULL DEFAULT 'America/New_York',
+  schedule_enabled BOOLEAN NOT NULL DEFAULT false,
+  slot_interval_minutes INTEGER NOT NULL DEFAULT 60
+    CHECK (slot_interval_minutes IN (15, 30, 60)),
+  minimum_notice_minutes INTEGER NOT NULL DEFAULT 0
+    CHECK (minimum_notice_minutes BETWEEN 0 AND 10080),
+  booking_window_days INTEGER NOT NULL DEFAULT 90
+    CHECK (booking_window_days BETWEEN 7 AND 365),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+DROP TRIGGER IF EXISTS set_founder_availability_settings_updated_at
+  ON founder_availability_settings;
+CREATE TRIGGER set_founder_availability_settings_updated_at
+BEFORE UPDATE ON founder_availability_settings
+FOR EACH ROW
+EXECUTE FUNCTION set_updated_at();
+
 CREATE TABLE IF NOT EXISTS bookings (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   appointment_type_id UUID REFERENCES appointment_types(id) ON DELETE SET NULL,

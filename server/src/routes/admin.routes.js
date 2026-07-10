@@ -5,6 +5,12 @@ const { z } = require('zod')
 
 const { pool } = require('../db/pool')
 const { requireAuth, requireRole } = require('../middleware/auth.middleware')
+const {
+  DEFAULT_SETTINGS: FOUNDER_AVAILABILITY_DEFAULTS,
+  getFounderAvailabilitySettings,
+  zonedDateTimeToUtc: founderZonedDateTimeToUtc,
+  addDateKey: addFounderDateKey,
+} = require('../services/founderAvailability.service')
 
 const router = express.Router()
 
@@ -4677,6 +4683,487 @@ function startOfFounderMonth(monthValue, offsetMonths = 0) {
   return new Date(firstGuess.getTime() - finalOffset)
 }
 
+const founderAvailabilityWindowSchema = z
+  .object({
+    startTime: z
+      .string()
+      .regex(/^([01]\d|2[0-3]):[0-5]\d$/, 'Start time must use HH:MM format.'),
+    endTime: z
+      .string()
+      .regex(/^([01]\d|2[0-3]):[0-5]\d$/, 'End time must use HH:MM format.'),
+  })
+  .refine((window) => window.endTime > window.startTime, {
+    message: 'End time must be later than start time.',
+  })
+
+function founderWindowsDoNotOverlap(windows = []) {
+  const sorted = [...windows].sort((left, right) =>
+    left.startTime.localeCompare(right.startTime),
+  )
+
+  return sorted.every(
+    (window, index) => index === 0 || window.startTime >= sorted[index - 1].endTime,
+  )
+}
+
+const founderWeeklyAvailabilitySchema = z.object({
+  timezone: z.string().trim().min(1).default(FOUNDER_TIME_ZONE),
+  slotIntervalMinutes: z.coerce.number().int().refine((value) => [15, 30, 60].includes(value), {
+    message: 'Start-time interval must be 15, 30, or 60 minutes.',
+  }),
+  minimumNoticeMinutes: z.coerce.number().int().min(0).max(10080),
+  bookingWindowDays: z.coerce.number().int().min(7).max(365),
+  weeklySchedule: z
+    .array(
+      z.object({
+        weekday: z.coerce.number().int().min(0).max(6),
+        windows: z.array(founderAvailabilityWindowSchema).max(8),
+      }),
+    )
+    .max(7),
+}).superRefine((value, context) => {
+  const weekdays = new Set()
+
+  value.weeklySchedule.forEach((day, index) => {
+    if (weekdays.has(day.weekday)) {
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['weeklySchedule', index, 'weekday'],
+        message: 'Each weekday can appear only once.',
+      })
+    }
+    weekdays.add(day.weekday)
+
+    if (!founderWindowsDoNotOverlap(day.windows)) {
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['weeklySchedule', index, 'windows'],
+        message: 'Availability windows cannot overlap.',
+      })
+    }
+  })
+})
+
+const founderDateAvailabilitySchema = z
+  .object({
+    mode: z.enum(['regular', 'unavailable', 'custom']),
+    windows: z.array(founderAvailabilityWindowSchema).max(8).optional().default([]),
+    notes: z.string().trim().max(500).optional().default(''),
+  })
+  .superRefine((value, context) => {
+    if (value.mode === 'custom' && value.windows.length === 0) {
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['windows'],
+        message: 'Add at least one available time window.',
+      })
+    }
+
+    if (!founderWindowsDoNotOverlap(value.windows)) {
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['windows'],
+        message: 'Availability windows cannot overlap.',
+      })
+    }
+  })
+
+async function getFounderAvailabilityWorkspace(ownerUserId) {
+  const settings = await getFounderAvailabilitySettings(pool, ownerUserId)
+  const [blocksResult, exceptionsResult] = await Promise.all([
+    pool.query(
+      `
+      SELECT
+        id,
+        owner_user_id,
+        weekday,
+        specific_date,
+        start_time,
+        end_time,
+        timezone,
+        is_active,
+        notes,
+        created_at,
+        updated_at
+      FROM availability_blocks
+      WHERE is_active = true
+        AND owner_user_id = $1
+      ORDER BY specific_date NULLS LAST, weekday NULLS LAST, start_time ASC
+      LIMIT 500
+      `,
+      [ownerUserId],
+    ),
+    pool.query(
+      `
+      SELECT
+        id,
+        title,
+        exception_type,
+        starts_at,
+        ends_at,
+        timezone,
+        status,
+        notes,
+        created_at,
+        updated_at
+      FROM availability_exceptions
+      WHERE status = 'active'
+        AND ends_at >= now()
+      ORDER BY starts_at ASC
+      LIMIT 250
+      `,
+    ),
+  ])
+
+  return {
+    settings,
+    availabilityBlocks: blocksResult.rows,
+    availabilityExceptions: exceptionsResult.rows,
+  }
+}
+
+router.get('/founders-view/availability', requireFounderAccess, async (req, res, next) => {
+  if (!pool) {
+    return res.status(503).json({
+      ok: false,
+      error: 'Database is not configured.',
+    })
+  }
+
+  try {
+    const workspace = await getFounderAvailabilityWorkspace(req.user.id)
+    return res.json({ ok: true, ...workspace })
+  } catch (error) {
+    return next(error)
+  }
+})
+
+router.put('/founders-view/availability/weekly', requireFounderAccess, async (req, res, next) => {
+  if (!pool) {
+    return res.status(503).json({
+      ok: false,
+      error: 'Database is not configured.',
+    })
+  }
+
+  const parsed = founderWeeklyAvailabilitySchema.safeParse(req.body)
+
+  if (!parsed.success) {
+    return res.status(400).json({
+      ok: false,
+      error: parsed.error.issues[0]?.message || 'Invalid weekly availability.',
+    })
+  }
+
+  const client = await pool.connect()
+
+  try {
+    const input = parsed.data
+    await client.query('BEGIN')
+
+    const beforeBlocks = await client.query(
+      `
+      SELECT weekday, start_time, end_time, timezone, is_active, notes
+      FROM availability_blocks
+      WHERE specific_date IS NULL
+        AND owner_user_id = $1
+      ORDER BY weekday ASC, start_time ASC
+      `,
+      [req.user.id],
+    )
+
+    await client.query(
+      `
+      DELETE FROM availability_blocks
+      WHERE specific_date IS NULL
+        AND owner_user_id = $1
+      `,
+      [req.user.id],
+    )
+
+    for (const day of input.weeklySchedule) {
+      for (const window of day.windows) {
+        await client.query(
+          `
+          INSERT INTO availability_blocks (
+            owner_user_id,
+            weekday,
+            specific_date,
+            start_time,
+            end_time,
+            timezone,
+            is_active,
+            notes
+          )
+          VALUES ($1, $2, NULL, $3, $4, $5, true, 'Founder weekly availability')
+          `,
+          [
+            req.user.id,
+            day.weekday,
+            window.startTime,
+            window.endTime,
+            input.timezone,
+          ],
+        )
+      }
+    }
+
+    const settingsResult = await client.query(
+      `
+      INSERT INTO founder_availability_settings (
+        owner_user_id,
+        timezone,
+        schedule_enabled,
+        slot_interval_minutes,
+        minimum_notice_minutes,
+        booking_window_days
+      )
+      VALUES ($1, $2, true, $3, $4, $5)
+      ON CONFLICT (owner_user_id)
+      DO UPDATE SET
+        timezone = EXCLUDED.timezone,
+        schedule_enabled = true,
+        slot_interval_minutes = EXCLUDED.slot_interval_minutes,
+        minimum_notice_minutes = EXCLUDED.minimum_notice_minutes,
+        booking_window_days = EXCLUDED.booking_window_days,
+        updated_at = now()
+      RETURNING *
+      `,
+      [
+        req.user.id,
+        input.timezone,
+        input.slotIntervalMinutes,
+        input.minimumNoticeMinutes,
+        input.bookingWindowDays,
+      ],
+    )
+
+    await client.query(
+      `
+      INSERT INTO audit_logs (
+        actor_user_id,
+        action,
+        entity_type,
+        entity_id,
+        before_data,
+        after_data
+      )
+      VALUES ($1, 'founder_weekly_availability_updated', 'founder_availability_settings', $2, $3::jsonb, $4::jsonb)
+      `,
+      [
+        req.user.id,
+        settingsResult.rows[0].id,
+        JSON.stringify({ availabilityBlocks: beforeBlocks.rows }),
+        JSON.stringify({
+          timezone: input.timezone,
+          slotIntervalMinutes: input.slotIntervalMinutes,
+          minimumNoticeMinutes: input.minimumNoticeMinutes,
+          bookingWindowDays: input.bookingWindowDays,
+          weeklySchedule: input.weeklySchedule,
+        }),
+      ],
+    )
+
+    await client.query('COMMIT')
+    const workspace = await getFounderAvailabilityWorkspace(req.user.id)
+
+    return res.json({
+      ok: true,
+      message: 'Weekly availability saved.',
+      ...workspace,
+    })
+  } catch (error) {
+    await client.query('ROLLBACK')
+    return next(error)
+  } finally {
+    client.release()
+  }
+})
+
+router.put('/founders-view/availability/dates/:date', requireFounderAccess, async (req, res, next) => {
+  if (!pool) {
+    return res.status(503).json({
+      ok: false,
+      error: 'Database is not configured.',
+    })
+  }
+
+  const dateValue = String(req.params.date || '').trim()
+
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(dateValue)) {
+    return res.status(400).json({
+      ok: false,
+      error: 'Date must use YYYY-MM-DD format.',
+    })
+  }
+
+  const parsed = founderDateAvailabilitySchema.safeParse(req.body)
+
+  if (!parsed.success) {
+    return res.status(400).json({
+      ok: false,
+      error: parsed.error.issues[0]?.message || 'Invalid date availability.',
+    })
+  }
+
+  const client = await pool.connect()
+
+  try {
+    const input = parsed.data
+    const settings = await getFounderAvailabilitySettings(client, req.user.id)
+    const timezone = settings.timezone || FOUNDER_AVAILABILITY_DEFAULTS.timezone
+    const startsAt = founderZonedDateTimeToUtc(dateValue, '00:00', timezone)
+    const endsAt = founderZonedDateTimeToUtc(addFounderDateKey(dateValue, 1), '00:00', timezone)
+
+    await client.query('BEGIN')
+
+    const beforeBlocks = await client.query(
+      `
+      SELECT *
+      FROM availability_blocks
+      WHERE specific_date = $1::date
+        AND owner_user_id = $2
+      `,
+      [dateValue, req.user.id],
+    )
+
+    const beforeExceptions = await client.query(
+      `
+      SELECT *
+      FROM availability_exceptions
+      WHERE status = 'active'
+        AND exception_type = 'day'
+        AND starts_at < $2
+        AND ends_at >= $1
+      `,
+      [startsAt.toISOString(), endsAt.toISOString()],
+    )
+
+    await client.query(
+      `
+      DELETE FROM availability_blocks
+      WHERE specific_date = $1::date
+        AND owner_user_id = $2
+      `,
+      [dateValue, req.user.id],
+    )
+
+    await client.query(
+      `
+      UPDATE availability_exceptions
+      SET status = 'archived', updated_at = now()
+      WHERE status = 'active'
+        AND exception_type = 'day'
+        AND starts_at < $2
+        AND ends_at >= $1
+      `,
+      [startsAt.toISOString(), endsAt.toISOString()],
+    )
+
+    if (input.mode === 'unavailable') {
+      await client.query(
+        `
+        INSERT INTO availability_exceptions (
+          title,
+          exception_type,
+          starts_at,
+          ends_at,
+          timezone,
+          status,
+          notes,
+          created_by_user_id
+        )
+        VALUES ('Unavailable', 'day', $1, $2, $3, 'active', $4, $5)
+        `,
+        [
+          startsAt.toISOString(),
+          new Date(endsAt.getTime() - 1000).toISOString(),
+          timezone,
+          input.notes || 'Protected from Founder Availability.',
+          req.user.id,
+        ],
+      )
+    }
+
+    if (input.mode === 'custom') {
+      for (const window of input.windows) {
+        await client.query(
+          `
+          INSERT INTO availability_blocks (
+            owner_user_id,
+            weekday,
+            specific_date,
+            start_time,
+            end_time,
+            timezone,
+            is_active,
+            notes
+          )
+          VALUES ($1, NULL, $2::date, $3, $4, $5, true, $6)
+          `,
+          [
+            req.user.id,
+            dateValue,
+            window.startTime,
+            window.endTime,
+            timezone,
+            input.notes || 'Founder date-specific availability',
+          ],
+        )
+      }
+    }
+
+    await client.query(
+      `
+      INSERT INTO audit_logs (
+        actor_user_id,
+        action,
+        entity_type,
+        entity_id,
+        before_data,
+        after_data
+      )
+      VALUES ($1, 'founder_date_availability_updated', 'availability_blocks', $2, $3::jsonb, $4::jsonb)
+      `,
+      [
+        req.user.id,
+        req.user.id,
+        JSON.stringify({
+          date: dateValue,
+          availabilityBlocks: beforeBlocks.rows,
+          availabilityExceptions: beforeExceptions.rows,
+        }),
+        JSON.stringify({
+          date: dateValue,
+          mode: input.mode,
+          windows: input.windows,
+          notes: input.notes,
+        }),
+      ],
+    )
+
+    await client.query('COMMIT')
+    const workspace = await getFounderAvailabilityWorkspace(req.user.id)
+
+    return res.json({
+      ok: true,
+      message:
+        input.mode === 'custom'
+          ? 'Custom hours saved for this date.'
+          : input.mode === 'unavailable'
+            ? 'This date is now unavailable.'
+            : 'This date now follows the weekly schedule.',
+      ...workspace,
+    })
+  } catch (error) {
+    await client.query('ROLLBACK')
+    return next(error)
+  } finally {
+    client.release()
+  }
+})
+
+
 router.get('/founders-view/overview', requireFounderAccess, async (req, res, next) => {
   if (!pool) {
     return res.status(503).json({
@@ -4902,6 +5389,36 @@ router.get('/founders-view/calendar', requireFounderAccess, async (req, res, nex
       [monthStart.toISOString(), nextMonthStart.toISOString()],
     )
 
+    const [monthYear, monthNumber] = month.split('-').map(Number)
+    const nextMonthDate = new Date(Date.UTC(monthYear, monthNumber, 1))
+    const nextMonthDateValue = [
+      nextMonthDate.getUTCFullYear(),
+      String(nextMonthDate.getUTCMonth() + 1).padStart(2, '0'),
+      '01',
+    ].join('-')
+
+    const availabilityBlocksResult = await pool.query(
+      `
+      SELECT
+        id,
+        weekday,
+        specific_date,
+        start_time,
+        end_time,
+        timezone,
+        notes
+      FROM availability_blocks
+      WHERE is_active = true
+        AND owner_user_id = $3
+        AND (
+          specific_date IS NULL
+          OR (specific_date >= $1::date AND specific_date < $2::date)
+        )
+      ORDER BY specific_date NULLS LAST, weekday NULLS LAST, start_time ASC
+      `,
+      [`${month}-01`, nextMonthDateValue, req.user.id],
+    )
+
     return res.json({
       ok: true,
       month,
@@ -4910,6 +5427,7 @@ router.get('/founders-view/calendar', requireFounderAccess, async (req, res, nex
       rangeEnd: nextMonthStart.toISOString(),
       bookings: bookingsResult.rows,
       availabilityExceptions: availabilityResult.rows,
+      availabilityBlocks: availabilityBlocksResult.rows,
     })
   } catch (error) {
     return next(error)

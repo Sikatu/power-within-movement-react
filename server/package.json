@@ -15,7 +15,8 @@
     "launch:check": "node scripts/launch-readiness-check.cjs",
     "dev-reset-cherry-portal-password": "node ./scripts/dev-reset-cherry-portal-password.cjs",
     "db:migrate-owner-password-reset": "node scripts/add-owner-password-reset-fields.cjs",
-    "db:seed-owner-temporary": "node scripts/seed-owner-temporary-password.cjs"
+    "db:seed-owner-temporary": "node scripts/seed-owner-temporary-password.cjs",
+    "db:migrate-founder-availability": "node scripts/create-founder-availability-settings.cjs"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",

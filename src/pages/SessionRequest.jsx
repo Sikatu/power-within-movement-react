@@ -3,50 +3,58 @@ import { Link } from 'react-router-dom'
 import {
   createPublicBookingRequest,
   getPublicAppointmentTypes,
-  getPublicAvailabilityExceptions,
-  getPublicBookedTimes,
+  getPublicAvailabilitySlots,
 } from '../lib/nativeApi'
 
-function dateValueFromDate(date) {
-  const year = date.getFullYear()
-  const month = String(date.getMonth() + 1).padStart(2, '0')
-  const day = String(date.getDate()).padStart(2, '0')
+const FOUNDER_TIME_ZONE = 'America/New_York'
 
-  return `${year}-${month}-${day}`
+function getBusinessDateKey(value = new Date()) {
+  const parts = new Intl.DateTimeFormat('en-US', {
+    timeZone: FOUNDER_TIME_ZONE,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).formatToParts(value)
+
+  const values = Object.fromEntries(
+    parts
+      .filter((part) => ['year', 'month', 'day'].includes(part.type))
+      .map((part) => [part.type, part.value]),
+  )
+
+  return `${values.year}-${values.month}-${values.day}`
+}
+
+function dateValueFromDate(date) {
+  return [
+    date.getUTCFullYear(),
+    String(date.getUTCMonth() + 1).padStart(2, '0'),
+    String(date.getUTCDate()).padStart(2, '0'),
+  ].join('-')
 }
 
 function getDateStringOffset(offsetDays = 0) {
-  const date = new Date()
-  date.setDate(date.getDate() + offsetDays)
-
+  const [year, month, day] = getBusinessDateKey().split('-').map(Number)
+  const date = new Date(Date.UTC(year, month - 1, day))
+  date.setUTCDate(date.getUTCDate() + offsetDays)
   return dateValueFromDate(date)
 }
 
-function buildLocalDateTime(dateValue, timeValue = '10:00') {
-  return new Date(`${dateValue}T${timeValue}:00`)
-}
-
 function addDays(dateValue, days) {
-  const date = new Date(dateValue)
-  date.setDate(date.getDate() + days)
-  return date
+  const [year, month, day] = String(dateValue).slice(0, 10).split('-').map(Number)
+  const date = new Date(Date.UTC(year, month - 1, day))
+  date.setUTCDate(date.getUTCDate() + days)
+  return dateValueFromDate(date)
 }
 
 function addMonthsToDateValue(dateValue, offsetMonths) {
-  const date = new Date(`${dateValue}T12:00:00`)
-  date.setMonth(date.getMonth() + offsetMonths)
-  date.setDate(1)
-
+  const [year, month] = dateValue.split('-').map(Number)
+  const date = new Date(Date.UTC(year, month - 1 + offsetMonths, 1))
   return dateValueFromDate(date)
 }
 
 function isPastDateValue(dateValue) {
-  const today = new Date()
-  today.setHours(0, 0, 0, 0)
-
-  const date = new Date(`${dateValue}T00:00:00`)
-
-  return date < today
+  return dateValue < getDateStringOffset(0)
 }
 
 function formatDateTile(dateValue) {
@@ -55,7 +63,8 @@ function formatDateTile(dateValue) {
       weekday: 'short',
       month: 'short',
       day: 'numeric',
-    }).format(new Date(`${dateValue}T12:00:00`))
+      timeZone: 'UTC',
+    }).format(new Date(`${dateValue}T12:00:00Z`))
   } catch {
     return dateValue
   }
@@ -68,7 +77,8 @@ function formatFullDate(dateValue) {
       month: 'long',
       day: 'numeric',
       year: 'numeric',
-    }).format(new Date(`${dateValue}T12:00:00`))
+      timeZone: 'UTC',
+    }).format(new Date(`${dateValue}T12:00:00Z`))
   } catch {
     return dateValue
   }
@@ -79,7 +89,8 @@ function formatMonthLabel(dateValue) {
     return new Intl.DateTimeFormat('en-US', {
       month: 'long',
       year: 'numeric',
-    }).format(new Date(`${dateValue}T12:00:00`))
+      timeZone: 'UTC',
+    }).format(new Date(`${dateValue.slice(0, 7)}-01T12:00:00Z`))
   } catch {
     return 'Choose a date'
   }
@@ -90,20 +101,15 @@ function formatTimeLabel(timeValue) {
     return new Intl.DateTimeFormat('en-US', {
       hour: 'numeric',
       minute: '2-digit',
-    }).format(new Date(`2026-01-01T${timeValue}:00`))
+      timeZone: 'UTC',
+    }).format(new Date(`2026-01-01T${timeValue}:00Z`))
   } catch {
     return timeValue
   }
 }
 
 function getCalendarDayNumber(dateValue) {
-  try {
-    return new Intl.DateTimeFormat('en-US', {
-      day: 'numeric',
-    }).format(new Date(`${dateValue}T12:00:00`))
-  } catch {
-    return dateValue.slice(-2)
-  }
+  return Number(dateValue.slice(-2))
 }
 
 function getAppointmentId(appointmentType) {
@@ -140,17 +146,6 @@ function getAppointmentPrice(appointmentType) {
   return price ? String(price) : ''
 }
 
-function normalizeAvailabilityRows(response) {
-  if (Array.isArray(response)) return response
-
-  return (
-    response?.availabilityExceptions ||
-    response?.availability_exceptions ||
-    response?.items ||
-    []
-  )
-}
-
 function normalizeAppointmentRows(response) {
   if (Array.isArray(response)) return response
 
@@ -162,136 +157,48 @@ function normalizeAppointmentRows(response) {
   )
 }
 
-function normalizeBookingRows(response) {
-  if (Array.isArray(response)) return response
-
-  return response?.bookedTimes || response?.booked_times || response?.items || []
-}
-
-function findDateConflict(dateValue, availabilityExceptions) {
-  if (!dateValue) return null
-
-  const dayStart = new Date(`${dateValue}T00:00:00`)
-  const dayEnd = new Date(`${dateValue}T23:59:59`)
-
-  return (
-    availabilityExceptions.find((exception) => {
-      const startsAt = new Date(exception.starts_at || exception.startsAt)
-      const endsAt = new Date(exception.ends_at || exception.endsAt)
-
-      if (Number.isNaN(startsAt.getTime()) || Number.isNaN(endsAt.getTime())) {
-        return false
-      }
-
-      return startsAt <= dayEnd && endsAt >= dayStart
-    }) || null
-  )
-}
-
-function findTimeConflict({
-  dateValue,
-  timeValue,
-  durationMinutes,
-  availabilityExceptions,
-}) {
-  if (!dateValue || !timeValue) return null
-
-  const startsAt = buildLocalDateTime(dateValue, timeValue)
-
-  if (Number.isNaN(startsAt.getTime())) return null
-
-  const endsAt = new Date(startsAt.getTime() + durationMinutes * 60 * 1000)
-
-  return (
-    availabilityExceptions.find((exception) => {
-      const blockStart = new Date(exception.starts_at || exception.startsAt)
-      const blockEnd = new Date(exception.ends_at || exception.endsAt)
-
-      if (
-        Number.isNaN(blockStart.getTime()) ||
-        Number.isNaN(blockEnd.getTime())
-      ) {
-        return false
-      }
-
-      return startsAt < blockEnd && endsAt > blockStart
-    }) || null
-  )
-}
-
-function findBookingConflict({
-  dateValue,
-  timeValue,
-  durationMinutes,
-  bookedTimes,
-}) {
-  if (!dateValue || !timeValue) return null
-
-  const startsAt = buildLocalDateTime(dateValue, timeValue)
-
-  if (Number.isNaN(startsAt.getTime())) return null
-
-  const endsAt = new Date(startsAt.getTime() + durationMinutes * 60 * 1000)
-
-  return (
-    bookedTimes.find((booking) => {
-      const bookingStart = new Date(booking.starts_at || booking.startsAt)
-      const bookingEnd = new Date(booking.ends_at || booking.endsAt)
-
-      if (
-        Number.isNaN(bookingStart.getTime()) ||
-        Number.isNaN(bookingEnd.getTime())
-      ) {
-        return false
-      }
-
-      return startsAt < bookingEnd && endsAt > bookingStart
-    }) || null
-  )
-}
-
 function buildCalendarDays({
   monthDateValue,
   selectedDateValue,
-  availabilityExceptions,
+  availabilityByDate,
 }) {
-  const monthDate = new Date(`${monthDateValue}T12:00:00`)
-  const year = monthDate.getFullYear()
-  const month = monthDate.getMonth()
-
-  const firstDayOfMonth = new Date(year, month, 1)
+  const [year, month] = monthDateValue.slice(0, 7).split('-').map(Number)
+  const firstDayOfMonth = new Date(Date.UTC(year, month - 1, 1))
   const calendarStart = new Date(firstDayOfMonth)
-  calendarStart.setDate(firstDayOfMonth.getDate() - firstDayOfMonth.getDay())
+  calendarStart.setUTCDate(firstDayOfMonth.getUTCDate() - firstDayOfMonth.getUTCDay())
 
   return Array.from({ length: 42 }, (_, index) => {
     const date = new Date(calendarStart)
-    date.setDate(calendarStart.getDate() + index)
+    date.setUTCDate(calendarStart.getUTCDate() + index)
 
     const dateValue = dateValueFromDate(date)
-    const conflict = findDateConflict(dateValue, availabilityExceptions)
+    const dayAvailability = availabilityByDate.get(dateValue)
     const isPast = isPastDateValue(dateValue)
+    const isUnavailable = !dayAvailability?.isAvailable
 
     return {
       dateValue,
       dayNumber: getCalendarDayNumber(dateValue),
-      isCurrentMonth: date.getMonth() === month,
+      isCurrentMonth: date.getUTCMonth() === month - 1,
       isSelected: dateValue === selectedDateValue,
       isToday: dateValue === getDateStringOffset(0),
-      isUnavailable: Boolean(conflict),
+      isUnavailable,
       isPast,
-      isDisabled: Boolean(conflict) || isPast,
+      isDisabled: isUnavailable || isPast,
+      availabilitySource: dayAvailability?.source || null,
     }
   })
 }
 
 export default function SessionRequest() {
   const [appointmentTypes, setAppointmentTypes] = useState([])
-  const [availabilityExceptions, setAvailabilityExceptions] = useState([])
-  const [bookedTimes, setBookedTimes] = useState([])
+  const [availabilityDays, setAvailabilityDays] = useState([])
+  const [availabilityTimezone, setAvailabilityTimezone] = useState(FOUNDER_TIME_ZONE)
   const [calendarMonthValue, setCalendarMonthValue] = useState(
     getDateStringOffset(1),
   )
-  const [isLoading, setIsLoading] = useState(true)
+  const [isLoadingAppointments, setIsLoadingAppointments] = useState(true)
+  const [isLoadingAvailability, setIsLoadingAvailability] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [lastSubmission, setLastSubmission] = useState(null)
   const [notice, setNotice] = useState('')
@@ -303,9 +210,11 @@ export default function SessionRequest() {
     guestEmail: '',
     guestPhone: '',
     preferredDate: getDateStringOffset(1),
-    preferredTime: '10:00',
+    preferredTime: '',
     message: '',
   })
+
+  const isLoading = isLoadingAppointments || isLoadingAvailability
 
   const selectedAppointment = useMemo(
     () =>
@@ -322,56 +231,38 @@ export default function SessionRequest() {
     [selectedAppointment],
   )
 
-  const selectedDateConflict = useMemo(
-    () => findDateConflict(form.preferredDate, availabilityExceptions),
-    [availabilityExceptions, form.preferredDate],
+  const availabilityByDate = useMemo(
+    () => new Map(availabilityDays.map((day) => [day.date, day])),
+    [availabilityDays],
   )
 
-  const selectedTimeConflict = useMemo(
-    () =>
-      findTimeConflict({
-        dateValue: form.preferredDate,
-        timeValue: form.preferredTime,
-        durationMinutes: selectedDurationMinutes,
-        availabilityExceptions,
-      }),
-    [
-      availabilityExceptions,
-      form.preferredDate,
-      form.preferredTime,
-      selectedDurationMinutes,
-    ],
-  )
-
-  const selectedBookingConflict = useMemo(
-    () =>
-      findBookingConflict({
-        dateValue: form.preferredDate,
-        timeValue: form.preferredTime,
-        durationMinutes: selectedDurationMinutes,
-        bookedTimes,
-      }),
-    [
-      bookedTimes,
-      form.preferredDate,
-      form.preferredTime,
-      selectedDurationMinutes,
-    ],
-  )
+  const selectedDayAvailability = availabilityByDate.get(form.preferredDate) || null
+  const selectedSlot =
+    selectedDayAvailability?.slots?.find((slot) => slot.time === form.preferredTime) ||
+    null
+  const selectedDateConflict =
+    !isLoadingAvailability &&
+    availabilityDays.length > 0 &&
+    !selectedDayAvailability?.isAvailable
+  const selectedTimeConflict =
+    Boolean(selectedDayAvailability?.isAvailable) &&
+    Boolean(form.preferredTime) &&
+    !selectedSlot
+  const selectedBookingConflict = null
 
   const dateTiles = useMemo(
     () =>
       Array.from({ length: 10 }, (_, index) => {
         const dateValue = getDateStringOffset(index + 1)
-        const conflict = findDateConflict(dateValue, availabilityExceptions)
+        const dayAvailability = availabilityByDate.get(dateValue)
 
         return {
           dateValue,
-          conflict,
+          conflict: !dayAvailability?.isAvailable,
           isSelected: dateValue === form.preferredDate,
         }
       }),
-    [availabilityExceptions, form.preferredDate],
+    [availabilityByDate, form.preferredDate],
   )
 
   const calendarDays = useMemo(
@@ -379,103 +270,126 @@ export default function SessionRequest() {
       buildCalendarDays({
         monthDateValue: calendarMonthValue,
         selectedDateValue: form.preferredDate,
-        availabilityExceptions,
+        availabilityByDate,
       }),
-    [availabilityExceptions, calendarMonthValue, form.preferredDate],
+    [availabilityByDate, calendarMonthValue, form.preferredDate],
   )
 
-  const timeOptions = useMemo(() => {
-    const slots = ['09:00', '10:00', '11:00', '13:00', '14:00', '15:00']
-
-    return slots.map((slot) => {
-      const conflict = findTimeConflict({
-        dateValue: form.preferredDate,
-        timeValue: slot,
-        durationMinutes: selectedDurationMinutes,
-        availabilityExceptions,
-      })
-
-      return {
-        value: slot,
-        label: formatTimeLabel(slot),
-        isSelected: slot === form.preferredTime,
-        isUnavailable: Boolean(
-          conflict ||
-            selectedDateConflict ||
-            findBookingConflict({
-              dateValue: form.preferredDate,
-              timeValue: slot,
-              durationMinutes: selectedDurationMinutes,
-              bookedTimes,
-            }),
-        ),
-      }
-    })
-  }, [
-    availabilityExceptions,
-    bookedTimes,
-    form.preferredDate,
-    form.preferredTime,
-    selectedDateConflict,
-    selectedDurationMinutes,
-  ])
+  const timeOptions = useMemo(
+    () =>
+      (selectedDayAvailability?.slots || []).map((slot) => ({
+        value: slot.time,
+        label: formatTimeLabel(slot.time),
+        isSelected: slot.time === form.preferredTime,
+        isUnavailable: false,
+      })),
+    [form.preferredTime, selectedDayAvailability?.slots],
+  )
 
   useEffect(() => {
     let isMounted = true
 
-    async function loadBookingData() {
-      setIsLoading(true)
+    async function loadAppointmentTypes() {
+      setIsLoadingAppointments(true)
       setError('')
 
       try {
-        const [appointmentResponse, availabilityResponse, bookedTimesResponse] =
-          await Promise.all([
-            getPublicAppointmentTypes(),
-            getPublicAvailabilityExceptions(
-              getDateStringOffset(0),
-              addDays(new Date(), 120).toISOString(),
-            ),
-            getPublicBookedTimes(
-              getDateStringOffset(0),
-              addDays(new Date(), 120).toISOString(),
-            ),
-          ])
-
+        const response = await getPublicAppointmentTypes()
         if (!isMounted) return
+        const rows = normalizeAppointmentRows(response)
+        setAppointmentTypes(rows)
 
-        const appointmentRows = normalizeAppointmentRows(appointmentResponse)
-        const availabilityRows = normalizeAvailabilityRows(availabilityResponse)
-        const bookedTimeRows = normalizeBookingRows(bookedTimesResponse)
-
-        setAppointmentTypes(appointmentRows)
-        setAvailabilityExceptions(availabilityRows)
-        setBookedTimes(bookedTimeRows)
-
-        if (appointmentRows.length > 0) {
+        if (rows.length > 0) {
           setForm((current) => ({
             ...current,
             appointmentTypeId:
-              current.appointmentTypeId || getAppointmentId(appointmentRows[0]),
+              current.appointmentTypeId || getAppointmentId(rows[0]),
           }))
         }
       } catch (loadError) {
-        if (!isMounted) return
-
-        setError(
-          loadError.message ||
-            'We could not load appointment availability right now.',
-        )
+        if (isMounted) {
+          setError(
+            loadError.message ||
+              'We could not load appointment availability right now.',
+          )
+        }
       } finally {
-        if (isMounted) setIsLoading(false)
+        if (isMounted) setIsLoadingAppointments(false)
       }
     }
 
-    loadBookingData()
+    loadAppointmentTypes()
 
     return () => {
       isMounted = false
     }
   }, [])
+
+  useEffect(() => {
+    if (!form.appointmentTypeId) return undefined
+    let isMounted = true
+
+    async function loadAvailability() {
+      setIsLoadingAvailability(true)
+      setError('')
+
+      try {
+        const startDate = getDateStringOffset(0)
+        const endDate = addDays(startDate, 180)
+        const response = await getPublicAvailabilitySlots(
+          form.appointmentTypeId,
+          startDate,
+          endDate,
+        )
+
+        if (!isMounted) return
+        const days = response.days || []
+        setAvailabilityDays(days)
+        setAvailabilityTimezone(response.timezone || FOUNDER_TIME_ZONE)
+
+        setForm((current) => {
+          const currentDay = days.find((day) => day.date === current.preferredDate)
+          const currentSlot = currentDay?.slots?.find(
+            (slot) => slot.time === current.preferredTime,
+          )
+
+          if (currentSlot) return current
+
+          const firstAvailableDay =
+            (currentDay?.slots?.length ? currentDay : null) ||
+            days.find((day) => day.slots?.length > 0)
+          const firstSlot = firstAvailableDay?.slots?.[0]
+
+          if (!firstAvailableDay || !firstSlot) {
+            return { ...current, preferredTime: '' }
+          }
+
+          setCalendarMonthValue(firstAvailableDay.date)
+          return {
+            ...current,
+            preferredDate: firstAvailableDay.date,
+            preferredTime: firstSlot.time,
+          }
+        })
+      } catch (loadError) {
+        if (isMounted) {
+          setAvailabilityDays([])
+          setError(
+            loadError.message ||
+              'We could not load appointment availability right now.',
+          )
+        }
+      } finally {
+        if (isMounted) setIsLoadingAvailability(false)
+      }
+    }
+
+    loadAvailability()
+
+    return () => {
+      isMounted = false
+    }
+  }, [form.appointmentTypeId])
 
   function updateField(field, value) {
     setNotice('')
@@ -501,8 +415,19 @@ export default function SessionRequest() {
   }
 
   function selectPreferredDate(dateValue) {
+    const day = availabilityByDate.get(dateValue)
+    const firstSlot = day?.slots?.[0]
+    if (!firstSlot) return
+
     setCalendarMonthValue(dateValue)
-    updateField('preferredDate', dateValue)
+    setNotice('')
+    setError('')
+    setLastSubmission(null)
+    setForm((current) => ({
+      ...current,
+      preferredDate: dateValue,
+      preferredTime: firstSlot.time,
+    }))
   }
 
   async function handleSubmit(event) {
@@ -521,8 +446,8 @@ export default function SessionRequest() {
       return
     }
 
-    if (!form.preferredDate || !form.preferredTime) {
-      setError('Please choose your preferred date and time.')
+    if (!form.preferredDate || !form.preferredTime || !selectedSlot) {
+      setError('Please choose an available date and time.')
       return
     }
 
@@ -530,25 +455,6 @@ export default function SessionRequest() {
       setError('Please choose an appointment type.')
       return
     }
-
-    if (selectedDateConflict || selectedTimeConflict) {
-      setError(
-        'Kim is unavailable during this date or time. Please choose another available option.',
-      )
-      return
-    }
-
-    if (selectedBookingConflict) {
-      setError(
-        'This time is already requested or booked. Please choose another available time.',
-      )
-      return
-    }
-
-    const startsAt = buildLocalDateTime(form.preferredDate, form.preferredTime)
-    const endsAt = new Date(
-      startsAt.getTime() + selectedDurationMinutes * 60 * 1000,
-    )
 
     setIsSubmitting(true)
 
@@ -562,13 +468,11 @@ export default function SessionRequest() {
         guest_email: form.guestEmail.trim(),
         guestPhone: form.guestPhone.trim(),
         guest_phone: form.guestPhone.trim(),
-        startsAt: startsAt.toISOString(),
-        starts_at: startsAt.toISOString(),
-        endsAt: endsAt.toISOString(),
-        ends_at: endsAt.toISOString(),
-        timezone:
-          Intl.DateTimeFormat().resolvedOptions().timeZone ||
-          'America/New_York',
+        startsAt: selectedSlot.startsAt,
+        starts_at: selectedSlot.startsAt,
+        endsAt: selectedSlot.endsAt,
+        ends_at: selectedSlot.endsAt,
+        timezone: availabilityTimezone,
         intakeAnswers: {
           message: form.message.trim(),
           preferredDate: form.preferredDate,
@@ -595,10 +499,7 @@ export default function SessionRequest() {
         'Your request has been received. The Power Within team will follow up with your next step.',
       )
 
-      window.scrollTo({
-        top: 0,
-        behavior: 'smooth',
-      })
+      window.scrollTo({ top: 0, behavior: 'smooth' })
     } catch (submitError) {
       setError(
         submitError.message ||
@@ -823,7 +724,8 @@ export default function SessionRequest() {
                     onClick={() => selectPreferredDate(day.dateValue)}
                   >
                     <span>{day.dayNumber}</span>
-                    {day.isUnavailable && <small>Blocked</small>}
+                    {day.isUnavailable && <small>Unavailable</small>}
+                    {!day.isUnavailable && day.availabilitySource === 'custom' && <small>Special hours</small>}
                     {!day.isUnavailable && day.isToday && <small>Today</small>}
                   </button>
                 ))}
@@ -837,6 +739,11 @@ export default function SessionRequest() {
               </div>
 
               <div className="session-request-native-time-grid-v4">
+                {timeOptions.length === 0 && (
+                  <div className="session-request-native-alert-v2 is-warning">
+                    No appointment times are open on this date.
+                  </div>
+                )}
                 {timeOptions.map((timeOption) => (
                   <button
                     key={timeOption.value}
@@ -854,7 +761,7 @@ export default function SessionRequest() {
               </div>
 
               <p className="session-request-native-time-note-v4">
-                All times are requested times. The team will confirm your final
+                Times are shown in Eastern Time. The team will confirm your final
                 appointment details.
               </p>
             </div>
@@ -921,6 +828,7 @@ export default function SessionRequest() {
             disabled={
               isSubmitting ||
               isLoading ||
+              !selectedSlot ||
               Boolean(
                 selectedDateConflict ||
                   selectedTimeConflict ||
@@ -952,8 +860,8 @@ export default function SessionRequest() {
           </div>
 
           <small>
-            Dates marked unavailable are protected by Kim private Founders
-            View, so the calendar stays clear and intentional.
+            The calendar reflects Kim’s weekly hours, custom date availability,
+            protected time, and already requested sessions.
           </small>
         </aside>
       </section>

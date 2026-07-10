@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import {
-  createAdminFounderAvailabilityException,
   getAdminFoundersViewOverview,
+  updateAdminFounderDateAvailability,
   logoutAdmin,
   updateAdminFounderAvailabilityException,
 } from '../../lib/nativeApi'
@@ -120,61 +120,6 @@ function getBusinessDateOffset(offsetDays = 0) {
     String(date.getUTCMonth() + 1).padStart(2, '0'),
     String(date.getUTCDate()).padStart(2, '0'),
   ].join('-')
-}
-
-function getTimeZoneOffsetMs(date, timeZone) {
-  const parts = new Intl.DateTimeFormat('en-US', {
-    timeZone,
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit',
-    hourCycle: 'h23',
-  }).formatToParts(date)
-
-  const values = Object.fromEntries(
-    parts
-      .filter((part) =>
-        ['year', 'month', 'day', 'hour', 'minute', 'second'].includes(part.type),
-      )
-      .map((part) => [part.type, Number(part.value)]),
-  )
-
-  const representedAsUtc = Date.UTC(
-    values.year,
-    values.month - 1,
-    values.day,
-    values.hour,
-    values.minute,
-    values.second,
-  )
-
-  return representedAsUtc - date.getTime()
-}
-
-function zonedDateTimeToUtc(dateValue, hour, minute, second) {
-  const [year, month, day] = dateValue.split('-').map(Number)
-  const firstGuess = new Date(
-    Date.UTC(year, month - 1, day, hour, minute, second),
-  )
-  const firstOffset = getTimeZoneOffsetMs(firstGuess, FOUNDER_TIME_ZONE)
-  const adjusted = new Date(firstGuess.getTime() - firstOffset)
-  const finalOffset = getTimeZoneOffsetMs(adjusted, FOUNDER_TIME_ZONE)
-
-  return new Date(firstGuess.getTime() - finalOffset)
-}
-
-function buildDayBlockPayload(dateValue, notes = '') {
-  return {
-    title: 'Unavailable',
-    exceptionType: 'day',
-    startsAt: zonedDateTimeToUtc(dateValue, 0, 0, 0).toISOString(),
-    endsAt: zonedDateTimeToUtc(dateValue, 23, 59, 59).toISOString(),
-    timezone: FOUNDER_TIME_ZONE,
-    notes,
-  }
 }
 
 function getAttentionDate(item) {
@@ -311,9 +256,11 @@ export default function AdminFoundersView() {
     setError('')
 
     try {
-      await createAdminFounderAvailabilityException(
-        buildDayBlockPayload(dateValue, notes),
-      )
+      await updateAdminFounderDateAvailability(dateValue, {
+        mode: 'unavailable',
+        windows: [],
+        notes,
+      })
       await loadFoundersView()
       setBlockNotes('')
       setNotice(`${formatDate(`${dateValue}T12:00:00Z`)} is now protected.`)
@@ -367,6 +314,9 @@ export default function AdminFoundersView() {
           <Link to="/admin/founders-calendar" className="founder-home__calendar-link">
             Open calendar
           </Link>
+          <Link to="/admin/founders-availability" className="founder-home__calendar-link">
+            Availability
+          </Link>
           <Link to="/admin/dashboard" className="founder-home__studio-link">
             Open The Studio
           </Link>
@@ -400,6 +350,7 @@ export default function AdminFoundersView() {
 
             <nav className="founder-home__primary-actions" aria-label="Founder controls">
               <Link to="/admin/founders-calendar">Open calendar</Link>
+              <Link to="/admin/founders-availability">Availability</Link>
               <Link to="/admin/dashboard">Open The Studio</Link>
               <button
                 type="button"
@@ -538,14 +489,21 @@ export default function AdminFoundersView() {
           <article className="founder-home__panel founder-home__panel--protect">
             <div className="founder-home__panel-heading">
               <div>
-                <p className="founder-home__eyebrow">Protect your time</p>
-                <h2>Make space before it fills.</h2>
+                <p className="founder-home__eyebrow">Shape your availability</p>
+                <h2>Make space without closing the whole day.</h2>
               </div>
             </div>
 
             <p className="founder-home__panel-intro">
-              Mark a day unavailable here. The scheduling system will respect it automatically.
+              Protect a full day quickly, or customize exactly when you are open.
             </p>
+
+            <Link
+              to={`/admin/founders-availability?date=${blockDate}`}
+              className="founder-home__availability-link"
+            >
+              Customize weekly hours or this date
+            </Link>
 
             <div className="founder-home__quick-blocks">
               <button
@@ -600,7 +558,7 @@ export default function AdminFoundersView() {
                 onClick={() => handleBlockDay(blockDate, blockNotes)}
                 disabled={isBlocking || !blockDate}
               >
-                {isBlocking ? 'Protecting…' : 'Protect this date'}
+                {isBlocking ? 'Protecting…' : 'Protect all day'}
               </button>
             </div>
           </article>

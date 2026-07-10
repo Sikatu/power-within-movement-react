@@ -1,10 +1,9 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import {
-  createAdminFounderAvailabilityException,
   getAdminFounderCalendar,
   logoutAdmin,
-  updateAdminFounderAvailabilityException,
+  updateAdminFounderDateAvailability,
 } from '../../lib/nativeApi'
 
 import './Admin.css'
@@ -90,6 +89,14 @@ function formatTime(value) {
   }).format(new Date(value))
 }
 
+function formatClockTime(value) {
+  return new Intl.DateTimeFormat('en-US', {
+    timeZone: 'UTC',
+    hour: 'numeric',
+    minute: '2-digit',
+  }).format(new Date(`2026-01-01T${String(value).slice(0, 5)}:00Z`))
+}
+
 function getClientName(item) {
   return (
     [item?.first_name, item?.last_name].filter(Boolean).join(' ') ||
@@ -109,59 +116,6 @@ function getInitials(name) {
       .map((part) => part[0]?.toUpperCase())
       .join('') || 'PW'
   )
-}
-
-function getTimeZoneOffsetMs(date, timeZone) {
-  const parts = new Intl.DateTimeFormat('en-US', {
-    timeZone,
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit',
-    hourCycle: 'h23',
-  }).formatToParts(date)
-
-  const values = Object.fromEntries(
-    parts
-      .filter((part) =>
-        ['year', 'month', 'day', 'hour', 'minute', 'second'].includes(part.type),
-      )
-      .map((part) => [part.type, Number(part.value)]),
-  )
-
-  return (
-    Date.UTC(
-      values.year,
-      values.month - 1,
-      values.day,
-      values.hour,
-      values.minute,
-      values.second,
-    ) - date.getTime()
-  )
-}
-
-function zonedDateTimeToUtc(dateValue, hour, minute, second) {
-  const [year, month, day] = dateValue.split('-').map(Number)
-  const firstGuess = new Date(Date.UTC(year, month - 1, day, hour, minute, second))
-  const firstOffset = getTimeZoneOffsetMs(firstGuess, FOUNDER_TIME_ZONE)
-  const adjusted = new Date(firstGuess.getTime() - firstOffset)
-  const finalOffset = getTimeZoneOffsetMs(adjusted, FOUNDER_TIME_ZONE)
-
-  return new Date(firstGuess.getTime() - finalOffset)
-}
-
-function buildDayBlockPayload(dateValue) {
-  return {
-    title: 'Unavailable',
-    exceptionType: 'day',
-    startsAt: zonedDateTimeToUtc(dateValue, 0, 0, 0).toISOString(),
-    endsAt: zonedDateTimeToUtc(dateValue, 23, 59, 59).toISOString(),
-    timezone: FOUNDER_TIME_ZONE,
-    notes: 'Protected from Founder Calendar.',
-  }
 }
 
 function getCalendarDays(monthValue) {
@@ -219,6 +173,10 @@ export default function AdminFounderCalendar() {
     () => calendar?.availabilityExceptions || [],
     [calendar?.availabilityExceptions],
   )
+  const availabilityBlocks = useMemo(
+    () => calendar?.availabilityBlocks || [],
+    [calendar?.availabilityBlocks],
+  )
   const calendarDays = useMemo(() => getCalendarDays(month), [month])
 
   const bookingsByDate = useMemo(() => {
@@ -248,8 +206,24 @@ export default function AdminFounderCalendar() {
     return grouped
   }, [availabilityExceptions])
 
+  const customHoursByDate = useMemo(() => {
+    const grouped = new Map()
+
+    availabilityBlocks
+      .filter((block) => block.specific_date)
+      .forEach((block) => {
+        const dateKey = String(block.specific_date).slice(0, 10)
+        const entries = grouped.get(dateKey) || []
+        entries.push(block)
+        grouped.set(dateKey, entries)
+      })
+
+    return grouped
+  }, [availabilityBlocks])
+
   const selectedBookings = bookingsByDate.get(selectedDate) || []
   const selectedBlocks = blocksByDate.get(selectedDate) || []
+  const selectedCustomHours = customHoursByDate.get(selectedDate) || []
   const todayKey = getDateKey()
 
   const loadCalendar = useCallback(async (monthValue) => {
@@ -304,7 +278,11 @@ export default function AdminFounderCalendar() {
     setError('')
 
     try {
-      await createAdminFounderAvailabilityException(buildDayBlockPayload(selectedDate))
+      await updateAdminFounderDateAvailability(selectedDate, {
+        mode: 'unavailable',
+        windows: [],
+        notes: 'Protected from Founder Calendar.',
+      })
       await loadCalendar(month)
       setNotice(`${formatSelectedDate(selectedDate)} is now protected.`)
     } catch (updateError) {
@@ -322,13 +300,11 @@ export default function AdminFounderCalendar() {
     setError('')
 
     try {
-      await Promise.all(
-        selectedBlocks.map((block) =>
-          updateAdminFounderAvailabilityException(block.id, {
-            status: 'archived',
-          }),
-        ),
-      )
+      await updateAdminFounderDateAvailability(selectedDate, {
+        mode: 'regular',
+        windows: [],
+        notes: '',
+      })
       await loadCalendar(month)
       setNotice(`${formatSelectedDate(selectedDate)} is available again.`)
     } catch (updateError) {
@@ -364,6 +340,7 @@ export default function AdminFounderCalendar() {
 
         <nav className="founder-calendar__header-actions" aria-label="Founder navigation">
           <Link to="/admin/founders-view">Founder’s View</Link>
+          <Link to="/admin/founders-availability">Availability</Link>
           <Link to="/admin/dashboard">Open The Studio</Link>
           <button type="button" onClick={handleLogout} disabled={isSigningOut}>
             {isSigningOut ? 'Signing out…' : 'Sign out'}
@@ -421,6 +398,7 @@ export default function AdminFounderCalendar() {
 
                 const dayBookings = bookingsByDate.get(dateKey) || []
                 const dayBlocks = blocksByDate.get(dateKey) || []
+                const dayCustomHours = customHoursByDate.get(dateKey) || []
                 const dayNumber = Number(dateKey.slice(-2))
 
                 return (
@@ -431,15 +409,17 @@ export default function AdminFounderCalendar() {
                       dateKey === selectedDate ? 'is-selected' : '',
                       dateKey === todayKey ? 'is-today' : '',
                       dayBlocks.length > 0 ? 'is-protected' : '',
+                      dayCustomHours.length > 0 ? 'is-custom' : '',
                     ].filter(Boolean).join(' ')}
                     key={dateKey}
                     onClick={() => setSelectedDate(dateKey)}
                     aria-pressed={dateKey === selectedDate}
-                    aria-label={`${formatSelectedDate(dateKey)}, ${dayBookings.length} sessions${dayBlocks.length ? ', protected' : ''}`}
+                    aria-label={`${formatSelectedDate(dateKey)}, ${dayBookings.length} sessions${dayBlocks.length ? ', protected' : ''}${dayCustomHours.length ? ', custom hours' : ''}`}
                   >
                     <span className="founder-calendar__day-number">{dayNumber}</span>
                     <span className="founder-calendar__day-events">
-                      {dayBlocks.length > 0 && <em>Protected</em>}
+                      {dayCustomHours.length > 0 && <em>Custom hours</em>}
+                      {dayBlocks.length > 0 && dayCustomHours.length === 0 && <em>Protected</em>}
                       {dayBookings.slice(0, 2).map((booking) => (
                         <small key={booking.id}>
                           {formatTime(booking.starts_at)} · {getClientName(booking)}
@@ -460,9 +440,33 @@ export default function AdminFounderCalendar() {
             <h2>{formatSelectedDate(selectedDate)}</h2>
 
             <div className="founder-calendar__day-status">
-              <span className={selectedBlocks.length ? 'is-protected' : 'is-open'} />
-              <strong>{selectedBlocks.length ? 'Protected time' : 'Open for scheduling'}</strong>
+              <span
+                className={
+                  selectedCustomHours.length
+                    ? 'is-custom'
+                    : selectedBlocks.length
+                      ? 'is-protected'
+                      : 'is-open'
+                }
+              />
+              <strong>
+                {selectedCustomHours.length
+                  ? 'Custom available hours'
+                  : selectedBlocks.length
+                    ? 'Protected time'
+                    : 'Regular availability'}
+              </strong>
             </div>
+
+            {selectedCustomHours.length > 0 && (
+              <div className="founder-calendar__custom-hours-list">
+                {selectedCustomHours.map((window) => (
+                  <span key={window.id}>
+                    {formatClockTime(window.start_time)}–{formatClockTime(window.end_time)}
+                  </span>
+                ))}
+              </div>
+            )}
 
             <div className="founder-calendar__session-list">
               {selectedBookings.length === 0 ? (
@@ -487,6 +491,13 @@ export default function AdminFounderCalendar() {
                 })
               )}
             </div>
+
+            <Link
+              to={`/admin/founders-availability?date=${selectedDate}`}
+              className="founder-calendar__customize"
+            >
+              Customize hours for this date
+            </Link>
 
             {selectedBlocks.length > 0 ? (
               <button

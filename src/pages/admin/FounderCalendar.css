@@ -590,3 +590,44 @@ body.admin-app-mode.founder-calendar-mode .founder-calendar__reopen:disabled {
     content: '';
   }
 }
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__customize {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 44px;
+  margin-bottom: 0.65rem;
+  border: 1px solid #6d5038;
+  border-radius: 999px;
+  background: #5a4331;
+  color: #fffaf3;
+  font-size: 0.75rem;
+  font-weight: 850;
+  text-decoration: none;
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__day.is-custom {
+  background: #f4eee2;
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__day-status span.is-custom {
+  background: #7d8d70;
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__custom-hours-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: -0.4rem 0 1rem;
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__custom-hours-list span {
+  padding: 0.4rem 0.55rem;
+  border: 1px solid rgba(93, 72, 50, 0.12);
+  border-radius: 999px;
+  background: #f4eadb;
+  color: #69513b;
+  font-size: 0.68rem;
+  font-weight: 750;
+}

@@ -885,3 +885,19 @@ body.admin-app-mode.founders-view-standalone-mode .founder-home__calendar-link {
     font-size: 0.68rem;
   }
 }
+
+body.admin-app-mode.founders-view-standalone-mode .founder-home__availability-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 46px;
+  margin-bottom: 0.8rem;
+  border: 1px solid #6e5139;
+  border-radius: 999px;
+  background: #5a4331;
+  color: #fffaf3;
+  font-size: 0.76rem;
+  font-weight: 850;
+  text-decoration: none;
+}

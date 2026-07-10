@@ -370,9 +370,41 @@ export async function updateAdminFounderAvailabilityException(exceptionId, paylo
     body: JSON.stringify(payload),
   })
 }
+
+
+export async function getAdminFounderAvailability() {
+  return apiRequest('/api/admin/founders-view/availability')
+}
+
+export async function updateAdminFounderWeeklyAvailability(payload) {
+  return apiRequest('/api/admin/founders-view/availability/weekly', {
+    method: 'PUT',
+    body: JSON.stringify(payload),
+  })
+}
+
+export async function updateAdminFounderDateAvailability(dateValue, payload) {
+  return apiRequest(
+    `/api/admin/founders-view/availability/dates/${encodeURIComponent(dateValue)}`,
+    {
+      method: 'PUT',
+      body: JSON.stringify(payload),
+    },
+  )
+}
 // phase-3-12a-founders-view-api-end
 
 // phase-3-12b-public-availability-api-start
+export async function getPublicAvailabilitySlots(appointmentTypeId, start, end) {
+  const params = new URLSearchParams()
+
+  if (appointmentTypeId) params.set('appointmentTypeId', appointmentTypeId)
+  if (start) params.set('start', start)
+  if (end) params.set('end', end)
+
+  return apiRequest(`/api/public/availability-slots?${params.toString()}`)
+}
+
 export async function getPublicAvailabilityExceptions(start, end) {
   const params = new URLSearchParams()
 
