@@ -38,6 +38,20 @@ export async function loginAdmin({ email, password }) {
   })
 }
 
+export async function getPasswordChangeStatus() {
+  return apiRequest('/api/auth/password-change-status')
+}
+
+export async function changeRequiredPassword({ newPassword, confirmPassword }) {
+  return apiRequest('/api/auth/change-password', {
+    method: 'POST',
+    body: JSON.stringify({
+      newPassword,
+      confirmPassword,
+    }),
+  })
+}
+
 export async function getCurrentUser() {
   return apiRequest('/api/auth/me')
 }

@@ -14,7 +14,7 @@ function AdminLogin() {
   const [status, setStatus] = useState({
     loading: false,
     error: '',
-    message: '',
+    message: location.state?.notice || '',
   })
 
   useEffect(() => {
@@ -51,6 +51,15 @@ function AdminLogin() {
 
     try {
       const result = await loginAdmin(form)
+
+      if (result.passwordChangeRequired) {
+        sessionStorage.removeItem('pwc_admin_user')
+        navigate('/admin/change-password', {
+          replace: true,
+          state: { email: result.user?.email },
+        })
+        return
+      }
 
       sessionStorage.setItem('pwc_admin_user', JSON.stringify(result.user))
 

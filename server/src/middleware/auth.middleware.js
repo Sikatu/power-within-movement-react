@@ -36,6 +36,13 @@ async function requireAuth(req, res, next) {
 
     const payload = jwt.verify(token, env.jwtSecret)
 
+    if (payload.purpose && payload.purpose !== 'auth') {
+      return res.status(401).json({
+        ok: false,
+        error: 'Invalid authentication token.',
+      })
+    }
+
     const result = await pool.query(
       `
       SELECT
@@ -43,6 +50,9 @@ async function requireAuth(req, res, next) {
         email,
         role,
         status,
+        must_change_password,
+        temporary_password_expires_at,
+        password_changed_at,
         last_login_at,
         created_at,
         updated_at
@@ -62,9 +72,17 @@ async function requireAuth(req, res, next) {
       })
     }
 
+    if (user.must_change_password) {
+      return res.status(403).json({
+        ok: false,
+        code: 'PASSWORD_CHANGE_REQUIRED',
+        error: 'A permanent password must be created before access is granted.',
+      })
+    }
+
     req.user = user
     next()
-  } catch (error) {
+  } catch {
     return res.status(401).json({
       ok: false,
       error: 'Invalid or expired authentication.',

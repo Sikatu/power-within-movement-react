@@ -30,6 +30,9 @@ CREATE TABLE IF NOT EXISTS system_users (
     CHECK (role IN ('owner', 'admin', 'staff', 'client', 'member')),
   status TEXT NOT NULL DEFAULT 'active'
     CHECK (status IN ('invited', 'active', 'suspended', 'archived')),
+  must_change_password BOOLEAN NOT NULL DEFAULT FALSE,
+  temporary_password_expires_at TIMESTAMPTZ,
+  password_changed_at TIMESTAMPTZ,
   last_login_at TIMESTAMPTZ,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()

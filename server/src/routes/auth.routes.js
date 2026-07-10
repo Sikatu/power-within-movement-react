@@ -14,12 +14,31 @@ const loginSchema = z.object({
   password: z.string().min(1),
 })
 
+const changePasswordSchema = z
+  .object({
+    newPassword: z
+      .string()
+      .min(12, 'Password must be at least 12 characters.')
+      .max(128, 'Password must be 128 characters or fewer.')
+      .regex(/[a-z]/, 'Password must include a lowercase letter.')
+      .regex(/[A-Z]/, 'Password must include an uppercase letter.')
+      .regex(/[0-9]/, 'Password must include a number.')
+      .regex(/[^A-Za-z0-9]/, 'Password must include a symbol.'),
+    confirmPassword: z.string().min(1),
+  })
+  .refine((values) => values.newPassword === values.confirmPassword, {
+    message: 'Passwords do not match.',
+    path: ['confirmPassword'],
+  })
+
 function publicUser(user) {
   return {
     id: user.id,
     email: user.email,
     role: user.role,
     status: user.status,
+    mustChangePassword: Boolean(user.must_change_password),
+    passwordChangedAt: user.password_changed_at,
     lastLoginAt: user.last_login_at,
     createdAt: user.created_at,
     updatedAt: user.updated_at,
@@ -32,6 +51,7 @@ function createToken(user) {
       sub: user.id,
       email: user.email,
       role: user.role,
+      purpose: 'auth',
     },
     env.jwtSecret,
     {
@@ -40,12 +60,27 @@ function createToken(user) {
   )
 }
 
-function getAuthCookieOptions(maxAge) {
+function createPasswordChangeToken(user) {
+  return jwt.sign(
+    {
+      sub: user.id,
+      email: user.email,
+      role: user.role,
+      purpose: 'password_change',
+    },
+    env.jwtSecret,
+    {
+      expiresIn: '15m',
+    },
+  )
+}
+
+function getCookieOptions({ maxAge, path = '/' } = {}) {
   const options = {
     httpOnly: true,
     sameSite: env.cookieSameSite,
     secure: env.cookieSecure,
-    path: '/',
+    path,
   }
 
   if (typeof maxAge === 'number') {
@@ -63,8 +98,118 @@ function setAuthCookie(res, token) {
   res.cookie(
     'pwc_auth',
     token,
-    getAuthCookieOptions(7 * 24 * 60 * 60 * 1000),
+    getCookieOptions({ maxAge: 7 * 24 * 60 * 60 * 1000 }),
   )
+}
+
+function clearAuthCookie(res) {
+  res.clearCookie('pwc_auth', getCookieOptions())
+}
+
+function setPasswordChangeCookie(res, token) {
+  res.cookie(
+    'pwc_password_change',
+    token,
+    getCookieOptions({
+      maxAge: 15 * 60 * 1000,
+      path: '/api/auth',
+    }),
+  )
+}
+
+function clearPasswordChangeCookie(res) {
+  res.clearCookie(
+    'pwc_password_change',
+    getCookieOptions({ path: '/api/auth' }),
+  )
+}
+
+async function writeAuditLog({ actorUserId, action, afterData }) {
+  try {
+    if (!pool) return
+
+    await pool.query(
+      `
+      INSERT INTO audit_logs (
+        actor_user_id,
+        action,
+        entity_type,
+        entity_id,
+        after_data
+      )
+      VALUES ($1, $2, 'system_users', $1, $3::jsonb)
+      `,
+      [actorUserId, action, JSON.stringify(afterData || {})],
+    )
+  } catch {
+    // Authentication must not fail only because audit logging is unavailable.
+  }
+}
+
+function readPasswordChangeToken(req) {
+  const token = req.cookies?.pwc_password_change
+
+  if (!token) {
+    const error = new Error('Password-change session is missing or expired.')
+    error.statusCode = 401
+    throw error
+  }
+
+  const payload = jwt.verify(token, env.jwtSecret)
+
+  if (payload.purpose !== 'password_change') {
+    const error = new Error('Invalid password-change session.')
+    error.statusCode = 401
+    throw error
+  }
+
+  return payload
+}
+
+async function getPasswordChangeUser(req) {
+  const payload = readPasswordChangeToken(req)
+
+  const result = await pool.query(
+    `
+    SELECT
+      id,
+      email,
+      password_hash,
+      role,
+      status,
+      must_change_password,
+      temporary_password_expires_at,
+      password_changed_at,
+      last_login_at,
+      created_at,
+      updated_at
+    FROM system_users
+    WHERE id = $1
+    LIMIT 1
+    `,
+    [payload.sub],
+  )
+
+  const user = result.rows[0]
+
+  if (!user || user.status !== 'active' || !user.must_change_password) {
+    const error = new Error('Password-change session is no longer valid.')
+    error.statusCode = 401
+    throw error
+  }
+
+  const expiresAt = user.temporary_password_expires_at
+    ? new Date(user.temporary_password_expires_at)
+    : null
+
+  if (!expiresAt || expiresAt.getTime() <= Date.now()) {
+    const error = new Error('The temporary password has expired. Ask the developer for a new one.')
+    error.statusCode = 403
+    error.code = 'TEMPORARY_PASSWORD_EXPIRED'
+    throw error
+  }
+
+  return user
 }
 
 router.post('/login', async (req, res, next) => {
@@ -95,6 +240,9 @@ router.post('/login', async (req, res, next) => {
         password_hash,
         role,
         status,
+        must_change_password,
+        temporary_password_expires_at,
+        password_changed_at,
         last_login_at,
         created_at,
         updated_at
@@ -123,6 +271,53 @@ router.post('/login', async (req, res, next) => {
       })
     }
 
+    if (user.must_change_password) {
+      const expiresAt = user.temporary_password_expires_at
+        ? new Date(user.temporary_password_expires_at)
+        : null
+
+      if (!expiresAt || expiresAt.getTime() <= Date.now()) {
+        clearAuthCookie(res)
+        clearPasswordChangeCookie(res)
+
+        return res.status(403).json({
+          ok: false,
+          code: 'TEMPORARY_PASSWORD_EXPIRED',
+          error: 'The temporary password has expired. Ask the developer for a new one.',
+        })
+      }
+
+      await pool.query(
+        `
+        UPDATE system_users
+        SET last_login_at = now(),
+            updated_at = now()
+        WHERE id = $1
+        `,
+        [user.id],
+      )
+
+      clearAuthCookie(res)
+      setPasswordChangeCookie(res, createPasswordChangeToken(user))
+
+      await writeAuditLog({
+        actorUserId: user.id,
+        action: 'temporary_password_verified',
+        afterData: {
+          email: user.email,
+          role: user.role,
+          passwordChangeRequired: true,
+        },
+      })
+
+      return res.json({
+        ok: true,
+        message: 'Temporary password verified. Create your permanent password to continue.',
+        passwordChangeRequired: true,
+        user: publicUser(user),
+      })
+    }
+
     await pool.query(
       `
       UPDATE system_users
@@ -140,6 +335,9 @@ router.post('/login', async (req, res, next) => {
         email,
         role,
         status,
+        must_change_password,
+        temporary_password_expires_at,
+        password_changed_at,
         last_login_at,
         created_at,
         updated_at
@@ -153,15 +351,139 @@ router.post('/login', async (req, res, next) => {
     const refreshedUser = refreshedUserResult.rows[0]
     const token = createToken(refreshedUser)
 
+    clearPasswordChangeCookie(res)
     setAuthCookie(res, token)
 
-    res.json({
+    return res.json({
       ok: true,
       message: 'Login successful.',
+      passwordChangeRequired: false,
       user: publicUser(refreshedUser),
       token,
     })
   } catch (error) {
+    next(error)
+  }
+})
+
+router.get('/password-change-status', async (req, res, next) => {
+  try {
+    if (!pool) {
+      return res.status(503).json({
+        ok: false,
+        error: 'Database is not configured.',
+      })
+    }
+
+    const user = await getPasswordChangeUser(req)
+
+    return res.json({
+      ok: true,
+      passwordChangeRequired: true,
+      user: publicUser(user),
+    })
+  } catch (error) {
+    clearPasswordChangeCookie(res)
+
+    return res.status(error.statusCode || 401).json({
+      ok: false,
+      code: error.code,
+      error: error.message || 'Password-change session is invalid or expired.',
+    })
+  }
+})
+
+router.post('/change-password', async (req, res, next) => {
+  try {
+    if (!pool) {
+      return res.status(503).json({
+        ok: false,
+        error: 'Database is not configured.',
+      })
+    }
+
+    const parsed = changePasswordSchema.safeParse(req.body)
+
+    if (!parsed.success) {
+      return res.status(400).json({
+        ok: false,
+        error: parsed.error.issues[0]?.message || 'A valid new password is required.',
+      })
+    }
+
+    const user = await getPasswordChangeUser(req)
+    const { newPassword } = parsed.data
+    const matchesTemporaryPassword = await bcrypt.compare(
+      newPassword,
+      user.password_hash,
+    )
+
+    if (matchesTemporaryPassword) {
+      return res.status(400).json({
+        ok: false,
+        error: 'Your permanent password must be different from the temporary password.',
+      })
+    }
+
+    const passwordHash = await bcrypt.hash(newPassword, 12)
+
+    const result = await pool.query(
+      `
+      UPDATE system_users
+      SET password_hash = $1,
+          must_change_password = false,
+          temporary_password_expires_at = NULL,
+          password_changed_at = now(),
+          last_login_at = now(),
+          updated_at = now()
+      WHERE id = $2
+      RETURNING
+        id,
+        email,
+        role,
+        status,
+        must_change_password,
+        temporary_password_expires_at,
+        password_changed_at,
+        last_login_at,
+        created_at,
+        updated_at
+      `,
+      [passwordHash, user.id],
+    )
+
+    const refreshedUser = result.rows[0]
+    const token = createToken(refreshedUser)
+
+    clearPasswordChangeCookie(res)
+    setAuthCookie(res, token)
+
+    await writeAuditLog({
+      actorUserId: refreshedUser.id,
+      action: 'required_password_change_completed',
+      afterData: {
+        email: refreshedUser.email,
+        role: refreshedUser.role,
+        passwordChangedAt: refreshedUser.password_changed_at,
+      },
+    })
+
+    return res.json({
+      ok: true,
+      message: 'Your permanent password has been created.',
+      user: publicUser(refreshedUser),
+    })
+  } catch (error) {
+    if (error.statusCode) {
+      clearPasswordChangeCookie(res)
+
+      return res.status(error.statusCode).json({
+        ok: false,
+        code: error.code,
+        error: error.message,
+      })
+    }
+
     next(error)
   }
 })
@@ -186,41 +508,21 @@ router.get(
   },
 )
 
-
-
 router.get('/founder-check', requireAuth, async (req, res, next) => {
   try {
     const isFounder = req.user.role === 'owner'
 
     if (!isFounder) {
-      try {
-        if (pool) {
-          await pool.query(
-            `
-            INSERT INTO audit_logs (
-              actor_user_id,
-              action,
-              entity_type,
-              entity_id,
-              after_data
-            )
-            VALUES ($1, 'founders_view_access_denied', 'system_users', $2, $3::jsonb)
-            `,
-            [
-              req.user.id,
-              req.user.id,
-              JSON.stringify({
-                email: req.user.email,
-                role: req.user.role,
-                route: '/api/auth/founder-check',
-                reason: 'owner_role_required',
-              }),
-            ],
-          )
-        }
-      } catch {
-        // Do not expose audit logging failures to the requester.
-      }
+      await writeAuditLog({
+        actorUserId: req.user.id,
+        action: 'founders_view_access_denied',
+        afterData: {
+          email: req.user.email,
+          role: req.user.role,
+          route: '/api/auth/founder-check',
+          reason: 'owner_role_required',
+        },
+      })
 
       return res.status(403).json({
         ok: false,
@@ -239,7 +541,8 @@ router.get('/founder-check', requireAuth, async (req, res, next) => {
 })
 
 router.post('/logout', (req, res) => {
-  res.clearCookie('pwc_auth', getAuthCookieOptions())
+  clearAuthCookie(res)
+  clearPasswordChangeCookie(res)
 
   res.json({
     ok: true,

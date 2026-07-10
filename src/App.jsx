@@ -37,6 +37,7 @@ const AdminClients = lazy(() => import('./pages/admin/AdminClients'))
 const AdminDashboard = lazy(() => import('./pages/admin/AdminDashboard'))
 const AdminFoundersView = lazy(() => import('./pages/admin/AdminFoundersView'))
 const AdminLogin = lazy(() => import('./pages/admin/AdminLogin'))
+const AdminChangePassword = lazy(() => import('./pages/admin/AdminChangePassword'))
 const SITE_URL = 'https://www.kimmittelstadt.com'
 
 const routeMetadata = {
@@ -315,6 +316,7 @@ function App() {
 
         <Route path="/admin" element={<AdminLogin />} />
         <Route path="/admin/login" element={<AdminLogin />} />
+        <Route path="/admin/change-password" element={<AdminChangePassword />} />
 
         <Route
           path="/admin/dashboard"

@@ -3355,3 +3355,73 @@ body.admin-app-mode .client-portal-link-box-v2 button {
   min-height: 42px;
   padding-block: 10px;
 }
+
+/* Required owner password setup */
+.pwc-admin-password-card {
+  width: min(720px, 100%);
+}
+
+.pwc-admin-account-email {
+  width: fit-content;
+  margin: 22px auto 0 !important;
+  padding: 10px 16px;
+  border: 1px solid rgba(200, 169, 106, 0.28);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.68);
+  color: var(--deep-mauve) !important;
+  font-size: 14px;
+}
+
+.pwc-admin-password-requirements {
+  margin-top: 4px;
+  padding: 18px;
+  border: 1px solid rgba(90, 55, 59, 0.12);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.58);
+}
+
+.pwc-admin-password-requirements > p {
+  margin: 0 0 10px;
+  color: var(--deep-mauve);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+}
+
+.pwc-admin-password-requirements ul {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px 14px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pwc-admin-password-requirements li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted-mauve);
+  font-size: 13px;
+}
+
+.pwc-admin-password-requirements li span {
+  width: 18px;
+  color: rgba(90, 55, 59, 0.48);
+  font-weight: 900;
+}
+
+.pwc-admin-password-requirements li.is-met {
+  color: #315f43;
+}
+
+.pwc-admin-password-requirements li.is-met span {
+  color: #477e5b;
+}
+
+@media (max-width: 620px) {
+  .pwc-admin-password-requirements ul {
+    grid-template-columns: 1fr;
+  }
+}
