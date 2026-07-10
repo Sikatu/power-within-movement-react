@@ -25,6 +25,24 @@ const DEFAULT_WINDOWS = [
   { startTime: '13:00', endTime: '16:00' },
 ]
 
+const COMMON_HOURS = [
+  {
+    label: 'Morning',
+    detail: '9:00 AM–12:00 PM',
+    windows: [{ startTime: '09:00', endTime: '12:00' }],
+  },
+  {
+    label: 'Afternoon',
+    detail: '1:00 PM–5:00 PM',
+    windows: [{ startTime: '13:00', endTime: '17:00' }],
+  },
+  {
+    label: 'Full day',
+    detail: '9:00 AM–5:00 PM',
+    windows: [{ startTime: '09:00', endTime: '17:00' }],
+  },
+]
+
 function getTimeZoneParts(value = new Date()) {
   const parts = new Intl.DateTimeFormat('en-US', {
     timeZone: FOUNDER_TIME_ZONE,
@@ -94,6 +112,58 @@ function normalizeWindow(window) {
     startTime: String(window.startTime || window.start_time || '09:00').slice(0, 5),
     endTime: String(window.endTime || window.end_time || '17:00').slice(0, 5),
   }
+}
+
+
+function windowsMatch(left = [], right = []) {
+  if (left.length !== right.length) return false
+  return left.every(
+    (window, index) =>
+      window.startTime === right[index]?.startTime &&
+      window.endTime === right[index]?.endTime,
+  )
+}
+
+function getWindowsSummary(windows = []) {
+  if (windows.length === 0) return 'No appointment times'
+  return windows
+    .map(
+      (window) =>
+        `${formatTime(window.startTime)}–${formatTime(window.endTime)}`,
+    )
+    .join(' · ')
+}
+
+function validateTimeWindows(windows = [], label = 'These hours') {
+  if (windows.length === 0) {
+    return `${label} need at least one time period.`
+  }
+
+  const normalized = windows.map((window) => ({
+    startTime: String(window.startTime || '').slice(0, 5),
+    endTime: String(window.endTime || '').slice(0, 5),
+  }))
+
+  for (const window of normalized) {
+    if (!window.startTime || !window.endTime) {
+      return `${label} have a missing start or end time.`
+    }
+    if (window.startTime >= window.endTime) {
+      return `${label}: the end time must be later than the start time.`
+    }
+  }
+
+  const sorted = [...normalized].sort((left, right) =>
+    left.startTime.localeCompare(right.startTime),
+  )
+
+  for (let index = 1; index < sorted.length; index += 1) {
+    if (sorted[index].startTime < sorted[index - 1].endTime) {
+      return `${label} contain overlapping time periods.`
+    }
+  }
+
+  return ''
 }
 
 function createWeeklySchedule(blocks = [], scheduleEnabled = false) {
@@ -190,38 +260,61 @@ function WindowEditor({ windows, onChange, compact = false }) {
     )
   }
 
+  function applyPreset(presetWindows) {
+    onChange(presetWindows.map((window) => ({ ...window })))
+  }
+
   return (
     <div className={compact ? 'founder-hours__windows is-compact' : 'founder-hours__windows'}>
-      {windows.map((window, index) => (
-        <div className="founder-hours__window" key={`window-${index}`}>
-          <label>
-            <span>From</span>
-            <input
-              type="time"
-              value={window.startTime}
-              onChange={(event) => updateWindow(index, 'startTime', event.target.value)}
-            />
-          </label>
-          <span aria-hidden="true">to</span>
-          <label>
-            <span>Until</span>
-            <input
-              type="time"
-              value={window.endTime}
-              onChange={(event) => updateWindow(index, 'endTime', event.target.value)}
-            />
-          </label>
+      <div className="founder-hours__presets" aria-label="Common hour choices">
+        {COMMON_HOURS.map((preset) => (
           <button
             type="button"
-            className="founder-hours__remove-window"
-            onClick={() => onChange(windows.filter((_, windowIndex) => windowIndex !== index))}
-            disabled={windows.length === 1}
-            aria-label="Remove this time window"
+            className={windowsMatch(windows, preset.windows) ? 'is-selected' : ''}
+            key={preset.label}
+            onClick={() => applyPreset(preset.windows)}
           >
-            Remove
+            <strong>{preset.label}</strong>
+            <small>{preset.detail}</small>
           </button>
-        </div>
-      ))}
+        ))}
+      </div>
+
+      <div className="founder-hours__time-list">
+        {windows.map((window, index) => (
+          <div className="founder-hours__window" key={`window-${index}`}>
+            <span className="founder-hours__window-number" aria-hidden="true">
+              {index + 1}
+            </span>
+            <label>
+              <span>Start time</span>
+              <input
+                type="time"
+                value={window.startTime}
+                onChange={(event) => updateWindow(index, 'startTime', event.target.value)}
+              />
+            </label>
+            <span className="founder-hours__to" aria-hidden="true">to</span>
+            <label>
+              <span>End time</span>
+              <input
+                type="time"
+                value={window.endTime}
+                onChange={(event) => updateWindow(index, 'endTime', event.target.value)}
+              />
+            </label>
+            <button
+              type="button"
+              className="founder-hours__remove-window"
+              onClick={() => onChange(windows.filter((_, windowIndex) => windowIndex !== index))}
+              disabled={windows.length === 1}
+              aria-label={`Remove time period ${index + 1}`}
+            >
+              Remove
+            </button>
+          </div>
+        ))}
+      </div>
 
       <button
         type="button"
@@ -230,8 +323,11 @@ function WindowEditor({ windows, onChange, compact = false }) {
           onChange([...windows, { startTime: '13:00', endTime: '17:00' }])
         }
       >
-        + Add another time
+        + Add another time period
       </button>
+      <p className="founder-hours__window-help">
+        Add another period when you want a break between appointments.
+      </p>
     </div>
   )
 }
@@ -256,6 +352,7 @@ export default function AdminFounderAvailability() {
     { startTime: '09:00', endTime: '12:00' },
   ])
   const [dateNotes, setDateNotes] = useState('')
+  const [activeWeekday, setActiveWeekday] = useState(1)
   const [isLoading, setIsLoading] = useState(true)
   const [isSavingWeekly, setIsSavingWeekly] = useState(false)
   const [isSavingDate, setIsSavingDate] = useState(false)
@@ -274,6 +371,10 @@ export default function AdminFounderAvailability() {
   const upcomingOverrides = useMemo(
     () => groupUpcomingOverrides(availabilityBlocks, availabilityExceptions),
     [availabilityBlocks, availabilityExceptions],
+  )
+  const availableDayCount = useMemo(
+    () => weeklySchedule.filter((day) => day.isAvailable).length,
+    [weeklySchedule],
   )
 
   const loadAvailability = useCallback(async () => {
@@ -353,14 +454,31 @@ export default function AdminFounderAvailability() {
           : day,
       ),
     )
-    setNotice('Monday’s hours were copied to Tuesday through Friday. Save when ready.')
+    setNotice('Monday’s hours are now copied to Tuesday through Friday. Choose “Save my usual week” when everything looks right.')
   }
 
   async function handleSaveWeekly(event) {
     event.preventDefault()
-    setIsSavingWeekly(true)
     setNotice('')
     setError('')
+
+    for (const day of weeklySchedule) {
+      if (!day.isAvailable) continue
+      const dayLabel = WEEKDAYS.find((item) => item.value === day.weekday)?.label || 'This day'
+      const validationError = validateTimeWindows(day.windows, dayLabel)
+      if (validationError) {
+        setActiveWeekday(day.weekday)
+        setError(`${validationError} Please adjust the times and try again.`)
+        return
+      }
+    }
+
+    if (availableDayCount === 0) {
+      setError('Choose at least one day for appointments before saving your usual week.')
+      return
+    }
+
+    setIsSavingWeekly(true)
 
     try {
       const response = await updateAdminFounderWeeklyAvailability({
@@ -375,7 +493,7 @@ export default function AdminFounderAvailability() {
       })
       setWorkspace(response)
       setSettings((current) => ({ ...current, scheduleEnabled: true }))
-      setNotice('Weekly availability is live on the booking page.')
+      setNotice('Your usual week is saved. Clients will now see these appointment times on the booking page.')
     } catch (saveError) {
       setError(saveError.message || 'Unable to save weekly availability.')
     } finally {
@@ -385,9 +503,18 @@ export default function AdminFounderAvailability() {
 
   async function handleSaveDate(event) {
     event.preventDefault()
-    setIsSavingDate(true)
     setNotice('')
     setError('')
+
+    if (dateMode === 'custom') {
+      const validationError = validateTimeWindows(dateWindows, formatShortDate(selectedDate))
+      if (validationError) {
+        setError(`${validationError} Please adjust the times and try again.`)
+        return
+      }
+    }
+
+    setIsSavingDate(true)
 
     try {
       const response = await updateAdminFounderDateAvailability(selectedDate, {
@@ -436,7 +563,7 @@ export default function AdminFounderAvailability() {
           <span aria-hidden="true" />
           <div>
             <strong>Power Within Collective</strong>
-            <small>Founder Availability</small>
+            <small>My Availability</small>
           </div>
         </Link>
 
@@ -457,166 +584,265 @@ export default function AdminFounderAvailability() {
 
         <section className="founder-hours__intro">
           <div>
-            <p>Shape your schedule</p>
-            <h1>Availability that works around real life.</h1>
+            <p>My availability</p>
+            <h1>Choose when clients can request time with you.</h1>
             <span>
-              Set regular weekly hours, then make any date more open or more
-              protected. Everything is shown in Eastern Time.
+              Start with your usual week. When one day needs to be different,
+              change only that date. You can come back and adjust this anytime.
             </span>
           </div>
           <div className="founder-hours__timezone">
-            <small>Business timezone</small>
+            <small>All times are shown in</small>
             <strong>Eastern Time</strong>
           </div>
         </section>
 
+        <section className="founder-hours__guide" aria-label="How availability works">
+          <div>
+            <span>1</span>
+            <div>
+              <strong>Set your usual week</strong>
+              <small>Choose the days and hours you normally meet with clients.</small>
+            </div>
+          </div>
+          <div>
+            <span>2</span>
+            <div>
+              <strong>Change one date when life shifts</strong>
+              <small>Take a day off or open different hours without changing every week.</small>
+            </div>
+          </div>
+        </section>
+
         {(notice || error) && (
-          <div className={error ? 'founder-hours__feedback is-error' : 'founder-hours__feedback'}>
-            {error || notice}
+          <div
+            className={error ? 'founder-hours__feedback is-error' : 'founder-hours__feedback'}
+            role={error ? 'alert' : 'status'}
+          >
+            <strong>{error ? 'Please check one thing' : 'Saved'}</strong>
+            <span>{error || notice}</span>
           </div>
         )}
 
         {!settings.scheduleEnabled && !isLoading && (
           <div className="founder-hours__legacy-note">
-            <strong>Your current booking hours are still active.</strong>
+            <strong>Your new schedule is not live yet.</strong>
             <span>
-              Adjust the weekly schedule below and save it once to activate your
-              personalized availability system.
+              Set your usual week below, then choose “Save my usual week.” Your
+              current booking hours will stay unchanged until you save.
             </span>
           </div>
         )}
 
+        {settings.scheduleEnabled && !isLoading && (
+          <div className="founder-hours__active-note">
+            <span aria-hidden="true" />
+            <div>
+              <strong>Your appointment hours are active.</strong>
+              <small>
+                Clients can request time on {availableDayCount} {availableDayCount === 1 ? 'day' : 'days'} of your usual week.
+              </small>
+            </div>
+          </div>
+        )}
+
         <div className="founder-hours__layout">
-          <form className="founder-hours__card founder-hours__weekly" onSubmit={handleSaveWeekly}>
+          <form
+            className="founder-hours__card founder-hours__weekly"
+            onSubmit={handleSaveWeekly}
+          >
             <div className="founder-hours__card-heading">
               <div>
-                <p>Regular rhythm</p>
-                <h2>Weekly availability</h2>
-                <span>Use more than one window when you want a break between sessions.</span>
+                <p>Step 1</p>
+                <h2>Your usual week</h2>
+                <span>Turn a day on when you want clients to be able to request an appointment.</span>
               </div>
               <button type="button" onClick={copyMondayToWeekdays}>
-                Copy Monday to weekdays
+                Use Monday for Tue–Fri
               </button>
             </div>
 
-            <div className="founder-hours__days" aria-busy={isLoading}>
-              {weeklySchedule.map((day) => {
-                const dayLabel = WEEKDAYS.find((item) => item.value === day.weekday)
-                return (
-                  <section className={day.isAvailable ? 'founder-hours__day is-open' : 'founder-hours__day'} key={day.weekday}>
-                    <div className="founder-hours__day-name">
-                      <label className="founder-hours__switch">
-                        <input
-                          type="checkbox"
-                          checked={day.isAvailable}
-                          onChange={(event) =>
-                            updateDay(day.weekday, (current) => ({
-                              ...current,
-                              isAvailable: event.target.checked,
-                            }))
-                          }
-                        />
-                        <span aria-hidden="true" />
-                      </label>
-                      <div>
-                        <strong>{dayLabel?.label}</strong>
-                        <small>{day.isAvailable ? 'Available' : 'Unavailable'}</small>
+            {isLoading ? (
+              <div className="founder-hours__loading">
+                <span aria-hidden="true" />
+                <strong>Loading your hours…</strong>
+              </div>
+            ) : (
+              <div className="founder-hours__days">
+                {weeklySchedule.map((day) => {
+                  const dayLabel = WEEKDAYS.find((item) => item.value === day.weekday)
+                  const isEditing = day.isAvailable && activeWeekday === day.weekday
+
+                  return (
+                    <section
+                      className={day.isAvailable ? 'founder-hours__day is-open' : 'founder-hours__day'}
+                      key={day.weekday}
+                    >
+                      <div className="founder-hours__day-summary">
+                        <div className="founder-hours__day-name">
+                          <span
+                            className={day.isAvailable ? 'founder-hours__day-dot is-open' : 'founder-hours__day-dot'}
+                            aria-hidden="true"
+                          />
+                          <div>
+                            <strong>{dayLabel?.label}</strong>
+                            <small>{day.isAvailable ? getWindowsSummary(day.windows) : 'Day off — no appointments'}</small>
+                          </div>
+                        </div>
+
+                        <div className="founder-hours__day-actions">
+                          <button
+                            type="button"
+                            className={day.isAvailable ? 'founder-hours__day-toggle is-on' : 'founder-hours__day-toggle'}
+                            onClick={() => {
+                              const nextIsAvailable = !day.isAvailable
+                              updateDay(day.weekday, (current) => ({
+                                ...current,
+                                isAvailable: nextIsAvailable,
+                              }))
+                              if (nextIsAvailable) setActiveWeekday(day.weekday)
+                            }}
+                          >
+                            {day.isAvailable ? 'Taking appointments' : 'Day off'}
+                          </button>
+
+                          {day.isAvailable && (
+                            <button
+                              type="button"
+                              className="founder-hours__edit-day"
+                              onClick={() => setActiveWeekday(isEditing ? null : day.weekday)}
+                              aria-expanded={isEditing}
+                            >
+                              {isEditing ? 'Done' : 'Change times'}
+                            </button>
+                          )}
+                        </div>
                       </div>
-                    </div>
 
-                    {day.isAvailable ? (
-                      <WindowEditor
-                        windows={day.windows}
-                        compact
-                        onChange={(windows) =>
-                          updateDay(day.weekday, (current) => ({
-                            ...current,
-                            windows,
-                          }))
-                        }
-                      />
-                    ) : (
-                      <p className="founder-hours__day-off">No appointments can be requested.</p>
-                    )}
-                  </section>
-                )
-              })}
+                      {isEditing && (
+                        <div className="founder-hours__day-editor">
+                          <div className="founder-hours__editor-intro">
+                            <strong>What times work for you on {dayLabel?.label}?</strong>
+                            <span>Choose a quick option or enter the exact times you prefer.</span>
+                          </div>
+                          <WindowEditor
+                            windows={day.windows}
+                            compact
+                            onChange={(windows) =>
+                              updateDay(day.weekday, (current) => ({
+                                ...current,
+                                windows,
+                              }))
+                            }
+                          />
+                        </div>
+                      )}
+                    </section>
+                  )
+                })}
+              </div>
+            )}
+
+            <details className="founder-hours__advanced">
+              <summary>
+                <div>
+                  <strong>Booking preferences</strong>
+                  <small>Optional settings — the recommended choices are already selected.</small>
+                </div>
+                <span aria-hidden="true">+</span>
+              </summary>
+
+              <div className="founder-hours__rules">
+                <label>
+                  <span>How often should start times appear?</span>
+                  <select
+                    value={settings.slotIntervalMinutes}
+                    onChange={(event) =>
+                      setSettings((current) => ({
+                        ...current,
+                        slotIntervalMinutes: Number(event.target.value),
+                      }))
+                    }
+                  >
+                    <option value={15}>Every 15 minutes</option>
+                    <option value={30}>Every 30 minutes</option>
+                    <option value={60}>Every hour</option>
+                  </select>
+                  <small>Example: 9:00, 9:30, 10:00.</small>
+                </label>
+
+                <label>
+                  <span>How much notice do you need?</span>
+                  <select
+                    value={settings.minimumNoticeMinutes}
+                    onChange={(event) =>
+                      setSettings((current) => ({
+                        ...current,
+                        minimumNoticeMinutes: Number(event.target.value),
+                      }))
+                    }
+                  >
+                    <option value={0}>Same-day requests are okay</option>
+                    <option value={120}>At least 2 hours</option>
+                    <option value={720}>At least 12 hours</option>
+                    <option value={1440}>At least 1 day</option>
+                    <option value={2880}>At least 2 days</option>
+                  </select>
+                  <small>Requests inside this notice period will not be shown.</small>
+                </label>
+
+                <label>
+                  <span>How far ahead may clients request time?</span>
+                  <select
+                    value={settings.bookingWindowDays}
+                    onChange={(event) =>
+                      setSettings((current) => ({
+                        ...current,
+                        bookingWindowDays: Number(event.target.value),
+                      }))
+                    }
+                  >
+                    <option value={30}>Up to 1 month ahead</option>
+                    <option value={60}>Up to 2 months ahead</option>
+                    <option value={90}>Up to 3 months ahead</option>
+                    <option value={120}>Up to 4 months ahead</option>
+                    <option value={180}>Up to 6 months ahead</option>
+                  </select>
+                  <small>Three months is a comfortable default.</small>
+                </label>
+              </div>
+            </details>
+
+            <div className="founder-hours__save-area">
+              <div>
+                <strong>Ready to update your regular hours?</strong>
+                <small>Nothing changes for clients until you press save.</small>
+              </div>
+              <button
+                className="founder-hours__save"
+                type="submit"
+                disabled={isSavingWeekly || isLoading}
+              >
+                {isSavingWeekly ? 'Saving your week…' : 'Save my usual week'}
+              </button>
             </div>
-
-            <div className="founder-hours__rules">
-              <label>
-                <span>Offer start times every</span>
-                <select
-                  value={settings.slotIntervalMinutes}
-                  onChange={(event) =>
-                    setSettings((current) => ({
-                      ...current,
-                      slotIntervalMinutes: Number(event.target.value),
-                    }))
-                  }
-                >
-                  <option value={15}>15 minutes</option>
-                  <option value={30}>30 minutes</option>
-                  <option value={60}>60 minutes</option>
-                </select>
-              </label>
-
-              <label>
-                <span>Minimum notice</span>
-                <select
-                  value={settings.minimumNoticeMinutes}
-                  onChange={(event) =>
-                    setSettings((current) => ({
-                      ...current,
-                      minimumNoticeMinutes: Number(event.target.value),
-                    }))
-                  }
-                >
-                  <option value={0}>No minimum</option>
-                  <option value={120}>2 hours</option>
-                  <option value={720}>12 hours</option>
-                  <option value={1440}>24 hours</option>
-                  <option value={2880}>48 hours</option>
-                </select>
-              </label>
-
-              <label>
-                <span>How far ahead</span>
-                <select
-                  value={settings.bookingWindowDays}
-                  onChange={(event) =>
-                    setSettings((current) => ({
-                      ...current,
-                      bookingWindowDays: Number(event.target.value),
-                    }))
-                  }
-                >
-                  <option value={30}>30 days</option>
-                  <option value={60}>60 days</option>
-                  <option value={90}>90 days</option>
-                  <option value={120}>120 days</option>
-                  <option value={180}>180 days</option>
-                </select>
-              </label>
-            </div>
-
-            <button className="founder-hours__save" type="submit" disabled={isSavingWeekly || isLoading}>
-              {isSavingWeekly ? 'Saving weekly hours...' : 'Save weekly availability'}
-            </button>
           </form>
 
           <aside className="founder-hours__side">
-            <form className="founder-hours__card founder-hours__override" onSubmit={handleSaveDate}>
+            <form
+              className="founder-hours__card founder-hours__override"
+              onSubmit={handleSaveDate}
+            >
               <div className="founder-hours__card-heading">
                 <div>
-                  <p>One day can be different</p>
-                  <h2>Date override</h2>
-                  <span>Custom hours replace the regular schedule for this date.</span>
+                  <p>Step 2</p>
+                  <h2>Change one date</h2>
+                  <span>Use this when one day should be different from your usual week.</span>
                 </div>
               </div>
 
               <label className="founder-hours__date-picker">
-                <span>Choose a date</span>
+                <span>Which date do you want to change?</span>
                 <input
                   type="date"
                   value={selectedDate}
@@ -626,22 +852,26 @@ export default function AdminFounderAvailability() {
                 <strong>{formatDate(selectedDate)}</strong>
               </label>
 
-              <div className="founder-hours__modes">
+              <fieldset className="founder-hours__modes">
+                <legend>What should happen on this day?</legend>
                 {[
                   {
                     value: 'regular',
-                    title: 'Use weekly hours',
-                    text: 'Follow the normal schedule for this weekday.',
+                    number: '1',
+                    title: 'Keep my usual hours',
+                    text: 'Use the normal hours for this weekday.',
                   },
                   {
                     value: 'unavailable',
-                    title: 'Unavailable all day',
-                    text: 'Protect the entire date from booking requests.',
+                    number: '2',
+                    title: 'Take the whole day off',
+                    text: 'Do not allow any appointment requests on this date.',
                   },
                   {
                     value: 'custom',
-                    title: 'Custom available hours',
-                    text: 'Open only the times you choose on this date.',
+                    number: '3',
+                    title: 'Choose different hours',
+                    text: 'Open only the times you select for this date.',
                   },
                 ].map((mode) => (
                   <label className={dateMode === mode.value ? 'is-selected' : ''} key={mode.value}>
@@ -652,31 +882,54 @@ export default function AdminFounderAvailability() {
                       checked={dateMode === mode.value}
                       onChange={() => setDateMode(mode.value)}
                     />
-                    <span aria-hidden="true" />
+                    <span className="founder-hours__mode-number" aria-hidden="true">{mode.number}</span>
                     <div>
                       <strong>{mode.title}</strong>
                       <small>{mode.text}</small>
                     </div>
+                    <span className="founder-hours__mode-check" aria-hidden="true">✓</span>
                   </label>
                 ))}
-              </div>
+              </fieldset>
 
               {dateMode === 'custom' && (
-                <WindowEditor windows={dateWindows} onChange={setDateWindows} />
+                <div className="founder-hours__custom-date">
+                  <div className="founder-hours__editor-intro">
+                    <strong>When are you available on this date?</strong>
+                    <span>These times will replace your usual hours for this day only.</span>
+                  </div>
+                  <WindowEditor windows={dateWindows} onChange={setDateWindows} />
+                </div>
               )}
 
-              <label className="founder-hours__note">
-                <span>Private note <small>optional</small></span>
-                <textarea
-                  rows={3}
-                  value={dateNotes}
-                  onChange={(event) => setDateNotes(event.target.value)}
-                  placeholder="Travel, personal appointment, preparation time..."
-                />
-              </label>
+              <div className="founder-hours__day-result">
+                <small>After you save</small>
+                <strong>
+                  {dateMode === 'regular' && `${formatShortDate(selectedDate)} will follow your usual hours.`}
+                  {dateMode === 'unavailable' && `${formatShortDate(selectedDate)} will be protected all day.`}
+                  {dateMode === 'custom' && `${formatShortDate(selectedDate)} will be open only from ${getWindowsSummary(dateWindows)}.`}
+                </strong>
+              </div>
 
-              <button className="founder-hours__save" type="submit" disabled={isSavingDate || isLoading}>
-                {isSavingDate ? 'Saving this date...' : 'Save date override'}
+              <details className="founder-hours__note-details">
+                <summary>Add a private note <span>optional</span></summary>
+                <label className="founder-hours__note">
+                  <span>This note is only for you and your team.</span>
+                  <textarea
+                    rows={3}
+                    value={dateNotes}
+                    onChange={(event) => setDateNotes(event.target.value)}
+                    placeholder="Travel, personal appointment, preparation time…"
+                  />
+                </label>
+              </details>
+
+              <button
+                className="founder-hours__save founder-hours__save-date"
+                type="submit"
+                disabled={isSavingDate || isLoading}
+              >
+                {isSavingDate ? 'Saving this day…' : 'Save this day'}
               </button>
             </form>
 
@@ -684,16 +937,16 @@ export default function AdminFounderAvailability() {
               <div className="founder-hours__card-heading">
                 <div>
                   <p>Coming up</p>
-                  <h2>Date overrides</h2>
-                  <span>Dates that do not follow the normal weekly rhythm.</span>
+                  <h2>Your special days</h2>
+                  <span>Days that are different from your usual week.</span>
                 </div>
                 <span className="founder-hours__count">{upcomingOverrides.length}</span>
               </div>
 
               {upcomingOverrides.length === 0 ? (
                 <div className="founder-hours__empty">
-                  <strong>No date overrides yet.</strong>
-                  <span>Your weekly availability will be used.</span>
+                  <strong>No special days are set.</strong>
+                  <span>Your usual weekly hours will be used.</span>
                 </div>
               ) : (
                 <div className="founder-hours__override-list">
@@ -707,7 +960,7 @@ export default function AdminFounderAvailability() {
                         <strong>{formatShortDate(override.date)}</strong>
                         <small>
                           {override.mode === 'unavailable'
-                            ? 'Unavailable all day'
+                            ? 'Day off — unavailable all day'
                             : override.windows
                                 .map(
                                   (window) =>
@@ -716,7 +969,7 @@ export default function AdminFounderAvailability() {
                                 .join(', ')}
                         </small>
                       </div>
-                      <span>Edit</span>
+                      <span>Review</span>
                     </button>
                   ))}
                 </div>
