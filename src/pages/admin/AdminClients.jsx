@@ -1,6 +1,10 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import AdminFrame from '../../components/admin/AdminFrame'
+import ClientProfileTabs from '../../components/admin/ClientProfileTabs'
+import {
+  normalizeClientProfileSection,
+} from '../../components/admin/clientProfileSections'
 import {
   createAdminClient,
   createAdminClientPortalInvite,
@@ -430,7 +434,7 @@ function serviceRecordToForm(record) {
 
 export default function AdminClients() {
   const navigate = useNavigate()
-  const { clientId } = useParams()
+  const { clientId, section } = useParams()
   const [clients, setClients] = useState([])
   const [clientSearchTerm, setClientSearchTerm] = useState('')
   const [clientStatusFilter, setClientStatusFilter] = useState('all')
@@ -439,7 +443,9 @@ export default function AdminClients() {
   const [selectedClient, setSelectedClient] = useState(null)
   const [editingClient, setEditingClient] = useState(null)
   const [isClientFormOpen, setIsClientFormOpen] = useState(false)
-  const [clientDetailSection, setClientDetailSection] = useState('overview')
+  const [clientDetailSection, setClientDetailSection] = useState(() =>
+    normalizeClientProfileSection(section),
+  )
   const [careTimeline, setCareTimeline] = useState(null)
   const [portalInvite, setPortalInvite] = useState(null)
   const [portalInvites, setPortalInvites] = useState([])
@@ -606,6 +612,25 @@ export default function AdminClients() {
   }, [])
 
   useEffect(() => {
+    if (clientId) return undefined
+
+    const directorySyncTimer = window.setTimeout(() => {
+      setSelectedClient(null)
+      setEditingClient(null)
+      setIsClientFormOpen(false)
+      setClientDetailSection('overview')
+      setCareTimeline(null)
+      setPortalInvite(null)
+      setPortalInvites([])
+      setPortalEmailDraft(null)
+      setPortalEmailLogs([])
+      setPortalResources([])
+    }, 0)
+
+    return () => window.clearTimeout(directorySyncTimer)
+  }, [clientId])
+
+  useEffect(() => {
     if (!clientId || isLoading) return undefined
 
     const routeClient = clients.find(
@@ -619,11 +644,19 @@ export default function AdminClients() {
         return
       }
 
+      const normalizedSection = normalizeClientProfileSection(section)
+      const canonicalPath = `/admin/clients/${routeClient.id}/${normalizedSection}`
+
+      if (!section || section !== normalizedSection) {
+        navigate(canonicalPath, { replace: true })
+      }
+
+      setClientDetailSection(normalizedSection)
+
       if (String(selectedClient?.id || '') === String(routeClient.id)) return
 
       setSelectedClient(routeClient)
       setIsClientFormOpen(false)
-      setClientDetailSection('overview')
       setEditingClient(null)
       setForm(emptyClientForm)
       setNotice('')
@@ -638,7 +671,7 @@ export default function AdminClients() {
     }, 0)
 
     return () => window.clearTimeout(routeSyncTimer)
-  }, [clientId, clients, isLoading, navigate, selectedClient?.id])
+  }, [clientId, section, clients, isLoading, navigate, selectedClient?.id])
 
   const selectedName = selectedClient?.name || 'None'
   const timelineItems = getTimelineItems(careTimeline)
@@ -772,8 +805,17 @@ export default function AdminClients() {
     }))
   }
 
+  function handleClientSectionChange(nextSection) {
+    if (!selectedClient?.id) return
+
+    const normalizedSection = normalizeClientProfileSection(nextSection)
+
+    setClientDetailSection(normalizedSection)
+    navigate(`/admin/clients/${selectedClient.id}/${normalizedSection}`)
+  }
+
   async function handleViewClient(client) {
-    navigate(`/admin/clients/${client.id}`)
+    navigate(`/admin/clients/${client.id}/overview`)
     setSelectedClient(client)
     setIsClientFormOpen(false)
     setClientDetailSection('overview')
@@ -781,12 +823,16 @@ export default function AdminClients() {
     setForm(emptyClientForm)
     setNotice('')
     setError('')
-    await loadCareTimeline(client)
-    await loadPortalInvites(client)
+    await Promise.all([
+      loadCareTimeline(client),
+      loadPortalInvites(client),
+      loadPortalResources(client),
+      loadPortalEmailLogs(client),
+    ])
   }
 
   async function handleEditClient(client) {
-    navigate(`/admin/clients/${client.id}`)
+    navigate(`/admin/clients/${client.id}/overview`)
     setSelectedClient(client)
     setIsClientFormOpen(true)
     setClientDetailSection('overview')
@@ -794,8 +840,12 @@ export default function AdminClients() {
     setForm(clientToForm(client))
     setNotice('')
     setError('')
-    await loadCareTimeline(client)
-    await loadPortalInvites(client)
+    await Promise.all([
+      loadCareTimeline(client),
+      loadPortalInvites(client),
+      loadPortalResources(client),
+      loadPortalEmailLogs(client),
+    ])
   }
 
   function handleClientActionMenuToggle(event) {
@@ -1767,57 +1817,48 @@ export default function AdminClients() {
                 </div>
               </div>
 
-                            <nav className="client-detail-jump-nav-v2" aria-label="Client profile sections">
-                <button
-                  type="button"
-                  className={clientDetailSection === 'overview' ? 'is-active' : ''}
-                  aria-current={clientDetailSection === 'overview' ? 'page' : undefined}
-                  onClick={() => setClientDetailSection('overview')}
-                >
-                  Overview
-                </button>
+              <ClientProfileTabs
+                activeSection={clientDetailSection}
+                onSelect={handleClientSectionChange}
+              />
 
-                <button
-                  type="button"
-                  className={clientDetailSection === 'notes' ? 'is-active' : ''}
-                  aria-current={clientDetailSection === 'notes' ? 'page' : undefined}
-                  onClick={() => setClientDetailSection('notes')}
-                >
-                  Notes
-                </button>
+              <section className="client-communication-card-v3">
+                <div>
+                  <p className="admin-eyebrow">Direct Communication</p>
+                  <h3>Contact {selectedClient.name}</h3>
+                  <p>
+                    Keep direct contact details and portal email activity together
+                    without mixing them into the care record.
+                  </p>
+                </div>
 
-                <button
-                  type="button"
-                  className={clientDetailSection === 'portal' ? 'is-active' : ''}
-                  aria-current={clientDetailSection === 'portal' ? 'page' : undefined}
-                  onClick={() => setClientDetailSection('portal')}
-                >
-                  Portal
-                </button>
+                <div className="client-communication-contact-grid-v3">
+                  <article>
+                    <span>Email</span>
+                    <strong>
+                      {getClientEmailDisplay(selectedClient) || 'No email saved'}
+                    </strong>
+                    <div className="client-profile-quick-actions-v2">
+                      <button type="button" onClick={handleCopySelectedClientEmail}>
+                        Copy Email
+                      </button>
+                      <button type="button" onClick={handleEmailSelectedClient}>
+                        Email Client
+                      </button>
+                    </div>
+                  </article>
 
-                <button
-                  type="button"
-                  className={clientDetailSection === 'activity' ? 'is-active' : ''}
-                  aria-current={clientDetailSection === 'activity' ? 'page' : undefined}
-                  onClick={() => setClientDetailSection('activity')}
-                >
-                  Activity
-                </button>
-              </nav>
-
-              <div className="client-profile-quick-actions-v2" aria-label="Client quick actions">
-                <button type="button" onClick={handleCopySelectedClientEmail}>
-                  Copy Email
-                </button>
-
-                <button type="button" onClick={handleEmailSelectedClient}>
-                  Email Client
-                </button>
-
-                <button type="button" onClick={handleCopySelectedClientPhone}>
-                  Copy Phone
-                </button>
-              </div>
+                  <article>
+                    <span>Phone</span>
+                    <strong>{selectedClient.phone || 'No phone saved'}</strong>
+                    <div className="client-profile-quick-actions-v2">
+                      <button type="button" onClick={handleCopySelectedClientPhone}>
+                        Copy Phone
+                      </button>
+                    </div>
+                  </article>
+                </div>
+              </section>
 
               <div className="client-detail-grid-v2">
                 <div>

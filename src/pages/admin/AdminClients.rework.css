@@ -608,68 +608,123 @@ body.admin-app-mode .client-circle-page-v2 .client-portal-email-logs-v2 {
   padding: 1rem !important;
 }
 
-/* Profile tabs: one section group at a time */
-body.admin-app-mode .client-circle-page-v2:is(.is-client-detail-overview-v2, .is-client-detail-notes-v2, .is-client-detail-portal-v2, .is-client-detail-activity-v2)
+/* Profile tabs: one focused workspace at a time */
+body.admin-app-mode
+  .client-circle-page-v2:is(
+    .is-client-detail-overview-v2,
+    .is-client-detail-care-v2,
+    .is-client-detail-resources-v2,
+    .is-client-detail-portal-access-v2,
+    .is-client-detail-communication-v2,
+    .is-client-detail-activity-v2
+  )
   .client-detail-card-v2
-  .client-detail-grid-v2,
-body.admin-app-mode .client-circle-page-v2:is(.is-client-detail-overview-v2, .is-client-detail-notes-v2, .is-client-detail-portal-v2, .is-client-detail-activity-v2)
-  .client-detail-card-v2
-  .client-care-highlights-v2,
-body.admin-app-mode .client-circle-page-v2:is(.is-client-detail-overview-v2, .is-client-detail-notes-v2, .is-client-detail-portal-v2, .is-client-detail-activity-v2)
-  .client-detail-card-v2
-  .client-care-summary-v2,
-body.admin-app-mode .client-circle-page-v2:is(.is-client-detail-overview-v2, .is-client-detail-notes-v2, .is-client-detail-portal-v2, .is-client-detail-activity-v2)
-  .client-detail-card-v2
-  .client-notes-grid-v2,
-body.admin-app-mode .client-circle-page-v2:is(.is-client-detail-overview-v2, .is-client-detail-notes-v2, .is-client-detail-portal-v2, .is-client-detail-activity-v2)
-  .client-detail-card-v2
-  .client-portal-invite-v2,
-body.admin-app-mode .client-circle-page-v2:is(.is-client-detail-overview-v2, .is-client-detail-notes-v2, .is-client-detail-portal-v2, .is-client-detail-activity-v2)
-  .client-detail-card-v2
-  .client-portal-invite-history-v2,
-body.admin-app-mode .client-circle-page-v2:is(.is-client-detail-overview-v2, .is-client-detail-notes-v2, .is-client-detail-portal-v2, .is-client-detail-activity-v2)
-  .client-detail-card-v2
-  .client-portal-resources-v2,
-body.admin-app-mode .client-circle-page-v2:is(.is-client-detail-overview-v2, .is-client-detail-notes-v2, .is-client-detail-portal-v2, .is-client-detail-activity-v2)
-  .client-detail-card-v2
-  .client-portal-email-draft-v2,
-body.admin-app-mode .client-circle-page-v2:is(.is-client-detail-overview-v2, .is-client-detail-notes-v2, .is-client-detail-portal-v2, .is-client-detail-activity-v2)
-  .client-detail-card-v2
-  .client-portal-email-logs-v2,
-body.admin-app-mode .client-circle-page-v2:is(.is-client-detail-overview-v2, .is-client-detail-notes-v2, .is-client-detail-portal-v2, .is-client-detail-activity-v2)
-  .client-detail-card-v2
-  .client-service-records-v2,
-body.admin-app-mode .client-circle-page-v2:is(.is-client-detail-overview-v2, .is-client-detail-notes-v2, .is-client-detail-portal-v2, .is-client-detail-activity-v2)
-  .client-detail-card-v2
-  .client-timeline-v2,
-body.admin-app-mode .client-circle-page-v2:is(.is-client-detail-overview-v2, .is-client-detail-notes-v2, .is-client-detail-portal-v2, .is-client-detail-activity-v2)
-  .client-detail-card-v2
-  .client-timeline-list-v2 {
+  :is(
+    .client-detail-grid-v2,
+    .client-care-highlights-v2,
+    .client-care-summary-v2,
+    .client-notes-grid-v2,
+    .client-portal-invite-v2,
+    .client-portal-invite-history-v2,
+    .client-portal-resources-v2,
+    .client-portal-email-draft-v2,
+    .client-portal-email-logs-v2,
+    .client-service-records-v2,
+    .client-timeline-v2,
+    .client-timeline-list-v2,
+    .client-communication-card-v3
+  ) {
   display: none !important;
 }
 
-body.admin-app-mode .client-circle-page-v2.is-client-detail-overview-v2 .client-detail-card-v2 .client-detail-grid-v2,
-body.admin-app-mode .client-circle-page-v2.is-client-detail-overview-v2 .client-detail-card-v2 .client-care-highlights-v2,
-body.admin-app-mode .client-circle-page-v2.is-client-detail-overview-v2 .client-detail-card-v2 .client-care-summary-v2 {
+body.admin-app-mode
+  .client-circle-page-v2.is-client-detail-overview-v2
+  .client-detail-card-v2
+  :is(.client-detail-grid-v2, .client-care-highlights-v2, .client-care-summary-v2) {
   display: grid !important;
 }
 
-body.admin-app-mode .client-circle-page-v2.is-client-detail-notes-v2 .client-detail-card-v2 .client-notes-grid-v2 {
+body.admin-app-mode
+  .client-circle-page-v2.is-client-detail-care-v2
+  .client-detail-card-v2
+  .client-notes-grid-v2 {
   display: grid !important;
 }
 
-body.admin-app-mode .client-circle-page-v2.is-client-detail-portal-v2 .client-detail-card-v2 .client-portal-invite-v2,
-body.admin-app-mode .client-circle-page-v2.is-client-detail-portal-v2 .client-detail-card-v2 .client-portal-invite-history-v2,
-body.admin-app-mode .client-circle-page-v2.is-client-detail-portal-v2 .client-detail-card-v2 .client-portal-resources-v2,
-body.admin-app-mode .client-circle-page-v2.is-client-detail-portal-v2 .client-detail-card-v2 .client-portal-email-draft-v2,
-body.admin-app-mode .client-circle-page-v2.is-client-detail-portal-v2 .client-detail-card-v2 .client-portal-email-logs-v2 {
+body.admin-app-mode
+  .client-circle-page-v2.is-client-detail-care-v2
+  .client-detail-card-v2
+  .client-service-records-v2,
+body.admin-app-mode
+  .client-circle-page-v2.is-client-detail-resources-v2
+  .client-detail-card-v2
+  .client-portal-resources-v2,
+body.admin-app-mode
+  .client-circle-page-v2.is-client-detail-portal-access-v2
+  .client-detail-card-v2
+  :is(.client-portal-invite-v2, .client-portal-invite-history-v2),
+body.admin-app-mode
+  .client-circle-page-v2.is-client-detail-communication-v2
+  .client-detail-card-v2
+  :is(
+    .client-communication-card-v3,
+    .client-portal-email-draft-v2,
+    .client-portal-email-logs-v2
+  ),
+body.admin-app-mode
+  .client-circle-page-v2.is-client-detail-activity-v2
+  .client-detail-card-v2
+  :is(.client-timeline-v2, .client-timeline-list-v2) {
   display: block !important;
 }
 
-body.admin-app-mode .client-circle-page-v2.is-client-detail-activity-v2 .client-detail-card-v2 .client-service-records-v2,
-body.admin-app-mode .client-circle-page-v2.is-client-detail-activity-v2 .client-detail-card-v2 .client-timeline-v2,
-body.admin-app-mode .client-circle-page-v2.is-client-detail-activity-v2 .client-detail-card-v2 .client-timeline-list-v2 {
-  display: block !important;
+/* Communication workspace */
+body.admin-app-mode .client-circle-page-v2 .client-communication-card-v3 {
+  margin: 1rem 1.35rem 0 !important;
+  padding: 1rem !important;
+  border: 1px solid rgba(198, 164, 93, 0.18) !important;
+  border-radius: 20px !important;
+  background: linear-gradient(
+    145deg,
+    rgba(255, 250, 246, 0.62),
+    rgba(248, 238, 232, 0.34)
+  ) !important;
+  box-shadow: 0 12px 30px rgba(67, 42, 45, 0.045) !important;
+}
+
+body.admin-app-mode
+  .client-circle-page-v2
+  .client-communication-contact-grid-v3 {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 0.75rem !important;
+  margin-top: 0.9rem !important;
+}
+
+body.admin-app-mode
+  .client-circle-page-v2
+  .client-communication-contact-grid-v3
+  > article {
+  display: grid !important;
+  gap: 0.5rem !important;
+  padding: 0.95rem !important;
+  border: 1px solid rgba(198, 164, 93, 0.14) !important;
+  border-radius: 16px !important;
+  background: rgba(255, 250, 246, 0.6) !important;
+}
+
+body.admin-app-mode
+  .client-circle-page-v2
+  .client-communication-card-v3
+  .client-profile-quick-actions-v2 {
+  position: static !important;
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 0.45rem !important;
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  backdrop-filter: none !important;
 }
 
 /* Responsive */
@@ -692,6 +747,14 @@ body.admin-app-mode .client-circle-page-v2.is-client-detail-activity-v2 .client-
   body.admin-app-mode .client-circle-page-v2 .client-records-card-v2 {
     max-height: none !important;
     overflow: visible !important;
+  }
+}
+
+@media (max-width: 720px) {
+  body.admin-app-mode
+    .client-circle-page-v2
+    .client-communication-contact-grid-v3 {
+    grid-template-columns: 1fr !important;
   }
 }
 
@@ -1295,8 +1358,10 @@ body.admin-app-mode
 body.admin-app-mode
   .client-circle-page-v2.admin-clients-rework-v1:is(
     .is-client-detail-overview-v2,
-    .is-client-detail-notes-v2,
-    .is-client-detail-portal-v2,
+    .is-client-detail-care-v2,
+    .is-client-detail-resources-v2,
+    .is-client-detail-portal-access-v2,
+    .is-client-detail-communication-v2,
     .is-client-detail-activity-v2
   ):not(.is-client-form-open-v2)
   .client-circle-detail-v2 {
@@ -1324,8 +1389,10 @@ body.admin-app-mode
 body.admin-app-mode
   .client-circle-page-v2.admin-clients-rework-v1:is(
     .is-client-detail-overview-v2,
-    .is-client-detail-notes-v2,
-    .is-client-detail-portal-v2,
+    .is-client-detail-care-v2,
+    .is-client-detail-resources-v2,
+    .is-client-detail-portal-access-v2,
+    .is-client-detail-communication-v2,
     .is-client-detail-activity-v2
   ):not(.is-client-form-open-v2)
   .client-circle-detail-v2
@@ -1372,8 +1439,10 @@ body.admin-app-mode
   body.admin-app-mode
     .client-circle-page-v2.admin-clients-rework-v1:is(
       .is-client-detail-overview-v2,
-      .is-client-detail-notes-v2,
-      .is-client-detail-portal-v2,
+      .is-client-detail-care-v2,
+      .is-client-detail-resources-v2,
+      .is-client-detail-portal-access-v2,
+      .is-client-detail-communication-v2,
       .is-client-detail-activity-v2
     ):not(.is-client-form-open-v2)
     .client-circle-detail-v2,
