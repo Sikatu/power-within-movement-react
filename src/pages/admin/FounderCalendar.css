@@ -113,6 +113,40 @@ body.admin-app-mode.founder-calendar-mode .founder-calendar__shell {
   padding: clamp(2rem, 4vw, 4rem) 0 4rem;
 }
 
+body.admin-app-mode.founder-calendar-mode .founder-calendar__back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 42px;
+  margin-bottom: 1.25rem;
+  padding: 0.7rem 1rem;
+  border: 1px solid rgba(82, 66, 50, 0.18);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.64);
+  color: #624e3d;
+  box-shadow: 0 8px 24px rgba(62, 47, 34, 0.04);
+  font-size: 0.78rem;
+  font-weight: 780;
+  text-decoration: none;
+  transition: background 150ms ease, border-color 150ms ease, transform 150ms ease;
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__back-link span {
+  font-size: 1rem;
+  line-height: 1;
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__back-link:hover {
+  border-color: rgba(82, 66, 50, 0.34);
+  background: #fffaf3;
+  transform: translateX(-2px);
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__back-link:focus-visible {
+  outline: 3px solid rgba(138, 103, 71, 0.34);
+  outline-offset: 3px;
+}
+
 body.admin-app-mode.founder-calendar-mode .founder-calendar__intro {
   display: flex;
   align-items: flex-end;

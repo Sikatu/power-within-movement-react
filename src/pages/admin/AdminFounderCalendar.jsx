@@ -372,6 +372,15 @@ export default function AdminFounderCalendar() {
       </header>
 
       <div className="founder-calendar__shell">
+        <Link
+          to="/admin/founders-view"
+          className="founder-calendar__back-link"
+          aria-label="Back to Founder’s View"
+        >
+          <span aria-hidden="true">←</span>
+          Back to Founder’s View
+        </Link>
+
         <section className="founder-calendar__intro">
           <div>
             <p>Personal calendar</p>
