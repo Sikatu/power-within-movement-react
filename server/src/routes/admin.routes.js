@@ -4555,16 +4555,72 @@ router.post('/mail-studio/send', requireAdmin, async (req, res, next) => {
 // phase-3-10b-mail-studio-composer-end
 
 // phase-3-12a-founders-view-start
-function startOfLocalDay(date = new Date()) {
-  const next = new Date(date)
-  next.setHours(0, 0, 0, 0)
-  return next
+const FOUNDER_TIME_ZONE = 'America/New_York'
+
+function getTimeZoneOffsetMs(date, timeZone) {
+  const parts = new Intl.DateTimeFormat('en-US', {
+    timeZone,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hourCycle: 'h23',
+  }).formatToParts(date)
+
+  const values = Object.fromEntries(
+    parts
+      .filter((part) =>
+        ['year', 'month', 'day', 'hour', 'minute', 'second'].includes(part.type),
+      )
+      .map((part) => [part.type, Number(part.value)]),
+  )
+
+  return (
+    Date.UTC(
+      values.year,
+      values.month - 1,
+      values.day,
+      values.hour,
+      values.minute,
+      values.second,
+    ) - date.getTime()
+  )
 }
 
-function addDays(date, days) {
-  const next = new Date(date)
-  next.setDate(next.getDate() + days)
-  return next
+function startOfTimeZoneDay(date = new Date(), offsetDays = 0) {
+  const parts = new Intl.DateTimeFormat('en-US', {
+    timeZone: FOUNDER_TIME_ZONE,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).formatToParts(date)
+
+  const values = Object.fromEntries(
+    parts
+      .filter((part) => ['year', 'month', 'day'].includes(part.type))
+      .map((part) => [part.type, Number(part.value)]),
+  )
+
+  const localDate = new Date(Date.UTC(values.year, values.month - 1, values.day))
+  localDate.setUTCDate(localDate.getUTCDate() + offsetDays)
+
+  const firstGuess = new Date(
+    Date.UTC(
+      localDate.getUTCFullYear(),
+      localDate.getUTCMonth(),
+      localDate.getUTCDate(),
+      0,
+      0,
+      0,
+    ),
+  )
+  const firstOffset = getTimeZoneOffsetMs(firstGuess, FOUNDER_TIME_ZONE)
+  const adjusted = new Date(firstGuess.getTime() - firstOffset)
+  const finalOffset = getTimeZoneOffsetMs(adjusted, FOUNDER_TIME_ZONE)
+
+  return new Date(firstGuess.getTime() - finalOffset)
 }
 
 function normalizeAvailabilityExceptionStatus(status) {
@@ -4582,14 +4638,15 @@ router.get('/founders-view/overview', requireFounderAccess, async (req, res, nex
   }
 
   try {
-    const todayStart = startOfLocalDay()
-    const tomorrowStart = addDays(todayStart, 1)
-    const nextTwoWeeks = addDays(todayStart, 14)
+    const todayStart = startOfTimeZoneDay()
+    const tomorrowStart = startOfTimeZoneDay(new Date(), 1)
+    const nextTwoWeeks = startOfTimeZoneDay(new Date(), 14)
 
     const todaySessionsResult = await pool.query(
       `
       SELECT
         b.id,
+        b.client_profile_id,
         b.guest_name,
         b.guest_email,
         b.guest_phone,
@@ -4618,6 +4675,7 @@ router.get('/founders-view/overview', requireFounderAccess, async (req, res, nex
       `
       SELECT
         b.id,
+        b.client_profile_id,
         b.guest_name,
         b.guest_email,
         b.guest_phone,
@@ -4646,6 +4704,7 @@ router.get('/founders-view/overview', requireFounderAccess, async (req, res, nex
       `
       SELECT
         b.id,
+        b.client_profile_id,
         b.guest_name,
         b.guest_email,
         b.guest_phone,

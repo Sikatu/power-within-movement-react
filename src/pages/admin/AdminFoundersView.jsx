@@ -1,37 +1,43 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import {
   createAdminFounderAvailabilityException,
   getAdminFoundersViewOverview,
+  logoutAdmin,
   updateAdminFounderAvailabilityException,
 } from '../../lib/nativeApi'
 
 import './Admin.css'
-function formatDate(value) {
+import './FounderView.css'
+
+const FOUNDER_TIME_ZONE = 'America/New_York'
+const FOUNDER_TIME_ZONE_LABEL = 'Eastern Time'
+
+function formatDate(value, options = {}) {
   if (!value) return 'Not recorded'
 
   try {
     return new Intl.DateTimeFormat('en-US', {
+      timeZone: FOUNDER_TIME_ZONE,
       month: 'short',
       day: 'numeric',
-      year: 'numeric',
+      year: options.includeYear === false ? undefined : 'numeric',
     }).format(new Date(value))
   } catch {
     return 'Not recorded'
   }
 }
 
-function formatLongDate(value) {
-  if (!value) return 'Not recorded'
-
+function formatLongDate(value = new Date()) {
   try {
     return new Intl.DateTimeFormat('en-US', {
+      timeZone: FOUNDER_TIME_ZONE,
       weekday: 'long',
       month: 'long',
       day: 'numeric',
     }).format(new Date(value))
   } catch {
-    return 'Not recorded'
+    return 'Today'
   }
 }
 
@@ -40,12 +46,35 @@ function formatTime(value) {
 
   try {
     return new Intl.DateTimeFormat('en-US', {
+      timeZone: FOUNDER_TIME_ZONE,
       hour: 'numeric',
       minute: '2-digit',
     }).format(new Date(value))
   } catch {
     return '-'
   }
+}
+
+function getBusinessHour() {
+  try {
+    return Number(
+      new Intl.DateTimeFormat('en-US', {
+        timeZone: FOUNDER_TIME_ZONE,
+        hour: '2-digit',
+        hourCycle: 'h23',
+      }).format(new Date()),
+    )
+  } catch {
+    return new Date().getHours()
+  }
+}
+
+function getGreeting() {
+  const hour = getBusinessHour()
+
+  if (hour < 12) return 'Good morning'
+  if (hour < 17) return 'Good afternoon'
+  return 'Good evening'
 }
 
 function getClientName(item) {
@@ -59,51 +88,107 @@ function getClientName(item) {
 }
 
 function getInitials(name) {
-  return String(name || 'Client')
-    .split(' ')
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((part) => part[0]?.toUpperCase())
-    .join('') || 'PW'
+  return (
+    String(name || 'Client')
+      .split(' ')
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((part) => part[0]?.toUpperCase())
+      .join('') || 'PW'
+  )
 }
 
-function getLocalDateOffset(offsetDays = 0) {
-  const date = new Date()
-  date.setDate(date.getDate() + offsetDays)
+function getBusinessDateOffset(offsetDays = 0) {
+  const parts = new Intl.DateTimeFormat('en-US', {
+    timeZone: FOUNDER_TIME_ZONE,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).formatToParts(new Date())
 
-  const year = date.getFullYear()
-  const month = String(date.getMonth() + 1).padStart(2, '0')
-  const day = String(date.getDate()).padStart(2, '0')
+  const values = Object.fromEntries(
+    parts
+      .filter((part) => ['year', 'month', 'day'].includes(part.type))
+      .map((part) => [part.type, Number(part.value)]),
+  )
 
-  return `${year}-${month}-${day}`
+  const date = new Date(Date.UTC(values.year, values.month - 1, values.day))
+  date.setUTCDate(date.getUTCDate() + offsetDays)
+
+  return [
+    date.getUTCFullYear(),
+    String(date.getUTCMonth() + 1).padStart(2, '0'),
+    String(date.getUTCDate()).padStart(2, '0'),
+  ].join('-')
+}
+
+function getTimeZoneOffsetMs(date, timeZone) {
+  const parts = new Intl.DateTimeFormat('en-US', {
+    timeZone,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hourCycle: 'h23',
+  }).formatToParts(date)
+
+  const values = Object.fromEntries(
+    parts
+      .filter((part) =>
+        ['year', 'month', 'day', 'hour', 'minute', 'second'].includes(part.type),
+      )
+      .map((part) => [part.type, Number(part.value)]),
+  )
+
+  const representedAsUtc = Date.UTC(
+    values.year,
+    values.month - 1,
+    values.day,
+    values.hour,
+    values.minute,
+    values.second,
+  )
+
+  return representedAsUtc - date.getTime()
+}
+
+function zonedDateTimeToUtc(dateValue, hour, minute, second) {
+  const [year, month, day] = dateValue.split('-').map(Number)
+  const firstGuess = new Date(
+    Date.UTC(year, month - 1, day, hour, minute, second),
+  )
+  const firstOffset = getTimeZoneOffsetMs(firstGuess, FOUNDER_TIME_ZONE)
+  const adjusted = new Date(firstGuess.getTime() - firstOffset)
+  const finalOffset = getTimeZoneOffsetMs(adjusted, FOUNDER_TIME_ZONE)
+
+  return new Date(firstGuess.getTime() - finalOffset)
 }
 
 function buildDayBlockPayload(dateValue, notes = '') {
-  const start = new Date(`${dateValue}T00:00:00`)
-  const end = new Date(`${dateValue}T23:59:59`)
-
   return {
     title: 'Unavailable',
     exceptionType: 'day',
-    startsAt: start.toISOString(),
-    endsAt: end.toISOString(),
-    timezone: 'America/New_York',
+    startsAt: zonedDateTimeToUtc(dateValue, 0, 0, 0).toISOString(),
+    endsAt: zonedDateTimeToUtc(dateValue, 23, 59, 59).toISOString(),
+    timezone: FOUNDER_TIME_ZONE,
     notes,
   }
 }
 
-function getNextSessionLabel(nextSession) {
-  if (!nextSession) return 'No session waiting right now.'
-
-  return `${formatTime(nextSession.starts_at)}  ${getClientName(nextSession)}`
+function getAttentionDate(item) {
+  return item.follow_up_at || item.created_at || item.starts_at || null
 }
 
 export default function AdminFoundersView() {
+  const navigate = useNavigate()
   const [overview, setOverview] = useState(null)
-  const [blockDate, setBlockDate] = useState(getLocalDateOffset(0))
+  const [blockDate, setBlockDate] = useState(getBusinessDateOffset(0))
   const [blockNotes, setBlockNotes] = useState('')
   const [isLoading, setIsLoading] = useState(true)
   const [isBlocking, setIsBlocking] = useState(false)
+  const [isSigningOut, setIsSigningOut] = useState(false)
   const [notice, setNotice] = useState('')
   const [error, setError] = useState('')
 
@@ -129,15 +214,62 @@ export default function AdminFoundersView() {
     [overview?.availabilityExceptions],
   )
 
-  const nextSession = useMemo(
-    () => todaySessions[0] || upcomingBookings[0] || null,
-    [todaySessions, upcomingBookings],
-  )
+  const scheduleItems = useMemo(() => {
+    if (todaySessions.length > 0) {
+      return todaySessions.slice(0, 4)
+    }
 
-  const laterSession = useMemo(
-    () => todaySessions[1] || upcomingBookings[1] || null,
-    [todaySessions, upcomingBookings],
-  )
+    return upcomingBookings.slice(0, 3)
+  }, [todaySessions, upcomingBookings])
+
+  const attentionItems = useMemo(() => {
+    const requests = pendingRequests.map((request) => ({
+      ...request,
+      attentionType: 'request',
+      attentionLabel: 'Booking request waiting for review',
+      actionLabel: 'Review request',
+      actionPath: '/admin/scheduler',
+    }))
+
+    const care = followUps.map((followUp) => ({
+      ...followUp,
+      attentionType: 'care',
+      attentionLabel: followUp.title || 'Client follow-up is due',
+      actionLabel: 'Open care record',
+      actionPath: followUp.client_profile_id
+        ? `/admin/clients/${followUp.client_profile_id}/care`
+        : '/admin/clients',
+    }))
+
+    return [...requests, ...care]
+      .sort((left, right) => {
+        if (left.attentionType !== right.attentionType) {
+          return left.attentionType === 'request' ? -1 : 1
+        }
+
+        return new Date(getAttentionDate(left) || 0) - new Date(getAttentionDate(right) || 0)
+      })
+      .slice(0, 5)
+  }, [followUps, pendingRequests])
+
+  const dailyFocus = useMemo(() => {
+    if (pendingRequests.length > 0) {
+      const count = pendingRequests.length
+      return `Review ${count} booking ${count === 1 ? 'request' : 'requests'} when you are ready.`
+    }
+
+    if (followUps.length > 0) {
+      const count = followUps.length
+      return `${count} client ${count === 1 ? 'follow-up needs' : 'follow-ups need'} a little care.`
+    }
+
+    if (todaySessions.length > 0) {
+      const count = todaySessions.length
+      return `Your focus today is ${count} meaningful ${count === 1 ? 'session' : 'sessions'}.`
+    }
+
+    return 'Nothing urgent is waiting. Your day has room to breathe.'
+  }, [followUps.length, pendingRequests.length, todaySessions.length])
 
   async function loadFoundersView() {
     setIsLoading(true)
@@ -147,7 +279,7 @@ export default function AdminFoundersView() {
       const response = await getAdminFoundersViewOverview()
       setOverview(response)
     } catch (loadError) {
-      setError(loadError.message || 'Unable to load the Founders View.')
+      setError(loadError.message || 'Unable to load Founder’s View.')
     } finally {
       setIsLoading(false)
     }
@@ -178,9 +310,10 @@ export default function AdminFoundersView() {
         buildDayBlockPayload(dateValue, notes),
       )
       await loadFoundersView()
-      setNotice('Unavailable day saved.')
+      setBlockNotes('')
+      setNotice(`${formatDate(`${dateValue}T12:00:00Z`)} is now protected.`)
     } catch (blockError) {
-      setError(blockError.message || 'Unable to block this day.')
+      setError(blockError.message || 'Unable to protect this date.')
     } finally {
       setIsBlocking(false)
     }
@@ -195,234 +328,290 @@ export default function AdminFoundersView() {
         status: 'archived',
       })
       await loadFoundersView()
-      setNotice('Availability block removed.')
+      setNotice('The protected date has been reopened.')
     } catch (archiveError) {
-      setError(archiveError.message || 'Unable to remove this block.')
+      setError(archiveError.message || 'Unable to reopen this date.')
+    }
+  }
+
+  async function handleLogout() {
+    setIsSigningOut(true)
+    setError('')
+
+    try {
+      await logoutAdmin()
+      navigate('/admin/login', { replace: true })
+    } catch (logoutError) {
+      setError(logoutError.message || 'Unable to sign out right now.')
+      setIsSigningOut(false)
     }
   }
 
   return (
-    <main className="founders-luxury-page-v1">
-      <header className="founders-luxury-topbar-v1">
-        <Link to="/admin/founders-view" className="founders-luxury-brand-v1">
-          <span aria-hidden="true"></span>
-          <strong>Power Within Collective</strong>
+    <main className="founder-home">
+      <header className="founder-home__topbar">
+        <Link to="/admin/founders-view" className="founder-home__brand">
+          <span aria-hidden="true" />
+          <div>
+            <strong>Power Within Collective</strong>
+            <small>Founder’s View</small>
+          </div>
         </Link>
 
-        <p>Good morning, Kim</p>
-
-        <div className="founders-luxury-top-actions-v1">
-          <Link to="/admin/dashboard">Open The Studio</Link>
-          <Link to="/admin/scheduler">Schedule</Link>
+        <div className="founder-home__top-actions">
+          <Link to="/admin/dashboard" className="founder-home__studio-link">
+            Open The Studio
+          </Link>
+          <button
+            type="button"
+            className="founder-home__signout"
+            onClick={handleLogout}
+            disabled={isSigningOut}
+          >
+            {isSigningOut ? 'Signing out…' : 'Sign out'}
+          </button>
         </div>
       </header>
 
-      <section className="founders-luxury-shell-v1">
-        <section className="founders-luxury-hero-v1">
+      <div className="founder-home__shell">
+        <section className="founder-home__intro">
           <div>
-            <p className="founders-luxury-kicker-v1">Owner View</p>
-            <h1>Founders View</h1>
-            <div className="founders-luxury-divider-v1" aria-hidden="true">
-              <span />
-              <i></i>
-              <span />
-            </div>
-            <p>
-              A calm daily view of what needs your attention, what can wait,
-              and where your presence matters most.
-            </p>
+            <p className="founder-home__eyebrow">{formatLongDate()}</p>
+            <h1>{getGreeting()}, Kim.</h1>
+            <p className="founder-home__focus">{dailyFocus}</p>
           </div>
 
-          <div className="founders-luxury-hero-art-v1" aria-hidden="true">
-            <span />
+          <div className="founder-home__timezone" aria-label="Schedule timezone">
+            <span aria-hidden="true" />
+            <div>
+              <small>Schedule shown in</small>
+              <strong>{FOUNDER_TIME_ZONE_LABEL}</strong>
+            </div>
           </div>
         </section>
 
-        {notice && <div className="admin-notice is-success">{notice}</div>}
-        {error && <div className="admin-notice is-error">{error}</div>}
+        <div className="founder-home__feedback" aria-live="polite">
+          {notice && <div className="admin-notice is-success">{notice}</div>}
+          {error && <div className="admin-notice is-error">{error}</div>}
+        </div>
 
-        <section className="founders-luxury-metrics-v1">
+        <section className="founder-home__pulse" aria-label="Today at a glance">
           <article>
-            <div className="founders-luxury-icon-v1 is-sun"></div>
+            <span className="founder-home__pulse-icon is-calendar" aria-hidden="true" />
             <div>
-              <span>Today Sessions</span>
+              <small>Today</small>
               <strong>{metrics.todaySessions || 0}</strong>
-              <p>{nextSession ? `Next up at ${formatTime(nextSession.starts_at)}` : 'A spacious day'}</p>
+              <p>{(metrics.todaySessions || 0) === 1 ? 'session' : 'sessions'}</p>
             </div>
           </article>
 
           <article>
-            <div className="founders-luxury-icon-v1 is-people"></div>
+            <span className="founder-home__pulse-icon is-decision" aria-hidden="true" />
             <div>
-              <span>Pending Requests</span>
+              <small>Decisions</small>
               <strong>{metrics.pendingRequests || 0}</strong>
-              <p>{(metrics.pendingRequests || 0) === 1 ? 'Awaiting review' : 'Awaiting your review'}</p>
+              <p>booking {(metrics.pendingRequests || 0) === 1 ? 'request' : 'requests'}</p>
             </div>
           </article>
 
           <article>
-            <div className="founders-luxury-icon-v1 is-heart"></div>
+            <span className="founder-home__pulse-icon is-care" aria-hidden="true" />
             <div>
-              <span>Follow-Ups</span>
+              <small>Client care</small>
               <strong>{metrics.followUps || 0}</strong>
-              <p>Clients to reconnect</p>
-            </div>
-          </article>
-
-          <article>
-            <div className="founders-luxury-icon-v1 is-message"></div>
-            <div>
-              <span>Messages</span>
-              <strong>{metrics.unreadMessages || 0}</strong>
-              <p>Coming soon</p>
+              <p>{(metrics.followUps || 0) === 1 ? 'follow-up' : 'follow-ups'}</p>
             </div>
           </article>
         </section>
 
-        <section className="founders-luxury-grid-v1">
-          <article className="founders-luxury-card-v1 is-session">
-            <p className="founders-luxury-kicker-v1">Today</p>
-            <h2>{nextSession ? 'Your Next Session' : 'Your Day is Open'}</h2>
+        <section className="founder-home__grid">
+          <article className="founder-home__panel founder-home__panel--schedule">
+            <div className="founder-home__panel-heading">
+              <div>
+                <p className="founder-home__eyebrow">
+                  {todaySessions.length > 0 ? 'Today’s rhythm' : 'Coming up'}
+                </p>
+                <h2>
+                  {todaySessions.length > 0
+                    ? 'Your schedule'
+                    : 'Your next sessions'}
+                </h2>
+              </div>
+              <Link to="/admin/scheduler">Open calendar</Link>
+            </div>
 
             {isLoading ? (
-              <p className="founders-luxury-empty-v1">Gathering today view...</p>
-            ) : nextSession ? (
-              <>
-                <div className="founders-luxury-client-v1">
-                  <div className="founders-luxury-avatar-v1">
-                    {getInitials(getClientName(nextSession))}
-                  </div>
-
-                  <div>
-                    <strong>{getClientName(nextSession)}</strong>
-                    <p>{nextSession.status || 'Scheduled session'}</p>
-                    <small>{getNextSessionLabel(nextSession)}</small>
-                  </div>
-                </div>
-
-                <div className="founders-luxury-session-meta-v1">
-                  <span>{formatTime(nextSession.starts_at)}</span>
-                  <span>{formatLongDate(nextSession.starts_at)}</span>
-                </div>
-
-                <Link to="/admin/scheduler">View Details</Link>
-              </>
+              <div className="founder-home__empty">Gathering your schedule…</div>
+            ) : scheduleItems.length === 0 ? (
+              <div className="founder-home__empty founder-home__empty--warm">
+                <strong>Your calendar is open.</strong>
+                <p>There are no sessions waiting in the next two weeks.</p>
+              </div>
             ) : (
-              <div className="founders-luxury-soft-note-v1">
-                <strong>No sessions are scheduled for today.</strong>
-                <p>Kim can rest, prepare, or make space for deeper client care.</p>
+              <div className="founder-home__schedule-list">
+                {scheduleItems.map((session, index) => (
+                  <div className="founder-home__session" key={session.id}>
+                    <div className="founder-home__session-time">
+                      <strong>{formatTime(session.starts_at)}</strong>
+                      <small>
+                        {todaySessions.length > 0
+                          ? FOUNDER_TIME_ZONE_LABEL
+                          : formatDate(session.starts_at, { includeYear: false })}
+                      </small>
+                    </div>
+
+                    <div className="founder-home__avatar" aria-hidden="true">
+                      {getInitials(getClientName(session))}
+                    </div>
+
+                    <div className="founder-home__session-copy">
+                      <strong>{getClientName(session)}</strong>
+                      <span>{session.status || 'Scheduled session'}</span>
+                    </div>
+
+                    {index === 0 && <em>Next</em>}
+                  </div>
+                ))}
               </div>
             )}
           </article>
 
-          <article className="founders-luxury-card-v1 is-availability">
-            <p className="founders-luxury-kicker-v1">Block Time Away</p>
-            <h2>Protect your time.</h2>
-            <p>
-              Block days when you are unavailable, so clients are cared for
-              clearly.
+          <article className="founder-home__panel founder-home__panel--attention">
+            <div className="founder-home__panel-heading">
+              <div>
+                <p className="founder-home__eyebrow">Needs your attention</p>
+                <h2>What matters now</h2>
+              </div>
+            </div>
+
+            {isLoading ? (
+              <div className="founder-home__empty">Gathering priorities…</div>
+            ) : attentionItems.length === 0 ? (
+              <div className="founder-home__empty founder-home__empty--warm">
+                <strong>You are all caught up.</strong>
+                <p>No decisions or client follow-ups need you right now.</p>
+              </div>
+            ) : (
+              <div className="founder-home__attention-list">
+                {attentionItems.map((item) => (
+                  <div className="founder-home__attention-item" key={`${item.attentionType}-${item.id}`}>
+                    <span
+                      className={`founder-home__attention-mark is-${item.attentionType}`}
+                      aria-hidden="true"
+                    />
+                    <div>
+                      <strong>{getClientName(item)}</strong>
+                      <p>{item.attentionLabel}</p>
+                      {getAttentionDate(item) && (
+                        <small>{formatDate(getAttentionDate(item))}</small>
+                      )}
+                    </div>
+                    <Link to={item.actionPath}>{item.actionLabel}</Link>
+                  </div>
+                ))}
+              </div>
+            )}
+          </article>
+
+          <article className="founder-home__panel founder-home__panel--protect">
+            <div className="founder-home__panel-heading">
+              <div>
+                <p className="founder-home__eyebrow">Protect your time</p>
+                <h2>Make space before it fills.</h2>
+              </div>
+            </div>
+
+            <p className="founder-home__panel-intro">
+              Mark a day unavailable here. The scheduling system will respect it automatically.
             </p>
 
-            <div className="founders-luxury-quick-actions-v1">
+            <div className="founder-home__quick-blocks">
               <button
                 type="button"
                 onClick={() =>
                   handleBlockDay(
-                    getLocalDateOffset(0),
-                    'Blocked from The Founders View.',
+                    getBusinessDateOffset(0),
+                    'Protected from Founder’s View.',
                   )
                 }
                 disabled={isBlocking}
               >
-                I am unavailable today
+                Protect today
               </button>
-
               <button
                 type="button"
                 onClick={() =>
                   handleBlockDay(
-                    getLocalDateOffset(1),
-                    'Blocked from The Founders View.',
+                    getBusinessDateOffset(1),
+                    'Protected from Founder’s View.',
                   )
                 }
                 disabled={isBlocking}
               >
-                Block tomorrow
+                Protect tomorrow
               </button>
             </div>
 
-            <label>
-              <span>Pick a date</span>
-              <input
-                type="date"
-                value={blockDate}
-                onChange={(event) => setBlockDate(event.target.value)}
-              />
-            </label>
+            <div className="founder-home__block-form">
+              <label>
+                <span>Choose a date</span>
+                <input
+                  type="date"
+                  value={blockDate}
+                  min={getBusinessDateOffset(0)}
+                  onChange={(event) => setBlockDate(event.target.value)}
+                />
+              </label>
 
-            <label>
-              <span>Private note</span>
-              <input
-                value={blockNotes}
-                onChange={(event) => setBlockNotes(event.target.value)}
-                placeholder="Add a note, optional"
-              />
-            </label>
+              <label>
+                <span>Private note <small>optional</small></span>
+                <input
+                  value={blockNotes}
+                  onChange={(event) => setBlockNotes(event.target.value)}
+                  placeholder="Personal day, travel, preparation…"
+                />
+              </label>
 
-            <button
-              type="button"
-              onClick={() => handleBlockDay(blockDate, blockNotes)}
-              disabled={isBlocking || !blockDate}
-            >
-              {isBlocking ? 'Saving...' : 'Save Unavailable Date'}
-            </button>
+              <button
+                type="button"
+                className="founder-home__protect-button"
+                onClick={() => handleBlockDay(blockDate, blockNotes)}
+                disabled={isBlocking || !blockDate}
+              >
+                {isBlocking ? 'Protecting…' : 'Protect this date'}
+              </button>
+            </div>
           </article>
 
-          <article className="founders-luxury-card-v1 is-care">
-            <p className="founders-luxury-kicker-v1">Clients Needing Care</p>
-            <h2>
-              {pendingRequests.length === 0 && followUps.length === 0
-                ? 'You are all set'
-                : 'A gentle nudge'}
-            </h2>
-
-            {pendingRequests.length === 0 && followUps.length === 0 ? (
-              <p>No urgent follow-ups need your attention right now.</p>
-            ) : (
-              <div className="founders-luxury-mini-list-v1">
-                {pendingRequests.slice(0, 2).map((request) => (
-                  <div key={request.id}>
-                    <strong>{getClientName(request)}</strong>
-                    <span>New booking request</span>
-                  </div>
-                ))}
-
-                {followUps.slice(0, 2).map((followUp) => (
-                  <div key={followUp.id}>
-                    <strong>{getClientName(followUp)}</strong>
-                    <span>{followUp.title || 'Follow-up due'}</span>
-                  </div>
-                ))}
+          <article className="founder-home__panel founder-home__panel--blocks">
+            <div className="founder-home__panel-heading">
+              <div>
+                <p className="founder-home__eyebrow">Protected dates</p>
+                <h2>Your breathing room</h2>
               </div>
-            )}
-          </article>
-
-          <article className="founders-luxury-card-v1 is-blocks">
-            <p className="founders-luxury-kicker-v1">Active Blocks</p>
-            <h2>Your unavailable dates</h2>
+              <span className="founder-home__count">
+                {availabilityExceptions.length}
+              </span>
+            </div>
 
             {availabilityExceptions.length === 0 ? (
-              <p>No unavailable dates have been added yet.</p>
+              <div className="founder-home__empty">
+                No protected dates have been added yet.
+              </div>
             ) : (
-              <div className="founders-luxury-block-list-v1">
-                {availabilityExceptions.slice(0, 4).map((block) => (
+              <div className="founder-home__block-list">
+                {availabilityExceptions.slice(0, 5).map((block) => (
                   <div key={block.id}>
-                    <span>{formatDate(block.starts_at)}</span>
+                    <span aria-hidden="true" />
+                    <div>
+                      <strong>{formatDate(block.starts_at)}</strong>
+                      <small>{block.notes || 'Unavailable'}</small>
+                    </div>
                     <button
                       type="button"
                       onClick={() => handleArchiveAvailability(block.id)}
                     >
-                      Remove
+                      Reopen
                     </button>
                   </div>
                 ))}
@@ -430,17 +619,7 @@ export default function AdminFoundersView() {
             )}
           </article>
         </section>
-
-        {laterSession && (
-          <section className="founders-luxury-next-v1">
-            <p>Later today</p>
-            <strong>
-              {formatTime(laterSession.starts_at)}  {getClientName(laterSession)}
-            </strong>
-            <Link to="/admin/scheduler">Open Calendar</Link>
-          </section>
-        )}
-      </section>
+      </div>
     </main>
   )
 }
