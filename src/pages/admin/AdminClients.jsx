@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
 import AdminFrame from '../../components/admin/AdminFrame'
 import {
   createAdminClient,
@@ -428,6 +429,8 @@ function serviceRecordToForm(record) {
 }
 
 export default function AdminClients() {
+  const navigate = useNavigate()
+  const { clientId } = useParams()
   const [clients, setClients] = useState([])
   const [clientSearchTerm, setClientSearchTerm] = useState('')
   const [clientStatusFilter, setClientStatusFilter] = useState('all')
@@ -602,6 +605,41 @@ export default function AdminClients() {
     }
   }, [])
 
+  useEffect(() => {
+    if (!clientId || isLoading) return undefined
+
+    const routeClient = clients.find(
+      (client) => String(client.id) === String(clientId),
+    )
+
+    const routeSyncTimer = window.setTimeout(() => {
+      if (!routeClient) {
+        setError('That client profile could not be found.')
+        navigate('/admin/clients', { replace: true })
+        return
+      }
+
+      if (String(selectedClient?.id || '') === String(routeClient.id)) return
+
+      setSelectedClient(routeClient)
+      setIsClientFormOpen(false)
+      setClientDetailSection('overview')
+      setEditingClient(null)
+      setForm(emptyClientForm)
+      setNotice('')
+      setError('')
+
+      Promise.all([
+        loadCareTimeline(routeClient),
+        loadPortalInvites(routeClient),
+        loadPortalResources(routeClient),
+        loadPortalEmailLogs(routeClient),
+      ])
+    }, 0)
+
+    return () => window.clearTimeout(routeSyncTimer)
+  }, [clientId, clients, isLoading, navigate, selectedClient?.id])
+
   const selectedName = selectedClient?.name || 'None'
   const timelineItems = getTimelineItems(careTimeline)
   const connectedBookings = getBookings(careTimeline)
@@ -735,6 +773,7 @@ export default function AdminClients() {
   }
 
   async function handleViewClient(client) {
+    navigate(`/admin/clients/${client.id}`)
     setSelectedClient(client)
     setIsClientFormOpen(false)
     setClientDetailSection('overview')
@@ -747,6 +786,7 @@ export default function AdminClients() {
   }
 
   async function handleEditClient(client) {
+    navigate(`/admin/clients/${client.id}`)
     setSelectedClient(client)
     setIsClientFormOpen(true)
     setClientDetailSection('overview')
@@ -773,9 +813,13 @@ export default function AdminClients() {
   }
 
   function handleBackToClientRecords() {
-    document
-      .querySelector('.client-records-card-v2')
-      ?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    handleNewProfile()
+
+    window.requestAnimationFrame(() => {
+      document
+        .querySelector('.client-records-card-v2')
+        ?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    })
   }
 
   async function handleCopySelectedClientEmail() {
@@ -822,6 +866,7 @@ export default function AdminClients() {
   }
 
   function handleOpenNewClientForm() {
+    navigate('/admin/clients')
     setSelectedClient(null)
     setEditingClient(null)
     setIsClientFormOpen(true)
@@ -859,6 +904,7 @@ export default function AdminClients() {
     setPortalStatusFilter(status)
   }
   function handleNewProfile() {
+    navigate('/admin/clients')
     setSelectedClient(null)
     setClientDetailSection('overview')
     setEditingClient(null)
@@ -1716,11 +1762,7 @@ export default function AdminClients() {
                   </button>
 
                   <button type="button" onClick={handleBackToClientRecords}>
-                    Back to Records
-                  </button>
-
-                  <button type="button" onClick={handleNewProfile}>
-                    Close
+                    Back to Client Directory
                   </button>
                 </div>
               </div>
@@ -1729,6 +1771,7 @@ export default function AdminClients() {
                 <button
                   type="button"
                   className={clientDetailSection === 'overview' ? 'is-active' : ''}
+                  aria-current={clientDetailSection === 'overview' ? 'page' : undefined}
                   onClick={() => setClientDetailSection('overview')}
                 >
                   Overview
@@ -1737,6 +1780,7 @@ export default function AdminClients() {
                 <button
                   type="button"
                   className={clientDetailSection === 'notes' ? 'is-active' : ''}
+                  aria-current={clientDetailSection === 'notes' ? 'page' : undefined}
                   onClick={() => setClientDetailSection('notes')}
                 >
                   Notes
@@ -1745,6 +1789,7 @@ export default function AdminClients() {
                 <button
                   type="button"
                   className={clientDetailSection === 'portal' ? 'is-active' : ''}
+                  aria-current={clientDetailSection === 'portal' ? 'page' : undefined}
                   onClick={() => setClientDetailSection('portal')}
                 >
                   Portal
@@ -1753,6 +1798,7 @@ export default function AdminClients() {
                 <button
                   type="button"
                   className={clientDetailSection === 'activity' ? 'is-active' : ''}
+                  aria-current={clientDetailSection === 'activity' ? 'page' : undefined}
                   onClick={() => setClientDetailSection('activity')}
                 >
                   Activity

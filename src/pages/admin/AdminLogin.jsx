@@ -7,9 +7,6 @@ function AdminLogin() {
   const navigate = useNavigate()
   const location = useLocation()
   const requestedPath = location.state?.from
-  const redirectPath = requestedPath?.startsWith('/admin/')
-    ? requestedPath
-    : '/admin/dashboard'
   const [form, setForm] = useState({
     email: '',
     password: '',
@@ -57,13 +54,22 @@ function AdminLogin() {
 
       sessionStorage.setItem('pwc_admin_user', JSON.stringify(result.user))
 
+      const destination = requestedPath?.startsWith('/admin/')
+        ? requestedPath
+        : result.user?.role === 'owner'
+          ? '/admin/founders-view'
+          : '/admin/dashboard'
+
       setStatus({
         loading: false,
         error: '',
-        message: 'Login successful. Redirecting to dashboard...',
+        message:
+          result.user?.role === 'owner'
+            ? 'Login successful. Opening Founder’s View...'
+            : 'Login successful. Opening The Studio...',
       })
 
-      navigate(redirectPath)
+      navigate(destination)
     } catch (error) {
       setStatus({
         loading: false,

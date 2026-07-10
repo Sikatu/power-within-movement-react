@@ -3296,3 +3296,62 @@ body.admin-app-mode .client-portal-link-box-v2 button {
 }
 
 /* phase-3-9a-client-portal-invite-end */
+
+
+/* Portal foundation: role switcher and grouped Studio navigation */
+.pwc-studio-founder-switch {
+  display: grid;
+  gap: 4px;
+  padding: 14px 16px;
+  border: 1px solid rgba(200, 169, 106, 0.28);
+  border-radius: 18px;
+  background: rgba(200, 169, 106, 0.1);
+  color: #fffaf6;
+  text-decoration: none;
+  transition: transform 160ms ease, background 160ms ease, border-color 160ms ease;
+}
+
+.pwc-studio-founder-switch:hover,
+.pwc-studio-founder-switch.is-active {
+  transform: translateY(-1px);
+  border-color: rgba(200, 169, 106, 0.52);
+  background: rgba(200, 169, 106, 0.17);
+}
+
+.pwc-studio-founder-switch span,
+.pwc-studio-nav-group > p {
+  margin: 0;
+  color: var(--soft-gold);
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.pwc-studio-founder-switch strong {
+  font-family: "Cormorant Garamond", serif;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.pwc-studio-nav {
+  align-content: start;
+  gap: 18px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.pwc-studio-nav-group {
+  display: grid;
+  gap: 7px;
+}
+
+.pwc-studio-nav-group > div {
+  display: grid;
+  gap: 6px;
+}
+
+.pwc-studio-nav-group > div > a {
+  min-height: 42px;
+  padding-block: 10px;
+}

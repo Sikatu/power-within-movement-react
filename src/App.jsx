@@ -344,6 +344,15 @@ function App() {
         />
 
         <Route
+          path="/admin/clients/:clientId"
+          element={
+            <AdminRouteGuard>
+              <AdminClients />
+            </AdminRouteGuard>
+          }
+        />
+
+        <Route
           path="/admin/scheduler"
           element={
             <AdminRouteGuard>

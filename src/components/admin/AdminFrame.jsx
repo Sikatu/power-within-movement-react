@@ -1,43 +1,43 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, NavLink } from 'react-router-dom'
 
-const studioNavItems = [
+const studioNavGroups = [
   {
-    to: '/admin/dashboard',
-    label: 'The Studio',
-  },
-
-  {
-    to: '/admin/clients',
-    label: 'Client Circle',
-  },
-  {
-    to: '/admin/scheduler',
-    label: 'Sessions & Calendar',
+    label: 'Workspace',
+    items: [
+      { to: '/admin/dashboard', label: 'Overview' },
+      { to: '/admin/clients', label: 'Clients' },
+      { to: '/admin/scheduler', label: 'Sessions' },
+      { to: '/admin/email-studio', label: 'Communications' },
+    ],
   },
   {
-    to: '/admin/email-studio',
-    label: 'Letters & Broadcasts',
+    label: 'Programs',
+    items: [
+      { to: '/admin/courses', label: 'Learning Library' },
+      { to: '/admin/memberships', label: 'Memberships' },
+      { to: '/admin/encouragements', label: 'Encouragements' },
+    ],
   },
   {
-    to: '/admin/courses',
-    label: 'Learning Library',
-  },
-  {
-    to: '/admin/memberships',
-    label: 'Membership Circle',
-  },
-  {
-    to: '/admin/encouragements',
-    label: 'Daily Encouragements',
-  },
-  {
-    to: '/admin/audit-log',
-    label: 'Activity Journal',
+    label: 'System',
+    items: [{ to: '/admin/audit-log', label: 'Activity Journal' }],
   },
 ]
 
+
 function AdminFrame({ children }) {
+  const [adminUser] = useState(() => {
+    if (typeof window === 'undefined') return null
+
+    try {
+      return JSON.parse(window.sessionStorage.getItem('pwc_admin_user') || 'null')
+    } catch {
+      return null
+    }
+  })
+
+  const isOwner = adminUser?.role === 'owner'
   useEffect(() => {
     document.body.classList.add('admin-app-mode')
 
@@ -55,15 +55,34 @@ function AdminFrame({ children }) {
           <span>A private space for meaningful transformation.</span>
         </div>
 
+        {isOwner && (
+          <NavLink
+            className={({ isActive }) =>
+              `pwc-studio-founder-switch${isActive ? ' is-active' : ''}`
+            }
+            to="/admin/founders-view"
+          >
+            <span>Owner workspace</span>
+            <strong>Founder’s View</strong>
+          </NavLink>
+        )}
+
         <nav className="pwc-admin-nav pwc-studio-nav" aria-label="Studio navigation">
-          {studioNavItems.map((item) => (
-            <NavLink
-              className={({ isActive }) => (isActive ? 'is-active' : undefined)}
-              key={item.to}
-              to={item.to}
-            >
-              {item.label}
-            </NavLink>
+          {studioNavGroups.map((group) => (
+            <section className="pwc-studio-nav-group" key={group.label}>
+              <p>{group.label}</p>
+              <div>
+                {group.items.map((item) => (
+                  <NavLink
+                    className={({ isActive }) => (isActive ? 'is-active' : undefined)}
+                    key={item.to}
+                    to={item.to}
+                  >
+                    {item.label}
+                  </NavLink>
+                ))}
+              </div>
+            </section>
           ))}
         </nav>
 
