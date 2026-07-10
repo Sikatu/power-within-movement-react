@@ -55,22 +55,22 @@ function formatTime(value) {
   }
 }
 
-function getBusinessHour() {
+function getBusinessHour(value = new Date()) {
   try {
     return Number(
       new Intl.DateTimeFormat('en-US', {
         timeZone: FOUNDER_TIME_ZONE,
         hour: '2-digit',
         hourCycle: 'h23',
-      }).format(new Date()),
+      }).format(new Date(value)),
     )
   } catch {
     return new Date().getHours()
   }
 }
 
-function getGreeting() {
-  const hour = getBusinessHour()
+function getGreeting(value = new Date()) {
+  const hour = getBusinessHour(value)
 
   if (hour < 12) return 'Good morning'
   if (hour < 17) return 'Good afternoon'
@@ -184,6 +184,7 @@ function getAttentionDate(item) {
 export default function AdminFoundersView() {
   const navigate = useNavigate()
   const [overview, setOverview] = useState(null)
+  const [currentTime, setCurrentTime] = useState(() => new Date())
   const [blockDate, setBlockDate] = useState(getBusinessDateOffset(0))
   const [blockNotes, setBlockNotes] = useState('')
   const [isLoading, setIsLoading] = useState(true)
@@ -289,12 +290,16 @@ export default function AdminFoundersView() {
     document.body.classList.add('admin-app-mode')
     document.body.classList.add('founders-view-standalone-mode')
 
-    const timer = window.setTimeout(() => {
+    const loadTimer = window.setTimeout(() => {
       loadFoundersView()
     }, 0)
+    const clockTimer = window.setInterval(() => {
+      setCurrentTime(new Date())
+    }, 60_000)
 
     return () => {
-      window.clearTimeout(timer)
+      window.clearTimeout(loadTimer)
+      window.clearInterval(clockTimer)
       document.body.classList.remove('founders-view-standalone-mode')
       document.body.classList.remove('admin-app-mode')
     }
@@ -359,6 +364,9 @@ export default function AdminFoundersView() {
         </Link>
 
         <div className="founder-home__top-actions">
+          <Link to="/admin/founders-calendar" className="founder-home__calendar-link">
+            Open calendar
+          </Link>
           <Link to="/admin/dashboard" className="founder-home__studio-link">
             Open The Studio
           </Link>
@@ -376,17 +384,31 @@ export default function AdminFoundersView() {
       <div className="founder-home__shell">
         <section className="founder-home__intro">
           <div>
-            <p className="founder-home__eyebrow">{formatLongDate()}</p>
-            <h1>{getGreeting()}, Kim.</h1>
+            <p className="founder-home__eyebrow">{formatLongDate(currentTime)}</p>
+            <h1>{getGreeting(currentTime)}, Kim.</h1>
             <p className="founder-home__focus">{dailyFocus}</p>
           </div>
 
-          <div className="founder-home__timezone" aria-label="Schedule timezone">
-            <span aria-hidden="true" />
-            <div>
-              <small>Schedule shown in</small>
-              <strong>{FOUNDER_TIME_ZONE_LABEL}</strong>
+          <div className="founder-home__intro-side">
+            <div className="founder-home__timezone" aria-label="Schedule timezone">
+              <span aria-hidden="true" />
+              <div>
+                <small>Schedule shown in</small>
+                <strong>{FOUNDER_TIME_ZONE_LABEL}</strong>
+              </div>
             </div>
+
+            <nav className="founder-home__primary-actions" aria-label="Founder controls">
+              <Link to="/admin/founders-calendar">Open calendar</Link>
+              <Link to="/admin/dashboard">Open The Studio</Link>
+              <button
+                type="button"
+                onClick={handleLogout}
+                disabled={isSigningOut}
+              >
+                {isSigningOut ? 'Signing out…' : 'Sign out'}
+              </button>
+            </nav>
           </div>
         </section>
 
@@ -437,7 +459,7 @@ export default function AdminFoundersView() {
                     : 'Your next sessions'}
                 </h2>
               </div>
-              <Link to="/admin/scheduler">Open calendar</Link>
+              <Link to="/admin/founders-calendar">Open calendar</Link>
             </div>
 
             {isLoading ? (

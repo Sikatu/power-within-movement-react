@@ -4629,6 +4629,54 @@ function normalizeAvailabilityExceptionStatus(status) {
     : 'active'
 }
 
+function getFounderMonthValue(date = new Date()) {
+  const parts = new Intl.DateTimeFormat('en-US', {
+    timeZone: FOUNDER_TIME_ZONE,
+    year: 'numeric',
+    month: '2-digit',
+  }).formatToParts(date)
+
+  const values = Object.fromEntries(
+    parts
+      .filter((part) => ['year', 'month'].includes(part.type))
+      .map((part) => [part.type, part.value]),
+  )
+
+  return `${values.year}-${values.month}`
+}
+
+function startOfFounderMonth(monthValue, offsetMonths = 0) {
+  const match = /^(\d{4})-(\d{2})$/.exec(String(monthValue || ''))
+
+  if (!match) {
+    return null
+  }
+
+  const year = Number(match[1])
+  const month = Number(match[2])
+
+  if (month < 1 || month > 12) {
+    return null
+  }
+
+  const localMonth = new Date(Date.UTC(year, month - 1 + offsetMonths, 1))
+  const firstGuess = new Date(
+    Date.UTC(
+      localMonth.getUTCFullYear(),
+      localMonth.getUTCMonth(),
+      1,
+      0,
+      0,
+      0,
+    ),
+  )
+  const firstOffset = getTimeZoneOffsetMs(firstGuess, FOUNDER_TIME_ZONE)
+  const adjusted = new Date(firstGuess.getTime() - firstOffset)
+  const finalOffset = getTimeZoneOffsetMs(adjusted, FOUNDER_TIME_ZONE)
+
+  return new Date(firstGuess.getTime() - finalOffset)
+}
+
 router.get('/founders-view/overview', requireFounderAccess, async (req, res, next) => {
   if (!pool) {
     return res.status(503).json({
@@ -4786,6 +4834,82 @@ router.get('/founders-view/overview', requireFounderAccess, async (req, res, nex
       pendingRequests: pendingRequestsResult.rows,
       followUps: followUpsResult.rows,
       availabilityExceptions: availabilityResult.rows
+    })
+  } catch (error) {
+    return next(error)
+  }
+})
+
+router.get('/founders-view/calendar', requireFounderAccess, async (req, res, next) => {
+  if (!pool) {
+    return res.status(503).json({
+      ok: false,
+      error: 'Database is not configured.',
+    })
+  }
+
+  try {
+    const month = String(req.query.month || getFounderMonthValue()).trim()
+    const monthStart = startOfFounderMonth(month)
+    const nextMonthStart = startOfFounderMonth(month, 1)
+
+    if (!monthStart || !nextMonthStart) {
+      return res.status(400).json({
+        ok: false,
+        error: 'Month must use YYYY-MM format.',
+      })
+    }
+
+    const bookingsResult = await pool.query(
+      `
+      SELECT
+        b.id,
+        b.client_profile_id,
+        b.guest_name,
+        b.guest_email,
+        b.guest_phone,
+        b.starts_at,
+        b.ends_at,
+        b.status,
+        b.admin_notes,
+        cp.first_name,
+        cp.last_name,
+        su.email AS client_email
+      FROM bookings b
+      LEFT JOIN client_profiles cp
+        ON cp.id = b.client_profile_id
+      LEFT JOIN system_users su
+        ON su.id = cp.user_id
+      WHERE b.starts_at >= $1
+        AND b.starts_at < $2
+        AND b.status NOT IN ('cancelled', 'rejected')
+      ORDER BY b.starts_at ASC
+      LIMIT 150
+      `,
+      [monthStart.toISOString(), nextMonthStart.toISOString()],
+    )
+
+    const availabilityResult = await pool.query(
+      `
+      SELECT *
+      FROM availability_exceptions
+      WHERE status = 'active'
+        AND starts_at < $2
+        AND ends_at >= $1
+      ORDER BY starts_at ASC
+      LIMIT 100
+      `,
+      [monthStart.toISOString(), nextMonthStart.toISOString()],
+    )
+
+    return res.json({
+      ok: true,
+      month,
+      timeZone: FOUNDER_TIME_ZONE,
+      rangeStart: monthStart.toISOString(),
+      rangeEnd: nextMonthStart.toISOString(),
+      bookings: bookingsResult.rows,
+      availabilityExceptions: availabilityResult.rows,
     })
   } catch (error) {
     return next(error)

@@ -1,0 +1,558 @@
+body.admin-app-mode.founder-calendar-mode {
+  margin: 0;
+  min-width: 320px;
+  background: #f4efe7;
+  color: #332e29;
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar,
+body.admin-app-mode.founder-calendar-mode .founder-calendar * {
+  box-sizing: border-box;
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 88% 8%, rgba(164, 127, 82, 0.13), transparent 27rem),
+    linear-gradient(180deg, #faf7f2 0%, #f3ede4 100%);
+  color: #332e29;
+  font-family: var(--font-body, "Inter", system-ui, sans-serif);
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__header {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  min-height: 76px;
+  padding: 0.85rem clamp(1rem, 4vw, 4.5rem);
+  border-bottom: 1px solid rgba(77, 63, 49, 0.12);
+  background: rgba(250, 247, 242, 0.96);
+  box-shadow: 0 8px 24px rgba(62, 47, 34, 0.04);
+  backdrop-filter: blur(18px);
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8rem;
+  color: inherit;
+  text-decoration: none;
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__brand > span {
+  width: 34px;
+  height: 34px;
+  border: 1px solid rgba(96, 72, 47, 0.28);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 50% 50%, #8f6c48 0 13%, transparent 14%),
+    linear-gradient(135deg, #efe0ca, #faf5eb);
+  box-shadow: inset 0 0 0 6px rgba(255, 255, 255, 0.52);
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__brand div {
+  display: grid;
+  gap: 0.12rem;
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__brand strong {
+  color: #3a3027;
+  font-family: var(--font-heading, Georgia, serif);
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__brand small {
+  color: #8a7560;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__header-actions a,
+body.admin-app-mode.founder-calendar-mode .founder-calendar__header-actions button,
+body.admin-app-mode.founder-calendar-mode .founder-calendar__today {
+  min-height: 40px;
+  padding: 0.68rem 0.95rem;
+  border: 1px solid rgba(82, 66, 50, 0.18);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.58);
+  color: #685744;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.75rem;
+  font-weight: 760;
+  text-decoration: none;
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__header-actions a:nth-child(2) {
+  border-color: #67513d;
+  background: #4d3c2f;
+  color: #fffaf3;
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__header-actions button:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__shell {
+  width: min(1380px, calc(100% - 2rem));
+  margin: 0 auto;
+  padding: clamp(2rem, 4vw, 4rem) 0 4rem;
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__intro {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 2rem;
+  margin-bottom: 1.4rem;
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__intro p,
+body.admin-app-mode.founder-calendar-mode .founder-calendar__day-panel > p {
+  margin: 0 0 0.55rem;
+  color: #92724f;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__intro h1 {
+  margin: 0;
+  color: #3d332a;
+  font-family: var(--font-heading, Georgia, serif);
+  font-size: clamp(2.35rem, 5vw, 4.5rem);
+  font-weight: 400;
+  letter-spacing: -0.04em;
+  line-height: 0.98;
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__intro span {
+  display: block;
+  margin-top: 0.85rem;
+  color: #806c59;
+  font-size: 0.9rem;
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__today {
+  flex: 0 0 auto;
+  border-color: #6d553d;
+  background: #5a4432;
+  color: #fffaf3;
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__feedback:empty {
+  display: none;
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__feedback {
+  margin-bottom: 1rem;
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(300px, 360px);
+  gap: 1rem;
+  align-items: start;
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__month-card,
+body.admin-app-mode.founder-calendar-mode .founder-calendar__day-panel {
+  border: 1px solid rgba(88, 67, 47, 0.12);
+  border-radius: 28px;
+  background: rgba(255, 252, 247, 0.86);
+  box-shadow: 0 18px 48px rgba(74, 53, 34, 0.06);
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__month-card {
+  position: relative;
+  min-width: 0;
+  padding: clamp(1rem, 2.2vw, 1.7rem);
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__month-toolbar {
+  display: grid;
+  grid-template-columns: 44px 1fr 44px;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__month-toolbar h2 {
+  margin: 0;
+  color: #40352c;
+  font-family: var(--font-heading, Georgia, serif);
+  font-size: clamp(1.55rem, 2.5vw, 2.15rem);
+  font-weight: 400;
+  text-align: center;
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__month-toolbar button {
+  width: 44px;
+  height: 44px;
+  border: 1px solid rgba(91, 69, 48, 0.16);
+  border-radius: 50%;
+  background: #f7efe4;
+  color: #5c4633;
+  cursor: pointer;
+  font: inherit;
+  font-size: 1.5rem;
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__weekdays,
+body.admin-app-mode.founder-calendar-mode .founder-calendar__grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__weekdays {
+  border: 1px solid rgba(89, 67, 46, 0.11);
+  border-bottom: 0;
+  border-radius: 18px 18px 0 0;
+  background: #f7f0e7;
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__weekdays span {
+  padding: 0.72rem 0.35rem;
+  color: #8e755d;
+  font-size: 0.67rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__grid {
+  overflow: hidden;
+  border: 1px solid rgba(89, 67, 46, 0.11);
+  border-radius: 0 0 18px 18px;
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__day {
+  position: relative;
+  min-height: 118px;
+  padding: 0.65rem;
+  overflow: hidden;
+  border: 0;
+  border-right: 1px solid rgba(89, 67, 46, 0.1);
+  border-bottom: 1px solid rgba(89, 67, 46, 0.1);
+  background: rgba(255, 253, 249, 0.72);
+  color: #4c3f34;
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+  transition: background 150ms ease, box-shadow 150ms ease;
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__day:nth-child(7n) {
+  border-right: 0;
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__day:hover {
+  background: #fbf4e9;
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__day.is-selected {
+  z-index: 1;
+  background: #f4e6d3;
+  box-shadow: inset 0 0 0 2px #8a6747;
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__day.is-today .founder-calendar__day-number {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #5a4432;
+  color: #fffaf3;
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__day.is-empty {
+  min-height: 118px;
+  background: rgba(243, 237, 228, 0.52);
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__day-number {
+  display: inline-block;
+  margin-bottom: 0.45rem;
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__day-events {
+  display: grid;
+  gap: 0.28rem;
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__day-events em,
+body.admin-app-mode.founder-calendar-mode .founder-calendar__day-events small {
+  display: block;
+  min-width: 0;
+  overflow: hidden;
+  border-radius: 7px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__day-events em {
+  padding: 0.25rem 0.35rem;
+  background: #e8d7c1;
+  color: #705538;
+  font-size: 0.58rem;
+  font-style: normal;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__day-events small {
+  padding: 0.26rem 0.35rem;
+  background: rgba(111, 83, 56, 0.08);
+  color: #6d5a47;
+  font-size: 0.63rem;
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__loading {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 28px;
+  background: rgba(250, 247, 242, 0.82);
+  color: #725b44;
+  font-size: 0.85rem;
+  font-weight: 700;
+  backdrop-filter: blur(4px);
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__day-panel {
+  position: sticky;
+  top: 92px;
+  padding: clamp(1.25rem, 2.5vw, 1.8rem);
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__day-panel h2 {
+  margin: 0;
+  color: #40352c;
+  font-family: var(--font-heading, Georgia, serif);
+  font-size: clamp(1.5rem, 2.2vw, 2rem);
+  font-weight: 400;
+  line-height: 1.08;
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__day-status {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin: 1.2rem 0;
+  padding: 0.8rem 0.9rem;
+  border: 1px solid rgba(88, 67, 47, 0.12);
+  border-radius: 14px;
+  background: #faf6ef;
+  color: #65523f;
+  font-size: 0.8rem;
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__day-status span {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__day-status span.is-open {
+  background: #76906f;
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__day-status span.is-protected {
+  background: #9a6f45;
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__session-list {
+  display: grid;
+  gap: 0.65rem;
+  margin-bottom: 1rem;
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__session-list article {
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr);
+  gap: 0.7rem;
+  align-items: center;
+  padding: 0.75rem;
+  border: 1px solid rgba(88, 67, 47, 0.1);
+  border-radius: 14px;
+  background: #fffdf9;
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__avatar {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid rgba(115, 83, 51, 0.16);
+  border-radius: 50%;
+  background: #f0e3d1;
+  color: #795a3d;
+  font-size: 0.68rem;
+  font-weight: 800;
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__session-list article > div:last-child {
+  display: grid;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__session-list strong {
+  overflow: hidden;
+  color: #483b30;
+  font-size: 0.8rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__session-list span {
+  color: #8a7663;
+  font-size: 0.7rem;
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__empty-state {
+  display: grid;
+  gap: 0.3rem;
+  padding: 1rem;
+  border: 1px dashed rgba(103, 78, 53, 0.22);
+  border-radius: 14px;
+  color: #806c59;
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__empty-state strong {
+  color: #5f4b38;
+  font-family: var(--font-heading, Georgia, serif);
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__protect,
+body.admin-app-mode.founder-calendar-mode .founder-calendar__reopen {
+  width: 100%;
+  min-height: 44px;
+  border-radius: 999px;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.76rem;
+  font-weight: 800;
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__protect {
+  border: 1px solid #5d4633;
+  background: #513d2e;
+  color: #fffaf3;
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__reopen {
+  border: 1px solid rgba(88, 67, 47, 0.2);
+  background: #f2e6d7;
+  color: #674d35;
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__protect:disabled,
+body.admin-app-mode.founder-calendar-mode .founder-calendar__reopen:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+@media (max-width: 1080px) {
+  body.admin-app-mode.founder-calendar-mode .founder-calendar__workspace {
+    grid-template-columns: 1fr;
+  }
+
+  body.admin-app-mode.founder-calendar-mode .founder-calendar__day-panel {
+    position: static;
+  }
+}
+
+@media (max-width: 760px) {
+  body.admin-app-mode.founder-calendar-mode .founder-calendar__header {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  body.admin-app-mode.founder-calendar-mode .founder-calendar__header-actions {
+    width: 100%;
+    overflow-x: auto;
+  }
+
+  body.admin-app-mode.founder-calendar-mode .founder-calendar__header-actions a,
+  body.admin-app-mode.founder-calendar-mode .founder-calendar__header-actions button {
+    flex: 0 0 auto;
+  }
+
+  body.admin-app-mode.founder-calendar-mode .founder-calendar__intro {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  body.admin-app-mode.founder-calendar-mode .founder-calendar__day {
+    min-height: 88px;
+    padding: 0.45rem;
+  }
+
+  body.admin-app-mode.founder-calendar-mode .founder-calendar__day-events small {
+    display: none;
+  }
+}
+
+@media (max-width: 520px) {
+  body.admin-app-mode.founder-calendar-mode .founder-calendar__brand small {
+    display: none;
+  }
+
+  body.admin-app-mode.founder-calendar-mode .founder-calendar__shell {
+    width: min(100% - 1rem, 1380px);
+  }
+
+  body.admin-app-mode.founder-calendar-mode .founder-calendar__month-card,
+  body.admin-app-mode.founder-calendar-mode .founder-calendar__day-panel {
+    border-radius: 20px;
+  }
+
+  body.admin-app-mode.founder-calendar-mode .founder-calendar__weekdays span {
+    font-size: 0.58rem;
+  }
+
+  body.admin-app-mode.founder-calendar-mode .founder-calendar__day {
+    min-height: 66px;
+  }
+
+  body.admin-app-mode.founder-calendar-mode .founder-calendar__day-events em {
+    overflow: hidden;
+    padding: 0.22rem;
+    text-indent: -999px;
+  }
+
+  body.admin-app-mode.founder-calendar-mode .founder-calendar__day-events em::after {
+    display: block;
+    width: 7px;
+    height: 7px;
+    margin: 0 auto;
+    border-radius: 50%;
+    background: #8a6747;
+    content: '';
+  }
+}

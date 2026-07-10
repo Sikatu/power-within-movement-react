@@ -349,6 +349,14 @@ export async function getAdminFoundersViewOverview() {
   return apiRequest('/api/admin/founders-view/overview')
 }
 
+export async function getAdminFounderCalendar(month) {
+  const params = new URLSearchParams()
+  if (month) params.set('month', month)
+  const query = params.toString()
+
+  return apiRequest(`/api/admin/founders-view/calendar${query ? `?${query}` : ''}`)
+}
+
 export async function createAdminFounderAvailabilityException(payload) {
   return apiRequest('/api/admin/founders-view/availability-exceptions', {
     method: 'POST',

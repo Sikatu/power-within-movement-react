@@ -812,3 +812,76 @@ body.admin-app-mode.founders-view-standalone-mode .founder-home__block-list butt
     grid-template-columns: 1fr;
   }
 }
+
+/* Pass 5: visible founder controls and dedicated personal calendar entry. */
+body.admin-app-mode.founders-view-standalone-mode .founder-home__intro-side {
+  display: grid;
+  gap: 0.75rem;
+  justify-items: end;
+}
+
+body.admin-app-mode.founders-view-standalone-mode .founder-home__primary-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.45rem;
+  flex-wrap: wrap;
+}
+
+body.admin-app-mode.founders-view-standalone-mode .founder-home__primary-actions a,
+body.admin-app-mode.founders-view-standalone-mode .founder-home__primary-actions button {
+  min-height: 38px;
+  padding: 0.62rem 0.82rem;
+  border: 1px solid rgba(82, 66, 50, 0.18);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.62);
+  color: #685744;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.7rem;
+  font-weight: 780;
+  text-decoration: none;
+}
+
+body.admin-app-mode.founders-view-standalone-mode .founder-home__primary-actions a:first-child {
+  border-color: #765a3e;
+  background: #5a4432;
+  color: #fffaf3;
+}
+
+body.admin-app-mode.founders-view-standalone-mode .founder-home__primary-actions button:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+@media (max-width: 760px) {
+  body.admin-app-mode.founders-view-standalone-mode .founder-home__intro-side {
+    width: 100%;
+    justify-items: stretch;
+  }
+
+  body.admin-app-mode.founders-view-standalone-mode .founder-home__primary-actions {
+    justify-content: flex-start;
+  }
+}
+
+body.admin-app-mode.founders-view-standalone-mode .founder-home__calendar-link {
+  min-height: 42px;
+  padding: 0.72rem 1rem;
+  border: 1px solid rgba(82, 66, 50, 0.18);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.54);
+  color: #685744;
+  font-size: 0.78rem;
+  font-weight: 750;
+  letter-spacing: 0.035em;
+  text-decoration: none;
+}
+
+@media (max-width: 760px) {
+  body.admin-app-mode.founders-view-standalone-mode .founder-home__calendar-link {
+    min-height: 38px;
+    padding: 0.62rem 0.72rem;
+    font-size: 0.68rem;
+  }
+}
