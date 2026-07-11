@@ -499,6 +499,7 @@ async function listCleanupCandidates(db, adminUserId) {
     FROM system_users
     WHERE role = ANY($1::text[])
       AND status <> 'archived'
+      AND role <> 'staff'
       AND id <> $2
       AND lower(email) NOT IN (lower($3), lower($4))
     ORDER BY

@@ -650,6 +650,30 @@ export async function getDeveloperClientPreview(clientProfileId) {
 }
 // developer-operations-phase-2-api-end
 
+// staff-team-management-pass-26-api-start
+export async function getMyTeamAccess() {
+  return apiRequest('/api/admin/team/my-access')
+}
+
+export async function getDeveloperTeamManagement() {
+  return apiRequest('/api/admin/developer/team')
+}
+
+export async function updateDeveloperTeamMember(userId, payload) {
+  return apiRequest(`/api/admin/developer/team/${userId}`, {
+    method: 'PATCH',
+    body: JSON.stringify(payload),
+  })
+}
+
+export async function updateDeveloperTeamAssignments(userId, assignments) {
+  return apiRequest(`/api/admin/developer/team/${userId}/client-assignments`, {
+    method: 'PUT',
+    body: JSON.stringify({ assignments }),
+  })
+}
+// staff-team-management-pass-26-api-end
+
 // learning-library-pass-18-api-start
 export async function getAdminLearningLibrary() {
   return apiRequest('/api/admin/learning-library')

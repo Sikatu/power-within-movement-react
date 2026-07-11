@@ -8,6 +8,7 @@ const orderedMigrations = [
   'db:migrate-developer-access',
   'db:migrate-developer-operations',
   'db:migrate-account-governance',
+  'db:migrate-team-management',
   'db:migrate-learning-library',
   'db:migrate-membership-circle',
   'db:migrate-circle-community',

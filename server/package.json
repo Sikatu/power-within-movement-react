@@ -27,6 +27,7 @@
     "db:migrate-client-session-self-service": "node scripts/ensure-client-session-self-service.cjs",
     "db:migrate-secure-client-inbox": "node scripts/ensure-secure-client-inbox.cjs",
     "db:migrate-account-governance": "node scripts/ensure-account-governance.cjs",
+    "db:migrate-team-management": "node scripts/ensure-team-management.cjs",
     "db:migrate-notification-center": "node scripts/ensure-notification-center.cjs",
     "db:migrate:ordered": "node scripts/run-ordered-migrations.cjs"
   },

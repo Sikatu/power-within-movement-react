@@ -78,6 +78,85 @@ BEFORE UPDATE ON client_profiles
 FOR EACH ROW
 EXECUTE FUNCTION set_updated_at();
 
+
+-- -----------------------------------------------------
+-- Staff and team management
+-- -----------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS team_member_profiles (
+  user_id UUID PRIMARY KEY REFERENCES system_users(id) ON DELETE CASCADE,
+  display_name TEXT,
+  job_title TEXT,
+  department TEXT NOT NULL DEFAULT 'client_care'
+    CHECK (department IN ('leadership', 'client_care', 'operations', 'content_community', 'learning', 'administration', 'other')),
+  availability_status TEXT NOT NULL DEFAULT 'available'
+    CHECK (availability_status IN ('available', 'focused', 'limited', 'away')),
+  capacity_percent INTEGER NOT NULL DEFAULT 100
+    CHECK (capacity_percent BETWEEN 0 AND 100),
+  is_assignable BOOLEAN NOT NULL DEFAULT true,
+  internal_notes TEXT,
+  created_by_user_id UUID REFERENCES system_users(id) ON DELETE SET NULL,
+  updated_by_user_id UUID REFERENCES system_users(id) ON DELETE SET NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+DROP TRIGGER IF EXISTS set_team_member_profiles_updated_at ON team_member_profiles;
+CREATE TRIGGER set_team_member_profiles_updated_at
+BEFORE UPDATE ON team_member_profiles
+FOR EACH ROW
+EXECUTE FUNCTION set_updated_at();
+
+CREATE TABLE IF NOT EXISTS team_member_permissions (
+  user_id UUID PRIMARY KEY REFERENCES system_users(id) ON DELETE CASCADE,
+  dashboard_access TEXT NOT NULL DEFAULT 'view' CHECK (dashboard_access IN ('none', 'view', 'manage')),
+  clients_access TEXT NOT NULL DEFAULT 'none' CHECK (clients_access IN ('none', 'view', 'manage')),
+  sessions_access TEXT NOT NULL DEFAULT 'none' CHECK (sessions_access IN ('none', 'view', 'manage')),
+  inbox_access TEXT NOT NULL DEFAULT 'none' CHECK (inbox_access IN ('none', 'view', 'manage')),
+  communications_access TEXT NOT NULL DEFAULT 'none' CHECK (communications_access IN ('none', 'view', 'manage')),
+  learning_access TEXT NOT NULL DEFAULT 'none' CHECK (learning_access IN ('none', 'view', 'manage')),
+  memberships_access TEXT NOT NULL DEFAULT 'none' CHECK (memberships_access IN ('none', 'view', 'manage')),
+  circle_access TEXT NOT NULL DEFAULT 'none' CHECK (circle_access IN ('none', 'view', 'manage')),
+  encouragements_access TEXT NOT NULL DEFAULT 'none' CHECK (encouragements_access IN ('none', 'view', 'manage')),
+  audit_access TEXT NOT NULL DEFAULT 'none' CHECK (audit_access IN ('none', 'view', 'manage')),
+  updated_by_user_id UUID REFERENCES system_users(id) ON DELETE SET NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+DROP TRIGGER IF EXISTS set_team_member_permissions_updated_at ON team_member_permissions;
+CREATE TRIGGER set_team_member_permissions_updated_at
+BEFORE UPDATE ON team_member_permissions
+FOR EACH ROW
+EXECUTE FUNCTION set_updated_at();
+
+CREATE TABLE IF NOT EXISTS team_client_assignments (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  team_user_id UUID NOT NULL REFERENCES system_users(id) ON DELETE CASCADE,
+  client_profile_id UUID NOT NULL REFERENCES client_profiles(id) ON DELETE CASCADE,
+  assignment_role TEXT NOT NULL DEFAULT 'support'
+    CHECK (assignment_role IN ('primary', 'support', 'specialist', 'observer')),
+  assigned_by_user_id UUID REFERENCES system_users(id) ON DELETE SET NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  UNIQUE (team_user_id, client_profile_id)
+);
+
+DROP TRIGGER IF EXISTS set_team_client_assignments_updated_at ON team_client_assignments;
+CREATE TRIGGER set_team_client_assignments_updated_at
+BEFORE UPDATE ON team_client_assignments
+FOR EACH ROW
+EXECUTE FUNCTION set_updated_at();
+
+CREATE INDEX IF NOT EXISTS idx_team_member_profiles_status
+  ON team_member_profiles(availability_status, is_assignable);
+
+CREATE INDEX IF NOT EXISTS idx_team_client_assignments_user
+  ON team_client_assignments(team_user_id, assignment_role, created_at DESC);
+
+CREATE INDEX IF NOT EXISTS idx_team_client_assignments_client
+  ON team_client_assignments(client_profile_id, assignment_role, created_at DESC);
+
 CREATE TABLE IF NOT EXISTS client_tags (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   name TEXT UNIQUE NOT NULL,

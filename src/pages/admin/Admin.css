@@ -3425,3 +3425,29 @@ body.admin-app-mode .client-portal-link-box-v2 button {
     grid-template-columns: 1fr;
   }
 }
+
+/* staff-team-management-pass-26 */
+.pwc-studio-view-only-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: 1rem 1rem 0;
+  border: 1px solid rgba(76, 103, 126, 0.22);
+  border-radius: 0.85rem;
+  background: #f0f5f7;
+  color: #405965;
+  padding: 0.75rem 0.9rem;
+}
+
+.pwc-studio-view-only-banner span {
+  color: #61747c;
+  font-size: 0.86rem;
+}
+
+@media (max-width: 720px) {
+  .pwc-studio-view-only-banner {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}

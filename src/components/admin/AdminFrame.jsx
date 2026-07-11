@@ -1,35 +1,38 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Link, NavLink } from 'react-router-dom'
+import { Link, NavLink, useLocation } from 'react-router-dom'
 import NotificationCenter from '../NotificationCenter'
+import { getMyTeamAccess } from '../../lib/nativeApi'
 
 const studioNavGroups = [
   {
     label: 'Workspace',
     items: [
-      { to: '/admin/dashboard', label: 'Overview' },
-      { to: '/admin/clients', label: 'Clients' },
-      { to: '/admin/inbox', label: 'Secure Inbox' },
-      { to: '/admin/scheduler', label: 'Sessions' },
-      { to: '/admin/session-changes', label: 'Session Changes' },
-      { to: '/admin/email-studio', label: 'Communications' },
+      { to: '/admin/dashboard', label: 'Overview', module: 'dashboard' },
+      { to: '/admin/clients', label: 'Clients', module: 'clients' },
+      { to: '/admin/inbox', label: 'Secure Inbox', module: 'inbox' },
+      { to: '/admin/scheduler', label: 'Sessions', module: 'sessions' },
+      { to: '/admin/session-changes', label: 'Session Changes', module: 'sessions' },
+      { to: '/admin/email-studio', label: 'Communications', module: 'communications' },
     ],
   },
   {
     label: 'Programs',
     items: [
-      { to: '/admin/courses', label: 'Learning Library' },
-      { to: '/admin/memberships', label: 'Memberships' },
-      { to: '/admin/circle', label: 'The Circle' },
-      { to: '/admin/encouragements', label: 'Encouragements' },
+      { to: '/admin/courses', label: 'Learning Library', module: 'learning' },
+      { to: '/admin/memberships', label: 'Memberships', module: 'memberships' },
+      { to: '/admin/circle', label: 'The Circle', module: 'circle' },
+      { to: '/admin/encouragements', label: 'Encouragements', module: 'encouragements' },
     ],
   },
   {
     label: 'System',
-    items: [{ to: '/admin/audit-log', label: 'Activity Journal' }],
+    items: [{ to: '/admin/audit-log', label: 'Activity Journal', module: 'audit' }],
   },
 ]
 
 function AdminFrame({ children }) {
+  const location = useLocation()
+  const [teamAccess, setTeamAccess] = useState(null)
   const [adminUser] = useState(() => {
     if (typeof window === 'undefined') return null
 
@@ -42,22 +45,63 @@ function AdminFrame({ children }) {
 
   const isOwner = adminUser?.role === 'owner'
   const isDeveloper = adminUser?.role === 'developer'
+  const isStaff = adminUser?.role === 'staff'
 
-  const navigationGroups = useMemo(
-    () =>
-      studioNavGroups.map((group) => {
-        if (group.label !== 'System' || !isDeveloper) return group
+  useEffect(() => {
+    let active = true
 
-        return {
-          ...group,
-          items: [
-            { to: '/admin/developer', label: 'Developer Control Center' },
-            ...group.items,
-          ],
-        }
-      }),
-    [isDeveloper],
+    if (!isStaff) return undefined
+
+    getMyTeamAccess()
+      .then((result) => {
+        if (active) setTeamAccess(result.access || null)
+      })
+      .catch(() => {
+        if (active) setTeamAccess({ permissions: {} })
+      })
+
+    return () => {
+      active = false
+    }
+  }, [isStaff])
+
+  const navigationGroups = useMemo(() => {
+    const groups = studioNavGroups.map((group) => {
+      if (group.label !== 'System' || !isDeveloper) return group
+
+      return {
+        ...group,
+        items: [
+          { to: '/admin/developer', label: 'Developer Control Center' },
+          { to: '/admin/team', label: 'Staff & Team Management' },
+          ...group.items,
+        ],
+      }
+    })
+
+    if (!isStaff) return groups
+
+    return groups
+      .map((group) => ({
+        ...group,
+        items: group.items.filter((item) => {
+          if (!item.module) return false
+          return (teamAccess?.permissions?.[item.module] || 'none') !== 'none'
+        }),
+      }))
+      .filter((group) => group.items.length > 0)
+  }, [isDeveloper, isStaff, teamAccess])
+
+  const currentNavigationItem = useMemo(
+    () => navigationGroups
+      .flatMap((group) => group.items)
+      .find((item) => location.pathname === item.to || location.pathname.startsWith(`${item.to}/`)),
+    [location.pathname, navigationGroups],
   )
+
+  const currentTeamAccessLevel = isStaff && currentNavigationItem?.module
+    ? teamAccess?.permissions?.[currentNavigationItem.module] || 'none'
+    : null
 
   useEffect(() => {
     document.body.classList.add('admin-app-mode')
@@ -144,7 +188,15 @@ function AdminFrame({ children }) {
         </Link>
       </aside>
 
-      <section className="pwc-admin-main pwc-studio-main">{children}</section>
+      <section className="pwc-admin-main pwc-studio-main">
+        {currentTeamAccessLevel === 'view' && (
+          <div className="pwc-studio-view-only-banner" role="status">
+            <strong>View-only team access</strong>
+            <span>Your role can review this area, but backend changes are blocked.</span>
+          </div>
+        )}
+        {children}
+      </section>
     </main>
   )
 }
