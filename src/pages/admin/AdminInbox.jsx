@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import AdminFrame from '../../components/admin/AdminFrame'
 import {
   createAdminInboxConversation,
@@ -57,11 +57,13 @@ function clientName(conversation) {
 }
 
 export default function AdminInbox() {
+  const [searchParams] = useSearchParams()
+  const requestedConversationId = searchParams.get('conversation') || ''
   const [conversations, setConversations] = useState([])
   const [clients, setClients] = useState([])
   const [teamUsers, setTeamUsers] = useState([])
   const [metrics, setMetrics] = useState({})
-  const [selectedId, setSelectedId] = useState('')
+  const [selectedId, setSelectedId] = useState(requestedConversationId)
   const [selectedConversation, setSelectedConversation] = useState(null)
   const [filters, setFilters] = useState({ status: 'all', priority: 'all', search: '' })
   const [showNew, setShowNew] = useState(false)
@@ -107,7 +109,7 @@ export default function AdminInbox() {
     async function start() {
       try {
         setLoading(true)
-        await loadInbox()
+        await loadInbox(requestedConversationId)
       } catch (loadError) {
         if (mounted) setError(loadError.message || 'The private inbox could not load.')
       } finally {
@@ -119,7 +121,7 @@ export default function AdminInbox() {
     return () => {
       mounted = false
     }
-  }, [loadInbox])
+  }, [loadInbox, requestedConversationId])
 
   const filteredCountLabel = useMemo(() => {
     if (filters.status === 'all' && filters.priority === 'all' && !filters.search.trim()) {

@@ -2,7 +2,9 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import AdminFrame from '../../components/admin/AdminFrame'
 import {
+  applyDeveloperAccountCleanup,
   createDeveloperManagedUser,
+  getDeveloperAccountGovernance,
   getDeveloperClientAccess,
   getDeveloperClientPreview,
   getDeveloperFounderPreview,
@@ -12,7 +14,10 @@ import {
   getDeveloperUsers,
   issueDeveloperTemporaryPassword,
   logoutAdmin,
+  previewDeveloperAccountCleanup,
+  reconcileDeveloperAccountGovernance,
   revokeDeveloperUserSessions,
+  saveDeveloperPermanentAdmin,
   updateDeveloperSettings,
   updateDeveloperUserRole,
   updateDeveloperUserStatus,
@@ -30,6 +35,7 @@ const tabs = [
 ]
 
 const roleOptions = ['developer', 'owner', 'admin', 'staff']
+const createRoleOptions = ['admin', 'staff']
 
 const featureFlagLabels = {
   clientMessages: 'Client Messages',
@@ -105,6 +111,11 @@ export default function AdminDeveloperPanel() {
   const [clients, setClients] = useState([])
   const [health, setHealth] = useState(null)
   const [settings, setSettings] = useState(null)
+  const [governance, setGovernance] = useState(null)
+  const [selectedAdminId, setSelectedAdminId] = useState('')
+  const [cleanupPreview, setCleanupPreview] = useState(null)
+  const [cleanupConfirmation, setCleanupConfirmation] = useState('')
+  const [isGovernanceBusy, setIsGovernanceBusy] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const [isSavingSettings, setIsSavingSettings] = useState(false)
   const [busyUserId, setBusyUserId] = useState('')
@@ -120,7 +131,7 @@ export default function AdminDeveloperPanel() {
   const [previewClientSearch, setPreviewClientSearch] = useState('')
   const [createForm, setCreateForm] = useState({
     email: '',
-    role: 'staff',
+    role: 'admin',
     expirationHours: 48,
   })
 
@@ -129,20 +140,37 @@ export default function AdminDeveloperPanel() {
     setError('')
 
     try {
-      const [overviewResult, usersResult, clientsResult, healthResult, settingsResult] =
-        await Promise.all([
-          getDeveloperOverview(),
-          getDeveloperUsers(),
-          getDeveloperClientAccess(),
-          getDeveloperSystemHealth(),
-          getDeveloperSettings(),
-        ])
+      const [
+        overviewResult,
+        usersResult,
+        clientsResult,
+        healthResult,
+        settingsResult,
+        governanceResult,
+      ] = await Promise.all([
+        getDeveloperOverview(),
+        getDeveloperUsers(),
+        getDeveloperClientAccess(),
+        getDeveloperSystemHealth(),
+        getDeveloperSettings(),
+        getDeveloperAccountGovernance(),
+      ])
+
+      const nextGovernance = governanceResult.governance || null
+      const adminCandidates = nextGovernance?.adminCandidates || []
+      const savedAdminId = nextGovernance?.permanentAdmin?.id || ''
 
       setOverview(overviewResult)
       setUsers(usersResult.users || [])
       setClients(clientsResult.clients || [])
       setHealth(healthResult)
       setSettings(settingsResult.settings || null)
+      setGovernance(nextGovernance)
+      setSelectedAdminId((current) =>
+        adminCandidates.some((candidate) => candidate.id === current)
+          ? current
+          : savedAdminId,
+      )
     } catch (loadError) {
       setError(loadError.message || 'Unable to load the Developer Control Center.')
     } finally {
@@ -213,10 +241,94 @@ export default function AdminDeveloperPanel() {
         password: result.temporaryPassword,
         expiresAt: result.user?.temporary_password_expires_at,
       })
-      setCreateForm({ email: '', role: 'staff', expirationHours: 48 })
+      setCreateForm({ email: '', role: 'admin', expirationHours: 48 })
+      if (result.user?.role === 'admin') setSelectedAdminId(result.user.id)
       await refreshAfterAction('Account created. Copy the temporary password now.')
     } catch (actionError) {
       setError(actionError.message || 'Unable to create the account.')
+    }
+  }
+
+  const handleReconcileGovernance = async () => {
+    if (!window.confirm('Repair the canonical Developer and Owner roles and transfer Founder availability to the Owner account?')) return
+
+    setIsGovernanceBusy(true)
+    setError('')
+    setNotice('')
+    setCleanupPreview(null)
+
+    try {
+      const result = await reconcileDeveloperAccountGovernance()
+      setGovernance(result.governance)
+      await refreshAfterAction(result.message)
+    } catch (actionError) {
+      setError(actionError.message || 'Unable to reconcile production identities.')
+    } finally {
+      setIsGovernanceBusy(false)
+    }
+  }
+
+  const handleSavePermanentAdmin = async () => {
+    setIsGovernanceBusy(true)
+    setError('')
+    setNotice('')
+    setCleanupPreview(null)
+    setCleanupConfirmation('')
+
+    try {
+      const result = await saveDeveloperPermanentAdmin(selectedAdminId)
+      setGovernance(result.governance)
+      setNotice(result.message)
+    } catch (actionError) {
+      setError(actionError.message || 'Unable to save the permanent Admin account.')
+    } finally {
+      setIsGovernanceBusy(false)
+    }
+  }
+
+  const handlePreviewCleanup = async () => {
+    setIsGovernanceBusy(true)
+    setError('')
+    setNotice('')
+    setCleanupConfirmation('')
+
+    try {
+      const result = await previewDeveloperAccountCleanup(selectedAdminId)
+      setCleanupPreview(result.preview)
+      setNotice('Cleanup preview is ready. Nothing has been changed yet.')
+    } catch (actionError) {
+      setCleanupPreview(null)
+      setError(actionError.message || 'Unable to preview account cleanup.')
+    } finally {
+      setIsGovernanceBusy(false)
+    }
+  }
+
+  const handleApplyCleanup = async () => {
+    if (cleanupConfirmation !== 'ARCHIVE') {
+      setError('Type ARCHIVE exactly before applying the cleanup.')
+      return
+    }
+
+    if (!window.confirm('Archive every listed duplicate/test system account and revoke its sessions? Client and member accounts will remain untouched.')) return
+
+    setIsGovernanceBusy(true)
+    setError('')
+    setNotice('')
+
+    try {
+      const result = await applyDeveloperAccountCleanup(
+        selectedAdminId,
+        cleanupConfirmation,
+      )
+      setGovernance(result.governance)
+      setCleanupPreview(null)
+      setCleanupConfirmation('')
+      await refreshAfterAction(result.message)
+    } catch (actionError) {
+      setError(actionError.message || 'Unable to apply the account cleanup.')
+    } finally {
+      setIsGovernanceBusy(false)
     }
   }
 
@@ -534,14 +646,120 @@ export default function AdminDeveloperPanel() {
 
         {activeTab === 'accounts' && (
           <>
+            <section className="developer-governance-card">
+              <div className="developer-section-heading">
+                <div>
+                  <p className="admin-eyebrow">Production Identity Governance</p>
+                  <h2>Protected Owner, Developer, and Admin access</h2>
+                  <p>The backend protects the canonical Developer and Owner emails. Choose one separate Admin before archiving duplicate or test system accounts.</p>
+                </div>
+                <HealthBadge state={governance?.healthy ? 'healthy' : 'warning'}>
+                  {governance?.healthy ? 'Identity map healthy' : `${governance?.issues?.length || 0} issue${governance?.issues?.length === 1 ? '' : 's'}`}
+                </HealthBadge>
+              </div>
+
+              <div className="developer-governance-identities">
+                <article>
+                  <span>Canonical Developer</span>
+                  <strong>{governance?.canonical?.developerEmail || 'Loading…'}</strong>
+                  <small>{governance?.developer ? `${readable(governance.developer.role)} · ${readable(governance.developer.status)}` : 'Account missing'}</small>
+                </article>
+                <article>
+                  <span>Canonical Owner</span>
+                  <strong>{governance?.canonical?.ownerEmail || 'Loading…'}</strong>
+                  <small>{governance?.owner ? `${readable(governance.owner.role)} · ${readable(governance.owner.status)}` : 'Account missing'}</small>
+                </article>
+                <article>
+                  <span>Founder availability owner</span>
+                  <strong>{governance?.founderAvailability?.owner_email || 'Unassigned'}</strong>
+                  <small>{governance?.founderAvailability ? `${governance.founderAvailability.schedule_enabled ? 'Schedule enabled' : 'Schedule disabled'} · ${governance.founderAvailability.timezone}` : 'Needs reconciliation'}</small>
+                </article>
+              </div>
+
+              {governance?.issues?.length > 0 && (
+                <div className="developer-governance-issues">
+                  {governance.issues.map((issue) => <span key={issue}>{issue}</span>)}
+                </div>
+              )}
+
+              <div className="developer-governance-admin-row">
+                <label>
+                  <span>Permanent Admin account</span>
+                  <select
+                    value={selectedAdminId}
+                    onChange={(event) => {
+                      setSelectedAdminId(event.target.value)
+                      setCleanupPreview(null)
+                      setCleanupConfirmation('')
+                    }}
+                  >
+                    <option value="">Choose an active Admin</option>
+                    {(governance?.adminCandidates || []).map((admin) => (
+                      <option value={admin.id} key={admin.id} disabled={admin.status !== 'active'}>
+                        {admin.email} · {readable(admin.status)}
+                      </option>
+                    ))}
+                  </select>
+                  <small>Create an Admin account below first when this list is empty.</small>
+                </label>
+
+                <div className="developer-governance-actions">
+                  <button className="btn secondary" type="button" onClick={handleReconcileGovernance} disabled={isGovernanceBusy}>
+                    {isGovernanceBusy ? 'Working…' : 'Repair Identity Mapping'}
+                  </button>
+                  <button className="btn secondary" type="button" onClick={handleSavePermanentAdmin} disabled={isGovernanceBusy || !selectedAdminId}>
+                    Save Permanent Admin
+                  </button>
+                  <button className="btn primary" type="button" onClick={handlePreviewCleanup} disabled={isGovernanceBusy || !selectedAdminId}>
+                    Preview Backend Cleanup
+                  </button>
+                </div>
+              </div>
+
+              {cleanupPreview && (
+                <div className="developer-cleanup-preview">
+                  <div>
+                    <p className="admin-eyebrow">Safe Cleanup Preview</p>
+                    <h3>{cleanupPreview.count} system account{cleanupPreview.count === 1 ? '' : 's'} will be archived</h3>
+                    <p>Preserved: canonical Developer, canonical Owner, {cleanupPreview.permanentAdmin?.email}. Client and member accounts are excluded.</p>
+                  </div>
+
+                  {cleanupPreview.candidates?.length > 0 ? (
+                    <div className="developer-cleanup-list">
+                      {cleanupPreview.candidates.map((candidate) => (
+                        <article key={candidate.id}>
+                          <strong>{candidate.email}</strong>
+                          <span>{readable(candidate.role)} · {readable(candidate.status)}</span>
+                        </article>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="developer-preview-empty">No duplicate or test system accounts are eligible for cleanup.</p>
+                  )}
+
+                  {cleanupPreview.candidates?.length > 0 && (
+                    <div className="developer-cleanup-confirmation">
+                      <label>
+                        <span>Type ARCHIVE to confirm</span>
+                        <input value={cleanupConfirmation} onChange={(event) => setCleanupConfirmation(event.target.value)} placeholder="ARCHIVE" />
+                      </label>
+                      <button className="btn secondary developer-danger-button" type="button" onClick={handleApplyCleanup} disabled={isGovernanceBusy || cleanupConfirmation !== 'ARCHIVE'}>
+                        Archive Listed Accounts
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
+            </section>
+
             <section className="developer-panel-card">
               <div className="developer-section-heading">
-                <div><p className="admin-eyebrow">Create Access</p><h2>New system account</h2><p>Creates a developer, owner, admin, or staff account with a one-time temporary password.</p></div>
+                <div><p className="admin-eyebrow">Create Access</p><h2>New Admin or team account</h2><p>Admin is selected by default. Canonical Developer and Owner emails are protected by the backend.</p></div>
               </div>
 
               <form className="developer-create-form" onSubmit={handleCreateAccount}>
                 <label>Email<input type="email" required value={createForm.email} onChange={(event) => setCreateForm((current) => ({ ...current, email: event.target.value }))} /></label>
-                <label>Role<select value={createForm.role} onChange={(event) => setCreateForm((current) => ({ ...current, role: event.target.value }))}>{roleOptions.map((role) => <option value={role} key={role}>{readable(role)}</option>)}</select></label>
+                <label>Role<select value={createForm.role} onChange={(event) => setCreateForm((current) => ({ ...current, role: event.target.value }))}>{createRoleOptions.map((role) => <option value={role} key={role}>{readable(role)}</option>)}</select></label>
                 <label>Temporary access<select value={createForm.expirationHours} onChange={(event) => setCreateForm((current) => ({ ...current, expirationHours: Number(event.target.value) }))}><option value={24}>24 hours</option><option value={48}>48 hours</option><option value={72}>72 hours</option><option value={168}>7 days</option></select></label>
                 <button className="btn primary" type="submit">Create Account</button>
               </form>
@@ -562,11 +780,12 @@ export default function AdminDeveloperPanel() {
                 {filteredUsers.map((user) => {
                   const isCurrentDeveloper = user.id === currentDeveloperId
                   const isSystemRole = !['client', 'member'].includes(user.role)
+                  const isProtectedIdentity = Boolean(user.protected_identity)
 
                   return (
                     <article className="developer-account-card" key={user.id}>
                       <div className="developer-account-primary">
-                        <div><span className={`developer-role-badge role-${user.role}`}>{readable(user.role)}</span>{isCurrentDeveloper && <span className="developer-you-badge">You</span>}</div>
+                        <div><span className={`developer-role-badge role-${user.role}`}>{readable(user.role)}</span>{isCurrentDeveloper && <span className="developer-you-badge">You</span>}{isProtectedIdentity && <span className="developer-protected-badge">Protected {readable(user.protected_identity)}</span>}</div>
                         <h3>{displayName(user)}</h3><p>{user.email}</p>
                       </div>
 
@@ -578,12 +797,12 @@ export default function AdminDeveloperPanel() {
 
                       <div className="developer-account-actions">
                         {user.client_profile_id && <Link className="btn secondary" to={`/admin/clients/${user.client_profile_id}/portal-access`}>Client Access</Link>}
-                        {isSystemRole && !isCurrentDeveloper && <select aria-label={`Change role for ${user.email}`} disabled={busyUserId === user.id} value={user.role} onChange={(event) => handleRole(user, event.target.value)}>{roleOptions.map((role) => <option value={role} key={role}>{readable(role)}</option>)}</select>}
+                        {isSystemRole && !isCurrentDeveloper && !isProtectedIdentity && <select aria-label={`Change role for ${user.email}`} disabled={busyUserId === user.id} value={user.role} onChange={(event) => handleRole(user, event.target.value)}>{roleOptions.map((role) => <option value={role} key={role}>{readable(role)}</option>)}</select>}
                         {isSystemRole && !isCurrentDeveloper && <button className="btn secondary" type="button" disabled={busyUserId === user.id} onClick={() => handleTemporaryPassword(user)}>Temporary Password</button>}
                         {!isCurrentDeveloper && <button className="btn secondary" type="button" disabled={busyUserId === user.id} onClick={() => handleRevokeSessions(user)}>Sign Out Everywhere</button>}
-                        {!isCurrentDeveloper && user.status !== 'active' && <button className="btn secondary" type="button" disabled={busyUserId === user.id} onClick={() => handleStatus(user, 'active')}>Activate</button>}
-                        {!isCurrentDeveloper && user.status === 'active' && <button className="btn secondary developer-danger-button" type="button" disabled={busyUserId === user.id} onClick={() => handleStatus(user, 'suspended')}>Suspend</button>}
-                        {!isCurrentDeveloper && user.status !== 'archived' && <button className="btn secondary developer-danger-button" type="button" disabled={busyUserId === user.id} onClick={() => handleStatus(user, 'archived')}>Archive</button>}
+                        {!isCurrentDeveloper && !isProtectedIdentity && user.status !== 'active' && <button className="btn secondary" type="button" disabled={busyUserId === user.id} onClick={() => handleStatus(user, 'active')}>Activate</button>}
+                        {!isCurrentDeveloper && !isProtectedIdentity && user.status === 'active' && <button className="btn secondary developer-danger-button" type="button" disabled={busyUserId === user.id} onClick={() => handleStatus(user, 'suspended')}>Suspend</button>}
+                        {!isCurrentDeveloper && !isProtectedIdentity && user.status !== 'archived' && <button className="btn secondary developer-danger-button" type="button" disabled={busyUserId === user.id} onClick={() => handleStatus(user, 'archived')}>Archive</button>}
                       </div>
                     </article>
                   )

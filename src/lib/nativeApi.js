@@ -555,6 +555,37 @@ export async function getDeveloperUsers() {
   return apiRequest('/api/admin/developer/users')
 }
 
+export async function getDeveloperAccountGovernance() {
+  return apiRequest('/api/admin/developer/account-governance')
+}
+
+export async function reconcileDeveloperAccountGovernance() {
+  return apiRequest('/api/admin/developer/account-governance/reconcile', {
+    method: 'POST',
+  })
+}
+
+export async function saveDeveloperPermanentAdmin(adminUserId) {
+  return apiRequest('/api/admin/developer/account-governance/admin', {
+    method: 'PATCH',
+    body: JSON.stringify({ adminUserId }),
+  })
+}
+
+export async function previewDeveloperAccountCleanup(adminUserId) {
+  return apiRequest('/api/admin/developer/account-governance/cleanup-preview', {
+    method: 'POST',
+    body: JSON.stringify({ adminUserId }),
+  })
+}
+
+export async function applyDeveloperAccountCleanup(adminUserId, confirmation) {
+  return apiRequest('/api/admin/developer/account-governance/cleanup', {
+    method: 'POST',
+    body: JSON.stringify({ adminUserId, confirmation }),
+  })
+}
+
 export async function issueDeveloperTemporaryPassword(userId, expirationHours = 48) {
   return apiRequest(`/api/admin/developer/users/${userId}/temporary-password`, {
     method: 'POST',
@@ -1006,3 +1037,32 @@ export async function updateClientPortalInboxConversation(conversationId, status
   })
 }
 // secure-client-inbox-pass-22-api-end
+
+// unified-notification-center-pass-25-api-start
+function buildNotificationQuery(filters = {}) {
+  const params = new URLSearchParams()
+  if (filters.unreadOnly) params.set('unreadOnly', 'true')
+  if (filters.category) params.set('category', filters.category)
+  if (filters.limit) params.set('limit', String(filters.limit))
+  const query = params.toString()
+  return query ? `?${query}` : ''
+}
+
+export async function getAdminNotificationSummary() { return apiRequest('/api/admin/notifications/summary') }
+export async function getAdminNotifications(filters = {}) { return apiRequest(`/api/admin/notifications${buildNotificationQuery(filters)}`) }
+export async function markAdminNotificationRead(id) { return apiRequest(`/api/admin/notifications/${id}/read`, { method: 'PATCH' }) }
+export async function markAllAdminNotificationsRead() { return apiRequest('/api/admin/notifications/mark-all-read', { method: 'POST' }) }
+export async function dismissAdminNotification(id) { return apiRequest(`/api/admin/notifications/${id}`, { method: 'DELETE' }) }
+export async function clearReadAdminNotifications() { return apiRequest('/api/admin/notifications/clear-read', { method: 'POST' }) }
+export async function getAdminNotificationPreferences() { return apiRequest('/api/admin/notifications/preferences') }
+export async function updateAdminNotificationPreferences(payload) { return apiRequest('/api/admin/notifications/preferences', { method: 'PATCH', body: JSON.stringify(payload) }) }
+
+export async function getClientNotificationSummary() { return apiRequest('/api/public/client-portal/notifications/summary') }
+export async function getClientNotifications(filters = {}) { return apiRequest(`/api/public/client-portal/notifications${buildNotificationQuery(filters)}`) }
+export async function markClientNotificationRead(id) { return apiRequest(`/api/public/client-portal/notifications/${id}/read`, { method: 'PATCH' }) }
+export async function markAllClientNotificationsRead() { return apiRequest('/api/public/client-portal/notifications/mark-all-read', { method: 'POST' }) }
+export async function dismissClientNotification(id) { return apiRequest(`/api/public/client-portal/notifications/${id}`, { method: 'DELETE' }) }
+export async function clearReadClientNotifications() { return apiRequest('/api/public/client-portal/notifications/clear-read', { method: 'POST' }) }
+export async function getClientNotificationPreferences() { return apiRequest('/api/public/client-portal/notifications/preferences') }
+export async function updateClientNotificationPreferences(payload) { return apiRequest('/api/public/client-portal/notifications/preferences', { method: 'PATCH', body: JSON.stringify(payload) }) }
+// unified-notification-center-pass-25-api-end

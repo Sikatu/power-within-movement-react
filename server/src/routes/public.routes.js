@@ -20,6 +20,17 @@ const {
   clientCanAccessCirclePost,
   listClientCircleFeed,
 } = require('../services/circleCommunity.service')
+const {
+  DEFAULT_EMAIL_CATEGORIES,
+  dismissNotification,
+  dismissReadNotifications,
+  getNotificationPreferences,
+  getNotificationSummary,
+  listNotifications,
+  markAllNotificationsRead,
+  markNotificationRead,
+  saveNotificationPreferences,
+} = require('../services/notificationCenter.service')
 
 const router = express.Router()
 const contactDbModule = require('../db/pool')
@@ -3479,5 +3490,104 @@ router.patch(
 )
 // secure-client-inbox-pass-22-public-end
 
+
+
+// unified-notification-center-pass-25-client-start
+const clientNotificationPreferencesSchema = z.object({
+  emailEnabled: z.boolean(),
+  emailCategories: z
+    .object({
+      inbox: z.boolean(),
+      sessions: z.boolean(),
+      resources: z.boolean(),
+      learning: z.boolean(),
+      memberships: z.boolean(),
+      encouragements: z.boolean(),
+      community: z.boolean(),
+      system: z.boolean(),
+    })
+    .default(DEFAULT_EMAIL_CATEGORIES),
+})
+
+router.get('/client-portal/notifications/summary', requireClientPortalUser, async (req, res, next) => {
+  try {
+    return res.json({ ok: true, summary: await getNotificationSummary(req.clientPortalUser.id) })
+  } catch (error) {
+    return next(error)
+  }
+})
+
+router.get('/client-portal/notifications', requireClientPortalUser, async (req, res, next) => {
+  try {
+    const result = await listNotifications(req.clientPortalUser.id, {
+      limit: req.query.limit,
+      unreadOnly: req.query.unreadOnly === 'true',
+      category: req.query.category,
+    })
+    return res.json({ ok: true, ...result })
+  } catch (error) {
+    return next(error)
+  }
+})
+
+router.patch('/client-portal/notifications/:notificationId/read', requireClientPortalUser, async (req, res, next) => {
+  try {
+    const notification = await markNotificationRead(req.clientPortalUser.id, req.params.notificationId)
+    if (!notification) return res.status(404).json({ ok: false, error: 'Notification not found.' })
+    return res.json({ ok: true, notification })
+  } catch (error) {
+    return next(error)
+  }
+})
+
+router.post('/client-portal/notifications/mark-all-read', requireClientPortalUser, async (req, res, next) => {
+  try {
+    const updated = await markAllNotificationsRead(req.clientPortalUser.id)
+    return res.json({ ok: true, updated, message: updated ? 'All notifications marked as read.' : 'No unread notifications remained.' })
+  } catch (error) {
+    return next(error)
+  }
+})
+
+router.delete('/client-portal/notifications/:notificationId', requireClientPortalUser, async (req, res, next) => {
+  try {
+    const dismissed = await dismissNotification(req.clientPortalUser.id, req.params.notificationId)
+    if (!dismissed) return res.status(404).json({ ok: false, error: 'Notification not found.' })
+    return res.json({ ok: true, message: 'Notification removed.' })
+  } catch (error) {
+    return next(error)
+  }
+})
+
+router.post('/client-portal/notifications/clear-read', requireClientPortalUser, async (req, res, next) => {
+  try {
+    const dismissed = await dismissReadNotifications(req.clientPortalUser.id)
+    return res.json({ ok: true, dismissed, message: dismissed ? 'Read notifications cleared.' : 'No read notifications needed clearing.' })
+  } catch (error) {
+    return next(error)
+  }
+})
+
+router.get('/client-portal/notifications/preferences', requireClientPortalUser, async (req, res, next) => {
+  try {
+    return res.json({ ok: true, preferences: await getNotificationPreferences(req.clientPortalUser.id) })
+  } catch (error) {
+    return next(error)
+  }
+})
+
+router.patch('/client-portal/notifications/preferences', requireClientPortalUser, async (req, res, next) => {
+  const parsed = clientNotificationPreferencesSchema.safeParse(req.body)
+  if (!parsed.success) return res.status(400).json({ ok: false, error: parsed.error.issues[0]?.message || 'Please check the notification preferences.' })
+
+  try {
+    const preferences = await saveNotificationPreferences(req.clientPortalUser.id, parsed.data)
+    await writeClientPortalAuditLog(req, 'notification_preferences_updated', 'system_users', req.clientPortalUser.id, {}, preferences)
+    return res.json({ ok: true, message: 'Notification preferences saved.', preferences })
+  } catch (error) {
+    return next(error)
+  }
+})
+// unified-notification-center-pass-25-client-end
 
 module.exports = router

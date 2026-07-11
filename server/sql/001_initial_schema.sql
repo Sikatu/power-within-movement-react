@@ -727,3 +727,70 @@ CREATE INDEX IF NOT EXISTS idx_client_conversations_assignee
 CREATE INDEX IF NOT EXISTS idx_client_conversation_messages_conversation
   ON client_conversation_messages(conversation_id, created_at ASC);
 -- secure-client-inbox-pass-22-schema-end
+
+-- unified-notification-center-pass-25-schema-start
+CREATE TABLE IF NOT EXISTS notification_preferences (
+  user_id UUID PRIMARY KEY REFERENCES system_users(id) ON DELETE CASCADE,
+  email_enabled BOOLEAN NOT NULL DEFAULT FALSE,
+  email_categories JSONB NOT NULL DEFAULT '{
+    "inbox": true,
+    "sessions": true,
+    "resources": true,
+    "learning": true,
+    "memberships": true,
+    "encouragements": true,
+    "community": true,
+    "system": true
+  }'::jsonb,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+DROP TRIGGER IF EXISTS set_notification_preferences_updated_at
+  ON notification_preferences;
+CREATE TRIGGER set_notification_preferences_updated_at
+BEFORE UPDATE ON notification_preferences
+FOR EACH ROW
+EXECUTE FUNCTION set_updated_at();
+
+CREATE TABLE IF NOT EXISTS notifications (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  recipient_user_id UUID NOT NULL REFERENCES system_users(id) ON DELETE CASCADE,
+  actor_user_id UUID REFERENCES system_users(id) ON DELETE SET NULL,
+  category TEXT NOT NULL CHECK (
+    category IN ('inbox', 'sessions', 'resources', 'learning', 'memberships', 'encouragements', 'community', 'system')
+  ),
+  title TEXT NOT NULL,
+  body TEXT NOT NULL,
+  action_url TEXT,
+  action_label TEXT,
+  entity_type TEXT,
+  entity_id UUID,
+  importance TEXT NOT NULL DEFAULT 'normal'
+    CHECK (importance IN ('normal', 'high', 'urgent')),
+  dedupe_key TEXT,
+  read_at TIMESTAMPTZ,
+  dismissed_at TIMESTAMPTZ,
+  email_status TEXT NOT NULL DEFAULT 'not_requested'
+    CHECK (email_status IN ('not_requested', 'pending', 'sent', 'skipped', 'failed')),
+  email_attempts INTEGER NOT NULL DEFAULT 0,
+  email_error TEXT,
+  email_sent_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  expires_at TIMESTAMPTZ NOT NULL DEFAULT (now() + interval '180 days')
+);
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_notifications_dedupe_key
+  ON notifications(dedupe_key)
+  WHERE dedupe_key IS NOT NULL;
+CREATE INDEX IF NOT EXISTS idx_notifications_recipient_created
+  ON notifications(recipient_user_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_notifications_recipient_unread
+  ON notifications(recipient_user_id, read_at, created_at DESC)
+  WHERE dismissed_at IS NULL;
+CREATE INDEX IF NOT EXISTS idx_notifications_email_queue
+  ON notifications(email_status, created_at)
+  WHERE email_status = 'pending';
+CREATE INDEX IF NOT EXISTS idx_notifications_expiration
+  ON notifications(expires_at);
+-- unified-notification-center-pass-25-schema-end

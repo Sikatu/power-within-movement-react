@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom'
+import NotificationCenter from '../components/NotificationCenter'
 import {
   changeClientPortalPassword,
   getClientPortalDashboard,
@@ -1730,6 +1731,7 @@ export default function ClientPortalDashboard() {
               <span>Signed in as</span>
               <strong>{client?.name || client?.email || 'Client'}</strong>
             </div>
+            <NotificationCenter mode="client" />
             <Link to="/">Website</Link>
             <button type="button" onClick={handleLogout} disabled={isLoggingOut}>
               {isLoggingOut ? 'Signing out...' : 'Sign Out'}

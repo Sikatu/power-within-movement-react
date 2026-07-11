@@ -2649,3 +2649,29 @@ body.client-portal-mode .client-learning-actions-v4 button:disabled {
   }
 }
 /* membership-circle-pass-19-client-end */
+
+
+/* unified-notification-center-pass-25-client-fit-start */
+body.client-portal-mode .client-portal-app-user-v3 .pwc-notification-trigger {
+  flex: 0 0 auto;
+  min-height: 42px;
+  border: 1px solid rgba(91, 44, 57, 0.14);
+  background: rgba(255, 255, 255, 0.72);
+  color: #5b2c39;
+  padding: 0 0.85rem;
+}
+body.client-portal-mode .client-portal-app-user-v3 .pwc-notification-trigger:hover {
+  background: #5b2c39;
+  color: #fffaf5;
+}
+@media (max-width: 720px) {
+  body.client-portal-mode .client-portal-app-user-v3 .pwc-notification-center {
+    flex: 0 0 auto;
+  }
+  body.client-portal-mode .client-portal-app-user-v3 .pwc-notification-trigger {
+    flex: 0 0 auto;
+    width: 44px;
+    padding: 0;
+  }
+}
+/* unified-notification-center-pass-25-client-fit-end */

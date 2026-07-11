@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Link, NavLink, useNavigate } from 'react-router-dom'
+import NotificationCenter from '../components/NotificationCenter'
 import {
   createClientCircleComment,
   deleteClientCircleComment,
@@ -71,6 +72,7 @@ function ClientPortalShell({ client, unreadCount, isLoggingOut, onLogout, childr
               <span>Signed in as</span>
               <strong>{client?.name || client?.email || 'Client'}</strong>
             </div>
+            <NotificationCenter mode="client" />
             <Link to="/">Website</Link>
             <button type="button" onClick={onLogout} disabled={isLoggingOut}>
               {isLoggingOut ? 'Signing out...' : 'Sign Out'}

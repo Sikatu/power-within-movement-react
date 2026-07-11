@@ -25,7 +25,10 @@
     "db:migrate-membership-circle": "node scripts/ensure-membership-circle.cjs",
     "db:migrate-circle-community": "node scripts/ensure-circle-community.cjs",
     "db:migrate-client-session-self-service": "node scripts/ensure-client-session-self-service.cjs",
-    "db:migrate-secure-client-inbox": "node scripts/ensure-secure-client-inbox.cjs"
+    "db:migrate-secure-client-inbox": "node scripts/ensure-secure-client-inbox.cjs",
+    "db:migrate-account-governance": "node scripts/ensure-account-governance.cjs",
+    "db:migrate-notification-center": "node scripts/ensure-notification-center.cjs",
+    "db:migrate:ordered": "node scripts/run-ordered-migrations.cjs"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",

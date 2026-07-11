@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, NavLink, useNavigate } from 'react-router-dom'
+import NotificationCenter from '../components/NotificationCenter'
 import {
   createClientPortalBooking,
   createClientPortalBookingChangeRequest,
@@ -285,6 +286,7 @@ export default function ClientPortalSessions() {
           <div className="client-portal-app-brand-v3"><span>Power Within</span><strong>Client Portal</strong></div>
           <div className="client-portal-app-user-v3">
             <div><span>Signed in as</span><strong>{client?.name || client?.email || 'Client'}</strong></div>
+            <NotificationCenter mode="client" />
             <Link to="/">Website</Link>
             <button type="button" onClick={handleLogout} disabled={isLoggingOut}>{isLoggingOut ? 'Signing out…' : 'Sign Out'}</button>
           </div>

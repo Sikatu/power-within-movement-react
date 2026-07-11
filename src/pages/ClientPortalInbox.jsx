@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Link, NavLink, useNavigate, useParams } from 'react-router-dom'
+import NotificationCenter from '../components/NotificationCenter'
 import {
   createClientPortalInboxConversation,
   getClientPortalDashboard,
@@ -243,6 +244,7 @@ export default function ClientPortalInbox() {
           </div>
           <div className="client-portal-app-user-v3">
             <div><span>Signed in as</span><strong>{client?.name || client?.email || 'Client'}</strong></div>
+            <NotificationCenter mode="client" />
             <Link to="/">Website</Link>
             <button type="button" onClick={handleLogout} disabled={loggingOut}>
               {loggingOut ? 'Signing out…' : 'Sign Out'}

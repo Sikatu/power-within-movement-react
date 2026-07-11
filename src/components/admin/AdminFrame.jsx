@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, NavLink } from 'react-router-dom'
+import NotificationCenter from '../NotificationCenter'
 
 const studioNavGroups = [
   {
@@ -129,6 +130,8 @@ function AdminFrame({ children }) {
             </section>
           ))}
         </nav>
+
+        <NotificationCenter mode="admin" />
 
         <div className="pwc-studio-profile-note">
           <span>Signed in as</span>

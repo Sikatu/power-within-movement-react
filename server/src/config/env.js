@@ -83,6 +83,11 @@ const env = {
 
   resendApiKey: process.env.RESEND_API_KEY || '',
   portalEmailFrom: process.env.PORTAL_EMAIL_FROM || '',
+
+  canonicalDeveloperEmail:
+    process.env.CANONICAL_DEVELOPER_EMAIL || 'darelle.grande.mva@gmail.com',
+  canonicalOwnerEmail:
+    process.env.CANONICAL_OWNER_EMAIL || 'hello@powerwithinmovement.com',
 }
 
 module.exports = { env }

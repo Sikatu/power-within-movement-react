@@ -37,6 +37,25 @@ const {
   getAdminCirclePost,
   listAdminCirclePosts,
 } = require('../services/circleCommunity.service')
+const {
+  getCanonicalRoleForEmail,
+  getAccountGovernanceSnapshot,
+  reconcileCanonicalAccounts,
+  setPermanentAdmin,
+  previewSystemAccountCleanup,
+  applySystemAccountCleanup,
+} = require('../services/accountGovernance.service')
+const {
+  DEFAULT_EMAIL_CATEGORIES,
+  dismissNotification,
+  dismissReadNotifications,
+  getNotificationPreferences,
+  getNotificationSummary,
+  listNotifications,
+  markAllNotificationsRead,
+  markNotificationRead,
+  saveNotificationPreferences,
+} = require('../services/notificationCenter.service')
 
 const router = express.Router()
 
@@ -59,9 +78,12 @@ async function getActiveFounderOwner() {
     FROM system_users
     WHERE role = 'owner'
       AND status = 'active'
-    ORDER BY created_at ASC
+    ORDER BY
+      CASE WHEN lower(email) = lower($1) THEN 0 ELSE 1 END,
+      created_at ASC
     LIMIT 1
     `,
+    [env.canonicalOwnerEmail],
   )
 
   return result.rows[0] || null
@@ -6682,7 +6704,10 @@ router.get('/developer/users', requireDeveloper, async (req, res, next) => {
 
     return res.json({
       ok: true,
-      users: result.rows,
+      users: result.rows.map((user) => ({
+        ...user,
+        protected_identity: getCanonicalRoleForEmail(user.email),
+      })),
     })
   } catch (error) {
     return next(error)
@@ -6861,6 +6886,15 @@ router.patch('/developer/users/:userId/status', requireDeveloper, async (req, re
       })
     }
 
+    const protectedIdentity = getCanonicalRoleForEmail(target.email)
+
+    if (protectedIdentity && parsed.data.status !== 'active') {
+      return res.status(400).json({
+        ok: false,
+        error: `The canonical ${protectedIdentity} account must remain active.`,
+      })
+    }
+
     if (target.role === 'developer' && parsed.data.status !== 'active') {
       const activeDeveloperCountResult = await pool.query(`
         SELECT COUNT(*)::int AS count
@@ -7016,6 +7050,129 @@ async function getActiveDeveloperCount() {
   return Number(result.rows[0]?.count || 0)
 }
 
+const accountGovernanceAdminSchema = z.object({
+  adminUserId: z.string().uuid(),
+})
+
+const accountGovernanceCleanupSchema = accountGovernanceAdminSchema.extend({
+  confirmation: z.literal('ARCHIVE'),
+})
+
+router.get('/developer/account-governance', requireDeveloper, async (req, res, next) => {
+  try {
+    const governance = await getAccountGovernanceSnapshot(pool)
+
+    return res.json({
+      ok: true,
+      governance,
+    })
+  } catch (error) {
+    return next(error)
+  }
+})
+
+router.post('/developer/account-governance/reconcile', requireDeveloper, async (req, res, next) => {
+  try {
+    const governance = await reconcileCanonicalAccounts(pool, req.user.id)
+
+    return res.json({
+      ok: true,
+      message: 'Canonical Developer, Owner, and Founder availability ownership are reconciled.',
+      governance,
+    })
+  } catch (error) {
+    if (['CANONICAL_DEVELOPER_MISSING', 'CANONICAL_OWNER_MISSING'].includes(error.code)) {
+      return res.status(409).json({ ok: false, error: error.message })
+    }
+
+    return next(error)
+  }
+})
+
+router.patch('/developer/account-governance/admin', requireDeveloper, async (req, res, next) => {
+  try {
+    const parsed = accountGovernanceAdminSchema.safeParse(req.body || {})
+
+    if (!parsed.success) {
+      return res.status(400).json({
+        ok: false,
+        error: 'Choose an active Admin account.',
+      })
+    }
+
+    const result = await setPermanentAdmin(pool, req.user.id, parsed.data.adminUserId)
+
+    return res.json({
+      ok: true,
+      message: `${result.permanentAdmin.email} is now the permanent Admin account.`,
+      ...result,
+    })
+  } catch (error) {
+    if (['ADMIN_REQUIRED', 'INVALID_ADMIN', 'INACTIVE_ADMIN', 'CANONICAL_EMAIL_CONFLICT'].includes(error.code)) {
+      return res.status(400).json({ ok: false, error: error.message })
+    }
+
+    return next(error)
+  }
+})
+
+router.post('/developer/account-governance/cleanup-preview', requireDeveloper, async (req, res, next) => {
+  try {
+    const parsed = accountGovernanceAdminSchema.safeParse(req.body || {})
+
+    if (!parsed.success) {
+      return res.status(400).json({
+        ok: false,
+        error: 'Choose the permanent Admin account before previewing cleanup.',
+      })
+    }
+
+    const preview = await previewSystemAccountCleanup(pool, parsed.data.adminUserId)
+
+    return res.json({
+      ok: true,
+      preview,
+    })
+  } catch (error) {
+    if (['ADMIN_REQUIRED', 'INVALID_ADMIN', 'INACTIVE_ADMIN', 'CANONICAL_EMAIL_CONFLICT'].includes(error.code)) {
+      return res.status(400).json({ ok: false, error: error.message })
+    }
+
+    return next(error)
+  }
+})
+
+router.post('/developer/account-governance/cleanup', requireDeveloper, async (req, res, next) => {
+  try {
+    const parsed = accountGovernanceCleanupSchema.safeParse(req.body || {})
+
+    if (!parsed.success) {
+      return res.status(400).json({
+        ok: false,
+        error: 'Choose the permanent Admin and type ARCHIVE to confirm.',
+      })
+    }
+
+    const result = await applySystemAccountCleanup(
+      pool,
+      req.user.id,
+      parsed.data.adminUserId,
+    )
+
+    return res.json({
+      ok: true,
+      message: `${result.count} duplicate or test system account${result.count === 1 ? '' : 's'} archived. Client accounts were not changed.`,
+      ...result,
+    })
+  } catch (error) {
+    if (['ADMIN_REQUIRED', 'INVALID_ADMIN', 'INACTIVE_ADMIN', 'CANONICAL_EMAIL_CONFLICT'].includes(error.code)) {
+      return res.status(400).json({ ok: false, error: error.message })
+    }
+
+    return next(error)
+  }
+})
+
 router.post('/developer/users', requireDeveloper, async (req, res, next) => {
   try {
     const parsed = developerAccountCreateSchema.safeParse(req.body || {})
@@ -7028,6 +7185,35 @@ router.post('/developer/users', requireDeveloper, async (req, res, next) => {
     }
 
     const email = parsed.data.email.toLowerCase()
+    const canonicalRole = getCanonicalRoleForEmail(email)
+
+    if (canonicalRole && parsed.data.role !== canonicalRole) {
+      return res.status(400).json({
+        ok: false,
+        error: `${email} is reserved for the canonical ${canonicalRole} account.`,
+      })
+    }
+
+    if (
+      parsed.data.role === 'developer' &&
+      email !== String(env.canonicalDeveloperEmail).toLowerCase()
+    ) {
+      return res.status(400).json({
+        ok: false,
+        error: `Developer access is reserved for ${env.canonicalDeveloperEmail}.`,
+      })
+    }
+
+    if (
+      parsed.data.role === 'owner' &&
+      email !== String(env.canonicalOwnerEmail).toLowerCase()
+    ) {
+      return res.status(400).json({
+        ok: false,
+        error: `Owner access is reserved for ${env.canonicalOwnerEmail}.`,
+      })
+    }
+
     const existing = await pool.query(
       `SELECT id, email, role, status FROM system_users WHERE lower(email) = lower($1) LIMIT 1`,
       [email],
@@ -7134,6 +7320,35 @@ router.patch('/developer/users/:userId/role', requireDeveloper, async (req, res,
       return res.status(400).json({
         ok: false,
         error: 'Client roles are managed through the Client Circle, not the system-role editor.',
+      })
+    }
+
+    const protectedIdentity = getCanonicalRoleForEmail(target.email)
+
+    if (protectedIdentity && parsed.data.role !== protectedIdentity) {
+      return res.status(400).json({
+        ok: false,
+        error: `${target.email} is the canonical ${protectedIdentity} account and cannot be reassigned.`,
+      })
+    }
+
+    if (
+      parsed.data.role === 'developer' &&
+      String(target.email).toLowerCase() !== String(env.canonicalDeveloperEmail).toLowerCase()
+    ) {
+      return res.status(400).json({
+        ok: false,
+        error: `Developer access is reserved for ${env.canonicalDeveloperEmail}.`,
+      })
+    }
+
+    if (
+      parsed.data.role === 'owner' &&
+      String(target.email).toLowerCase() !== String(env.canonicalOwnerEmail).toLowerCase()
+    ) {
+      return res.status(400).json({
+        ok: false,
+        error: `Owner access is reserved for ${env.canonicalOwnerEmail}.`,
       })
     }
 
@@ -7354,6 +7569,8 @@ router.get('/developer/system-health', requireDeveloper, async (req, res, next) 
       'circle_comments',
       'client_conversations',
       'client_conversation_messages',
+      'notifications',
+      'notification_preferences',
     ]])
 
     const requiredTables = [
@@ -7377,6 +7594,8 @@ router.get('/developer/system-health', requireDeveloper, async (req, res, next) 
       'circle_comments',
       'client_conversations',
       'client_conversation_messages',
+      'notifications',
+      'notification_preferences',
     ]
     const foundTables = new Set(tablesResult.rows.map((row) => row.table_name))
     const missingTables = requiredTables.filter((tableName) => !foundTables.has(tableName))
@@ -10394,5 +10613,108 @@ router.patch('/inbox/:conversationId', requireAdmin, async (req, res, next) => {
 })
 // secure-client-inbox-pass-22-admin-end
 
+
+
+// unified-notification-center-pass-25-admin-start
+const notificationPreferencesSchema = z.object({
+  emailEnabled: z.boolean(),
+  emailCategories: z
+    .object({
+      inbox: z.boolean(),
+      sessions: z.boolean(),
+      resources: z.boolean(),
+      learning: z.boolean(),
+      memberships: z.boolean(),
+      encouragements: z.boolean(),
+      community: z.boolean(),
+      system: z.boolean(),
+    })
+    .default(DEFAULT_EMAIL_CATEGORIES),
+})
+
+router.get('/notifications/summary', requireAdmin, async (req, res, next) => {
+  try {
+    return res.json({ ok: true, summary: await getNotificationSummary(req.user.id) })
+  } catch (error) {
+    return next(error)
+  }
+})
+
+router.get('/notifications', requireAdmin, async (req, res, next) => {
+  try {
+    const result = await listNotifications(req.user.id, {
+      limit: req.query.limit,
+      unreadOnly: req.query.unreadOnly === 'true',
+      category: req.query.category,
+    })
+    return res.json({ ok: true, ...result })
+  } catch (error) {
+    return next(error)
+  }
+})
+
+router.patch('/notifications/:notificationId/read', requireAdmin, async (req, res, next) => {
+  try {
+    const notification = await markNotificationRead(req.user.id, req.params.notificationId)
+    if (!notification) return res.status(404).json({ ok: false, error: 'Notification not found.' })
+    return res.json({ ok: true, notification })
+  } catch (error) {
+    return next(error)
+  }
+})
+
+router.post('/notifications/mark-all-read', requireAdmin, async (req, res, next) => {
+  try {
+    const updated = await markAllNotificationsRead(req.user.id)
+    return res.json({ ok: true, updated, message: updated ? 'All notifications marked as read.' : 'No unread notifications remained.' })
+  } catch (error) {
+    return next(error)
+  }
+})
+
+router.delete('/notifications/:notificationId', requireAdmin, async (req, res, next) => {
+  try {
+    const dismissed = await dismissNotification(req.user.id, req.params.notificationId)
+    if (!dismissed) return res.status(404).json({ ok: false, error: 'Notification not found.' })
+    return res.json({ ok: true, message: 'Notification removed.' })
+  } catch (error) {
+    return next(error)
+  }
+})
+
+router.post('/notifications/clear-read', requireAdmin, async (req, res, next) => {
+  try {
+    const dismissed = await dismissReadNotifications(req.user.id)
+    return res.json({ ok: true, dismissed, message: dismissed ? 'Read notifications cleared.' : 'No read notifications needed clearing.' })
+  } catch (error) {
+    return next(error)
+  }
+})
+
+router.get('/notifications/preferences', requireAdmin, async (req, res, next) => {
+  try {
+    return res.json({ ok: true, preferences: await getNotificationPreferences(req.user.id) })
+  } catch (error) {
+    return next(error)
+  }
+})
+
+router.patch('/notifications/preferences', requireAdmin, async (req, res, next) => {
+  const parsed = notificationPreferencesSchema.safeParse(req.body)
+  if (!parsed.success) return res.status(400).json({ ok: false, error: parsed.error.issues[0]?.message || 'Please check the notification preferences.' })
+
+  try {
+    const preferences = await saveNotificationPreferences(req.user.id, parsed.data)
+    await pool.query(
+      `INSERT INTO audit_logs (actor_user_id, action, entity_type, entity_id, after_data, ip_address, user_agent)
+       VALUES ($1, 'notification_preferences_updated', 'system_users', $1, $2::jsonb, $3, $4)`,
+      [req.user.id, JSON.stringify(preferences), req.ip || null, req.get('user-agent') || null],
+    )
+    return res.json({ ok: true, message: 'Notification preferences saved.', preferences })
+  } catch (error) {
+    return next(error)
+  }
+})
+// unified-notification-center-pass-25-admin-end
 
 module.exports = router
