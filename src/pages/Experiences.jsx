@@ -3,6 +3,7 @@ import PageHero from '../components/PageHero'
 import experiencesImage from '../assets/images/experiences-private-guidance.webp'
 import consultationDetailImage from '../assets/images/consultation-detail.webp'
 import appointmentsImage from '../assets/images/appointments-studio-atmosphere.webp'
+import './Experiences.mobile.css'
 
 const appointmentOptions = [
   {
@@ -150,7 +151,7 @@ function ConsultationCallout({ compact = false }) {
 
 function Experiences() {
   return (
-    <main>
+    <main className="experiences-page">
       <PageHero
         eyebrow="Experiences"
         title="This is not a makeover. It is a return."

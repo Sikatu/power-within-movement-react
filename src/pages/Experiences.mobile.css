@@ -1,0 +1,702 @@
+/*
+ * Experiences page mobile flow repair.
+ *
+ * The global stylesheet contains several desktop alignment passes that use
+ * fixed grid rows and translated elements. Those are useful on wide screens,
+ * but on a narrow viewport they can make growing text collide with the next
+ * section. This file is intentionally scoped to the Experiences page and
+ * restores normal document flow on tablets and phones.
+ */
+
+@media (max-width: 900px) {
+  .experiences-page,
+  .experiences-page .appointment-section,
+  .experiences-page .appointment-shell {
+    overflow: visible !important;
+  }
+
+  .experiences-page .experience-feature-grid,
+  .experiences-page .appointment-intro-grid,
+  .experiences-page .appointment-glance-grid,
+  .experiences-page .appointment-cover-grid,
+  .experiences-page .appointment-service-grid,
+  .experiences-page .appointment-choice-grid {
+    grid-template-columns: minmax(0, 1fr) !important;
+    align-items: start !important;
+  }
+
+  .experiences-page .appointment-glance-grid,
+  .experiences-page .appointment-cover-grid,
+  .experiences-page .appointment-service-grid,
+  .experiences-page .appointment-choice-grid {
+    gap: 1.35rem !important;
+  }
+
+  .experiences-page .appointment-glance-card,
+  .experiences-page .appointment-cover-card,
+  .experiences-page .appointment-service-card,
+  .experiences-page .appointment-choice-card {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
+    box-sizing: border-box !important;
+    transform: none !important;
+  }
+
+  /* At-a-glance cards: let labels and values determine their own height. */
+  .experiences-page .appointment-glance-card {
+    display: block !important;
+    padding: 1.6rem !important;
+  }
+
+  .experiences-page .appointment-glance-card > span:first-child,
+  .experiences-page .appointment-glance-card h4,
+  .experiences-page .appointment-glance-card dl,
+  .experiences-page .appointment-glance-card dt,
+  .experiences-page .appointment-glance-card dd {
+    grid-row: auto !important;
+    min-height: 0 !important;
+  }
+
+  .experiences-page .appointment-glance-card h4 {
+    margin: 0.85rem 0 1.35rem !important;
+  }
+
+  .experiences-page .appointment-glance-card dl {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    grid-template-rows: none !important;
+    gap: 0 !important;
+  }
+
+  .experiences-page .appointment-glance-card dt {
+    margin: 0 0 0.4rem !important;
+  }
+
+  .experiences-page .appointment-glance-card dd,
+  .experiences-page .appointment-glance-card dd:nth-of-type(1),
+  .experiences-page .appointment-glance-card dd:nth-of-type(2),
+  .experiences-page .appointment-glance-card dd:nth-of-type(3) {
+    min-height: 0 !important;
+    margin: 0 0 1.15rem !important;
+  }
+
+  .experiences-page .appointment-glance-card dd:last-child {
+    margin-bottom: 0 !important;
+  }
+
+  /* Appointment cards: remove desktop fixed rows and negative positioning. */
+  .experiences-page .appointment-service-card {
+    display: flex !important;
+    flex-direction: column !important;
+    grid-template-rows: none !important;
+    gap: 1.2rem !important;
+    padding: 1.55rem !important;
+    overflow: hidden !important;
+  }
+
+  .experiences-page .appointment-service-card > div,
+  .experiences-page .appointment-service-card > p,
+  .experiences-page .appointment-service-card > a {
+    grid-row: auto !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-height: 0 !important;
+    box-sizing: border-box !important;
+    transform: none !important;
+  }
+
+  .experiences-page .appointment-service-card > div:first-child,
+  .experiences-page .appointment-service-card > div:first-child h4 {
+    min-height: 0 !important;
+  }
+
+  .experiences-page .appointment-service-card > div:first-child h4 {
+    margin-bottom: 0.85rem !important;
+  }
+
+  .experiences-page .appointment-service-card .appointment-meta-row {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    grid-template-rows: none !important;
+    gap: 0 !important;
+    margin: 0 !important;
+    padding: 0.7rem 1rem !important;
+    transform: none !important;
+  }
+
+  .experiences-page .appointment-service-card .appointment-meta-row > div {
+    min-height: 0 !important;
+    padding: 1rem 0.25rem !important;
+  }
+
+  .experiences-page .appointment-service-card .appointment-meta-row > div:first-child {
+    border-right: 0 !important;
+    border-bottom: 1px solid rgba(198, 164, 93, 0.22) !important;
+  }
+
+  .experiences-page .appointment-service-card > div:nth-of-type(3) {
+    margin: 0 !important;
+    padding: 1.2rem !important;
+  }
+
+  .experiences-page .appointment-service-card .thinking-note,
+  .experiences-page .appointment-service-card .best-for {
+    min-height: 0 !important;
+    margin: 0 !important;
+  }
+
+  .experiences-page .appointment-service-card .thinking-note {
+    padding: 1.25rem !important;
+  }
+
+  .experiences-page .appointment-service-card > .btn {
+    margin: 0.15rem 0 0 !important;
+    align-self: stretch !important;
+  }
+
+  /* Choice and cover cards should grow naturally with wrapped copy. */
+  .experiences-page .appointment-cover-card,
+  .experiences-page .appointment-choice-card {
+    display: flex !important;
+    flex-direction: column !important;
+    grid-template-rows: none !important;
+    gap: 1rem !important;
+    padding: 1.55rem !important;
+  }
+
+  .experiences-page .appointment-cover-card h4,
+  .experiences-page .appointment-choice-card h4 {
+    min-height: 0 !important;
+    margin-bottom: 0 !important;
+  }
+
+  .experiences-page .appointment-cover-card span {
+    margin-top: 0.5rem !important;
+  }
+
+  .experiences-page .appointment-choice-card:hover {
+    transform: none !important;
+  }
+
+  .experiences-page .appointment-callout,
+  .experiences-page .appointment-callout.compact,
+  .experiences-page .appointment-bridge,
+  .experiences-page .appointment-closing {
+    height: auto !important;
+    min-height: 0 !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+  }
+}
+
+@media (max-width: 560px) {
+  .experiences-page .section {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+
+  .experiences-page .experience-feature-grid,
+  .experiences-page .cards,
+  .experiences-page .experience-story-note,
+  .experiences-page .appointment-shell {
+    width: calc(100% - 24px) !important;
+    max-width: calc(100% - 24px) !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+
+  .experiences-page .experience-feature-image {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: clamp(250px, 82vw, 370px) !important;
+    margin-bottom: 1.5rem !important;
+  }
+
+  .experiences-page .appointment-glance-card,
+  .experiences-page .appointment-cover-card,
+  .experiences-page .appointment-service-card,
+  .experiences-page .appointment-choice-card,
+  .experiences-page .appointment-callout,
+  .experiences-page .appointment-callout.compact,
+  .experiences-page .appointment-bridge {
+    padding: 1.35rem !important;
+    border-radius: 24px !important;
+  }
+
+  .experiences-page .appointment-service-card .appointment-meta-row,
+  .experiences-page .appointment-service-card > div:nth-of-type(3),
+  .experiences-page .appointment-service-card .thinking-note {
+    border-radius: 20px !important;
+  }
+
+  .experiences-page .appointment-intro-copy .hero-actions,
+  .experiences-page .appointment-callout .btn,
+  .experiences-page .appointment-callout.compact .btn,
+  .experiences-page .appointment-bridge .btn {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+}
+
+/*
+ * Pass 11: Appointment Experiences mobile card isolation.
+ *
+ * The global stylesheet contains later, highly-specific grid alignment rules.
+ * On phones those rules can still win over the first mobile repair and pull
+ * the Investment/Time panel upward into the card introduction. These selectors
+ * deliberately outrank the global rules and restore a single vertical flow.
+ */
+@media (max-width: 900px) {
+  .experiences-page .appointment-service-grid {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 1.5rem !important;
+    align-items: stretch !important;
+  }
+
+  .experiences-page .appointment-service-grid > .appointment-service-card {
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
+    grid-template-columns: none !important;
+    grid-template-rows: none !important;
+    align-content: normal !important;
+    align-items: stretch !important;
+    gap: 1.25rem !important;
+    padding: 1.55rem !important;
+    overflow: visible !important;
+  }
+
+  .experiences-page .appointment-service-grid > .appointment-service-card > * {
+    position: static !important;
+    grid-column: auto !important;
+    grid-row: auto !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    height: auto !important;
+    min-height: 0 !important;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    transform: none !important;
+  }
+
+  .experiences-page .appointment-service-grid > .appointment-service-card > div:first-child {
+    display: block !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+  }
+
+  .experiences-page .appointment-service-grid > .appointment-service-card > div:first-child span {
+    display: block !important;
+    margin: 0 0 1rem !important;
+  }
+
+  .experiences-page .appointment-service-grid > .appointment-service-card > div:first-child h4 {
+    min-height: 0 !important;
+    margin: 0 0 0.85rem !important;
+    line-height: 1.08 !important;
+  }
+
+  .experiences-page .appointment-service-grid > .appointment-service-card > div:first-child p {
+    display: block !important;
+    margin: 0 !important;
+  }
+
+  .experiences-page .appointment-service-grid > .appointment-service-card > .appointment-meta-row {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    grid-template-rows: none !important;
+    gap: 0 !important;
+    margin: 0 !important;
+    padding: 0.65rem 1rem !important;
+    border-radius: 22px !important;
+    overflow: hidden !important;
+  }
+
+  .experiences-page .appointment-service-grid > .appointment-service-card > .appointment-meta-row > div {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    justify-content: center !important;
+    width: 100% !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 0.9rem 0.2rem !important;
+    border: 0 !important;
+    background: transparent !important;
+  }
+
+  .experiences-page .appointment-service-grid > .appointment-service-card > .appointment-meta-row > div:first-child {
+    border-right: 0 !important;
+    border-bottom: 1px solid rgba(198, 164, 93, 0.22) !important;
+  }
+
+  .experiences-page .appointment-service-grid > .appointment-service-card > .appointment-meta-row strong,
+  .experiences-page .appointment-service-grid > .appointment-service-card > .appointment-meta-row small {
+    display: block !important;
+    width: 100% !important;
+    margin: 0 !important;
+  }
+
+  .experiences-page .appointment-service-grid > .appointment-service-card > .appointment-meta-row strong {
+    margin-bottom: 0.35rem !important;
+  }
+
+  .experiences-page .appointment-service-grid > .appointment-service-card > div:nth-of-type(3) {
+    display: block !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 1.1rem 0 0 !important;
+    border-top: 1px solid rgba(198, 164, 93, 0.22) !important;
+  }
+
+  .experiences-page .appointment-service-grid > .appointment-service-card > .thinking-note {
+    display: block !important;
+    width: 100% !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 1.15rem !important;
+  }
+
+  .experiences-page .appointment-service-grid > .appointment-service-card > .best-for {
+    display: block !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .experiences-page .appointment-service-grid > .appointment-service-card > .btn {
+    display: inline-flex !important;
+    width: 100% !important;
+    min-height: 52px !important;
+    margin: 0 !important;
+    align-self: stretch !important;
+  }
+}
+
+@media (max-width: 560px) {
+  .experiences-page .appointment-service-grid > .appointment-service-card {
+    gap: 1.1rem !important;
+    padding: 1.3rem !important;
+    border-radius: 24px !important;
+  }
+}
+
+/*
+ * Pass 12: Experiences mobile rhythm and readability.
+ *
+ * Earlier desktop alignment passes intentionally reserve matching card heights.
+ * On phones that creates a very long page with large blank areas and small copy.
+ * These page-scoped rules remove the remaining desktop reservations, tighten the
+ * vertical rhythm, and keep every section comfortable to read and tap.
+ */
+@media (max-width: 700px) {
+  main.experiences-page .intro-section,
+  main.experiences-page .appointment-section {
+    padding-top: 3.25rem !important;
+    padding-bottom: 3.25rem !important;
+  }
+
+  main.experiences-page .experience-feature-grid {
+    gap: 1.75rem !important;
+    margin-bottom: 2rem !important;
+  }
+
+  main.experiences-page .experience-feature-grid .section-header h2,
+  main.experiences-page .appointment-intro-copy h2 {
+    font-size: clamp(2rem, 9vw, 2.75rem) !important;
+    line-height: 1.04 !important;
+  }
+
+  main.experiences-page .experience-feature-grid .section-header p,
+  main.experiences-page .appointment-intro-copy p,
+  main.experiences-page .appointment-cover-card p,
+  main.experiences-page .appointment-service-card p,
+  main.experiences-page .appointment-choice-card li,
+  main.experiences-page .appointment-bridge p {
+    font-size: 0.98rem !important;
+    line-height: 1.65 !important;
+  }
+
+  main.experiences-page .cards {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 0.9rem !important;
+  }
+
+  main.experiences-page .cards > .card {
+    min-height: 0 !important;
+    height: auto !important;
+    padding: 1.35rem !important;
+  }
+
+  main.experiences-page .experience-story-note {
+    margin-top: 1.5rem !important;
+    padding: 1.45rem !important;
+  }
+
+  main.experiences-page .experience-story-note h3 {
+    font-size: clamp(1.55rem, 7vw, 2rem) !important;
+    line-height: 1.12 !important;
+  }
+
+  main.experiences-page .appointment-shell {
+    gap: 2.15rem !important;
+  }
+
+  main.experiences-page .appointment-intro-grid {
+    gap: 1.2rem !important;
+  }
+
+  main.experiences-page .appointment-intro-copy,
+  main.experiences-page .appointment-callout {
+    padding: 1.45rem !important;
+    border-radius: 24px !important;
+  }
+
+  main.experiences-page .appointment-intro-copy .hero-actions {
+    gap: 0.7rem !important;
+    margin-top: 1.35rem !important;
+  }
+
+  main.experiences-page .appointment-atmosphere-image {
+    margin: 0 auto !important;
+    border-radius: 24px !important;
+  }
+
+  main.experiences-page .appointment-subheader,
+  main.experiences-page #appointment-services.appointment-subheader {
+    max-width: 100% !important;
+    margin: 0 auto !important;
+    padding: 0 0.35rem !important;
+  }
+
+  main.experiences-page .appointment-subheader .eyebrow {
+    margin-bottom: 0.6rem !important;
+  }
+
+  main.experiences-page .appointment-subheader h3 {
+    font-size: clamp(1.85rem, 8.5vw, 2.45rem) !important;
+    line-height: 1.06 !important;
+    margin: 0 !important;
+  }
+
+  main.experiences-page .appointment-glance-grid,
+  main.experiences-page .appointment-cover-grid,
+  main.experiences-page .appointment-service-grid,
+  main.experiences-page .appointment-choice-grid {
+    gap: 0.95rem !important;
+  }
+
+  /* Remove the final desktop height reservations from At a Glance. */
+  main.experiences-page .appointment-glance-grid > .appointment-glance-card {
+    display: block !important;
+    height: auto !important;
+    min-height: 0 !important;
+    grid-template-rows: none !important;
+    padding: 1.3rem !important;
+    border-radius: 22px !important;
+  }
+
+  main.experiences-page .appointment-glance-grid > .appointment-glance-card > span:first-child {
+    display: block !important;
+    margin: 0 0 0.7rem !important;
+  }
+
+  main.experiences-page .appointment-glance-grid > .appointment-glance-card h4 {
+    min-height: 0 !important;
+    margin: 0 0 1rem !important;
+    font-size: clamp(1.45rem, 6.6vw, 1.85rem) !important;
+    line-height: 1.08 !important;
+  }
+
+  main.experiences-page .appointment-glance-grid > .appointment-glance-card dl {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    grid-template-rows: none !important;
+    gap: 0.85rem !important;
+    margin: 0 !important;
+  }
+
+  main.experiences-page .appointment-glance-grid > .appointment-glance-card dl > div {
+    display: block !important;
+    min-height: 0 !important;
+    padding-top: 0.8rem !important;
+    border-top: 1px solid rgba(198, 164, 93, 0.16) !important;
+  }
+
+  main.experiences-page .appointment-glance-grid > .appointment-glance-card dl > div:first-child {
+    padding-top: 0 !important;
+    border-top: 0 !important;
+  }
+
+  main.experiences-page .appointment-glance-grid > .appointment-glance-card dt,
+  main.experiences-page .appointment-glance-grid > .appointment-glance-card dd,
+  main.experiences-page .appointment-glance-grid > .appointment-glance-card dd:nth-of-type(1),
+  main.experiences-page .appointment-glance-grid > .appointment-glance-card dd:nth-of-type(2),
+  main.experiences-page .appointment-glance-grid > .appointment-glance-card dd:nth-of-type(3) {
+    position: static !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    transform: none !important;
+  }
+
+  main.experiences-page .appointment-glance-grid > .appointment-glance-card dt {
+    margin-bottom: 0.32rem !important;
+  }
+
+  main.experiences-page .appointment-glance-grid > .appointment-glance-card dd {
+    font-size: 0.95rem !important;
+    line-height: 1.5 !important;
+  }
+
+  /* Keep cover cards concise and eliminate desktop title rows. */
+  main.experiences-page .appointment-cover-grid > .appointment-cover-card {
+    display: flex !important;
+    flex-direction: column !important;
+    height: auto !important;
+    min-height: 0 !important;
+    grid-template-rows: none !important;
+    gap: 0.8rem !important;
+    padding: 1.3rem !important;
+    border-radius: 22px !important;
+  }
+
+  main.experiences-page .appointment-cover-grid > .appointment-cover-card h4 {
+    display: block !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    font-size: clamp(1.4rem, 6.5vw, 1.8rem) !important;
+    line-height: 1.08 !important;
+  }
+
+  main.experiences-page .appointment-cover-grid > .appointment-cover-card p {
+    margin: 0 !important;
+  }
+
+  main.experiences-page .appointment-cover-grid > .appointment-cover-card span {
+    margin-top: 0.25rem !important;
+  }
+
+  /* Appointment cards stay complete, but use calmer mobile-sized rhythm. */
+  main.experiences-page .appointment-service-grid > .appointment-service-card {
+    gap: 1rem !important;
+    padding: 1.3rem !important;
+    border-radius: 22px !important;
+  }
+
+  main.experiences-page .appointment-service-grid > .appointment-service-card > div:first-child span {
+    margin-bottom: 0.75rem !important;
+  }
+
+  main.experiences-page .appointment-service-grid > .appointment-service-card > div:first-child h4 {
+    margin: 0 0 0.7rem !important;
+    font-size: clamp(1.55rem, 7vw, 2rem) !important;
+    line-height: 1.06 !important;
+  }
+
+  main.experiences-page .appointment-service-grid > .appointment-service-card .appointment-meta-row {
+    padding: 0.55rem 0.9rem !important;
+    border-radius: 19px !important;
+  }
+
+  main.experiences-page .appointment-service-grid > .appointment-service-card .appointment-meta-row > div {
+    min-height: 0 !important;
+    padding: 0.8rem 0.15rem !important;
+  }
+
+  main.experiences-page .appointment-service-grid > .appointment-service-card .appointment-meta-row > div::before {
+    margin-bottom: 0.45rem !important;
+  }
+
+  main.experiences-page .appointment-service-grid > .appointment-service-card > div:nth-of-type(3),
+  main.experiences-page .appointment-service-grid > .appointment-service-card .thinking-note {
+    padding: 1rem !important;
+    border-radius: 18px !important;
+  }
+
+  main.experiences-page .appointment-service-grid > .appointment-service-card > div:nth-of-type(3) ul {
+    width: 100% !important;
+    gap: 0.6rem !important;
+  }
+
+  main.experiences-page .appointment-service-grid > .appointment-service-card .thinking-note p {
+    font-size: clamp(1.25rem, 5.8vw, 1.55rem) !important;
+    line-height: 1.18 !important;
+  }
+
+  main.experiences-page .appointment-service-grid > .appointment-service-card .best-for {
+    min-height: 0 !important;
+    font-size: 0.95rem !important;
+  }
+
+  /* How to Choose should read like short guidance, not tall desktop cards. */
+  main.experiences-page .appointment-choice-section {
+    gap: 1.75rem !important;
+  }
+
+  main.experiences-page .appointment-choice-grid > .appointment-choice-card {
+    display: block !important;
+    height: auto !important;
+    min-height: 0 !important;
+    grid-template-rows: none !important;
+    padding: 1.3rem !important;
+    border-radius: 22px !important;
+  }
+
+  main.experiences-page .appointment-choice-grid > .appointment-choice-card h4 {
+    min-height: 0 !important;
+    margin: 0 0 0.85rem !important;
+    font-size: clamp(1.35rem, 6.2vw, 1.7rem) !important;
+    line-height: 1.12 !important;
+  }
+
+  main.experiences-page .appointment-choice-grid > .appointment-choice-card ul {
+    gap: 0.65rem !important;
+    margin: 0 !important;
+  }
+
+  main.experiences-page .appointment-callout.compact,
+  main.experiences-page .appointment-bridge {
+    padding: 1.5rem !important;
+    border-radius: 24px !important;
+  }
+
+  main.experiences-page .appointment-callout h3,
+  main.experiences-page .appointment-bridge h3 {
+    font-size: clamp(1.65rem, 7.4vw, 2.15rem) !important;
+    line-height: 1.08 !important;
+  }
+
+  main.experiences-page .appointment-closing {
+    padding: 0 0.5rem !important;
+  }
+
+  main.experiences-page .appointment-closing p {
+    font-size: clamp(1.8rem, 8vw, 2.35rem) !important;
+    line-height: 1.08 !important;
+  }
+}
+
+@media (max-width: 380px) {
+  main.experiences-page .appointment-shell,
+  main.experiences-page .experience-feature-grid,
+  main.experiences-page .cards,
+  main.experiences-page .experience-story-note {
+    width: calc(100% - 20px) !important;
+    max-width: calc(100% - 20px) !important;
+  }
+
+  main.experiences-page .appointment-glance-grid > .appointment-glance-card,
+  main.experiences-page .appointment-cover-grid > .appointment-cover-card,
+  main.experiences-page .appointment-service-grid > .appointment-service-card,
+  main.experiences-page .appointment-choice-grid > .appointment-choice-card {
+    padding: 1.15rem !important;
+  }
+}

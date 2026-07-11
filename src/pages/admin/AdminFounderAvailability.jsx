@@ -359,6 +359,8 @@ export default function AdminFounderAvailability() {
   const [isSigningOut, setIsSigningOut] = useState(false)
   const [notice, setNotice] = useState('')
   const [error, setError] = useState('')
+  const [copyStatus, setCopyStatus] = useState('')
+  const [copiedWeekdays, setCopiedWeekdays] = useState([])
 
   const availabilityBlocks = useMemo(
     () => workspace?.availabilityBlocks || [],
@@ -434,18 +436,54 @@ export default function AdminFounderAvailability() {
   }, [availabilityBlocks, availabilityExceptions, selectedDate, workspace])
 
   function updateDay(weekday, updater) {
+    setCopyStatus('')
+    setCopiedWeekdays([])
     setWeeklySchedule((current) =>
       current.map((day) => (day.weekday === weekday ? updater(day) : day)),
     )
   }
 
   function copyMondayToWeekdays() {
+    setNotice('')
+    setError('')
+
     const monday = weeklySchedule.find((day) => day.weekday === 1)
-    if (!monday) return
+    if (!monday) {
+      setError('Monday could not be found. Refresh the page and try again.')
+      return
+    }
+
+    if (monday.isAvailable) {
+      const validationError = validateTimeWindows(monday.windows, 'Monday')
+      if (validationError) {
+        setActiveWeekday(1)
+        setCopyStatus('')
+        setCopiedWeekdays([])
+        setError(`${validationError} Fix Monday first, then copy it to the other weekdays.`)
+        return
+      }
+    }
+
+    const weekdaysAlreadyMatch = weeklySchedule
+      .filter((day) => day.weekday >= 2 && day.weekday <= 5)
+      .every(
+        (day) =>
+          day.isAvailable === monday.isAvailable &&
+          windowsMatch(day.windows, monday.windows),
+      )
+
+    setCopiedWeekdays([2, 3, 4, 5])
+    setActiveWeekday(null)
+
+    if (weekdaysAlreadyMatch) {
+      setCopyStatus('Tuesday through Friday already match Monday.')
+      setNotice('No changes were needed. Tuesday through Friday already use Monday’s schedule.')
+      return
+    }
 
     setWeeklySchedule((current) =>
       current.map((day) =>
-        day.weekday >= 1 && day.weekday <= 5
+        day.weekday >= 2 && day.weekday <= 5
           ? {
               ...day,
               isAvailable: monday.isAvailable,
@@ -454,7 +492,8 @@ export default function AdminFounderAvailability() {
           : day,
       ),
     )
-    setNotice('Monday’s hours are now copied to Tuesday through Friday. Choose “Save my usual week” when everything looks right.')
+    setCopyStatus('Copied. Review Tuesday through Friday, then save your usual week.')
+    setNotice('Monday’s schedule was copied to Tuesday through Friday. The change is not live until you choose “Save my usual week.”')
   }
 
   async function handleSaveWeekly(event) {
@@ -493,6 +532,8 @@ export default function AdminFounderAvailability() {
       })
       setWorkspace(response)
       setSettings((current) => ({ ...current, scheduleEnabled: true }))
+      setCopyStatus('')
+      setCopiedWeekdays([])
       setNotice('Your usual week is saved. Clients will now see these appointment times on the booking page.')
     } catch (saveError) {
       setError(saveError.message || 'Unable to save weekly availability.')
@@ -657,9 +698,17 @@ export default function AdminFounderAvailability() {
                 <h2>Your usual week</h2>
                 <span>Turn a day on when you want clients to be able to request an appointment.</span>
               </div>
-              <button type="button" onClick={copyMondayToWeekdays}>
-                Use Monday for Tue–Fri
-              </button>
+              <div className="founder-hours__copy-action">
+                <button type="button" onClick={copyMondayToWeekdays}>
+                  Copy Monday to Tuesday–Friday
+                </button>
+                <small>Copies Monday’s day-off setting and appointment times.</small>
+                {copyStatus && (
+                  <span className="founder-hours__copy-status" role="status">
+                    ✓ {copyStatus}
+                  </span>
+                )}
+              </div>
             </div>
 
             {isLoading ? (
@@ -675,7 +724,13 @@ export default function AdminFounderAvailability() {
 
                   return (
                     <section
-                      className={day.isAvailable ? 'founder-hours__day is-open' : 'founder-hours__day'}
+                      className={[
+                        'founder-hours__day',
+                        day.isAvailable ? 'is-open' : '',
+                        copiedWeekdays.includes(day.weekday) ? 'is-copied' : '',
+                      ]
+                        .filter(Boolean)
+                        .join(' ')}
                       key={day.weekday}
                     >
                       <div className="founder-hours__day-summary">
@@ -687,6 +742,9 @@ export default function AdminFounderAvailability() {
                           <div>
                             <strong>{dayLabel?.label}</strong>
                             <small>{day.isAvailable ? getWindowsSummary(day.windows) : 'Day off — no appointments'}</small>
+                            {copiedWeekdays.includes(day.weekday) && (
+                              <em>Copied from Monday</em>
+                            )}
                           </div>
                         </div>
 

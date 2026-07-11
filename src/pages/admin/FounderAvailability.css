@@ -1310,3 +1310,75 @@ body.admin-app-mode.founder-availability-mode .founder-hours__loading > span {
     width: 100%;
   }
 }
+
+/* Pass 9 — make Monday copy action obvious and trustworthy */
+body.admin-app-mode.founder-availability-mode .founder-hours__copy-action {
+  display: grid;
+  justify-items: end;
+  gap: 0.35rem;
+  max-width: 290px;
+}
+
+body.admin-app-mode.founder-availability-mode .founder-hours__copy-action > button {
+  min-height: 40px;
+  padding: 0.65rem 0.95rem;
+  border: 1px solid rgba(91, 67, 45, 0.18);
+  border-radius: 999px;
+  background: #f6eadb;
+  color: #6d5037;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.7rem;
+  font-weight: 800;
+}
+
+body.admin-app-mode.founder-availability-mode .founder-hours__copy-action > small {
+  color: #8b7764;
+  font-size: 0.68rem;
+  line-height: 1.45;
+  text-align: right;
+}
+
+body.admin-app-mode.founder-availability-mode .founder-hours__copy-status {
+  display: block;
+  color: #5d704c;
+  font-size: 0.7rem;
+  font-weight: 800;
+  line-height: 1.4;
+  text-align: right;
+}
+
+body.admin-app-mode.founder-availability-mode .founder-hours__day.is-copied {
+  border-color: rgba(107, 130, 83, 0.34);
+  box-shadow: 0 0 0 3px rgba(107, 130, 83, 0.08);
+}
+
+body.admin-app-mode.founder-availability-mode .founder-hours__day-name em {
+  display: inline-flex;
+  width: fit-content;
+  margin-top: 0.3rem;
+  padding: 0.18rem 0.45rem;
+  border-radius: 999px;
+  background: #eef3e9;
+  color: #60734f;
+  font-size: 0.62rem;
+  font-style: normal;
+  font-weight: 800;
+}
+
+@media (max-width: 600px) {
+  body.admin-app-mode.founder-availability-mode .founder-hours__copy-action {
+    width: 100%;
+    max-width: none;
+    justify-items: stretch;
+  }
+
+  body.admin-app-mode.founder-availability-mode .founder-hours__copy-action > button {
+    width: 100%;
+  }
+
+  body.admin-app-mode.founder-availability-mode .founder-hours__copy-action > small,
+  body.admin-app-mode.founder-availability-mode .founder-hours__copy-status {
+    text-align: left;
+  }
+}
