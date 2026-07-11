@@ -11,7 +11,12 @@ function AdminRouteGuard({ children }) {
 
     async function verifyAccess() {
       try {
-        await checkAdminAccess()
+        const result = await checkAdminAccess()
+
+        if (result?.user) {
+          sessionStorage.setItem('pwc_admin_user', JSON.stringify(result.user))
+        }
+
         if (isMounted) setStatus('allowed')
       } catch {
         sessionStorage.removeItem('pwc_admin_user')

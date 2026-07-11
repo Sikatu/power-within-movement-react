@@ -95,6 +95,13 @@ function normalizeAuditLog(log) {
 }
 
 export default function AdminDashboard() {
+  const [adminUser] = useState(() => {
+    try {
+      return JSON.parse(sessionStorage.getItem('pwc_admin_user') || 'null')
+    } catch {
+      return null
+    }
+  })
   const [overview, setOverview] = useState(null)
   const [clients, setClients] = useState([])
   const [bookings, setBookings] = useState([])
@@ -243,7 +250,7 @@ export default function AdminDashboard() {
         <header className="studio-hero-v3">
           <div>
             <p className="admin-eyebrow">The Studio</p>
-            <h1>Welcome back, Kim.</h1>
+            <h1>Welcome back, {adminUser?.role === 'developer' ? 'Developer' : adminUser?.role === 'owner' ? 'Kim' : 'Studio Team'}.</h1>
             <p>
               A calm command center for sessions, Client Circle care, follow-up
               reminders, and recent studio movement.

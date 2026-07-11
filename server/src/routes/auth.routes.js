@@ -39,6 +39,7 @@ function publicUser(user) {
     status: user.status,
     mustChangePassword: Boolean(user.must_change_password),
     passwordChangedAt: user.password_changed_at,
+    sessionVersion: Number(user.session_version || 1),
     lastLoginAt: user.last_login_at,
     createdAt: user.created_at,
     updatedAt: user.updated_at,
@@ -52,6 +53,7 @@ function createToken(user) {
       email: user.email,
       role: user.role,
       purpose: 'auth',
+      sessionVersion: Number(user.session_version || 1),
     },
     env.jwtSecret,
     {
@@ -180,6 +182,7 @@ async function getPasswordChangeUser(req) {
       must_change_password,
       temporary_password_expires_at,
       password_changed_at,
+      session_version,
       last_login_at,
       created_at,
       updated_at
@@ -243,6 +246,7 @@ router.post('/login', async (req, res, next) => {
         must_change_password,
         temporary_password_expires_at,
         password_changed_at,
+        session_version,
         last_login_at,
         created_at,
         updated_at
@@ -338,6 +342,7 @@ router.post('/login', async (req, res, next) => {
         must_change_password,
         temporary_password_expires_at,
         password_changed_at,
+        session_version,
         last_login_at,
         created_at,
         updated_at
@@ -434,6 +439,7 @@ router.post('/change-password', async (req, res, next) => {
           must_change_password = false,
           temporary_password_expires_at = NULL,
           password_changed_at = now(),
+          session_version = COALESCE(session_version, 1) + 1,
           last_login_at = now(),
           updated_at = now()
       WHERE id = $2
@@ -445,6 +451,7 @@ router.post('/change-password', async (req, res, next) => {
         must_change_password,
         temporary_password_expires_at,
         password_changed_at,
+        session_version,
         last_login_at,
         created_at,
         updated_at
@@ -498,7 +505,7 @@ router.get('/me', requireAuth, (req, res) => {
 router.get(
   '/admin-check',
   requireAuth,
-  requireRole(['owner', 'admin', 'staff']),
+  requireRole(['developer', 'owner', 'admin', 'staff']),
   (req, res) => {
     res.json({
       ok: true,
@@ -508,32 +515,86 @@ router.get(
   },
 )
 
+router.get(
+  '/developer-check',
+  requireAuth,
+  requireRole(['developer']),
+  (req, res) => {
+    res.json({
+      ok: true,
+      message: 'Developer access confirmed.',
+      user: publicUser(req.user),
+    })
+  },
+)
+
 router.get('/founder-check', requireAuth, async (req, res, next) => {
   try {
-    const isFounder = req.user.role === 'owner'
-
-    if (!isFounder) {
-      await writeAuditLog({
-        actorUserId: req.user.id,
-        action: 'founders_view_access_denied',
-        afterData: {
-          email: req.user.email,
-          role: req.user.role,
-          route: '/api/auth/founder-check',
-          reason: 'owner_role_required',
-        },
-      })
-
-      return res.status(403).json({
-        ok: false,
-        error: 'Founder access is restricted to the owner account.',
+    if (req.user.role === 'owner') {
+      return res.json({
+        ok: true,
+        message: 'Founder access confirmed.',
+        accessMode: 'owner',
+        user: publicUser(req.user),
+        founderOwner: publicUser(req.user),
       })
     }
 
-    return res.json({
-      ok: true,
-      message: 'Founder access confirmed.',
-      user: publicUser(req.user),
+    if (req.user.role === 'developer') {
+      const ownerResult = await pool.query(
+        `
+        SELECT *
+        FROM system_users
+        WHERE role = 'owner'
+          AND status = 'active'
+        ORDER BY created_at ASC
+        LIMIT 1
+        `,
+      )
+
+      const founderOwner = ownerResult.rows[0]
+
+      if (!founderOwner) {
+        return res.status(409).json({
+          ok: false,
+          error: 'No active owner account is available for the Founder workspace.',
+        })
+      }
+
+      await writeAuditLog({
+        actorUserId: req.user.id,
+        action: 'founders_view_developer_access_confirmed',
+        afterData: {
+          developerEmail: req.user.email,
+          founderOwnerId: founderOwner.id,
+          founderOwnerEmail: founderOwner.email,
+          route: '/api/auth/founder-check',
+        },
+      })
+
+      return res.json({
+        ok: true,
+        message: 'Developer access to the live Founder workspace confirmed.',
+        accessMode: 'developer',
+        user: publicUser(req.user),
+        founderOwner: publicUser(founderOwner),
+      })
+    }
+
+    await writeAuditLog({
+      actorUserId: req.user.id,
+      action: 'founders_view_access_denied',
+      afterData: {
+        email: req.user.email,
+        role: req.user.role,
+        route: '/api/auth/founder-check',
+        reason: 'owner_or_developer_role_required',
+      },
+    })
+
+    return res.status(403).json({
+      ok: false,
+      error: 'Founder access requires the owner or developer account.',
     })
   } catch (error) {
     next(error)

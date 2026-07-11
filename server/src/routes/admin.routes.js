@@ -1,4 +1,4 @@
-﻿const crypto = require('crypto')
+const crypto = require('crypto')
 const express = require('express')
 const bcrypt = require('bcryptjs')
 const { z } = require('zod')
@@ -10,20 +10,90 @@ const {
   getFounderAvailabilitySettings,
   zonedDateTimeToUtc: founderZonedDateTimeToUtc,
   addDateKey: addFounderDateKey,
+  isRequestedSlotAvailable,
 } = require('../services/founderAvailability.service')
+const { env } = require('../config/env')
+const {
+  DEFAULT_PLATFORM_SETTINGS,
+  getPlatformSettings,
+  normalizePlatformSettings,
+  savePlatformSettings,
+} = require('../services/platformSettings.service')
+const { publishDueEncouragements } = require('../services/encouragements.service')
+const {
+  createUniqueCourseSlug,
+  getCourseTree,
+  listAdminCourses,
+  listClientCourses,
+} = require('../services/learningLibrary.service')
+const {
+  createUniqueMembershipSlug,
+  getMembershipDetail,
+  listAdminMemberships,
+  listClientMemberships,
+} = require('../services/membershipCircle.service')
+const {
+  getActiveCircleMemberships,
+  getAdminCirclePost,
+  listAdminCirclePosts,
+} = require('../services/circleCommunity.service')
 
 const router = express.Router()
 
 const requireAdmin = [
   requireAuth,
-  requireRole(['owner', 'admin', 'staff']),
+  requireRole(['developer', 'owner', 'admin', 'staff']),
 ]
+
+const requireDeveloper = [
+  requireAuth,
+  requireRole(['developer']),
+]
+
+async function getActiveFounderOwner() {
+  if (!pool) return null
+
+  const result = await pool.query(
+    `
+    SELECT id, email, role, status
+    FROM system_users
+    WHERE role = 'owner'
+      AND status = 'active'
+    ORDER BY created_at ASC
+    LIMIT 1
+    `,
+  )
+
+  return result.rows[0] || null
+}
 
 const requireFounderAccess = [
   requireAuth,
   async (req, res, next) => {
     if (req.user?.role === 'owner') {
+      req.founderOwnerUserId = req.user.id
+      req.founderAccessMode = 'owner'
       return next()
+    }
+
+    if (req.user?.role === 'developer') {
+      try {
+        const founderOwner = await getActiveFounderOwner()
+
+        if (!founderOwner) {
+          return res.status(409).json({
+            ok: false,
+            error: 'No active owner account is available for the Founder workspace.',
+          })
+        }
+
+        req.founderOwnerUserId = founderOwner.id
+        req.founderAccessMode = 'developer'
+        req.founderOwner = founderOwner
+        return next()
+      } catch (error) {
+        return next(error)
+      }
     }
 
     try {
@@ -47,7 +117,7 @@ const requireFounderAccess = [
               role: req.user.role,
               method: req.method,
               path: req.originalUrl,
-              reason: 'owner_role_required',
+              reason: 'owner_or_developer_role_required',
             }),
           ],
         )
@@ -58,7 +128,7 @@ const requireFounderAccess = [
 
     return res.status(403).json({
       ok: false,
-      error: 'Founder access is restricted to the owner account.',
+      error: 'Founder access requires the owner or developer account.',
     })
   },
 ]
@@ -128,7 +198,7 @@ async function getClients() {
       cp.phone,
       cp.birthday,
       cp.client_status,
-      
+
       cp.private_admin_notes,
       cp.public_contact_email,
       cp.lead_interest,
@@ -391,7 +461,7 @@ router.post('/clients', requireAdmin, async (req, res, next) => {
       ON CONFLICT (email)
       DO UPDATE SET
         role = CASE
-          WHEN system_users.role IN ('owner', 'admin', 'staff') THEN system_users.role
+          WHEN system_users.role IN ('developer', 'owner', 'admin', 'staff') THEN system_users.role
           ELSE 'client'
         END,
         updated_at = now()
@@ -1249,6 +1319,251 @@ async function getBookings() {
 
   return result.rows
 }
+
+
+const bookingChangeDecisionSchema = z.object({
+  decision: z.enum(['approved', 'declined']),
+  reviewerNotes: z.string().trim().max(2000).optional().default(''),
+})
+
+async function getSessionChangeRequests() {
+  const result = await pool.query(
+    `
+    SELECT
+      request.id,
+      request.booking_id,
+      request.client_profile_id,
+      request.request_type,
+      request.requested_starts_at,
+      request.requested_ends_at,
+      request.reason,
+      request.status,
+      request.reviewer_notes,
+      request.reviewed_at,
+      request.created_at,
+      request.updated_at,
+      booking.status AS booking_status,
+      booking.starts_at AS current_starts_at,
+      booking.ends_at AS current_ends_at,
+      booking.timezone,
+      appointment.name AS appointment_type_name,
+      profile.first_name AS client_first_name,
+      profile.last_name AS client_last_name,
+      account.email AS client_email,
+      reviewer.email AS reviewer_email
+    FROM booking_change_requests request
+    INNER JOIN bookings booking ON booking.id = request.booking_id
+    LEFT JOIN appointment_types appointment ON appointment.id = booking.appointment_type_id
+    INNER JOIN client_profiles profile ON profile.id = request.client_profile_id
+    LEFT JOIN system_users account ON account.id = profile.user_id
+    LEFT JOIN system_users reviewer ON reviewer.id = request.reviewer_user_id
+    ORDER BY
+      CASE WHEN request.status = 'pending' THEN 0 ELSE 1 END,
+      request.created_at DESC
+    LIMIT 250
+    `,
+  )
+
+  return result.rows
+}
+
+router.get('/session-change-requests', requireAdmin, async (req, res, next) => {
+  try {
+    if (!pool) {
+      return res.status(503).json({ ok: false, error: 'Database is not configured.' })
+    }
+
+    const requests = await getSessionChangeRequests()
+
+    return res.json({
+      ok: true,
+      requests,
+      pendingCount: requests.filter((request) => request.status === 'pending').length,
+    })
+  } catch (error) {
+    return next(error)
+  }
+})
+
+router.patch(
+  '/session-change-requests/:requestId',
+  requireAdmin,
+  async (req, res, next) => {
+    if (!pool) {
+      return res.status(503).json({ ok: false, error: 'Database is not configured.' })
+    }
+
+    const parsed = bookingChangeDecisionSchema.safeParse(req.body)
+
+    if (!parsed.success) {
+      return res.status(400).json({
+        ok: false,
+        error: parsed.error.issues[0]?.message || 'Invalid review decision.',
+      })
+    }
+
+    const dbClient = await pool.connect()
+
+    try {
+      const requestResult = await dbClient.query(
+        `
+        SELECT
+          request.*,
+          booking.appointment_type_id,
+          booking.status AS booking_status,
+          booking.starts_at AS current_starts_at,
+          booking.ends_at AS current_ends_at,
+          appointment.name AS appointment_type_name,
+          appointment.duration_minutes,
+          appointment.buffer_before_minutes,
+          appointment.buffer_after_minutes,
+          appointment.is_active
+        FROM booking_change_requests request
+        INNER JOIN bookings booking ON booking.id = request.booking_id
+        LEFT JOIN appointment_types appointment ON appointment.id = booking.appointment_type_id
+        WHERE request.id = $1
+        LIMIT 1
+        `,
+        [req.params.requestId],
+      )
+      const changeRequest = requestResult.rows[0]
+
+      if (!changeRequest) {
+        return res.status(404).json({ ok: false, error: 'Session change request not found.' })
+      }
+
+      if (changeRequest.status !== 'pending') {
+        return res.status(409).json({
+          ok: false,
+          error: 'This session change request has already been reviewed.',
+        })
+      }
+
+      const input = parsed.data
+
+      if (input.decision === 'approved' && changeRequest.request_type === 'reschedule') {
+        if (!changeRequest.appointment_type_id || !changeRequest.is_active) {
+          return res.status(409).json({
+            ok: false,
+            error: 'The linked session type is not currently available.',
+          })
+        }
+
+        const requestedStart = new Date(changeRequest.requested_starts_at)
+        const availability = await isRequestedSlotAvailable({
+          pool,
+          appointmentType: changeRequest,
+          startsAt: requestedStart,
+        })
+
+        if (!availability.available) {
+          return res.status(409).json({
+            ok: false,
+            availabilityBlocked: true,
+            error: 'The requested replacement time is no longer available.',
+          })
+        }
+      }
+
+      await dbClient.query('BEGIN')
+
+      const beforeBooking = {
+        status: changeRequest.booking_status,
+        startsAt: changeRequest.current_starts_at,
+        endsAt: changeRequest.current_ends_at,
+      }
+
+      if (input.decision === 'approved' && changeRequest.request_type === 'cancel') {
+        await dbClient.query(
+          `
+          UPDATE bookings
+          SET status = 'cancelled',
+              cancellation_reason = $1,
+              updated_at = now()
+          WHERE id = $2
+          `,
+          [changeRequest.reason, changeRequest.booking_id],
+        )
+      }
+
+      if (input.decision === 'approved' && changeRequest.request_type === 'reschedule') {
+        await dbClient.query(
+          `
+          UPDATE bookings
+          SET starts_at = $1,
+              ends_at = $2,
+              updated_at = now()
+          WHERE id = $3
+          `,
+          [
+            changeRequest.requested_starts_at,
+            changeRequest.requested_ends_at,
+            changeRequest.booking_id,
+          ],
+        )
+      }
+
+      const reviewed = await dbClient.query(
+        `
+        UPDATE booking_change_requests
+        SET status = $1,
+            reviewer_user_id = $2,
+            reviewer_notes = $3,
+            reviewed_at = now(),
+            updated_at = now()
+        WHERE id = $4
+        RETURNING *
+        `,
+        [input.decision, req.user.id, input.reviewerNotes, changeRequest.id],
+      )
+
+      const updatedBookingResult = await dbClient.query(
+        'SELECT * FROM bookings WHERE id = $1 LIMIT 1',
+        [changeRequest.booking_id],
+      )
+      const updatedBooking = updatedBookingResult.rows[0]
+
+      await dbClient.query(
+        `
+        INSERT INTO audit_logs (
+          actor_user_id,
+          action,
+          entity_type,
+          entity_id,
+          before_data,
+          after_data
+        )
+        VALUES ($1, 'session_change_request_reviewed', 'booking_change_requests', $2, $3::jsonb, $4::jsonb)
+        `,
+        [
+          req.user.id,
+          changeRequest.id,
+          JSON.stringify({ request: changeRequest, booking: beforeBooking }),
+          JSON.stringify({ request: reviewed.rows[0], booking: updatedBooking }),
+        ],
+      )
+
+      await dbClient.query('COMMIT')
+
+      return res.json({
+        ok: true,
+        message: input.decision === 'approved'
+          ? 'The client’s session request was approved.'
+          : 'The client’s session request was declined.',
+        request: reviewed.rows[0],
+        booking: updatedBooking,
+        requests: await getSessionChangeRequests(),
+      })
+    } catch (error) {
+      try { await dbClient.query('ROLLBACK') } catch {}
+      return next(error)
+    } finally {
+      dbClient.release()
+    }
+  },
+)
+
+// client-session-self-service-pass-21-admin-end
 
 router.get('/bookings', requireAdmin, async (req, res, next) => {
   try {
@@ -3477,6 +3792,24 @@ router.post('/portal-invites/:inviteId/send-email', requireAdmin, async (req, re
     })
   }
 
+  let platformSettings
+
+  try {
+    platformSettings = await getPlatformSettings(pool)
+  } catch (error) {
+    return next(error)
+  }
+
+  if (platformSettings.maintenanceMode || platformSettings.outgoingEmailPaused) {
+    return res.status(503).json({
+      ok: false,
+      code: 'OUTGOING_EMAIL_PAUSED',
+      error: platformSettings.maintenanceMode
+        ? platformSettings.maintenanceMessage
+        : 'Outgoing email is temporarily paused by the developer.',
+    })
+  }
+
   const resendApiKey = String(process.env.RESEND_API_KEY || '').trim()
   const fromEmail = String(
     process.env.PORTAL_EMAIL_FROM ||
@@ -4373,6 +4706,24 @@ router.post('/mail-studio/send', requireAdmin, async (req, res, next) => {
     })
   }
 
+  let platformSettings
+
+  try {
+    platformSettings = await getPlatformSettings(pool)
+  } catch (error) {
+    return next(error)
+  }
+
+  if (platformSettings.maintenanceMode || platformSettings.outgoingEmailPaused) {
+    return res.status(503).json({
+      ok: false,
+      code: 'OUTGOING_EMAIL_PAUSED',
+      error: platformSettings.maintenanceMode
+        ? platformSettings.maintenanceMessage
+        : 'Outgoing email is temporarily paused by the developer.',
+    })
+  }
+
   const resendApiKey = String(process.env.RESEND_API_KEY || '').trim()
   const fromEmail = String(
     process.env.PORTAL_EMAIL_FROM ||
@@ -4831,7 +5182,7 @@ router.get('/founders-view/availability', requireFounderAccess, async (req, res,
   }
 
   try {
-    const workspace = await getFounderAvailabilityWorkspace(req.user.id)
+    const workspace = await getFounderAvailabilityWorkspace(req.founderOwnerUserId)
     return res.json({ ok: true, ...workspace })
   } catch (error) {
     return next(error)
@@ -4869,7 +5220,7 @@ router.put('/founders-view/availability/weekly', requireFounderAccess, async (re
         AND owner_user_id = $1
       ORDER BY weekday ASC, start_time ASC
       `,
-      [req.user.id],
+      [req.founderOwnerUserId],
     )
 
     await client.query(
@@ -4878,7 +5229,7 @@ router.put('/founders-view/availability/weekly', requireFounderAccess, async (re
       WHERE specific_date IS NULL
         AND owner_user_id = $1
       `,
-      [req.user.id],
+      [req.founderOwnerUserId],
     )
 
     for (const day of input.weeklySchedule) {
@@ -4898,7 +5249,7 @@ router.put('/founders-view/availability/weekly', requireFounderAccess, async (re
           VALUES ($1, $2, NULL, $3, $4, $5, true, 'Founder weekly availability')
           `,
           [
-            req.user.id,
+            req.founderOwnerUserId,
             day.weekday,
             window.startTime,
             window.endTime,
@@ -4930,7 +5281,7 @@ router.put('/founders-view/availability/weekly', requireFounderAccess, async (re
       RETURNING *
       `,
       [
-        req.user.id,
+        req.founderOwnerUserId,
         input.timezone,
         input.slotIntervalMinutes,
         input.minimumNoticeMinutes,
@@ -4965,7 +5316,7 @@ router.put('/founders-view/availability/weekly', requireFounderAccess, async (re
     )
 
     await client.query('COMMIT')
-    const workspace = await getFounderAvailabilityWorkspace(req.user.id)
+    const workspace = await getFounderAvailabilityWorkspace(req.founderOwnerUserId)
 
     return res.json({
       ok: true,
@@ -5010,7 +5361,7 @@ router.put('/founders-view/availability/dates/:date', requireFounderAccess, asyn
 
   try {
     const input = parsed.data
-    const settings = await getFounderAvailabilitySettings(client, req.user.id)
+    const settings = await getFounderAvailabilitySettings(client, req.founderOwnerUserId)
     const timezone = settings.timezone || FOUNDER_AVAILABILITY_DEFAULTS.timezone
     const startsAt = founderZonedDateTimeToUtc(dateValue, '00:00', timezone)
     const endsAt = founderZonedDateTimeToUtc(addFounderDateKey(dateValue, 1), '00:00', timezone)
@@ -5024,7 +5375,7 @@ router.put('/founders-view/availability/dates/:date', requireFounderAccess, asyn
       WHERE specific_date = $1::date
         AND owner_user_id = $2
       `,
-      [dateValue, req.user.id],
+      [dateValue, req.founderOwnerUserId],
     )
 
     const beforeExceptions = await client.query(
@@ -5045,7 +5396,7 @@ router.put('/founders-view/availability/dates/:date', requireFounderAccess, asyn
       WHERE specific_date = $1::date
         AND owner_user_id = $2
       `,
-      [dateValue, req.user.id],
+      [dateValue, req.founderOwnerUserId],
     )
 
     await client.query(
@@ -5102,7 +5453,7 @@ router.put('/founders-view/availability/dates/:date', requireFounderAccess, asyn
           VALUES ($1, NULL, $2::date, $3, $4, $5, true, $6)
           `,
           [
-            req.user.id,
+            req.founderOwnerUserId,
             dateValue,
             window.startTime,
             window.endTime,
@@ -5127,7 +5478,7 @@ router.put('/founders-view/availability/dates/:date', requireFounderAccess, asyn
       `,
       [
         req.user.id,
-        req.user.id,
+        req.founderOwnerUserId,
         JSON.stringify({
           date: dateValue,
           availabilityBlocks: beforeBlocks.rows,
@@ -5143,7 +5494,7 @@ router.put('/founders-view/availability/dates/:date', requireFounderAccess, asyn
     )
 
     await client.query('COMMIT')
-    const workspace = await getFounderAvailabilityWorkspace(req.user.id)
+    const workspace = await getFounderAvailabilityWorkspace(req.founderOwnerUserId)
 
     return res.json({
       ok: true,
@@ -5416,7 +5767,7 @@ router.get('/founders-view/calendar', requireFounderAccess, async (req, res, nex
         )
       ORDER BY specific_date NULLS LAST, weekday NULLS LAST, start_time ASC
       `,
-      [`${month}-01`, nextMonthDateValue, req.user.id],
+      [`${month}-01`, nextMonthDateValue, req.founderOwnerUserId],
     )
 
     return res.json({
@@ -5605,12 +5956,4443 @@ router.patch('/founders-view/availability-exceptions/:exceptionId', requireFound
 // phase-3-12a-founders-view-end
 
 
+// encouragement-studio-pass-17-start
+const encouragementDeliveryModes = ['draft', 'publish_now', 'schedule']
+const encouragementVisibilityModes = ['all_members', 'single_client']
+
+const encouragementPayloadSchema = z
+  .object({
+    title: z.string().trim().max(160, 'Keep the title under 160 characters.').optional().default(''),
+    body: z.string().trim().min(1, 'Write the encouragement before saving.').max(10000),
+    visibility: z.enum(encouragementVisibilityModes).optional().default('all_members'),
+    clientProfileId: z.string().uuid().nullable().optional(),
+    deliveryMode: z.enum(encouragementDeliveryModes).optional().default('draft'),
+    scheduledDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional().or(z.literal('')),
+    scheduledTime: z.string().regex(/^\d{2}:\d{2}$/).optional().or(z.literal('')),
+  })
+  .superRefine((value, context) => {
+    if (value.visibility === 'single_client' && !value.clientProfileId) {
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['clientProfileId'],
+        message: 'Choose the client who should receive this message.',
+      })
+    }
+
+    if (value.deliveryMode === 'schedule' && (!value.scheduledDate || !value.scheduledTime)) {
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['scheduledDate'],
+        message: 'Choose both a date and time for the scheduled message.',
+      })
+    }
+  })
+
+async function getEncouragementScheduleDate(payload) {
+  if (payload.deliveryMode !== 'schedule') return null
+
+  const founderSettings = await getFounderAvailabilitySettings(pool)
+  const timeZone = founderSettings.timezone || 'America/New_York'
+  const scheduledAt = founderZonedDateTimeToUtc(
+    payload.scheduledDate,
+    payload.scheduledTime,
+    timeZone,
+  )
+
+  if (Number.isNaN(scheduledAt.getTime())) {
+    const error = new Error('The scheduled date or time is invalid.')
+    error.statusCode = 400
+    throw error
+  }
+
+  if (scheduledAt.getTime() <= Date.now()) {
+    const error = new Error('Choose a future time for a scheduled message.')
+    error.statusCode = 400
+    throw error
+  }
+
+  return { scheduledAt, timeZone }
+}
+
+function getEncouragementState(payload, scheduledDetails = null) {
+  if (payload.deliveryMode === 'publish_now') {
+    return {
+      status: 'published',
+      scheduledAt: null,
+      publishedAt: new Date(),
+    }
+  }
+
+  if (payload.deliveryMode === 'schedule') {
+    return {
+      status: 'scheduled',
+      scheduledAt: scheduledDetails?.scheduledAt || null,
+      publishedAt: null,
+    }
+  }
+
+  return {
+    status: 'draft',
+    scheduledAt: null,
+    publishedAt: null,
+  }
+}
+
+async function ensureEncouragementClient(clientProfileId, db = pool) {
+  if (!clientProfileId) return null
+
+  const result = await db.query(
+    `
+    SELECT
+      cp.id,
+      cp.first_name,
+      cp.last_name,
+      COALESCE(su.email, cp.public_contact_email) AS email,
+      su.status AS portal_status
+    FROM client_profiles cp
+    LEFT JOIN system_users su ON su.id = cp.user_id
+    WHERE cp.id = $1
+    LIMIT 1
+    `,
+    [clientProfileId],
+  )
+
+  if (!result.rows[0]) {
+    const error = new Error('The selected client could not be found.')
+    error.statusCode = 404
+    throw error
+  }
+
+  return result.rows[0]
+}
+
+async function writeEncouragementAudit({
+  actorUserId,
+  action,
+  encouragementId,
+  beforeData = null,
+  afterData = null,
+  db = pool,
+}) {
+  await db.query(
+    `
+    INSERT INTO audit_logs (
+      actor_user_id,
+      action,
+      entity_type,
+      entity_id,
+      before_data,
+      after_data
+    )
+    VALUES ($1, $2, 'encouragement_posts', $3, $4::jsonb, $5::jsonb)
+    `,
+    [
+      actorUserId || null,
+      action,
+      encouragementId || null,
+      beforeData ? JSON.stringify(beforeData) : null,
+      afterData ? JSON.stringify(afterData) : null,
+    ],
+  )
+}
+
+router.get('/encouragements', requireAdmin, async (req, res, next) => {
+  try {
+    await publishDueEncouragements(pool)
+
+    const status = String(req.query.status || 'all').trim().toLowerCase()
+    const visibility = String(req.query.visibility || 'all').trim().toLowerCase()
+    const search = String(req.query.search || '').trim()
+
+    const allowedStatuses = new Set(['all', 'draft', 'scheduled', 'published', 'archived'])
+    const allowedVisibilities = new Set(['all', ...encouragementVisibilityModes])
+
+    if (!allowedStatuses.has(status) || !allowedVisibilities.has(visibility)) {
+      return res.status(400).json({ ok: false, error: 'Invalid encouragement filter.' })
+    }
+
+    const [postsResult, metricsResult, settings] = await Promise.all([
+      pool.query(
+        `
+        SELECT
+          ep.id,
+          ep.title,
+          ep.body,
+          ep.visibility,
+          ep.status,
+          ep.scheduled_at,
+          ep.published_at,
+          ep.created_at,
+          ep.updated_at,
+          creator.email AS created_by_email,
+          target_cp.id AS client_profile_id,
+          target_cp.first_name AS client_first_name,
+          target_cp.last_name AS client_last_name,
+          COALESCE(target_su.email, target_cp.public_contact_email) AS client_email,
+          CASE
+            WHEN ep.visibility = 'all_members' THEN (
+              SELECT COUNT(*)::int
+              FROM client_profiles audience_cp
+              JOIN system_users audience_su ON audience_su.id = audience_cp.user_id
+              WHERE audience_su.role = 'client'
+                AND audience_su.status = 'active'
+            )
+            ELSE CASE WHEN target_cp.id IS NULL THEN 0 ELSE 1 END
+          END AS audience_count,
+          (
+            SELECT COUNT(*)::int
+            FROM encouragement_recipients read_er
+            WHERE read_er.encouragement_post_id = ep.id
+              AND read_er.read_at IS NOT NULL
+          ) AS read_count
+        FROM encouragement_posts ep
+        LEFT JOIN system_users creator ON creator.id = ep.created_by
+        LEFT JOIN encouragement_recipients target_er
+          ON target_er.encouragement_post_id = ep.id
+         AND ep.visibility = 'single_client'
+        LEFT JOIN client_profiles target_cp ON target_cp.id = target_er.client_profile_id
+        LEFT JOIN system_users target_su ON target_su.id = target_cp.user_id
+        WHERE ($1 = 'all' OR ep.status = $1)
+          AND ($2 = 'all' OR ep.visibility = $2)
+          AND (
+            $3 = ''
+            OR COALESCE(ep.title, '') ILIKE '%' || $3 || '%'
+            OR ep.body ILIKE '%' || $3 || '%'
+            OR COALESCE(target_cp.first_name, '') ILIKE '%' || $3 || '%'
+            OR COALESCE(target_cp.last_name, '') ILIKE '%' || $3 || '%'
+            OR COALESCE(target_su.email, target_cp.public_contact_email, '') ILIKE '%' || $3 || '%'
+          )
+        ORDER BY
+          CASE ep.status
+            WHEN 'scheduled' THEN 0
+            WHEN 'published' THEN 1
+            WHEN 'draft' THEN 2
+            ELSE 3
+          END,
+          COALESCE(ep.scheduled_at, ep.published_at, ep.updated_at) DESC
+        LIMIT 250
+        `,
+        [status, visibility, search],
+      ),
+      pool.query(
+        `
+        SELECT
+          COUNT(*) FILTER (WHERE status = 'draft')::int AS drafts,
+          COUNT(*) FILTER (WHERE status = 'scheduled')::int AS scheduled,
+          COUNT(*) FILTER (WHERE status = 'published')::int AS published,
+          COUNT(*) FILTER (WHERE status = 'archived')::int AS archived,
+          COALESCE((
+            SELECT COUNT(*)::int
+            FROM encouragement_recipients
+            WHERE read_at IS NOT NULL
+          ), 0) AS total_reads
+        FROM encouragement_posts
+        `,
+      ),
+      getPlatformSettings(pool),
+    ])
+
+    return res.json({
+      ok: true,
+      encouragements: postsResult.rows,
+      metrics: metricsResult.rows[0] || {},
+      featureEnabled: Boolean(settings.featureFlags?.clientMessages),
+    })
+  } catch (error) {
+    return next(error)
+  }
+})
+
+router.post('/encouragements', requireAdmin, async (req, res, next) => {
+  const parsed = encouragementPayloadSchema.safeParse(req.body || {})
+
+  if (!parsed.success) {
+    return res.status(400).json({
+      ok: false,
+      error: parsed.error.issues[0]?.message || 'Review the encouragement details.',
+      issues: parsed.error.issues,
+    })
+  }
+
+  const client = await pool.connect()
+
+  try {
+    const payload = parsed.data
+    const scheduledDetails = await getEncouragementScheduleDate(payload)
+    const state = getEncouragementState(payload, scheduledDetails)
+
+    await client.query('BEGIN')
+
+    const targetClient =
+      payload.visibility === 'single_client'
+        ? await ensureEncouragementClient(payload.clientProfileId, client)
+        : null
+
+    const result = await client.query(
+      `
+      INSERT INTO encouragement_posts (
+        title,
+        body,
+        visibility,
+        status,
+        scheduled_at,
+        published_at,
+        created_by
+      )
+      VALUES ($1, $2, $3, $4, $5, $6, $7)
+      RETURNING *
+      `,
+      [
+        payload.title || null,
+        payload.body,
+        payload.visibility,
+        state.status,
+        state.scheduledAt,
+        state.publishedAt,
+        req.user.id,
+      ],
+    )
+
+    const encouragement = result.rows[0]
+
+    if (payload.visibility === 'single_client') {
+      await client.query(
+        `
+        INSERT INTO encouragement_recipients (
+          encouragement_post_id,
+          client_profile_id
+        )
+        VALUES ($1, $2)
+        ON CONFLICT (encouragement_post_id, client_profile_id) DO NOTHING
+        `,
+        [encouragement.id, payload.clientProfileId],
+      )
+    }
+
+    await writeEncouragementAudit({
+      actorUserId: req.user.id,
+      action: 'encouragement_created',
+      encouragementId: encouragement.id,
+      afterData: {
+        ...encouragement,
+        targetClient,
+        scheduleTimeZone: scheduledDetails?.timeZone || null,
+      },
+      db: client,
+    })
+
+    await client.query('COMMIT')
+
+    return res.status(201).json({
+      ok: true,
+      encouragement,
+      targetClient,
+    })
+  } catch (error) {
+    await client.query('ROLLBACK')
+    if (error.statusCode) {
+      return res.status(error.statusCode).json({ ok: false, error: error.message })
+    }
+    return next(error)
+  } finally {
+    client.release()
+  }
+})
+
+router.patch('/encouragements/:encouragementId', requireAdmin, async (req, res, next) => {
+  const parsed = encouragementPayloadSchema.safeParse(req.body || {})
+
+  if (!parsed.success) {
+    return res.status(400).json({
+      ok: false,
+      error: parsed.error.issues[0]?.message || 'Review the encouragement details.',
+      issues: parsed.error.issues,
+    })
+  }
+
+  const client = await pool.connect()
+
+  try {
+    const payload = parsed.data
+    const scheduledDetails = await getEncouragementScheduleDate(payload)
+    const state = getEncouragementState(payload, scheduledDetails)
+
+    await client.query('BEGIN')
+
+    const beforeResult = await client.query(
+      `
+      SELECT
+        ep.*,
+        (
+          SELECT er.client_profile_id
+          FROM encouragement_recipients er
+          WHERE er.encouragement_post_id = ep.id
+          LIMIT 1
+        ) AS existing_client_profile_id
+      FROM encouragement_posts ep
+      WHERE ep.id = $1
+      FOR UPDATE
+      `,
+      [req.params.encouragementId],
+    )
+
+    const before = beforeResult.rows[0]
+
+    if (!before) {
+      await client.query('ROLLBACK')
+      return res.status(404).json({ ok: false, error: 'Encouragement not found.' })
+    }
+
+    const targetClient =
+      payload.visibility === 'single_client'
+        ? await ensureEncouragementClient(payload.clientProfileId, client)
+        : null
+
+    const result = await client.query(
+      `
+      UPDATE encouragement_posts
+      SET
+        title = $2,
+        body = $3,
+        visibility = $4,
+        status = $5,
+        scheduled_at = $6,
+        published_at = $7,
+        updated_at = now()
+      WHERE id = $1
+      RETURNING *
+      `,
+      [
+        req.params.encouragementId,
+        payload.title || null,
+        payload.body,
+        payload.visibility,
+        state.status,
+        state.scheduledAt,
+        state.publishedAt,
+      ],
+    )
+
+    const contentChanged =
+      before.title !== (payload.title || null) ||
+      before.body !== payload.body ||
+      before.visibility !== payload.visibility ||
+      String(before.existing_client_profile_id || '') !== String(payload.clientProfileId || '')
+
+    if (contentChanged) {
+      await client.query(
+        'DELETE FROM encouragement_recipients WHERE encouragement_post_id = $1',
+        [req.params.encouragementId],
+      )
+    }
+
+    if (payload.visibility === 'single_client') {
+      await client.query(
+        `
+        INSERT INTO encouragement_recipients (
+          encouragement_post_id,
+          client_profile_id
+        )
+        VALUES ($1, $2)
+        ON CONFLICT (encouragement_post_id, client_profile_id) DO NOTHING
+        `,
+        [req.params.encouragementId, payload.clientProfileId],
+      )
+    }
+
+    await writeEncouragementAudit({
+      actorUserId: req.user.id,
+      action: 'encouragement_updated',
+      encouragementId: req.params.encouragementId,
+      beforeData: before,
+      afterData: {
+        ...result.rows[0],
+        targetClient,
+        readsReset: contentChanged,
+        scheduleTimeZone: scheduledDetails?.timeZone || null,
+      },
+      db: client,
+    })
+
+    await client.query('COMMIT')
+
+    return res.json({
+      ok: true,
+      encouragement: result.rows[0],
+      targetClient,
+    })
+  } catch (error) {
+    await client.query('ROLLBACK')
+    if (error.statusCode) {
+      return res.status(error.statusCode).json({ ok: false, error: error.message })
+    }
+    return next(error)
+  } finally {
+    client.release()
+  }
+})
+
+router.post('/encouragements/:encouragementId/publish', requireAdmin, async (req, res, next) => {
+  try {
+    const beforeResult = await pool.query(
+      'SELECT * FROM encouragement_posts WHERE id = $1 LIMIT 1',
+      [req.params.encouragementId],
+    )
+
+    if (!beforeResult.rows[0]) {
+      return res.status(404).json({ ok: false, error: 'Encouragement not found.' })
+    }
+
+    const result = await pool.query(
+      `
+      UPDATE encouragement_posts
+      SET
+        status = 'published',
+        scheduled_at = NULL,
+        published_at = now(),
+        updated_at = now()
+      WHERE id = $1
+      RETURNING *
+      `,
+      [req.params.encouragementId],
+    )
+
+    await writeEncouragementAudit({
+      actorUserId: req.user.id,
+      action: 'encouragement_published',
+      encouragementId: req.params.encouragementId,
+      beforeData: beforeResult.rows[0],
+      afterData: result.rows[0],
+    })
+
+    return res.json({ ok: true, encouragement: result.rows[0] })
+  } catch (error) {
+    return next(error)
+  }
+})
+
+router.post('/encouragements/:encouragementId/archive', requireAdmin, async (req, res, next) => {
+  try {
+    const beforeResult = await pool.query(
+      'SELECT * FROM encouragement_posts WHERE id = $1 LIMIT 1',
+      [req.params.encouragementId],
+    )
+
+    if (!beforeResult.rows[0]) {
+      return res.status(404).json({ ok: false, error: 'Encouragement not found.' })
+    }
+
+    const result = await pool.query(
+      `
+      UPDATE encouragement_posts
+      SET status = 'archived', updated_at = now()
+      WHERE id = $1
+      RETURNING *
+      `,
+      [req.params.encouragementId],
+    )
+
+    await writeEncouragementAudit({
+      actorUserId: req.user.id,
+      action: 'encouragement_archived',
+      encouragementId: req.params.encouragementId,
+      beforeData: beforeResult.rows[0],
+      afterData: result.rows[0],
+    })
+
+    return res.json({ ok: true, encouragement: result.rows[0] })
+  } catch (error) {
+    return next(error)
+  }
+})
+
+router.delete('/encouragements/:encouragementId', requireAdmin, async (req, res, next) => {
+  const client = await pool.connect()
+
+  try {
+    await client.query('BEGIN')
+
+    const result = await client.query(
+      `
+      DELETE FROM encouragement_posts
+      WHERE id = $1
+        AND status IN ('draft', 'archived')
+      RETURNING *
+      `,
+      [req.params.encouragementId],
+    )
+
+    if (!result.rows[0]) {
+      await client.query('ROLLBACK')
+      return res.status(409).json({
+        ok: false,
+        error: 'Only draft or archived encouragements can be deleted.',
+      })
+    }
+
+    await writeEncouragementAudit({
+      actorUserId: req.user.id,
+      action: 'encouragement_deleted',
+      encouragementId: req.params.encouragementId,
+      beforeData: result.rows[0],
+      db: client,
+    })
+
+    await client.query('COMMIT')
+
+    return res.json({ ok: true, deletedId: req.params.encouragementId })
+  } catch (error) {
+    await client.query('ROLLBACK')
+    return next(error)
+  } finally {
+    client.release()
+  }
+})
+// encouragement-studio-pass-17-end
+
+
+// developer-control-center-start
+router.get('/developer/overview', requireDeveloper, async (req, res, next) => {
+  try {
+    if (!pool) {
+      return res.status(503).json({
+        ok: false,
+        error: 'Database is not configured.',
+      })
+    }
+
+    const [roleCountsResult, statusCountsResult, totalsResult, recentUsersResult, recentAuditResult] =
+      await Promise.all([
+        pool.query(`
+          SELECT role, COUNT(*)::int AS count
+          FROM system_users
+          GROUP BY role
+          ORDER BY role
+        `),
+        pool.query(`
+          SELECT status, COUNT(*)::int AS count
+          FROM system_users
+          GROUP BY status
+          ORDER BY status
+        `),
+        pool.query(`
+          SELECT
+            (SELECT COUNT(*)::int FROM system_users) AS users,
+            (SELECT COUNT(*)::int FROM client_profiles) AS client_profiles,
+            (SELECT COUNT(*)::int FROM system_users WHERE role = 'client' AND status = 'active') AS active_client_logins,
+            (SELECT COUNT(*)::int FROM bookings) AS bookings,
+            (SELECT COUNT(*)::int FROM audit_logs) AS audit_events
+        `),
+        pool.query(`
+          SELECT
+            su.id,
+            su.email,
+            su.role,
+            su.status,
+            su.must_change_password,
+            su.temporary_password_expires_at,
+            su.password_changed_at,
+            su.session_version,
+            su.last_login_at,
+            su.created_at,
+            cp.id AS client_profile_id,
+            cp.first_name,
+            cp.last_name
+          FROM system_users su
+          LEFT JOIN client_profiles cp
+            ON cp.user_id = su.id
+          ORDER BY su.created_at DESC
+          LIMIT 8
+        `),
+        pool.query(`
+          SELECT
+            al.id,
+            al.action,
+            al.entity_type,
+            al.entity_id,
+            al.created_at,
+            su.email AS actor_email,
+            su.role AS actor_role
+          FROM audit_logs al
+          LEFT JOIN system_users su
+            ON su.id = al.actor_user_id
+          ORDER BY al.created_at DESC
+          LIMIT 10
+        `),
+      ])
+
+    return res.json({
+      ok: true,
+      developer: {
+        id: req.user.id,
+        email: req.user.email,
+        role: req.user.role,
+      },
+      totals: totalsResult.rows[0] || {},
+      roleCounts: roleCountsResult.rows,
+      statusCounts: statusCountsResult.rows,
+      recentUsers: recentUsersResult.rows,
+      recentAudit: recentAuditResult.rows,
+    })
+  } catch (error) {
+    return next(error)
+  }
+})
+
+router.get('/developer/users', requireDeveloper, async (req, res, next) => {
+  try {
+    if (!pool) {
+      return res.status(503).json({
+        ok: false,
+        error: 'Database is not configured.',
+      })
+    }
+
+    const result = await pool.query(`
+      SELECT
+        su.id,
+        su.email,
+        su.role,
+        su.status,
+        su.must_change_password,
+        su.temporary_password_expires_at,
+        su.password_changed_at,
+        su.session_version,
+        su.last_login_at,
+        su.created_at,
+        su.updated_at,
+        cp.id AS client_profile_id,
+        cp.first_name,
+        cp.last_name,
+        cp.client_status
+      FROM system_users su
+      LEFT JOIN client_profiles cp
+        ON cp.user_id = su.id
+      ORDER BY
+        CASE su.role
+          WHEN 'developer' THEN 1
+          WHEN 'owner' THEN 2
+          WHEN 'admin' THEN 3
+          WHEN 'staff' THEN 4
+          WHEN 'client' THEN 5
+          ELSE 6
+        END,
+        lower(su.email)
+    `)
+
+    return res.json({
+      ok: true,
+      users: result.rows,
+    })
+  } catch (error) {
+    return next(error)
+  }
+})
+
+router.post('/developer/users/:userId/temporary-password', requireDeveloper, async (req, res, next) => {
+  try {
+    if (!pool) {
+      return res.status(503).json({
+        ok: false,
+        error: 'Database is not configured.',
+      })
+    }
+
+    const parsed = z
+      .object({
+        expirationHours: z.coerce.number().int().min(1).max(168).optional().default(48),
+      })
+      .safeParse(req.body || {})
+
+    if (!parsed.success) {
+      return res.status(400).json({
+        ok: false,
+        error: 'Temporary-password validity must be between 1 and 168 hours.',
+      })
+    }
+
+    const targetResult = await pool.query(
+      `
+      SELECT id, email, role, status
+      FROM system_users
+      WHERE id = $1
+      LIMIT 1
+      `,
+      [req.params.userId],
+    )
+
+    const target = targetResult.rows[0]
+
+    if (!target) {
+      return res.status(404).json({
+        ok: false,
+        error: 'User account not found.',
+      })
+    }
+
+    if (target.id === req.user.id) {
+      return res.status(400).json({
+        ok: false,
+        error: 'Use the developer seed command to reset your own access safely.',
+      })
+    }
+
+    if (['client', 'member'].includes(target.role)) {
+      return res.status(400).json({
+        ok: false,
+        error: 'Client access must be managed from the Client Circle portal invitation flow.',
+      })
+    }
+
+    const temporaryPassword = `Pw!${crypto.randomBytes(12).toString('base64url')}`
+    const passwordHash = await bcrypt.hash(temporaryPassword, 12)
+
+    const result = await pool.query(
+      `
+      UPDATE system_users
+      SET
+        password_hash = $2,
+        status = 'active',
+        must_change_password = true,
+        temporary_password_expires_at = now() + ($3::text || ' hours')::interval,
+        password_changed_at = NULL,
+        session_version = COALESCE(session_version, 1) + 1,
+        updated_at = now()
+      WHERE id = $1
+      RETURNING
+        id,
+        email,
+        role,
+        status,
+        must_change_password,
+        temporary_password_expires_at
+      `,
+      [target.id, passwordHash, parsed.data.expirationHours],
+    )
+
+    const updatedUser = result.rows[0]
+
+    await pool.query(
+      `
+      INSERT INTO audit_logs (
+        actor_user_id,
+        action,
+        entity_type,
+        entity_id,
+        before_data,
+        after_data
+      )
+      VALUES ($1, 'developer_issued_temporary_password', 'system_users', $2, $3::jsonb, $4::jsonb)
+      `,
+      [
+        req.user.id,
+        target.id,
+        JSON.stringify({
+          email: target.email,
+          role: target.role,
+          status: target.status,
+        }),
+        JSON.stringify({
+          email: updatedUser.email,
+          role: updatedUser.role,
+          status: updatedUser.status,
+          passwordChangeRequired: true,
+          expiresAt: updatedUser.temporary_password_expires_at,
+        }),
+      ],
+    )
+
+    return res.json({
+      ok: true,
+      message: 'Temporary password created. It will be shown only in this response.',
+      user: updatedUser,
+      temporaryPassword,
+    })
+  } catch (error) {
+    return next(error)
+  }
+})
+
+router.patch('/developer/users/:userId/status', requireDeveloper, async (req, res, next) => {
+  try {
+    if (!pool) {
+      return res.status(503).json({
+        ok: false,
+        error: 'Database is not configured.',
+      })
+    }
+
+    const parsed = z
+      .object({
+        status: z.enum(['active', 'suspended', 'archived']),
+      })
+      .safeParse(req.body || {})
+
+    if (!parsed.success) {
+      return res.status(400).json({
+        ok: false,
+        error: 'Choose active, suspended, or archived.',
+      })
+    }
+
+    const targetResult = await pool.query(
+      `
+      SELECT id, email, role, status
+      FROM system_users
+      WHERE id = $1
+      LIMIT 1
+      `,
+      [req.params.userId],
+    )
+
+    const target = targetResult.rows[0]
+
+    if (!target) {
+      return res.status(404).json({
+        ok: false,
+        error: 'User account not found.',
+      })
+    }
+
+    if (target.id === req.user.id) {
+      return res.status(400).json({
+        ok: false,
+        error: 'You cannot change the status of your current developer session.',
+      })
+    }
+
+    if (target.role === 'developer' && parsed.data.status !== 'active') {
+      const activeDeveloperCountResult = await pool.query(`
+        SELECT COUNT(*)::int AS count
+        FROM system_users
+        WHERE role = 'developer'
+          AND status = 'active'
+      `)
+
+      if (Number(activeDeveloperCountResult.rows[0]?.count || 0) <= 1) {
+        return res.status(400).json({
+          ok: false,
+          error: 'The final active developer account cannot be suspended or archived.',
+        })
+      }
+    }
+
+    const result = await pool.query(
+      `
+      UPDATE system_users
+      SET status = $2,
+          session_version = COALESCE(session_version, 1) + 1,
+          updated_at = now()
+      WHERE id = $1
+      RETURNING
+        id,
+        email,
+        role,
+        status,
+        must_change_password,
+        temporary_password_expires_at,
+        password_changed_at,
+        session_version,
+        last_login_at,
+        created_at,
+        updated_at
+      `,
+      [target.id, parsed.data.status],
+    )
+
+    const updatedUser = result.rows[0]
+
+    await pool.query(
+      `
+      INSERT INTO audit_logs (
+        actor_user_id,
+        action,
+        entity_type,
+        entity_id,
+        before_data,
+        after_data
+      )
+      VALUES ($1, 'developer_changed_user_status', 'system_users', $2, $3::jsonb, $4::jsonb)
+      `,
+      [
+        req.user.id,
+        target.id,
+        JSON.stringify({
+          email: target.email,
+          role: target.role,
+          status: target.status,
+        }),
+        JSON.stringify({
+          email: updatedUser.email,
+          role: updatedUser.role,
+          status: updatedUser.status,
+        }),
+      ],
+    )
+
+    return res.json({
+      ok: true,
+      message: `Account is now ${updatedUser.status}.`,
+      user: updatedUser,
+    })
+  } catch (error) {
+    return next(error)
+  }
+})
+
+// developer-operations-phase-2-start
+const developerAccountCreateSchema = z.object({
+  email: z.string().trim().email(),
+  role: z.enum(['developer', 'owner', 'admin', 'staff']),
+  expirationHours: z.coerce.number().int().min(1).max(168).optional().default(48),
+})
+
+const developerRoleSchema = z.object({
+  role: z.enum(['developer', 'owner', 'admin', 'staff']),
+})
+
+const developerSettingsSchema = z.object({
+  maintenanceMode: z.boolean(),
+  maintenanceMessage: z.string().trim().min(1).max(300),
+  bookingsPaused: z.boolean(),
+  clientLoginsPaused: z.boolean(),
+  outgoingEmailPaused: z.boolean(),
+  featureFlags: z.object({
+    clientMessages: z.boolean(),
+    secureClientInbox: z.boolean(),
+    courses: z.boolean(),
+    memberships: z.boolean(),
+    circleCommunity: z.boolean(),
+    founderReports: z.boolean(),
+    adminBroadcasts: z.boolean(),
+    newClientDashboard: z.boolean(),
+    experimentalScheduler: z.boolean(),
+  }),
+})
+
+async function writeDeveloperAudit({
+  actorUserId,
+  action,
+  entityType,
+  entityId = null,
+  beforeData = {},
+  afterData = {},
+}) {
+  try {
+    await pool.query(
+      `
+      INSERT INTO audit_logs (
+        actor_user_id,
+        action,
+        entity_type,
+        entity_id,
+        before_data,
+        after_data
+      )
+      VALUES ($1, $2, $3, $4, $5::jsonb, $6::jsonb)
+      `,
+      [
+        actorUserId,
+        action,
+        entityType,
+        entityId,
+        JSON.stringify(beforeData || {}),
+        JSON.stringify(afterData || {}),
+      ],
+    )
+  } catch {
+    // Developer operations should not fail only because audit logging is unavailable.
+  }
+}
+
+async function getActiveDeveloperCount() {
+  const result = await pool.query(`
+    SELECT COUNT(*)::int AS count
+    FROM system_users
+    WHERE role = 'developer'
+      AND status = 'active'
+  `)
+
+  return Number(result.rows[0]?.count || 0)
+}
+
+router.post('/developer/users', requireDeveloper, async (req, res, next) => {
+  try {
+    const parsed = developerAccountCreateSchema.safeParse(req.body || {})
+
+    if (!parsed.success) {
+      return res.status(400).json({
+        ok: false,
+        error: parsed.error.issues[0]?.message || 'Enter a valid account email and role.',
+      })
+    }
+
+    const email = parsed.data.email.toLowerCase()
+    const existing = await pool.query(
+      `SELECT id, email, role, status FROM system_users WHERE lower(email) = lower($1) LIMIT 1`,
+      [email],
+    )
+
+    if (existing.rows[0]) {
+      return res.status(409).json({
+        ok: false,
+        error: 'An account already exists for this email address.',
+      })
+    }
+
+    const temporaryPassword = `Pw!${crypto.randomBytes(12).toString('base64url')}`
+    const passwordHash = await bcrypt.hash(temporaryPassword, 12)
+
+    const result = await pool.query(
+      `
+      INSERT INTO system_users (
+        email,
+        password_hash,
+        role,
+        status,
+        must_change_password,
+        temporary_password_expires_at,
+        password_changed_at,
+        session_version
+      )
+      VALUES (
+        $1,
+        $2,
+        $3,
+        'active',
+        true,
+        now() + ($4::text || ' hours')::interval,
+        NULL,
+        1
+      )
+      RETURNING
+        id,
+        email,
+        role,
+        status,
+        must_change_password,
+        temporary_password_expires_at,
+        session_version,
+        created_at
+      `,
+      [email, passwordHash, parsed.data.role, parsed.data.expirationHours],
+    )
+
+    const user = result.rows[0]
+
+    await writeDeveloperAudit({
+      actorUserId: req.user.id,
+      action: 'developer_created_system_account',
+      entityType: 'system_users',
+      entityId: user.id,
+      afterData: {
+        email: user.email,
+        role: user.role,
+        status: user.status,
+        passwordChangeRequired: true,
+        expiresAt: user.temporary_password_expires_at,
+      },
+    })
+
+    return res.status(201).json({
+      ok: true,
+      message: 'Account created. The temporary password is shown only once.',
+      user,
+      temporaryPassword,
+    })
+  } catch (error) {
+    return next(error)
+  }
+})
+
+router.patch('/developer/users/:userId/role', requireDeveloper, async (req, res, next) => {
+  try {
+    const parsed = developerRoleSchema.safeParse(req.body || {})
+
+    if (!parsed.success) {
+      return res.status(400).json({ ok: false, error: 'Choose a valid system role.' })
+    }
+
+    const targetResult = await pool.query(
+      `SELECT id, email, role, status FROM system_users WHERE id = $1 LIMIT 1`,
+      [req.params.userId],
+    )
+    const target = targetResult.rows[0]
+
+    if (!target) {
+      return res.status(404).json({ ok: false, error: 'User account not found.' })
+    }
+
+    if (target.id === req.user.id) {
+      return res.status(400).json({
+        ok: false,
+        error: 'You cannot change the role of your current developer session.',
+      })
+    }
+
+    if (['client', 'member'].includes(target.role)) {
+      return res.status(400).json({
+        ok: false,
+        error: 'Client roles are managed through the Client Circle, not the system-role editor.',
+      })
+    }
+
+    if (target.role === 'developer' && parsed.data.role !== 'developer') {
+      const activeDeveloperCount = await getActiveDeveloperCount()
+
+      if (target.status === 'active' && activeDeveloperCount <= 1) {
+        return res.status(400).json({
+          ok: false,
+          error: 'The final active developer account cannot be demoted.',
+        })
+      }
+    }
+
+    const result = await pool.query(
+      `
+      UPDATE system_users
+      SET role = $2,
+          session_version = COALESCE(session_version, 1) + 1,
+          updated_at = now()
+      WHERE id = $1
+      RETURNING id, email, role, status, session_version, updated_at
+      `,
+      [target.id, parsed.data.role],
+    )
+
+    const updatedUser = result.rows[0]
+
+    await writeDeveloperAudit({
+      actorUserId: req.user.id,
+      action: 'developer_changed_user_role',
+      entityType: 'system_users',
+      entityId: target.id,
+      beforeData: target,
+      afterData: updatedUser,
+    })
+
+    return res.json({
+      ok: true,
+      message: `Role changed to ${updatedUser.role}. Existing sessions were revoked.`,
+      user: updatedUser,
+    })
+  } catch (error) {
+    return next(error)
+  }
+})
+
+router.post('/developer/users/:userId/revoke-sessions', requireDeveloper, async (req, res, next) => {
+  try {
+    const targetResult = await pool.query(
+      `SELECT id, email, role, status, session_version FROM system_users WHERE id = $1 LIMIT 1`,
+      [req.params.userId],
+    )
+    const target = targetResult.rows[0]
+
+    if (!target) {
+      return res.status(404).json({ ok: false, error: 'User account not found.' })
+    }
+
+    if (target.id === req.user.id) {
+      return res.status(400).json({
+        ok: false,
+        error: 'Use Sign Out for your current developer session.',
+      })
+    }
+
+    const result = await pool.query(
+      `
+      UPDATE system_users
+      SET session_version = COALESCE(session_version, 1) + 1,
+          updated_at = now()
+      WHERE id = $1
+      RETURNING id, email, role, status, session_version, updated_at
+      `,
+      [target.id],
+    )
+
+    await writeDeveloperAudit({
+      actorUserId: req.user.id,
+      action: 'developer_revoked_user_sessions',
+      entityType: 'system_users',
+      entityId: target.id,
+      beforeData: { sessionVersion: target.session_version },
+      afterData: { sessionVersion: result.rows[0].session_version },
+    })
+
+    return res.json({
+      ok: true,
+      message: `All active sessions for ${target.email} were revoked.`,
+      user: result.rows[0],
+    })
+  } catch (error) {
+    return next(error)
+  }
+})
+
+router.get('/developer/client-access', requireDeveloper, async (req, res, next) => {
+  try {
+    const result = await pool.query(`
+      SELECT
+        cp.id AS client_profile_id,
+        cp.first_name,
+        cp.last_name,
+        cp.client_status,
+        cp.public_contact_email,
+        cp.updated_at AS profile_updated_at,
+        su.id AS user_id,
+        su.email,
+        su.status AS account_status,
+        su.last_login_at,
+        su.password_changed_at,
+        su.session_version,
+        invite.id AS latest_invite_id,
+        invite.status AS latest_invite_status,
+        invite.expires_at AS latest_invite_expires_at,
+        invite.created_at AS latest_invite_created_at,
+        COALESCE(resource_counts.active_resources, 0)::int AS active_resources,
+        COALESCE(booking_counts.upcoming_sessions, 0)::int AS upcoming_sessions,
+        COALESCE(message_counts.published_messages, 0)::int AS published_messages
+      FROM client_profiles cp
+      LEFT JOIN system_users su
+        ON su.id = cp.user_id
+      LEFT JOIN LATERAL (
+        SELECT id, status, expires_at, created_at
+        FROM client_portal_invites
+        WHERE client_profile_id = cp.id
+        ORDER BY created_at DESC
+        LIMIT 1
+      ) invite ON true
+      LEFT JOIN LATERAL (
+        SELECT COUNT(*) AS active_resources
+        FROM client_portal_resources
+        WHERE client_profile_id = cp.id
+          AND status = 'active'
+      ) resource_counts ON true
+      LEFT JOIN LATERAL (
+        SELECT COUNT(*) AS upcoming_sessions
+        FROM bookings
+        WHERE client_profile_id = cp.id
+          AND starts_at >= now()
+          AND status IN ('requested', 'approved', 'confirmed')
+      ) booking_counts ON true
+      LEFT JOIN LATERAL (
+        SELECT COUNT(*) AS published_messages
+        FROM encouragement_posts ep
+        WHERE ep.status = 'published'
+          AND (
+            ep.visibility = 'all_members'
+            OR EXISTS (
+              SELECT 1
+              FROM encouragement_recipients er
+              WHERE er.encouragement_post_id = ep.id
+                AND er.client_profile_id = cp.id
+            )
+          )
+      ) message_counts ON true
+      ORDER BY lower(COALESCE(cp.last_name, '')), lower(COALESCE(cp.first_name, '')), cp.created_at DESC
+    `)
+
+    const clients = result.rows.map((client) => {
+      const issues = []
+      const inviteExpired =
+        client.latest_invite_status === 'pending' &&
+        client.latest_invite_expires_at &&
+        new Date(client.latest_invite_expires_at).getTime() <= Date.now()
+
+      if (!client.user_id) issues.push('No portal account')
+      if (client.user_id && client.account_status !== 'active') issues.push('Login is not active')
+      if (client.user_id && !client.password_changed_at) issues.push('Password setup is incomplete')
+      if (inviteExpired) issues.push('Latest invitation expired')
+      if (client.user_id && !client.last_login_at) issues.push('Client has never signed in')
+
+      return {
+        ...client,
+        readiness: issues.length === 0 ? 'ready' : 'needs_attention',
+        issues,
+      }
+    })
+
+    return res.json({ ok: true, clients })
+  } catch (error) {
+    return next(error)
+  }
+})
+
+router.get('/developer/system-health', requireDeveloper, async (req, res, next) => {
+  const startedAt = Date.now()
+
+  try {
+    const databaseResult = await pool.query(`SELECT now() AS database_time`)
+    const databaseLatencyMs = Date.now() - startedAt
+    const settings = await getPlatformSettings(pool)
+
+    const tablesResult = await pool.query(`
+      SELECT table_name
+      FROM information_schema.tables
+      WHERE table_schema = 'public'
+        AND table_name = ANY($1::text[])
+      ORDER BY table_name
+    `, [[
+      'system_users',
+      'client_profiles',
+      'bookings',
+      'booking_change_requests',
+      'audit_logs',
+      'client_portal_invites',
+      'client_portal_resources',
+      'encouragement_posts',
+      'platform_settings',
+      'courses',
+      'course_modules',
+      'course_lessons',
+      'course_access',
+      'lesson_progress',
+      'memberships',
+      'membership_enrollments',
+      'circle_posts',
+      'circle_comments',
+      'client_conversations',
+      'client_conversation_messages',
+    ]])
+
+    const requiredTables = [
+      'system_users',
+      'client_profiles',
+      'bookings',
+      'booking_change_requests',
+      'audit_logs',
+      'client_portal_invites',
+      'client_portal_resources',
+      'encouragement_posts',
+      'platform_settings',
+      'courses',
+      'course_modules',
+      'course_lessons',
+      'course_access',
+      'lesson_progress',
+      'memberships',
+      'membership_enrollments',
+      'circle_posts',
+      'circle_comments',
+      'client_conversations',
+      'client_conversation_messages',
+    ]
+    const foundTables = new Set(tablesResult.rows.map((row) => row.table_name))
+    const missingTables = requiredTables.filter((tableName) => !foundTables.has(tableName))
+    const memory = process.memoryUsage()
+
+    const securityEventsResult = await pool.query(`
+      SELECT
+        al.id,
+        al.action,
+        al.entity_type,
+        al.entity_id,
+        al.created_at,
+        su.email AS actor_email,
+        su.role AS actor_role
+      FROM audit_logs al
+      LEFT JOIN system_users su ON su.id = al.actor_user_id
+      WHERE
+        al.action ILIKE '%denied%'
+        OR al.action ILIKE '%password%'
+        OR al.action ILIKE '%session%'
+        OR al.action ILIKE '%status%'
+        OR al.action ILIKE '%role%'
+      ORDER BY al.created_at DESC
+      LIMIT 20
+    `)
+
+    return res.json({
+      ok: true,
+      checkedAt: new Date().toISOString(),
+      status: missingTables.length === 0 ? 'healthy' : 'needs_attention',
+      database: {
+        connected: true,
+        latencyMs: databaseLatencyMs,
+        time: databaseResult.rows[0]?.database_time,
+        missingTables,
+      },
+      application: {
+        environment: env.nodeEnv,
+        nodeVersion: process.version,
+        uptimeSeconds: Math.round(process.uptime()),
+        memoryRssBytes: memory.rss,
+        heapUsedBytes: memory.heapUsed,
+      },
+      configuration: {
+        databaseConfigured: Boolean(env.databaseUrl),
+        secureJwtConfigured: env.jwtSecret !== 'change-this-dev-secret-before-production',
+        emailProviderConfigured: Boolean(env.resendApiKey && env.portalEmailFrom),
+        allowedClientOrigins: env.clientOrigins,
+        secureCookies: env.cookieSecure,
+        sameSite: env.cookieSameSite,
+      },
+      settings,
+      securityEvents: securityEventsResult.rows,
+    })
+  } catch (error) {
+    return next(error)
+  }
+})
+
+router.get('/developer/settings', requireDeveloper, async (req, res, next) => {
+  try {
+    const settings = await getPlatformSettings(pool)
+    return res.json({ ok: true, settings })
+  } catch (error) {
+    return next(error)
+  }
+})
+
+router.patch('/developer/settings', requireDeveloper, async (req, res, next) => {
+  try {
+    const parsed = developerSettingsSchema.safeParse(req.body || {})
+
+    if (!parsed.success) {
+      return res.status(400).json({
+        ok: false,
+        error: parsed.error.issues[0]?.message || 'Review the platform controls.',
+      })
+    }
+
+    const before = await getPlatformSettings(pool)
+    const saved = await savePlatformSettings(
+      normalizePlatformSettings(parsed.data),
+      req.user.id,
+      pool,
+    )
+
+    await writeDeveloperAudit({
+      actorUserId: req.user.id,
+      action: 'developer_updated_platform_controls',
+      entityType: 'platform_settings',
+      beforeData: before,
+      afterData: saved.value,
+    })
+
+    return res.json({
+      ok: true,
+      message: 'Platform controls were saved.',
+      settings: saved.value,
+    })
+  } catch (error) {
+    return next(error)
+  }
+})
+
+router.get('/developer/preview/founder', requireDeveloper, async (req, res, next) => {
+  try {
+    const [sessionsResult, followUpsResult, totalsResult] = await Promise.all([
+      pool.query(`
+        SELECT
+          b.id,
+          b.starts_at,
+          b.ends_at,
+          b.status,
+          COALESCE(cp.first_name || ' ' || cp.last_name, b.guest_name, b.guest_email) AS client_name,
+          at.name AS appointment_type_name
+        FROM bookings b
+        LEFT JOIN client_profiles cp ON cp.id = b.client_profile_id
+        LEFT JOIN appointment_types at ON at.id = b.appointment_type_id
+        WHERE b.starts_at >= now()
+          AND b.status IN ('requested', 'approved', 'confirmed')
+        ORDER BY b.starts_at ASC
+        LIMIT 8
+      `),
+      pool.query(`
+        SELECT
+          sr.id,
+          sr.client_profile_id,
+          sr.title,
+          sr.service_name,
+          sr.follow_up_at,
+          COALESCE(cp.first_name || ' ' || cp.last_name, 'Client') AS client_name
+        FROM service_records sr
+        INNER JOIN client_profiles cp ON cp.id = sr.client_profile_id
+        WHERE sr.follow_up_at IS NOT NULL
+          AND sr.follow_up_at <= now() + interval '14 days'
+          AND sr.status <> 'archived'
+        ORDER BY sr.follow_up_at ASC
+        LIMIT 8
+      `),
+      pool.query(`
+        SELECT
+          (SELECT COUNT(*)::int FROM client_profiles WHERE client_status IN ('active_client', 'member')) AS active_clients,
+          (SELECT COUNT(*)::int FROM bookings WHERE status = 'requested') AS booking_decisions,
+          (SELECT COUNT(*)::int FROM service_records WHERE follow_up_at IS NOT NULL AND follow_up_at <= now() + interval '14 days' AND status <> 'archived') AS follow_ups
+      `),
+    ])
+
+    return res.json({
+      ok: true,
+      preview: {
+        type: 'founder',
+        readOnly: true,
+        banner: 'Developer read-only preview — actions are disabled.',
+        totals: totalsResult.rows[0] || {},
+        sessions: sessionsResult.rows,
+        followUps: followUpsResult.rows,
+      },
+    })
+  } catch (error) {
+    return next(error)
+  }
+})
+
+router.get('/developer/preview/client/:clientProfileId', requireDeveloper, async (req, res, next) => {
+  try {
+    await publishDueEncouragements(pool)
+
+    const profileResult = await pool.query(
+      `
+      SELECT
+        cp.id,
+        cp.first_name,
+        cp.last_name,
+        cp.client_status,
+        cp.client_visible_notes,
+        cp.public_contact_email,
+        cp.phone,
+        su.email,
+        su.status AS portal_status,
+        su.last_login_at
+      FROM client_profiles cp
+      LEFT JOIN system_users su ON su.id = cp.user_id
+      WHERE cp.id = $1
+      LIMIT 1
+      `,
+      [req.params.clientProfileId],
+    )
+
+    const profile = profileResult.rows[0]
+
+    if (!profile) {
+      return res.status(404).json({ ok: false, error: 'Client profile not found.' })
+    }
+
+    const [
+      resourcesResult,
+      sessionsResult,
+      messagesResult,
+      journeyResult,
+      memberships,
+      courses,
+      circleMemberships,
+      conversationsResult,
+    ] = await Promise.all([
+      pool.query(`
+        SELECT id, title, resource_type, description, resource_url, created_at
+        FROM client_portal_resources
+        WHERE client_profile_id = $1
+          AND status = 'active'
+        ORDER BY created_at DESC
+        LIMIT 10
+      `, [profile.id]),
+      pool.query(`
+        SELECT b.id, b.starts_at, b.ends_at, b.status, at.name AS appointment_type_name
+        FROM bookings b
+        LEFT JOIN appointment_types at ON at.id = b.appointment_type_id
+        WHERE b.client_profile_id = $1
+        ORDER BY b.starts_at DESC
+        LIMIT 10
+      `, [profile.id]),
+      pool.query(`
+        SELECT ep.id, ep.title, ep.body, ep.published_at, ep.created_at
+        FROM encouragement_posts ep
+        WHERE ep.status = 'published'
+          AND (
+            ep.visibility = 'all_members'
+            OR EXISTS (
+              SELECT 1 FROM encouragement_recipients er
+              WHERE er.encouragement_post_id = ep.id
+                AND er.client_profile_id = $1
+            )
+          )
+        ORDER BY COALESCE(ep.published_at, ep.created_at) DESC
+        LIMIT 10
+      `, [profile.id]),
+      pool.query(`
+        SELECT id, title, service_name, status, client_visible_notes, service_date, follow_up_at
+        FROM service_records
+        WHERE client_profile_id = $1
+          AND status <> 'archived'
+        ORDER BY COALESCE(service_date, created_at) DESC
+        LIMIT 10
+      `, [profile.id]),
+      listClientMemberships(profile.id, pool),
+      listClientCourses(profile.id, pool),
+      getActiveCircleMemberships(profile.id, pool),
+      pool.query(`
+        SELECT
+          cc.id,
+          cc.subject,
+          cc.status,
+          cc.priority,
+          cc.last_message_at,
+          cc.updated_at,
+          COALESCE(message_counts.message_count, 0)::int AS message_count
+        FROM client_conversations cc
+        LEFT JOIN LATERAL (
+          SELECT COUNT(*) AS message_count
+          FROM client_conversation_messages ccm
+          WHERE ccm.conversation_id = cc.id
+            AND ccm.is_internal_note = false
+        ) message_counts ON true
+        WHERE cc.client_profile_id = $1
+        ORDER BY cc.last_message_at DESC, cc.updated_at DESC
+        LIMIT 10
+      `, [profile.id]),
+    ])
+
+    return res.json({
+      ok: true,
+      preview: {
+        type: 'client',
+        readOnly: true,
+        banner: 'Developer read-only preview — no client action will be recorded.',
+        profile,
+        summary: {
+          membershipCount: memberships.length,
+          courseCount: courses.length,
+          conversationCount: conversationsResult.rows.length,
+        },
+        resources: resourcesResult.rows,
+        sessions: sessionsResult.rows,
+        messages: messagesResult.rows,
+        journey: journeyResult.rows,
+        memberships,
+        courses,
+        circleMemberships,
+        conversations: conversationsResult.rows,
+      },
+    })
+  } catch (error) {
+    return next(error)
+  }
+})
+// developer-operations-phase-2-end
+
+// developer-control-center-end
+
+// learning-library-pass-18-start
+const learningCourseSchema = z.object({
+  title: z.string().trim().min(1).max(140),
+  description: z.string().trim().max(6000).optional().default(''),
+  category: z.string().trim().max(80).optional().default('Personal Growth'),
+  coverImageUrl: z.string().trim().max(1200).optional().default(''),
+  estimatedMinutes: z.coerce.number().int().min(5).max(10000).optional().default(30),
+  accessMode: z.enum(['all_clients', 'assigned_clients']).optional().default('assigned_clients'),
+  status: z.enum(['draft', 'published', 'archived']).optional().default('draft'),
+})
+
+const learningCourseUpdateSchema = learningCourseSchema.partial()
+
+const learningModuleSchema = z.object({
+  title: z.string().trim().min(1).max(140),
+  description: z.string().trim().max(3000).optional().default(''),
+  position: z.coerce.number().int().min(0).max(10000).optional(),
+  status: z.enum(['draft', 'published', 'archived']).optional().default('draft'),
+})
+
+const learningModuleUpdateSchema = learningModuleSchema.partial()
+
+const learningLessonSchema = z.object({
+  title: z.string().trim().min(1).max(160),
+  lessonType: z.enum(['text', 'video', 'download', 'reflection']).optional().default('text'),
+  content: z.string().trim().max(30000).optional().default(''),
+  externalUrl: z.string().trim().max(2000).optional().default(''),
+  estimatedMinutes: z.coerce.number().int().min(1).max(1000).optional().default(5),
+  isPreview: z.coerce.boolean().optional().default(false),
+  position: z.coerce.number().int().min(0).max(10000).optional(),
+  status: z.enum(['draft', 'published', 'archived']).optional().default('draft'),
+})
+
+const learningLessonUpdateSchema = learningLessonSchema.partial()
+
+const learningAccessSchema = z.object({
+  accessMode: z.enum(['all_clients', 'assigned_clients']),
+  clientProfileIds: z.array(z.string().uuid()).max(500).optional().default([]),
+})
+
+async function writeLearningAudit({
+  actorUserId,
+  action,
+  entityType,
+  entityId = null,
+  beforeData = {},
+  afterData = {},
+}) {
+  try {
+    await pool.query(
+      `
+      INSERT INTO audit_logs (
+        actor_user_id,
+        action,
+        entity_type,
+        entity_id,
+        before_data,
+        after_data
+      )
+      VALUES ($1, $2, $3, $4, $5::jsonb, $6::jsonb)
+      `,
+      [
+        actorUserId,
+        action,
+        entityType,
+        entityId,
+        JSON.stringify(beforeData || {}),
+        JSON.stringify(afterData || {}),
+      ],
+    )
+  } catch {
+    // Learning management must remain usable if audit storage is temporarily unavailable.
+  }
+}
+
+router.get('/learning-library', requireAdmin, async (req, res, next) => {
+  try {
+    const [courses, clientsResult, settings] = await Promise.all([
+      listAdminCourses(pool),
+      pool.query(`
+        SELECT
+          cp.id,
+          cp.first_name,
+          cp.last_name,
+          cp.client_status,
+          su.email,
+          su.status AS account_status
+        FROM client_profiles cp
+        LEFT JOIN system_users su ON su.id = cp.user_id
+        WHERE cp.client_status <> 'archived'
+        ORDER BY cp.first_name, cp.last_name, su.email
+        LIMIT 500
+      `),
+      getPlatformSettings(pool),
+    ])
+
+    return res.json({
+      ok: true,
+      courses,
+      clients: clientsResult.rows,
+      featureEnabled: Boolean(settings.featureFlags?.courses),
+    })
+  } catch (error) {
+    return next(error)
+  }
+})
+
+router.get('/learning-library/:courseId', requireAdmin, async (req, res, next) => {
+  try {
+    const course = await getCourseTree(req.params.courseId, {}, pool)
+
+    if (!course) {
+      return res.status(404).json({
+        ok: false,
+        error: 'Learning program not found.',
+      })
+    }
+
+    return res.json({ ok: true, course })
+  } catch (error) {
+    return next(error)
+  }
+})
+
+router.post('/learning-library', requireAdmin, async (req, res, next) => {
+  const parsed = learningCourseSchema.safeParse(req.body)
+
+  if (!parsed.success) {
+    return res.status(400).json({
+      ok: false,
+      error: parsed.error.issues[0]?.message || 'Please check the learning program details.',
+    })
+  }
+
+  try {
+    const payload = parsed.data
+    const slug = await createUniqueCourseSlug(payload.title, null, pool)
+
+    const result = await pool.query(
+      `
+      INSERT INTO courses (
+        title,
+        slug,
+        description,
+        status,
+        category,
+        cover_image_url,
+        estimated_minutes,
+        access_mode,
+        created_by
+      )
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+      RETURNING *
+      `,
+      [
+        payload.title,
+        slug,
+        payload.description || null,
+        payload.status,
+        payload.category || 'Personal Growth',
+        payload.coverImageUrl || null,
+        payload.estimatedMinutes,
+        payload.accessMode,
+        req.user.id,
+      ],
+    )
+
+    const course = result.rows[0]
+
+    await writeLearningAudit({
+      actorUserId: req.user.id,
+      action: 'learning_course_created',
+      entityType: 'courses',
+      entityId: course.id,
+      afterData: course,
+    })
+
+    return res.status(201).json({
+      ok: true,
+      message: 'Learning program created as a draft.',
+      course,
+    })
+  } catch (error) {
+    return next(error)
+  }
+})
+
+router.patch('/learning-library/:courseId', requireAdmin, async (req, res, next) => {
+  const parsed = learningCourseUpdateSchema.safeParse(req.body)
+
+  if (!parsed.success) {
+    return res.status(400).json({
+      ok: false,
+      error: parsed.error.issues[0]?.message || 'Please check the learning program details.',
+    })
+  }
+
+  try {
+    const beforeResult = await pool.query('SELECT * FROM courses WHERE id = $1 LIMIT 1', [
+      req.params.courseId,
+    ])
+    const before = beforeResult.rows[0]
+
+    if (!before) {
+      return res.status(404).json({ ok: false, error: 'Learning program not found.' })
+    }
+
+    const payload = parsed.data
+    const nextTitle = payload.title ?? before.title
+    const nextSlug =
+      payload.title && payload.title !== before.title
+        ? await createUniqueCourseSlug(payload.title, before.id, pool)
+        : before.slug
+
+    const result = await pool.query(
+      `
+      UPDATE courses
+      SET
+        title = $2,
+        slug = $3,
+        description = $4,
+        category = $5,
+        cover_image_url = $6,
+        estimated_minutes = $7,
+        access_mode = $8,
+        status = $9,
+        updated_at = now()
+      WHERE id = $1
+      RETURNING *
+      `,
+      [
+        before.id,
+        nextTitle,
+        nextSlug,
+        payload.description ?? before.description,
+        payload.category ?? before.category,
+        payload.coverImageUrl !== undefined
+          ? payload.coverImageUrl || null
+          : before.cover_image_url,
+        payload.estimatedMinutes ?? before.estimated_minutes,
+        payload.accessMode ?? before.access_mode,
+        payload.status ?? before.status,
+      ],
+    )
+
+    const course = result.rows[0]
+
+    await writeLearningAudit({
+      actorUserId: req.user.id,
+      action: 'learning_course_updated',
+      entityType: 'courses',
+      entityId: course.id,
+      beforeData: before,
+      afterData: course,
+    })
+
+    return res.json({
+      ok: true,
+      message: 'Learning program saved.',
+      course,
+    })
+  } catch (error) {
+    return next(error)
+  }
+})
+
+router.post('/learning-library/:courseId/publish', requireAdmin, async (req, res, next) => {
+  const dbClient = await pool.connect()
+
+  try {
+    await dbClient.query('BEGIN')
+
+    const lessonCountResult = await dbClient.query(
+      `
+      SELECT COUNT(*)::int AS count
+      FROM course_lessons cl
+      JOIN course_modules cm ON cm.id = cl.module_id
+      WHERE cm.course_id = $1
+        AND cm.status <> 'archived'
+        AND cl.status <> 'archived'
+      `,
+      [req.params.courseId],
+    )
+
+    if ((lessonCountResult.rows[0]?.count || 0) === 0) {
+      await dbClient.query('ROLLBACK')
+      return res.status(400).json({
+        ok: false,
+        error: 'Add at least one lesson before publishing this learning program.',
+      })
+    }
+
+    const beforeResult = await dbClient.query('SELECT * FROM courses WHERE id = $1 LIMIT 1', [
+      req.params.courseId,
+    ])
+    const before = beforeResult.rows[0]
+
+    if (!before) {
+      await dbClient.query('ROLLBACK')
+      return res.status(404).json({ ok: false, error: 'Learning program not found.' })
+    }
+
+    await dbClient.query(
+      `
+      UPDATE course_modules
+      SET status = 'published', updated_at = now()
+      WHERE course_id = $1
+        AND status = 'draft'
+      `,
+      [before.id],
+    )
+
+    await dbClient.query(
+      `
+      UPDATE course_lessons
+      SET status = 'published', updated_at = now()
+      WHERE module_id IN (
+        SELECT id FROM course_modules WHERE course_id = $1
+      )
+        AND status = 'draft'
+      `,
+      [before.id],
+    )
+
+    const result = await dbClient.query(
+      `
+      UPDATE courses
+      SET status = 'published', updated_at = now()
+      WHERE id = $1
+      RETURNING *
+      `,
+      [before.id],
+    )
+
+    await dbClient.query('COMMIT')
+
+    const course = result.rows[0]
+
+    await writeLearningAudit({
+      actorUserId: req.user.id,
+      action: 'learning_course_published',
+      entityType: 'courses',
+      entityId: course.id,
+      beforeData: before,
+      afterData: course,
+    })
+
+    return res.json({
+      ok: true,
+      message: 'Learning program is now available to its audience.',
+      course,
+    })
+  } catch (error) {
+    await dbClient.query('ROLLBACK')
+    return next(error)
+  } finally {
+    dbClient.release()
+  }
+})
+
+router.post('/learning-library/:courseId/archive', requireAdmin, async (req, res, next) => {
+  try {
+    const beforeResult = await pool.query('SELECT * FROM courses WHERE id = $1 LIMIT 1', [
+      req.params.courseId,
+    ])
+    const before = beforeResult.rows[0]
+
+    if (!before) {
+      return res.status(404).json({ ok: false, error: 'Learning program not found.' })
+    }
+
+    const result = await pool.query(
+      `
+      UPDATE courses
+      SET status = 'archived', updated_at = now()
+      WHERE id = $1
+      RETURNING *
+      `,
+      [before.id],
+    )
+
+    await writeLearningAudit({
+      actorUserId: req.user.id,
+      action: 'learning_course_archived',
+      entityType: 'courses',
+      entityId: before.id,
+      beforeData: before,
+      afterData: result.rows[0],
+    })
+
+    return res.json({
+      ok: true,
+      message: 'Learning program archived and removed from client view.',
+      course: result.rows[0],
+    })
+  } catch (error) {
+    return next(error)
+  }
+})
+
+router.delete('/learning-library/:courseId', requireAdmin, async (req, res, next) => {
+  try {
+    const beforeResult = await pool.query('SELECT * FROM courses WHERE id = $1 LIMIT 1', [
+      req.params.courseId,
+    ])
+    const before = beforeResult.rows[0]
+
+    if (!before) {
+      return res.status(404).json({ ok: false, error: 'Learning program not found.' })
+    }
+
+    if (before.status === 'published') {
+      return res.status(409).json({
+        ok: false,
+        error: 'Archive this learning program before deleting it permanently.',
+      })
+    }
+
+    await pool.query('DELETE FROM courses WHERE id = $1', [before.id])
+
+    await writeLearningAudit({
+      actorUserId: req.user.id,
+      action: 'learning_course_deleted',
+      entityType: 'courses',
+      entityId: before.id,
+      beforeData: before,
+    })
+
+    return res.json({ ok: true, message: 'Learning program permanently deleted.' })
+  } catch (error) {
+    return next(error)
+  }
+})
+
+router.post('/learning-library/:courseId/modules', requireAdmin, async (req, res, next) => {
+  const parsed = learningModuleSchema.safeParse(req.body)
+
+  if (!parsed.success) {
+    return res.status(400).json({
+      ok: false,
+      error: parsed.error.issues[0]?.message || 'Please check the module details.',
+    })
+  }
+
+  try {
+    const payload = parsed.data
+    const positionResult = await pool.query(
+      `
+      SELECT COALESCE(MAX(position), -1) + 1 AS next_position
+      FROM course_modules
+      WHERE course_id = $1
+      `,
+      [req.params.courseId],
+    )
+
+    const result = await pool.query(
+      `
+      INSERT INTO course_modules (
+        course_id,
+        title,
+        description,
+        position,
+        status
+      )
+      VALUES ($1, $2, $3, $4, $5)
+      RETURNING *
+      `,
+      [
+        req.params.courseId,
+        payload.title,
+        payload.description || null,
+        payload.position ?? positionResult.rows[0]?.next_position ?? 0,
+        payload.status,
+      ],
+    )
+
+    const module = result.rows[0]
+
+    await writeLearningAudit({
+      actorUserId: req.user.id,
+      action: 'learning_module_created',
+      entityType: 'course_modules',
+      entityId: module.id,
+      afterData: module,
+    })
+
+    return res.status(201).json({ ok: true, message: 'Module added.', module })
+  } catch (error) {
+    return next(error)
+  }
+})
+
+router.patch('/learning-library/modules/:moduleId', requireAdmin, async (req, res, next) => {
+  const parsed = learningModuleUpdateSchema.safeParse(req.body)
+
+  if (!parsed.success) {
+    return res.status(400).json({
+      ok: false,
+      error: parsed.error.issues[0]?.message || 'Please check the module details.',
+    })
+  }
+
+  try {
+    const beforeResult = await pool.query('SELECT * FROM course_modules WHERE id = $1 LIMIT 1', [
+      req.params.moduleId,
+    ])
+    const before = beforeResult.rows[0]
+
+    if (!before) return res.status(404).json({ ok: false, error: 'Module not found.' })
+
+    const payload = parsed.data
+    const result = await pool.query(
+      `
+      UPDATE course_modules
+      SET
+        title = $2,
+        description = $3,
+        position = $4,
+        status = $5,
+        updated_at = now()
+      WHERE id = $1
+      RETURNING *
+      `,
+      [
+        before.id,
+        payload.title ?? before.title,
+        payload.description ?? before.description,
+        payload.position ?? before.position,
+        payload.status ?? before.status,
+      ],
+    )
+
+    await writeLearningAudit({
+      actorUserId: req.user.id,
+      action: 'learning_module_updated',
+      entityType: 'course_modules',
+      entityId: before.id,
+      beforeData: before,
+      afterData: result.rows[0],
+    })
+
+    return res.json({ ok: true, message: 'Module saved.', module: result.rows[0] })
+  } catch (error) {
+    return next(error)
+  }
+})
+
+router.delete('/learning-library/modules/:moduleId', requireAdmin, async (req, res, next) => {
+  try {
+    const result = await pool.query(
+      'DELETE FROM course_modules WHERE id = $1 RETURNING *',
+      [req.params.moduleId],
+    )
+    const module = result.rows[0]
+
+    if (!module) return res.status(404).json({ ok: false, error: 'Module not found.' })
+
+    await writeLearningAudit({
+      actorUserId: req.user.id,
+      action: 'learning_module_deleted',
+      entityType: 'course_modules',
+      entityId: module.id,
+      beforeData: module,
+    })
+
+    return res.json({ ok: true, message: 'Module and its lessons deleted.' })
+  } catch (error) {
+    return next(error)
+  }
+})
+
+router.post('/learning-library/modules/:moduleId/lessons', requireAdmin, async (req, res, next) => {
+  const parsed = learningLessonSchema.safeParse(req.body)
+
+  if (!parsed.success) {
+    return res.status(400).json({
+      ok: false,
+      error: parsed.error.issues[0]?.message || 'Please check the lesson details.',
+    })
+  }
+
+  try {
+    const payload = parsed.data
+    const positionResult = await pool.query(
+      `
+      SELECT COALESCE(MAX(position), -1) + 1 AS next_position
+      FROM course_lessons
+      WHERE module_id = $1
+      `,
+      [req.params.moduleId],
+    )
+
+    const result = await pool.query(
+      `
+      INSERT INTO course_lessons (
+        module_id,
+        title,
+        lesson_type,
+        content_html,
+        video_url,
+        external_url,
+        estimated_minutes,
+        is_preview,
+        position,
+        status
+      )
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+      RETURNING *
+      `,
+      [
+        req.params.moduleId,
+        payload.title,
+        payload.lessonType,
+        payload.content || null,
+        payload.lessonType === 'video' ? payload.externalUrl || null : null,
+        payload.externalUrl || null,
+        payload.estimatedMinutes,
+        payload.isPreview,
+        payload.position ?? positionResult.rows[0]?.next_position ?? 0,
+        payload.status,
+      ],
+    )
+
+    const lesson = result.rows[0]
+
+    await writeLearningAudit({
+      actorUserId: req.user.id,
+      action: 'learning_lesson_created',
+      entityType: 'course_lessons',
+      entityId: lesson.id,
+      afterData: lesson,
+    })
+
+    return res.status(201).json({ ok: true, message: 'Lesson added.', lesson })
+  } catch (error) {
+    return next(error)
+  }
+})
+
+router.patch('/learning-library/lessons/:lessonId', requireAdmin, async (req, res, next) => {
+  const parsed = learningLessonUpdateSchema.safeParse(req.body)
+
+  if (!parsed.success) {
+    return res.status(400).json({
+      ok: false,
+      error: parsed.error.issues[0]?.message || 'Please check the lesson details.',
+    })
+  }
+
+  try {
+    const beforeResult = await pool.query('SELECT * FROM course_lessons WHERE id = $1 LIMIT 1', [
+      req.params.lessonId,
+    ])
+    const before = beforeResult.rows[0]
+
+    if (!before) return res.status(404).json({ ok: false, error: 'Lesson not found.' })
+
+    const payload = parsed.data
+    const nextType = payload.lessonType ?? before.lesson_type
+    const nextUrl =
+      payload.externalUrl !== undefined ? payload.externalUrl || null : before.external_url
+
+    const result = await pool.query(
+      `
+      UPDATE course_lessons
+      SET
+        title = $2,
+        lesson_type = $3,
+        content_html = $4,
+        video_url = $5,
+        external_url = $6,
+        estimated_minutes = $7,
+        is_preview = $8,
+        position = $9,
+        status = $10,
+        updated_at = now()
+      WHERE id = $1
+      RETURNING *
+      `,
+      [
+        before.id,
+        payload.title ?? before.title,
+        nextType,
+        payload.content ?? before.content_html,
+        nextType === 'video' ? nextUrl : null,
+        nextUrl,
+        payload.estimatedMinutes ?? before.estimated_minutes,
+        payload.isPreview ?? before.is_preview,
+        payload.position ?? before.position,
+        payload.status ?? before.status,
+      ],
+    )
+
+    await writeLearningAudit({
+      actorUserId: req.user.id,
+      action: 'learning_lesson_updated',
+      entityType: 'course_lessons',
+      entityId: before.id,
+      beforeData: before,
+      afterData: result.rows[0],
+    })
+
+    return res.json({ ok: true, message: 'Lesson saved.', lesson: result.rows[0] })
+  } catch (error) {
+    return next(error)
+  }
+})
+
+router.delete('/learning-library/lessons/:lessonId', requireAdmin, async (req, res, next) => {
+  try {
+    const result = await pool.query(
+      'DELETE FROM course_lessons WHERE id = $1 RETURNING *',
+      [req.params.lessonId],
+    )
+    const lesson = result.rows[0]
+
+    if (!lesson) return res.status(404).json({ ok: false, error: 'Lesson not found.' })
+
+    await writeLearningAudit({
+      actorUserId: req.user.id,
+      action: 'learning_lesson_deleted',
+      entityType: 'course_lessons',
+      entityId: lesson.id,
+      beforeData: lesson,
+    })
+
+    return res.json({ ok: true, message: 'Lesson deleted.' })
+  } catch (error) {
+    return next(error)
+  }
+})
+
+router.put('/learning-library/:courseId/access', requireAdmin, async (req, res, next) => {
+  const parsed = learningAccessSchema.safeParse(req.body)
+
+  if (!parsed.success) {
+    return res.status(400).json({
+      ok: false,
+      error: parsed.error.issues[0]?.message || 'Please check the audience selection.',
+    })
+  }
+
+  const dbClient = await pool.connect()
+
+  try {
+    await dbClient.query('BEGIN')
+
+    const beforeResult = await dbClient.query(
+      `
+      SELECT c.*, COALESCE(json_agg(ca.client_profile_id) FILTER (WHERE ca.id IS NOT NULL), '[]') AS client_ids
+      FROM courses c
+      LEFT JOIN course_access ca
+        ON ca.course_id = c.id
+        AND ca.access_status = 'active'
+      WHERE c.id = $1
+      GROUP BY c.id
+      LIMIT 1
+      `,
+      [req.params.courseId],
+    )
+    const before = beforeResult.rows[0]
+
+    if (!before) {
+      await dbClient.query('ROLLBACK')
+      return res.status(404).json({ ok: false, error: 'Learning program not found.' })
+    }
+
+    await dbClient.query(
+      'UPDATE courses SET access_mode = $2, updated_at = now() WHERE id = $1',
+      [before.id, parsed.data.accessMode],
+    )
+
+    await dbClient.query('DELETE FROM course_access WHERE course_id = $1', [before.id])
+
+    if (
+      parsed.data.accessMode === 'assigned_clients' &&
+      parsed.data.clientProfileIds.length > 0
+    ) {
+      await dbClient.query(
+        `
+        INSERT INTO course_access (
+          course_id,
+          client_profile_id,
+          access_status,
+          granted_by,
+          granted_at
+        )
+        SELECT $1, client_id, 'active', $2, now()
+        FROM unnest($3::uuid[]) AS client_id
+        ON CONFLICT (course_id, client_profile_id)
+        DO UPDATE SET
+          access_status = 'active',
+          granted_by = EXCLUDED.granted_by,
+          granted_at = now(),
+          expires_at = NULL
+        `,
+        [before.id, req.user.id, parsed.data.clientProfileIds],
+      )
+    }
+
+    await dbClient.query('COMMIT')
+
+    await writeLearningAudit({
+      actorUserId: req.user.id,
+      action: 'learning_course_access_updated',
+      entityType: 'courses',
+      entityId: before.id,
+      beforeData: {
+        accessMode: before.access_mode,
+        clientProfileIds: before.client_ids,
+      },
+      afterData: parsed.data,
+    })
+
+    const course = await getCourseTree(before.id, {}, pool)
+
+    return res.json({
+      ok: true,
+      message:
+        parsed.data.accessMode === 'all_clients'
+          ? 'This program is available to all active client portal users.'
+          : 'Client access was updated.',
+      course,
+    })
+  } catch (error) {
+    await dbClient.query('ROLLBACK')
+    return next(error)
+  } finally {
+    dbClient.release()
+  }
+})
+// learning-library-pass-18-end
+
+
+// membership-circle-pass-19-start
+const membershipPlanSchema = z.object({
+  name: z.string().trim().min(1).max(140),
+  tagline: z.string().trim().max(240).optional().default(''),
+  description: z.string().trim().max(8000).optional().default(''),
+  benefits: z.array(z.string().trim().min(1).max(240)).max(30).optional().default([]),
+  welcomeMessage: z.string().trim().max(8000).optional().default(''),
+  priceCents: z.coerce.number().int().min(0).max(100000000).nullable().optional(),
+  currency: z.string().trim().min(3).max(3).optional().default('USD'),
+  billingInterval: z.enum(['one_time', 'monthly', 'quarterly', 'yearly']).nullable().optional(),
+  status: z.enum(['draft', 'active', 'archived']).optional().default('draft'),
+})
+
+const membershipPlanUpdateSchema = membershipPlanSchema.partial()
+
+const membershipEnrollmentSchema = z.object({
+  clientProfileId: z.string().uuid(),
+  status: z.enum(['active', 'paused', 'cancelled', 'expired']).optional().default('active'),
+  startedAt: z.string().datetime({ offset: true }).nullable().optional(),
+  renewalAt: z.string().datetime({ offset: true }).nullable().optional(),
+  endsAt: z.string().datetime({ offset: true }).nullable().optional(),
+  notes: z.string().trim().max(3000).optional().default(''),
+})
+
+const membershipEnrollmentUpdateSchema = membershipEnrollmentSchema
+  .omit({ clientProfileId: true })
+  .partial()
+
+const membershipCourseAccessSchema = z.object({
+  courseIds: z.array(z.string().uuid()).max(200).optional().default([]),
+})
+
+const membershipResourceSchema = z.object({
+  title: z.string().trim().min(1).max(180),
+  resourceType: z
+    .enum(['guide', 'worksheet', 'link', 'video', 'download', 'note'])
+    .optional()
+    .default('link'),
+  description: z.string().trim().max(4000).optional().default(''),
+  resourceUrl: z.string().trim().max(2000).optional().default(''),
+  status: z.enum(['active', 'archived']).optional().default('active'),
+  position: z.coerce.number().int().min(0).max(10000).optional().default(0),
+})
+
+const membershipResourceUpdateSchema = membershipResourceSchema.partial()
+
+const membershipAnnouncementSchema = z.object({
+  title: z.string().trim().min(1).max(180),
+  body: z.string().trim().min(1).max(12000),
+  status: z.enum(['draft', 'published', 'archived']).optional().default('draft'),
+})
+
+const membershipAnnouncementUpdateSchema = membershipAnnouncementSchema.partial()
+
+async function writeMembershipAudit({
+  actorUserId,
+  action,
+  entityType,
+  entityId = null,
+  beforeData = {},
+  afterData = {},
+}) {
+  try {
+    await pool.query(
+      `
+      INSERT INTO audit_logs (
+        actor_user_id,
+        action,
+        entity_type,
+        entity_id,
+        before_data,
+        after_data
+      )
+      VALUES ($1, $2, $3, $4, $5::jsonb, $6::jsonb)
+      `,
+      [
+        actorUserId,
+        action,
+        entityType,
+        entityId,
+        JSON.stringify(beforeData || {}),
+        JSON.stringify(afterData || {}),
+      ],
+    )
+  } catch {
+    // Membership care must remain usable if the audit store is briefly unavailable.
+  }
+}
+
+router.get('/memberships', requireAdmin, async (req, res, next) => {
+  try {
+    const [memberships, clientsResult, coursesResult, settings] = await Promise.all([
+      listAdminMemberships(pool),
+      pool.query(`
+        SELECT
+          cp.id,
+          cp.first_name,
+          cp.last_name,
+          cp.client_status,
+          su.email,
+          su.status AS account_status
+        FROM client_profiles cp
+        LEFT JOIN system_users su ON su.id = cp.user_id
+        WHERE cp.client_status <> 'archived'
+        ORDER BY cp.first_name, cp.last_name, su.email
+        LIMIT 500
+      `),
+      pool.query(`
+        SELECT id, title, category, status, estimated_minutes
+        FROM courses
+        WHERE status <> 'archived'
+        ORDER BY title
+      `),
+      getPlatformSettings(pool),
+    ])
+
+    return res.json({
+      ok: true,
+      memberships,
+      clients: clientsResult.rows,
+      courses: coursesResult.rows,
+      featureEnabled: Boolean(settings.featureFlags?.memberships),
+    })
+  } catch (error) {
+    return next(error)
+  }
+})
+
+router.get('/memberships/:membershipId', requireAdmin, async (req, res, next) => {
+  try {
+    const membership = await getMembershipDetail(req.params.membershipId, pool)
+
+    if (!membership) {
+      return res.status(404).json({ ok: false, error: 'Membership plan not found.' })
+    }
+
+    return res.json({ ok: true, membership })
+  } catch (error) {
+    return next(error)
+  }
+})
+
+router.post('/memberships', requireAdmin, async (req, res, next) => {
+  const parsed = membershipPlanSchema.safeParse(req.body)
+
+  if (!parsed.success) {
+    return res.status(400).json({
+      ok: false,
+      error: parsed.error.issues[0]?.message || 'Please check the membership details.',
+    })
+  }
+
+  try {
+    const payload = parsed.data
+    const slug = await createUniqueMembershipSlug(payload.name, null, pool)
+    const result = await pool.query(
+      `
+      INSERT INTO memberships (
+        name,
+        slug,
+        tagline,
+        description,
+        benefits,
+        welcome_message,
+        status,
+        price_cents,
+        currency,
+        billing_interval,
+        created_by,
+        updated_by
+      )
+      VALUES ($1, $2, $3, $4, $5::jsonb, $6, $7, $8, $9, $10, $11, $11)
+      RETURNING *
+      `,
+      [
+        payload.name,
+        slug,
+        payload.tagline || null,
+        payload.description || null,
+        JSON.stringify(payload.benefits || []),
+        payload.welcomeMessage || null,
+        payload.status,
+        payload.priceCents ?? null,
+        String(payload.currency || 'USD').toUpperCase(),
+        payload.billingInterval || null,
+        req.user.id,
+      ],
+    )
+
+    const membership = result.rows[0]
+
+    await writeMembershipAudit({
+      actorUserId: req.user.id,
+      action: 'membership_created',
+      entityType: 'memberships',
+      entityId: membership.id,
+      afterData: membership,
+    })
+
+    return res.status(201).json({
+      ok: true,
+      message: 'Membership plan created as a draft.',
+      membership,
+    })
+  } catch (error) {
+    return next(error)
+  }
+})
+
+router.patch('/memberships/:membershipId', requireAdmin, async (req, res, next) => {
+  const parsed = membershipPlanUpdateSchema.safeParse(req.body)
+
+  if (!parsed.success) {
+    return res.status(400).json({
+      ok: false,
+      error: parsed.error.issues[0]?.message || 'Please check the membership details.',
+    })
+  }
+
+  try {
+    const beforeResult = await pool.query(
+      'SELECT * FROM memberships WHERE id = $1 LIMIT 1',
+      [req.params.membershipId],
+    )
+    const before = beforeResult.rows[0]
+
+    if (!before) {
+      return res.status(404).json({ ok: false, error: 'Membership plan not found.' })
+    }
+
+    const payload = parsed.data
+    const nextName = payload.name ?? before.name
+    const nextSlug =
+      payload.name && payload.name !== before.name
+        ? await createUniqueMembershipSlug(payload.name, before.id, pool)
+        : before.slug
+
+    const result = await pool.query(
+      `
+      UPDATE memberships
+      SET
+        name = $2,
+        slug = $3,
+        tagline = $4,
+        description = $5,
+        benefits = $6::jsonb,
+        welcome_message = $7,
+        status = $8,
+        price_cents = $9,
+        currency = $10,
+        billing_interval = $11,
+        updated_by = $12,
+        updated_at = now()
+      WHERE id = $1
+      RETURNING *
+      `,
+      [
+        before.id,
+        nextName,
+        nextSlug,
+        payload.tagline !== undefined ? payload.tagline || null : before.tagline,
+        payload.description !== undefined ? payload.description || null : before.description,
+        JSON.stringify(payload.benefits ?? before.benefits ?? []),
+        payload.welcomeMessage !== undefined
+          ? payload.welcomeMessage || null
+          : before.welcome_message,
+        payload.status ?? before.status,
+        payload.priceCents !== undefined ? payload.priceCents : before.price_cents,
+        payload.currency
+          ? String(payload.currency).toUpperCase()
+          : before.currency,
+        payload.billingInterval !== undefined
+          ? payload.billingInterval
+          : before.billing_interval,
+        req.user.id,
+      ],
+    )
+
+    const membership = result.rows[0]
+
+    await writeMembershipAudit({
+      actorUserId: req.user.id,
+      action: 'membership_updated',
+      entityType: 'memberships',
+      entityId: membership.id,
+      beforeData: before,
+      afterData: membership,
+    })
+
+    return res.json({ ok: true, message: 'Membership plan saved.', membership })
+  } catch (error) {
+    return next(error)
+  }
+})
+
+router.post('/memberships/:membershipId/activate', requireAdmin, async (req, res, next) => {
+  try {
+    const beforeResult = await pool.query(
+      'SELECT * FROM memberships WHERE id = $1 LIMIT 1',
+      [req.params.membershipId],
+    )
+    const before = beforeResult.rows[0]
+
+    if (!before) {
+      return res.status(404).json({ ok: false, error: 'Membership plan not found.' })
+    }
+
+    const result = await pool.query(
+      `
+      UPDATE memberships
+      SET status = 'active', updated_by = $2, updated_at = now()
+      WHERE id = $1
+      RETURNING *
+      `,
+      [before.id, req.user.id],
+    )
+
+    await writeMembershipAudit({
+      actorUserId: req.user.id,
+      action: 'membership_activated',
+      entityType: 'memberships',
+      entityId: before.id,
+      beforeData: before,
+      afterData: result.rows[0],
+    })
+
+    return res.json({
+      ok: true,
+      message: 'Membership is active and visible to active members.',
+      membership: result.rows[0],
+    })
+  } catch (error) {
+    return next(error)
+  }
+})
+
+router.post('/memberships/:membershipId/archive', requireAdmin, async (req, res, next) => {
+  try {
+    const beforeResult = await pool.query(
+      'SELECT * FROM memberships WHERE id = $1 LIMIT 1',
+      [req.params.membershipId],
+    )
+    const before = beforeResult.rows[0]
+
+    if (!before) {
+      return res.status(404).json({ ok: false, error: 'Membership plan not found.' })
+    }
+
+    const result = await pool.query(
+      `
+      UPDATE memberships
+      SET status = 'archived', updated_by = $2, updated_at = now()
+      WHERE id = $1
+      RETURNING *
+      `,
+      [before.id, req.user.id],
+    )
+
+    await writeMembershipAudit({
+      actorUserId: req.user.id,
+      action: 'membership_archived',
+      entityType: 'memberships',
+      entityId: before.id,
+      beforeData: before,
+      afterData: result.rows[0],
+    })
+
+    return res.json({
+      ok: true,
+      message: 'Membership archived. Current records are preserved.',
+      membership: result.rows[0],
+    })
+  } catch (error) {
+    return next(error)
+  }
+})
+
+router.delete('/memberships/:membershipId', requireAdmin, async (req, res, next) => {
+  try {
+    const enrollmentCountResult = await pool.query(
+      'SELECT COUNT(*)::int AS count FROM membership_enrollments WHERE membership_id = $1',
+      [req.params.membershipId],
+    )
+
+    if ((enrollmentCountResult.rows[0]?.count || 0) > 0) {
+      return res.status(409).json({
+        ok: false,
+        error: 'Archive this membership instead. It has member history that must be preserved.',
+      })
+    }
+
+    const result = await pool.query(
+      `
+      DELETE FROM memberships
+      WHERE id = $1
+        AND status <> 'active'
+      RETURNING *
+      `,
+      [req.params.membershipId],
+    )
+    const membership = result.rows[0]
+
+    if (!membership) {
+      return res.status(409).json({
+        ok: false,
+        error: 'Only a draft or archived membership without member history can be deleted.',
+      })
+    }
+
+    await writeMembershipAudit({
+      actorUserId: req.user.id,
+      action: 'membership_deleted',
+      entityType: 'memberships',
+      entityId: membership.id,
+      beforeData: membership,
+    })
+
+    return res.json({ ok: true, message: 'Membership plan deleted.' })
+  } catch (error) {
+    return next(error)
+  }
+})
+
+router.post('/memberships/:membershipId/enrollments', requireAdmin, async (req, res, next) => {
+  const parsed = membershipEnrollmentSchema.safeParse(req.body)
+
+  if (!parsed.success) {
+    return res.status(400).json({
+      ok: false,
+      error: parsed.error.issues[0]?.message || 'Please check the member details.',
+    })
+  }
+
+  try {
+    const payload = parsed.data
+    const beforeResult = await pool.query(
+      `
+      SELECT *
+      FROM membership_enrollments
+      WHERE membership_id = $1
+        AND client_profile_id = $2
+      LIMIT 1
+      `,
+      [req.params.membershipId, payload.clientProfileId],
+    )
+    const before = beforeResult.rows[0] || null
+
+    const result = await pool.query(
+      `
+      INSERT INTO membership_enrollments (
+        membership_id,
+        client_profile_id,
+        status,
+        started_at,
+        renewal_at,
+        ends_at,
+        notes,
+        assigned_by
+      )
+      VALUES ($1, $2, $3, COALESCE($4::timestamptz, now()), $5, $6, $7, $8)
+      ON CONFLICT (membership_id, client_profile_id)
+      DO UPDATE SET
+        status = EXCLUDED.status,
+        started_at = EXCLUDED.started_at,
+        renewal_at = EXCLUDED.renewal_at,
+        ends_at = EXCLUDED.ends_at,
+        notes = EXCLUDED.notes,
+        assigned_by = EXCLUDED.assigned_by,
+        updated_at = now()
+      RETURNING *
+      `,
+      [
+        req.params.membershipId,
+        payload.clientProfileId,
+        payload.status,
+        payload.startedAt || null,
+        payload.renewalAt || null,
+        payload.endsAt || null,
+        payload.notes || null,
+        req.user.id,
+      ],
+    )
+
+    const enrollment = result.rows[0]
+
+    await writeMembershipAudit({
+      actorUserId: req.user.id,
+      action: before ? 'membership_enrollment_updated' : 'membership_enrollment_created',
+      entityType: 'membership_enrollments',
+      entityId: enrollment.id,
+      beforeData: before || {},
+      afterData: enrollment,
+    })
+
+    return res.status(before ? 200 : 201).json({
+      ok: true,
+      message: before ? 'Member access updated.' : 'Client added to this membership.',
+      enrollment,
+    })
+  } catch (error) {
+    return next(error)
+  }
+})
+
+router.patch('/memberships/enrollments/:enrollmentId', requireAdmin, async (req, res, next) => {
+  const parsed = membershipEnrollmentUpdateSchema.safeParse(req.body)
+
+  if (!parsed.success) {
+    return res.status(400).json({
+      ok: false,
+      error: parsed.error.issues[0]?.message || 'Please check the member details.',
+    })
+  }
+
+  try {
+    const beforeResult = await pool.query(
+      'SELECT * FROM membership_enrollments WHERE id = $1 LIMIT 1',
+      [req.params.enrollmentId],
+    )
+    const before = beforeResult.rows[0]
+
+    if (!before) {
+      return res.status(404).json({ ok: false, error: 'Membership enrollment not found.' })
+    }
+
+    const payload = parsed.data
+    const result = await pool.query(
+      `
+      UPDATE membership_enrollments
+      SET
+        status = $2,
+        started_at = $3,
+        renewal_at = $4,
+        ends_at = $5,
+        notes = $6,
+        assigned_by = $7,
+        updated_at = now()
+      WHERE id = $1
+      RETURNING *
+      `,
+      [
+        before.id,
+        payload.status ?? before.status,
+        payload.startedAt !== undefined ? payload.startedAt : before.started_at,
+        payload.renewalAt !== undefined ? payload.renewalAt : before.renewal_at,
+        payload.endsAt !== undefined ? payload.endsAt : before.ends_at,
+        payload.notes !== undefined ? payload.notes || null : before.notes,
+        req.user.id,
+      ],
+    )
+
+    await writeMembershipAudit({
+      actorUserId: req.user.id,
+      action: 'membership_enrollment_updated',
+      entityType: 'membership_enrollments',
+      entityId: before.id,
+      beforeData: before,
+      afterData: result.rows[0],
+    })
+
+    return res.json({ ok: true, message: 'Member access updated.', enrollment: result.rows[0] })
+  } catch (error) {
+    return next(error)
+  }
+})
+
+router.delete('/memberships/enrollments/:enrollmentId', requireAdmin, async (req, res, next) => {
+  try {
+    const result = await pool.query(
+      'DELETE FROM membership_enrollments WHERE id = $1 RETURNING *',
+      [req.params.enrollmentId],
+    )
+    const enrollment = result.rows[0]
+
+    if (!enrollment) {
+      return res.status(404).json({ ok: false, error: 'Membership enrollment not found.' })
+    }
+
+    await writeMembershipAudit({
+      actorUserId: req.user.id,
+      action: 'membership_enrollment_removed',
+      entityType: 'membership_enrollments',
+      entityId: enrollment.id,
+      beforeData: enrollment,
+    })
+
+    return res.json({ ok: true, message: 'Client removed from this membership.' })
+  } catch (error) {
+    return next(error)
+  }
+})
+
+router.put('/memberships/:membershipId/courses', requireAdmin, async (req, res, next) => {
+  const parsed = membershipCourseAccessSchema.safeParse(req.body)
+
+  if (!parsed.success) {
+    return res.status(400).json({
+      ok: false,
+      error: parsed.error.issues[0]?.message || 'Please check the learning selections.',
+    })
+  }
+
+  const dbClient = await pool.connect()
+
+  try {
+    await dbClient.query('BEGIN')
+
+    const beforeResult = await dbClient.query(
+      `
+      SELECT COALESCE(json_agg(course_id), '[]') AS course_ids
+      FROM membership_course_links
+      WHERE membership_id = $1
+      `,
+      [req.params.membershipId],
+    )
+
+    await dbClient.query(
+      'DELETE FROM membership_course_links WHERE membership_id = $1',
+      [req.params.membershipId],
+    )
+
+    if (parsed.data.courseIds.length > 0) {
+      await dbClient.query(
+        `
+        INSERT INTO membership_course_links (membership_id, course_id, created_by)
+        SELECT $1, course_id, $2
+        FROM unnest($3::uuid[]) AS course_id
+        ON CONFLICT (membership_id, course_id) DO NOTHING
+        `,
+        [req.params.membershipId, req.user.id, parsed.data.courseIds],
+      )
+    }
+
+    await dbClient.query('COMMIT')
+
+    await writeMembershipAudit({
+      actorUserId: req.user.id,
+      action: 'membership_learning_access_updated',
+      entityType: 'memberships',
+      entityId: req.params.membershipId,
+      beforeData: { courseIds: beforeResult.rows[0]?.course_ids || [] },
+      afterData: parsed.data,
+    })
+
+    return res.json({
+      ok: true,
+      message: 'Member Learning Library access updated.',
+      membership: await getMembershipDetail(req.params.membershipId, pool),
+    })
+  } catch (error) {
+    await dbClient.query('ROLLBACK')
+    return next(error)
+  } finally {
+    dbClient.release()
+  }
+})
+
+router.post('/memberships/:membershipId/resources', requireAdmin, async (req, res, next) => {
+  const parsed = membershipResourceSchema.safeParse(req.body)
+
+  if (!parsed.success) {
+    return res.status(400).json({
+      ok: false,
+      error: parsed.error.issues[0]?.message || 'Please check the resource details.',
+    })
+  }
+
+  try {
+    const payload = parsed.data
+    const result = await pool.query(
+      `
+      INSERT INTO membership_resources (
+        membership_id,
+        title,
+        resource_type,
+        description,
+        resource_url,
+        status,
+        position,
+        created_by
+      )
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+      RETURNING *
+      `,
+      [
+        req.params.membershipId,
+        payload.title,
+        payload.resourceType,
+        payload.description || null,
+        payload.resourceUrl || null,
+        payload.status,
+        payload.position,
+        req.user.id,
+      ],
+    )
+
+    await writeMembershipAudit({
+      actorUserId: req.user.id,
+      action: 'membership_resource_created',
+      entityType: 'membership_resources',
+      entityId: result.rows[0].id,
+      afterData: result.rows[0],
+    })
+
+    return res.status(201).json({ ok: true, message: 'Member resource added.', resource: result.rows[0] })
+  } catch (error) {
+    return next(error)
+  }
+})
+
+router.patch('/memberships/resources/:resourceId', requireAdmin, async (req, res, next) => {
+  const parsed = membershipResourceUpdateSchema.safeParse(req.body)
+
+  if (!parsed.success) {
+    return res.status(400).json({ ok: false, error: 'Please check the resource details.' })
+  }
+
+  try {
+    const beforeResult = await pool.query(
+      'SELECT * FROM membership_resources WHERE id = $1 LIMIT 1',
+      [req.params.resourceId],
+    )
+    const before = beforeResult.rows[0]
+
+    if (!before) return res.status(404).json({ ok: false, error: 'Resource not found.' })
+
+    const payload = parsed.data
+    const result = await pool.query(
+      `
+      UPDATE membership_resources
+      SET
+        title = $2,
+        resource_type = $3,
+        description = $4,
+        resource_url = $5,
+        status = $6,
+        position = $7,
+        updated_at = now()
+      WHERE id = $1
+      RETURNING *
+      `,
+      [
+        before.id,
+        payload.title ?? before.title,
+        payload.resourceType ?? before.resource_type,
+        payload.description !== undefined ? payload.description || null : before.description,
+        payload.resourceUrl !== undefined ? payload.resourceUrl || null : before.resource_url,
+        payload.status ?? before.status,
+        payload.position ?? before.position,
+      ],
+    )
+
+    await writeMembershipAudit({
+      actorUserId: req.user.id,
+      action: 'membership_resource_updated',
+      entityType: 'membership_resources',
+      entityId: before.id,
+      beforeData: before,
+      afterData: result.rows[0],
+    })
+
+    return res.json({ ok: true, message: 'Member resource saved.', resource: result.rows[0] })
+  } catch (error) {
+    return next(error)
+  }
+})
+
+router.delete('/memberships/resources/:resourceId', requireAdmin, async (req, res, next) => {
+  try {
+    const result = await pool.query(
+      'DELETE FROM membership_resources WHERE id = $1 RETURNING *',
+      [req.params.resourceId],
+    )
+    const resource = result.rows[0]
+
+    if (!resource) return res.status(404).json({ ok: false, error: 'Resource not found.' })
+
+    await writeMembershipAudit({
+      actorUserId: req.user.id,
+      action: 'membership_resource_deleted',
+      entityType: 'membership_resources',
+      entityId: resource.id,
+      beforeData: resource,
+    })
+
+    return res.json({ ok: true, message: 'Member resource deleted.' })
+  } catch (error) {
+    return next(error)
+  }
+})
+
+router.post('/memberships/:membershipId/announcements', requireAdmin, async (req, res, next) => {
+  const parsed = membershipAnnouncementSchema.safeParse(req.body)
+
+  if (!parsed.success) {
+    return res.status(400).json({
+      ok: false,
+      error: parsed.error.issues[0]?.message || 'Please check the update details.',
+    })
+  }
+
+  try {
+    const payload = parsed.data
+    const result = await pool.query(
+      `
+      INSERT INTO membership_announcements (
+        membership_id,
+        title,
+        body,
+        status,
+        published_at,
+        created_by
+      )
+      VALUES ($1, $2, $3, $4, CASE WHEN $4 = 'published' THEN now() ELSE NULL END, $5)
+      RETURNING *
+      `,
+      [req.params.membershipId, payload.title, payload.body, payload.status, req.user.id],
+    )
+
+    await writeMembershipAudit({
+      actorUserId: req.user.id,
+      action: 'membership_announcement_created',
+      entityType: 'membership_announcements',
+      entityId: result.rows[0].id,
+      afterData: result.rows[0],
+    })
+
+    return res.status(201).json({
+      ok: true,
+      message:
+        payload.status === 'published'
+          ? 'Member update published.'
+          : 'Member update saved as a draft.',
+      announcement: result.rows[0],
+    })
+  } catch (error) {
+    return next(error)
+  }
+})
+
+router.patch('/memberships/announcements/:announcementId', requireAdmin, async (req, res, next) => {
+  const parsed = membershipAnnouncementUpdateSchema.safeParse(req.body)
+
+  if (!parsed.success) {
+    return res.status(400).json({ ok: false, error: 'Please check the update details.' })
+  }
+
+  try {
+    const beforeResult = await pool.query(
+      'SELECT * FROM membership_announcements WHERE id = $1 LIMIT 1',
+      [req.params.announcementId],
+    )
+    const before = beforeResult.rows[0]
+
+    if (!before) return res.status(404).json({ ok: false, error: 'Member update not found.' })
+
+    const payload = parsed.data
+    const nextStatus = payload.status ?? before.status
+    const result = await pool.query(
+      `
+      UPDATE membership_announcements
+      SET
+        title = $2,
+        body = $3,
+        status = $4,
+        published_at = CASE
+          WHEN $4 = 'published' AND published_at IS NULL THEN now()
+          WHEN $4 <> 'published' THEN NULL
+          ELSE published_at
+        END,
+        updated_at = now()
+      WHERE id = $1
+      RETURNING *
+      `,
+      [
+        before.id,
+        payload.title ?? before.title,
+        payload.body ?? before.body,
+        nextStatus,
+      ],
+    )
+
+    await writeMembershipAudit({
+      actorUserId: req.user.id,
+      action: 'membership_announcement_updated',
+      entityType: 'membership_announcements',
+      entityId: before.id,
+      beforeData: before,
+      afterData: result.rows[0],
+    })
+
+    return res.json({ ok: true, message: 'Member update saved.', announcement: result.rows[0] })
+  } catch (error) {
+    return next(error)
+  }
+})
+
+router.post('/memberships/announcements/:announcementId/publish', requireAdmin, async (req, res, next) => {
+  try {
+    const beforeResult = await pool.query(
+      'SELECT * FROM membership_announcements WHERE id = $1 LIMIT 1',
+      [req.params.announcementId],
+    )
+    const before = beforeResult.rows[0]
+
+    if (!before) return res.status(404).json({ ok: false, error: 'Member update not found.' })
+
+    const result = await pool.query(
+      `
+      UPDATE membership_announcements
+      SET status = 'published', published_at = COALESCE(published_at, now()), updated_at = now()
+      WHERE id = $1
+      RETURNING *
+      `,
+      [before.id],
+    )
+
+    await writeMembershipAudit({
+      actorUserId: req.user.id,
+      action: 'membership_announcement_published',
+      entityType: 'membership_announcements',
+      entityId: before.id,
+      beforeData: before,
+      afterData: result.rows[0],
+    })
+
+    return res.json({ ok: true, message: 'Member update published.', announcement: result.rows[0] })
+  } catch (error) {
+    return next(error)
+  }
+})
+
+router.post('/memberships/announcements/:announcementId/archive', requireAdmin, async (req, res, next) => {
+  try {
+    const beforeResult = await pool.query(
+      'SELECT * FROM membership_announcements WHERE id = $1 LIMIT 1',
+      [req.params.announcementId],
+    )
+    const before = beforeResult.rows[0]
+
+    if (!before) return res.status(404).json({ ok: false, error: 'Member update not found.' })
+
+    const result = await pool.query(
+      `
+      UPDATE membership_announcements
+      SET status = 'archived', updated_at = now()
+      WHERE id = $1
+      RETURNING *
+      `,
+      [before.id],
+    )
+
+    await writeMembershipAudit({
+      actorUserId: req.user.id,
+      action: 'membership_announcement_archived',
+      entityType: 'membership_announcements',
+      entityId: before.id,
+      beforeData: before,
+      afterData: result.rows[0],
+    })
+
+    return res.json({ ok: true, message: 'Member update archived.', announcement: result.rows[0] })
+  } catch (error) {
+    return next(error)
+  }
+})
+
+router.delete('/memberships/announcements/:announcementId', requireAdmin, async (req, res, next) => {
+  try {
+    const result = await pool.query(
+      `
+      DELETE FROM membership_announcements
+      WHERE id = $1
+        AND status <> 'published'
+      RETURNING *
+      `,
+      [req.params.announcementId],
+    )
+    const announcement = result.rows[0]
+
+    if (!announcement) {
+      return res.status(409).json({
+        ok: false,
+        error: 'Archive a published member update before deleting it.',
+      })
+    }
+
+    await writeMembershipAudit({
+      actorUserId: req.user.id,
+      action: 'membership_announcement_deleted',
+      entityType: 'membership_announcements',
+      entityId: announcement.id,
+      beforeData: announcement,
+    })
+
+    return res.json({ ok: true, message: 'Member update deleted.' })
+  } catch (error) {
+    return next(error)
+  }
+})
+// membership-circle-pass-19-end
+
+
+// the-circle-community-pass-20-admin-start
+const circlePostFields = z.object({
+  membershipId: z.string().uuid().nullable().optional(),
+  postType: z.enum(['post', 'announcement', 'event', 'challenge']).default('post'),
+  title: z.string().trim().min(2, 'A title is required.').max(180),
+  body: z.string().trim().min(2, 'A message is required.').max(12000),
+  status: z.enum(['draft', 'published', 'archived']).optional().default('draft'),
+  isPinned: z.boolean().optional().default(false),
+  commentsEnabled: z.boolean().optional().default(true),
+  reactionsEnabled: z.boolean().optional().default(true),
+  eventStartsAt: z.string().datetime().nullable().optional(),
+  eventEndsAt: z.string().datetime().nullable().optional(),
+})
+
+const validCircleEventRange = (value) =>
+  !value.eventStartsAt ||
+  !value.eventEndsAt ||
+  new Date(value.eventEndsAt) > new Date(value.eventStartsAt)
+
+const circlePostSchema = circlePostFields.refine(validCircleEventRange, {
+  message: 'The ending time must be later than the starting time.',
+  path: ['eventEndsAt'],
+})
+
+const circlePostUpdateSchema = circlePostFields.partial().refine(validCircleEventRange, {
+  message: 'The ending time must be later than the starting time.',
+  path: ['eventEndsAt'],
+})
+const circleCommentModerationSchema = z.object({
+  status: z.enum(['active', 'hidden']),
+})
+const circleReportReviewSchema = z.object({
+  status: z.enum(['resolved', 'dismissed']),
+})
+
+async function writeCircleAudit(req, action, entityType, entityId, beforeData = {}, afterData = {}) {
+  try {
+    await pool.query(
+      `
+      INSERT INTO audit_logs (
+        actor_user_id,
+        action,
+        entity_type,
+        entity_id,
+        before_data,
+        after_data,
+        ip_address,
+        user_agent
+      )
+      VALUES ($1, $2, $3, $4, $5::jsonb, $6::jsonb, $7, $8)
+      `,
+      [
+        req.user?.id || null,
+        action,
+        entityType,
+        entityId || null,
+        JSON.stringify(beforeData || {}),
+        JSON.stringify(afterData || {}),
+        req.ip || null,
+        req.get('user-agent') || null,
+      ],
+    )
+  } catch {
+    // Community work should remain available if audit storage is briefly unavailable.
+  }
+}
+
+router.get('/circle', requireAdmin, async (req, res, next) => {
+  try {
+    const [posts, membershipsResult, settings] = await Promise.all([
+      listAdminCirclePosts(pool),
+      pool.query(`
+        SELECT id, name, status
+        FROM memberships
+        WHERE status <> 'archived'
+        ORDER BY name
+      `),
+      getPlatformSettings(pool),
+    ])
+
+    const openReportCount = posts.reduce(
+      (total, post) => total + Number(post.open_report_count || 0),
+      0,
+    )
+
+    return res.json({
+      ok: true,
+      posts,
+      memberships: membershipsResult.rows,
+      featureEnabled: Boolean(settings.featureFlags?.circleCommunity),
+      metrics: {
+        published: posts.filter((post) => post.status === 'published').length,
+        drafts: posts.filter((post) => post.status === 'draft').length,
+        comments: posts.reduce((total, post) => total + Number(post.comment_count || 0), 0),
+        openReports: openReportCount,
+      },
+    })
+  } catch (error) {
+    return next(error)
+  }
+})
+
+router.get('/circle/posts/:postId', requireAdmin, async (req, res, next) => {
+  try {
+    const post = await getAdminCirclePost(req.params.postId, pool)
+    if (!post) return res.status(404).json({ ok: false, error: 'Circle post not found.' })
+    return res.json({ ok: true, post })
+  } catch (error) {
+    return next(error)
+  }
+})
+
+router.post('/circle/posts', requireAdmin, async (req, res, next) => {
+  const parsed = circlePostSchema.safeParse(req.body)
+  if (!parsed.success) {
+    return res.status(400).json({
+      ok: false,
+      error: parsed.error.issues[0]?.message || 'Please check the post details.',
+    })
+  }
+
+  try {
+    const payload = parsed.data
+    const status = payload.status === 'published' ? 'published' : 'draft'
+    const result = await pool.query(
+      `
+      INSERT INTO circle_posts (
+        membership_id,
+        author_user_id,
+        post_type,
+        title,
+        body,
+        status,
+        is_pinned,
+        comments_enabled,
+        reactions_enabled,
+        event_starts_at,
+        event_ends_at,
+        published_at
+      )
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, CASE WHEN $6 = 'published' THEN now() ELSE NULL END)
+      RETURNING *
+      `,
+      [
+        payload.membershipId || null,
+        req.user.id,
+        payload.postType,
+        payload.title,
+        payload.body,
+        status,
+        payload.isPinned,
+        payload.commentsEnabled,
+        payload.reactionsEnabled,
+        payload.eventStartsAt || null,
+        payload.eventEndsAt || null,
+      ],
+    )
+
+    const post = result.rows[0]
+    await writeCircleAudit(req, 'circle_post_created', 'circle_posts', post.id, {}, post)
+
+    return res.status(201).json({
+      ok: true,
+      message: status === 'published' ? 'Post published to The Circle.' : 'Circle post saved as a draft.',
+      post,
+    })
+  } catch (error) {
+    return next(error)
+  }
+})
+
+router.patch('/circle/posts/:postId', requireAdmin, async (req, res, next) => {
+  const parsed = circlePostUpdateSchema.safeParse(req.body)
+  if (!parsed.success) {
+    return res.status(400).json({
+      ok: false,
+      error: parsed.error.issues[0]?.message || 'Please check the post details.',
+    })
+  }
+
+  try {
+    const beforeResult = await pool.query('SELECT * FROM circle_posts WHERE id = $1 LIMIT 1', [req.params.postId])
+    const before = beforeResult.rows[0]
+    if (!before) return res.status(404).json({ ok: false, error: 'Circle post not found.' })
+
+    const payload = parsed.data
+    const nextStatus = payload.status || before.status
+    const result = await pool.query(
+      `
+      UPDATE circle_posts
+      SET
+        membership_id = $2,
+        post_type = $3,
+        title = $4,
+        body = $5,
+        status = $6,
+        is_pinned = $7,
+        comments_enabled = $8,
+        reactions_enabled = $9,
+        event_starts_at = $10,
+        event_ends_at = $11,
+        published_at = CASE
+          WHEN $6 = 'published' THEN COALESCE(published_at, now())
+          WHEN $6 = 'draft' THEN NULL
+          ELSE published_at
+        END,
+        updated_at = now()
+      WHERE id = $1
+      RETURNING *
+      `,
+      [
+        before.id,
+        payload.membershipId !== undefined ? payload.membershipId || null : before.membership_id,
+        payload.postType || before.post_type,
+        payload.title || before.title,
+        payload.body || before.body,
+        nextStatus,
+        payload.isPinned ?? before.is_pinned,
+        payload.commentsEnabled ?? before.comments_enabled,
+        payload.reactionsEnabled ?? before.reactions_enabled,
+        payload.eventStartsAt !== undefined ? payload.eventStartsAt : before.event_starts_at,
+        payload.eventEndsAt !== undefined ? payload.eventEndsAt : before.event_ends_at,
+      ],
+    )
+
+    const post = result.rows[0]
+    await writeCircleAudit(req, 'circle_post_updated', 'circle_posts', post.id, before, post)
+    return res.json({ ok: true, message: 'Circle post saved.', post })
+  } catch (error) {
+    return next(error)
+  }
+})
+
+router.post('/circle/posts/:postId/publish', requireAdmin, async (req, res, next) => {
+  try {
+    const result = await pool.query(
+      `
+      UPDATE circle_posts
+      SET status = 'published', published_at = COALESCE(published_at, now()), updated_at = now()
+      WHERE id = $1
+      RETURNING *
+      `,
+      [req.params.postId],
+    )
+    const post = result.rows[0]
+    if (!post) return res.status(404).json({ ok: false, error: 'Circle post not found.' })
+    await writeCircleAudit(req, 'circle_post_published', 'circle_posts', post.id, {}, post)
+    return res.json({ ok: true, message: 'Post published to The Circle.', post })
+  } catch (error) {
+    return next(error)
+  }
+})
+
+router.post('/circle/posts/:postId/archive', requireAdmin, async (req, res, next) => {
+  try {
+    const result = await pool.query(
+      `
+      UPDATE circle_posts
+      SET status = 'archived', is_pinned = false, updated_at = now()
+      WHERE id = $1
+      RETURNING *
+      `,
+      [req.params.postId],
+    )
+    const post = result.rows[0]
+    if (!post) return res.status(404).json({ ok: false, error: 'Circle post not found.' })
+    await writeCircleAudit(req, 'circle_post_archived', 'circle_posts', post.id, {}, post)
+    return res.json({ ok: true, message: 'Post archived and removed from member view.', post })
+  } catch (error) {
+    return next(error)
+  }
+})
+
+router.post('/circle/posts/:postId/pin', requireAdmin, async (req, res, next) => {
+  const parsed = z.object({ isPinned: z.boolean() }).safeParse(req.body)
+  if (!parsed.success) return res.status(400).json({ ok: false, error: 'Choose whether the post should be pinned.' })
+
+  try {
+    const result = await pool.query(
+      `
+      UPDATE circle_posts
+      SET is_pinned = $2, updated_at = now()
+      WHERE id = $1
+      RETURNING *
+      `,
+      [req.params.postId, parsed.data.isPinned],
+    )
+    const post = result.rows[0]
+    if (!post) return res.status(404).json({ ok: false, error: 'Circle post not found.' })
+    await writeCircleAudit(req, parsed.data.isPinned ? 'circle_post_pinned' : 'circle_post_unpinned', 'circle_posts', post.id, {}, post)
+    return res.json({ ok: true, message: parsed.data.isPinned ? 'Post pinned.' : 'Post unpinned.', post })
+  } catch (error) {
+    return next(error)
+  }
+})
+
+router.delete('/circle/posts/:postId', requireAdmin, async (req, res, next) => {
+  try {
+    const result = await pool.query(
+      `
+      DELETE FROM circle_posts
+      WHERE id = $1 AND status <> 'published'
+      RETURNING *
+      `,
+      [req.params.postId],
+    )
+    const post = result.rows[0]
+    if (!post) {
+      return res.status(409).json({
+        ok: false,
+        error: 'Archive a published post before deleting it.',
+      })
+    }
+    await writeCircleAudit(req, 'circle_post_deleted', 'circle_posts', post.id, post, {})
+    return res.json({ ok: true, message: 'Circle post deleted.' })
+  } catch (error) {
+    return next(error)
+  }
+})
+
+router.patch('/circle/comments/:commentId/moderation', requireAdmin, async (req, res, next) => {
+  const parsed = circleCommentModerationSchema.safeParse(req.body)
+  if (!parsed.success) return res.status(400).json({ ok: false, error: 'Choose a valid moderation action.' })
+
+  try {
+    const beforeResult = await pool.query('SELECT * FROM circle_comments WHERE id = $1 LIMIT 1', [req.params.commentId])
+    const before = beforeResult.rows[0]
+    if (!before) return res.status(404).json({ ok: false, error: 'Comment not found.' })
+
+    const result = await pool.query(
+      `
+      UPDATE circle_comments
+      SET
+        status = $2,
+        hidden_by_user_id = CASE WHEN $2 = 'hidden' THEN $3 ELSE NULL END,
+        hidden_at = CASE WHEN $2 = 'hidden' THEN now() ELSE NULL END,
+        updated_at = now()
+      WHERE id = $1
+      RETURNING *
+      `,
+      [before.id, parsed.data.status, req.user.id],
+    )
+    const comment = result.rows[0]
+    await writeCircleAudit(req, parsed.data.status === 'hidden' ? 'circle_comment_hidden' : 'circle_comment_restored', 'circle_comments', comment.id, before, comment)
+    return res.json({ ok: true, message: parsed.data.status === 'hidden' ? 'Comment hidden from members.' : 'Comment restored.', comment })
+  } catch (error) {
+    return next(error)
+  }
+})
+
+router.patch('/circle/reports/:reportId', requireAdmin, async (req, res, next) => {
+  const parsed = circleReportReviewSchema.safeParse(req.body)
+  if (!parsed.success) return res.status(400).json({ ok: false, error: 'Choose resolved or dismissed.' })
+
+  try {
+    const beforeResult = await pool.query('SELECT * FROM circle_reports WHERE id = $1 LIMIT 1', [req.params.reportId])
+    const before = beforeResult.rows[0]
+    if (!before) return res.status(404).json({ ok: false, error: 'Report not found.' })
+
+    const result = await pool.query(
+      `
+      UPDATE circle_reports
+      SET status = $2, reviewed_by_user_id = $3, reviewed_at = now(), updated_at = now()
+      WHERE id = $1
+      RETURNING *
+      `,
+      [before.id, parsed.data.status, req.user.id],
+    )
+    const report = result.rows[0]
+    await writeCircleAudit(req, `circle_report_${parsed.data.status}`, 'circle_reports', report.id, before, report)
+    return res.json({ ok: true, message: parsed.data.status === 'resolved' ? 'Report resolved.' : 'Report dismissed.', report })
+  } catch (error) {
+    return next(error)
+  }
+})
+// the-circle-community-pass-20-admin-end
+
+
+// secure-client-inbox-pass-22-admin-start
+const inboxStatusValues = ['open', 'waiting_on_client', 'waiting_on_team', 'closed']
+const inboxPriorityValues = ['normal', 'high', 'urgent']
+
+const inboxAttachmentSchema = {
+  attachmentUrl: z.string().trim().url('Attachment link must be a valid URL.').max(2000).optional().or(z.literal('')),
+  attachmentLabel: z.string().trim().max(160).optional().default(''),
+}
+
+const adminInboxCreateSchema = z.object({
+  clientProfileId: z.string().uuid(),
+  subject: z.string().trim().min(1, 'Add a subject.').max(180),
+  body: z.string().trim().min(1, 'Write a message.').max(10000),
+  priority: z.enum(inboxPriorityValues).optional().default('normal'),
+  assignedUserId: z.string().uuid().nullable().optional(),
+  ...inboxAttachmentSchema,
+})
+
+const adminInboxMessageSchema = z.object({
+  body: z.string().trim().min(1, 'Write a reply or internal note.').max(10000),
+  isInternalNote: z.boolean().optional().default(false),
+  ...inboxAttachmentSchema,
+})
+
+const adminInboxUpdateSchema = z.object({
+  status: z.enum(inboxStatusValues).optional(),
+  priority: z.enum(inboxPriorityValues).optional(),
+  assignedUserId: z.string().uuid().nullable().optional(),
+}).refine((value) => Object.keys(value).length > 0, {
+  message: 'Choose at least one conversation setting to update.',
+})
+
+async function writeInboxAudit(req, action, entityId, beforeData = null, afterData = null) {
+  try {
+    await pool.query(
+      `
+      INSERT INTO audit_logs (
+        actor_user_id,
+        action,
+        entity_type,
+        entity_id,
+        before_data,
+        after_data,
+        ip_address,
+        user_agent
+      )
+      VALUES ($1, $2, 'client_conversations', $3, $4::jsonb, $5::jsonb, $6, $7)
+      `,
+      [
+        req.user?.id || null,
+        action,
+        entityId || null,
+        beforeData ? JSON.stringify(beforeData) : null,
+        afterData ? JSON.stringify(afterData) : null,
+        req.ip || null,
+        req.get('user-agent') || null,
+      ],
+    )
+  } catch {
+    // Inbox work must remain available if audit storage is briefly unavailable.
+  }
+}
+
+async function getAdminInboxConversation(conversationId, db = pool) {
+  const conversationResult = await db.query(
+    `
+    SELECT
+      cc.*,
+      cp.first_name,
+      cp.last_name,
+      COALESCE(su.email, cp.public_contact_email) AS client_email,
+      assignee.email AS assigned_email,
+      assignee.role AS assigned_role,
+      creator.email AS created_by_email,
+      creator.role AS created_by_role
+    FROM client_conversations cc
+    JOIN client_profiles cp ON cp.id = cc.client_profile_id
+    LEFT JOIN system_users su ON su.id = cp.user_id
+    LEFT JOIN system_users assignee ON assignee.id = cc.assigned_user_id
+    LEFT JOIN system_users creator ON creator.id = cc.created_by_user_id
+    WHERE cc.id = $1
+    LIMIT 1
+    `,
+    [conversationId],
+  )
+
+  const conversation = conversationResult.rows[0]
+  if (!conversation) return null
+
+  const messagesResult = await db.query(
+    `
+    SELECT
+      ccm.*,
+      sender.email AS sender_email,
+      COALESCE(
+        NULLIF(TRIM(CONCAT(cp.first_name, ' ', cp.last_name)), ''),
+        sender.email,
+        'Power Within Team'
+      ) AS sender_name
+    FROM client_conversation_messages ccm
+    LEFT JOIN system_users sender ON sender.id = ccm.sender_user_id
+    LEFT JOIN client_profiles cp ON cp.user_id = ccm.sender_user_id
+    WHERE ccm.conversation_id = $1
+    ORDER BY ccm.created_at ASC
+    `,
+    [conversationId],
+  )
+
+  return { ...conversation, messages: messagesResult.rows }
+}
+
+router.get('/inbox', requireAdmin, async (req, res, next) => {
+  try {
+    const status = String(req.query.status || 'all').trim().toLowerCase()
+    const priority = String(req.query.priority || 'all').trim().toLowerCase()
+    const search = String(req.query.search || '').trim()
+
+    if (status !== 'all' && !inboxStatusValues.includes(status)) {
+      return res.status(400).json({ ok: false, error: 'Invalid inbox status filter.' })
+    }
+    if (priority !== 'all' && !inboxPriorityValues.includes(priority)) {
+      return res.status(400).json({ ok: false, error: 'Invalid inbox priority filter.' })
+    }
+
+    const result = await pool.query(
+      `
+      SELECT
+        cc.*,
+        cp.first_name,
+        cp.last_name,
+        COALESCE(su.email, cp.public_contact_email) AS client_email,
+        assignee.email AS assigned_email,
+        assignee.role AS assigned_role,
+        COALESCE(message_counts.message_count, 0)::int AS message_count,
+        COALESCE(message_counts.unread_team_count, 0)::int AS unread_team_count,
+        latest.body AS latest_message,
+        latest.sender_role AS latest_sender_role,
+        latest.is_internal_note AS latest_is_internal_note
+      FROM client_conversations cc
+      JOIN client_profiles cp ON cp.id = cc.client_profile_id
+      LEFT JOIN system_users su ON su.id = cp.user_id
+      LEFT JOIN system_users assignee ON assignee.id = cc.assigned_user_id
+      LEFT JOIN LATERAL (
+        SELECT
+          COUNT(*)::int AS message_count,
+          COUNT(*) FILTER (
+            WHERE sender_role = 'client' AND read_by_team_at IS NULL
+          )::int AS unread_team_count
+        FROM client_conversation_messages
+        WHERE conversation_id = cc.id
+      ) message_counts ON true
+      LEFT JOIN LATERAL (
+        SELECT body, sender_role, is_internal_note
+        FROM client_conversation_messages
+        WHERE conversation_id = cc.id
+        ORDER BY created_at DESC
+        LIMIT 1
+      ) latest ON true
+      WHERE ($1 = 'all' OR cc.status = $1)
+        AND ($2 = 'all' OR cc.priority = $2)
+        AND (
+          $3 = ''
+          OR cc.subject ILIKE '%' || $3 || '%'
+          OR cp.first_name ILIKE '%' || $3 || '%'
+          OR cp.last_name ILIKE '%' || $3 || '%'
+          OR COALESCE(su.email, cp.public_contact_email, '') ILIKE '%' || $3 || '%'
+        )
+      ORDER BY
+        CASE cc.priority WHEN 'urgent' THEN 0 WHEN 'high' THEN 1 ELSE 2 END,
+        cc.last_message_at DESC
+      LIMIT 300
+      `,
+      [status, priority, search],
+    )
+
+    const [metricsResult, clientsResult, teamResult] = await Promise.all([
+      pool.query(
+        `
+        SELECT
+          COUNT(*) FILTER (WHERE status <> 'closed')::int AS active,
+          COUNT(*) FILTER (WHERE status = 'waiting_on_team')::int AS waiting_on_team,
+          COUNT(*) FILTER (WHERE priority = 'urgent' AND status <> 'closed')::int AS urgent,
+          COALESCE(SUM(unread_count), 0)::int AS unread
+        FROM (
+          SELECT
+            cc.id,
+            cc.status,
+            cc.priority,
+            COUNT(ccm.id) FILTER (
+              WHERE ccm.sender_role = 'client' AND ccm.read_by_team_at IS NULL
+            )::int AS unread_count
+          FROM client_conversations cc
+          LEFT JOIN client_conversation_messages ccm ON ccm.conversation_id = cc.id
+          GROUP BY cc.id
+        ) summary
+        `,
+      ),
+      pool.query(
+        `
+        SELECT
+          cp.id,
+          cp.first_name,
+          cp.last_name,
+          COALESCE(su.email, cp.public_contact_email) AS email,
+          su.status AS portal_status
+        FROM client_profiles cp
+        LEFT JOIN system_users su ON su.id = cp.user_id
+        WHERE cp.client_status <> 'archived'
+        ORDER BY cp.first_name, cp.last_name, email
+        `,
+      ),
+      pool.query(
+        `
+        SELECT id, email, role, status
+        FROM system_users
+        WHERE role IN ('developer', 'owner', 'admin', 'staff')
+          AND status = 'active'
+        ORDER BY role, email
+        `,
+      ),
+    ])
+
+    return res.json({
+      ok: true,
+      conversations: result.rows,
+      metrics: metricsResult.rows[0] || {},
+      clients: clientsResult.rows,
+      teamUsers: teamResult.rows,
+    })
+  } catch (error) {
+    return next(error)
+  }
+})
+
+router.get('/inbox/:conversationId', requireAdmin, async (req, res, next) => {
+  try {
+    const conversation = await getAdminInboxConversation(req.params.conversationId)
+    if (!conversation) {
+      return res.status(404).json({ ok: false, error: 'Conversation not found.' })
+    }
+
+    await pool.query(
+      `
+      UPDATE client_conversation_messages
+      SET read_by_team_at = COALESCE(read_by_team_at, now())
+      WHERE conversation_id = $1
+        AND sender_role = 'client'
+        AND read_by_team_at IS NULL
+      `,
+      [conversation.id],
+    )
+
+    const refreshed = await getAdminInboxConversation(conversation.id)
+    return res.json({ ok: true, conversation: refreshed })
+  } catch (error) {
+    return next(error)
+  }
+})
+
+router.post('/inbox', requireAdmin, async (req, res, next) => {
+  const parsed = adminInboxCreateSchema.safeParse(req.body)
+  if (!parsed.success) {
+    return res.status(400).json({
+      ok: false,
+      error: parsed.error.issues[0]?.message || 'Please check the conversation details.',
+    })
+  }
+
+  const db = await pool.connect()
+  try {
+    await db.query('BEGIN')
+
+    const clientResult = await db.query(
+      `SELECT id FROM client_profiles WHERE id = $1 LIMIT 1`,
+      [parsed.data.clientProfileId],
+    )
+    if (!clientResult.rows[0]) {
+      await db.query('ROLLBACK')
+      return res.status(404).json({ ok: false, error: 'Client profile not found.' })
+    }
+
+    const conversationResult = await db.query(
+      `
+      INSERT INTO client_conversations (
+        client_profile_id,
+        subject,
+        status,
+        priority,
+        assigned_user_id,
+        created_by_user_id
+      )
+      VALUES ($1, $2, 'waiting_on_client', $3, $4, $5)
+      RETURNING *
+      `,
+      [
+        parsed.data.clientProfileId,
+        parsed.data.subject,
+        parsed.data.priority,
+        parsed.data.assignedUserId || req.user.id,
+        req.user.id,
+      ],
+    )
+
+    const conversation = conversationResult.rows[0]
+    await db.query(
+      `
+      INSERT INTO client_conversation_messages (
+        conversation_id,
+        sender_user_id,
+        sender_role,
+        body,
+        attachment_url,
+        attachment_label,
+        read_by_team_at
+      )
+      VALUES ($1, $2, $3, $4, $5, $6, now())
+      `,
+      [
+        conversation.id,
+        req.user.id,
+        req.user.role,
+        parsed.data.body,
+        parsed.data.attachmentUrl || null,
+        parsed.data.attachmentLabel || null,
+      ],
+    )
+
+    await db.query('COMMIT')
+    await writeInboxAudit(req, 'client_conversation_created_by_team', conversation.id, null, conversation)
+
+    return res.status(201).json({
+      ok: true,
+      message: 'Private client conversation created.',
+      conversation: await getAdminInboxConversation(conversation.id),
+    })
+  } catch (error) {
+    await db.query('ROLLBACK')
+    return next(error)
+  } finally {
+    db.release()
+  }
+})
+
+router.post('/inbox/:conversationId/messages', requireAdmin, async (req, res, next) => {
+  const parsed = adminInboxMessageSchema.safeParse(req.body)
+  if (!parsed.success) {
+    return res.status(400).json({
+      ok: false,
+      error: parsed.error.issues[0]?.message || 'Please check the message.',
+    })
+  }
+
+  const db = await pool.connect()
+  try {
+    await db.query('BEGIN')
+    const beforeResult = await db.query(
+      `SELECT * FROM client_conversations WHERE id = $1 FOR UPDATE`,
+      [req.params.conversationId],
+    )
+    const before = beforeResult.rows[0]
+    if (!before) {
+      await db.query('ROLLBACK')
+      return res.status(404).json({ ok: false, error: 'Conversation not found.' })
+    }
+
+    const messageResult = await db.query(
+      `
+      INSERT INTO client_conversation_messages (
+        conversation_id,
+        sender_user_id,
+        sender_role,
+        body,
+        attachment_url,
+        attachment_label,
+        is_internal_note,
+        read_by_team_at
+      )
+      VALUES ($1, $2, $3, $4, $5, $6, $7, now())
+      RETURNING *
+      `,
+      [
+        before.id,
+        req.user.id,
+        req.user.role,
+        parsed.data.body,
+        parsed.data.attachmentUrl || null,
+        parsed.data.attachmentLabel || null,
+        parsed.data.isInternalNote,
+      ],
+    )
+
+    const nextStatus = parsed.data.isInternalNote
+      ? before.status
+      : 'waiting_on_client'
+
+    const updatedResult = await db.query(
+      `
+      UPDATE client_conversations
+      SET
+        status = $2,
+        assigned_user_id = COALESCE(assigned_user_id, $3),
+        last_message_at = now(),
+        closed_at = CASE WHEN $2 = 'closed' THEN COALESCE(closed_at, now()) ELSE NULL END,
+        updated_at = now()
+      WHERE id = $1
+      RETURNING *
+      `,
+      [before.id, nextStatus, req.user.id],
+    )
+
+    await db.query('COMMIT')
+    await writeInboxAudit(
+      req,
+      parsed.data.isInternalNote ? 'client_conversation_internal_note_added' : 'client_conversation_team_reply_sent',
+      before.id,
+      before,
+      { conversation: updatedResult.rows[0], messageId: messageResult.rows[0].id },
+    )
+
+    return res.status(201).json({
+      ok: true,
+      message: parsed.data.isInternalNote ? 'Internal note added.' : 'Reply sent to the client.',
+      conversation: await getAdminInboxConversation(before.id),
+    })
+  } catch (error) {
+    await db.query('ROLLBACK')
+    return next(error)
+  } finally {
+    db.release()
+  }
+})
+
+router.patch('/inbox/:conversationId', requireAdmin, async (req, res, next) => {
+  const parsed = adminInboxUpdateSchema.safeParse(req.body)
+  if (!parsed.success) {
+    return res.status(400).json({
+      ok: false,
+      error: parsed.error.issues[0]?.message || 'Please check the conversation settings.',
+    })
+  }
+
+  try {
+    const beforeResult = await pool.query(
+      `SELECT * FROM client_conversations WHERE id = $1 LIMIT 1`,
+      [req.params.conversationId],
+    )
+    const before = beforeResult.rows[0]
+    if (!before) return res.status(404).json({ ok: false, error: 'Conversation not found.' })
+
+    if (parsed.data.assignedUserId) {
+      const assigneeResult = await pool.query(
+        `
+        SELECT id
+        FROM system_users
+        WHERE id = $1
+          AND role IN ('developer', 'owner', 'admin', 'staff')
+          AND status = 'active'
+        LIMIT 1
+        `,
+        [parsed.data.assignedUserId],
+      )
+      if (!assigneeResult.rows[0]) {
+        return res.status(400).json({ ok: false, error: 'Choose an active Studio team member.' })
+      }
+    }
+
+    const result = await pool.query(
+      `
+      UPDATE client_conversations
+      SET
+        status = COALESCE($2, status),
+        priority = COALESCE($3, priority),
+        assigned_user_id = CASE WHEN $4::boolean THEN $5 ELSE assigned_user_id END,
+        closed_at = CASE
+          WHEN COALESCE($2, status) = 'closed' THEN COALESCE(closed_at, now())
+          ELSE NULL
+        END,
+        updated_at = now()
+      WHERE id = $1
+      RETURNING *
+      `,
+      [
+        before.id,
+        parsed.data.status || null,
+        parsed.data.priority || null,
+        Object.prototype.hasOwnProperty.call(parsed.data, 'assignedUserId'),
+        parsed.data.assignedUserId || null,
+      ],
+    )
+
+    const conversation = result.rows[0]
+    await writeInboxAudit(req, 'client_conversation_settings_updated', conversation.id, before, conversation)
+
+    return res.json({
+      ok: true,
+      message: conversation.status === 'closed' ? 'Conversation closed.' : 'Conversation updated.',
+      conversation: await getAdminInboxConversation(conversation.id),
+    })
+  } catch (error) {
+    return next(error)
+  }
+})
+// secure-client-inbox-pass-22-admin-end
+
+
 module.exports = router
-
-
-
-
-
-
-
-

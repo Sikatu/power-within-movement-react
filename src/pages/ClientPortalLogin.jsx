@@ -50,7 +50,7 @@ export default function ClientPortalLogin() {
         await getClientPortalMe()
 
         if (isMounted) {
-          navigate('/client-portal/dashboard', { replace: true })
+          navigate('/client-portal/home', { replace: true })
         }
       } catch {
         // Not logged in yet. Stay on the login page.
@@ -77,7 +77,7 @@ export default function ClientPortalLogin() {
         password,
       })
 
-      navigate('/client-portal/dashboard')
+      navigate('/client-portal/home')
     } catch (loginError) {
       setError(
         loginError.message ||

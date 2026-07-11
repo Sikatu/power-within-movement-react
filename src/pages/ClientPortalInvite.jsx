@@ -284,7 +284,9 @@ export default function ClientPortalInvite() {
                       type="password"
                       value={password}
                       onChange={(event) => setPassword(event.target.value)}
-                      minLength={8}
+                      minLength={12}
+                      pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{12,}"
+                      title="Use at least 12 characters with uppercase, lowercase, a number, and a symbol."
                       autoComplete="new-password"
                       required
                     />
@@ -298,11 +300,18 @@ export default function ClientPortalInvite() {
                       onChange={(event) =>
                         setConfirmPassword(event.target.value)
                       }
-                      minLength={8}
+                      minLength={12}
+                      pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{12,}"
+                      title="Use at least 12 characters with uppercase, lowercase, a number, and a symbol."
                       autoComplete="new-password"
                       required
                     />
                   </label>
+
+                  <p className="client-portal-password-help-v3">
+                    Use at least 12 characters with an uppercase letter, lowercase letter,
+                    number, and symbol.
+                  </p>
 
                   <button type="submit" disabled={isSaving}>
                     {isSaving ? 'Creating Access...' : 'Create My Portal Access'}

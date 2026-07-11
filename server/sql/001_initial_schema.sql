@@ -27,12 +27,13 @@ CREATE TABLE IF NOT EXISTS system_users (
   email CITEXT UNIQUE NOT NULL,
   password_hash TEXT NOT NULL,
   role TEXT NOT NULL DEFAULT 'client'
-    CHECK (role IN ('owner', 'admin', 'staff', 'client', 'member')),
+    CHECK (role IN ('developer', 'owner', 'admin', 'staff', 'client', 'member')),
   status TEXT NOT NULL DEFAULT 'active'
     CHECK (status IN ('invited', 'active', 'suspended', 'archived')),
   must_change_password BOOLEAN NOT NULL DEFAULT FALSE,
   temporary_password_expires_at TIMESTAMPTZ,
   password_changed_at TIMESTAMPTZ,
+  session_version INTEGER NOT NULL DEFAULT 1,
   last_login_at TIMESTAMPTZ,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
@@ -43,6 +44,15 @@ CREATE TRIGGER set_system_users_updated_at
 BEFORE UPDATE ON system_users
 FOR EACH ROW
 EXECUTE FUNCTION set_updated_at();
+
+
+CREATE TABLE IF NOT EXISTS platform_settings (
+  key TEXT PRIMARY KEY,
+  value JSONB NOT NULL DEFAULT '{}'::jsonb,
+  updated_by_user_id UUID REFERENCES system_users(id) ON DELETE SET NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
 
 CREATE TABLE IF NOT EXISTS client_profiles (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -207,6 +217,46 @@ BEFORE UPDATE ON bookings
 FOR EACH ROW
 EXECUTE FUNCTION set_updated_at();
 
+
+CREATE TABLE IF NOT EXISTS booking_change_requests (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  booking_id UUID NOT NULL REFERENCES bookings(id) ON DELETE CASCADE,
+  client_profile_id UUID NOT NULL REFERENCES client_profiles(id) ON DELETE CASCADE,
+  request_type TEXT NOT NULL CHECK (request_type IN ('reschedule', 'cancel')),
+  requested_starts_at TIMESTAMPTZ,
+  requested_ends_at TIMESTAMPTZ,
+  reason TEXT NOT NULL,
+  status TEXT NOT NULL DEFAULT 'pending'
+    CHECK (status IN ('pending', 'approved', 'declined', 'withdrawn')),
+  reviewer_user_id UUID REFERENCES system_users(id) ON DELETE SET NULL,
+  reviewer_notes TEXT,
+  reviewed_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  CHECK (
+    (request_type = 'cancel' AND requested_starts_at IS NULL AND requested_ends_at IS NULL)
+    OR
+    (request_type = 'reschedule' AND requested_starts_at IS NOT NULL AND requested_ends_at IS NOT NULL)
+  )
+);
+
+DROP TRIGGER IF EXISTS set_booking_change_requests_updated_at
+  ON booking_change_requests;
+CREATE TRIGGER set_booking_change_requests_updated_at
+BEFORE UPDATE ON booking_change_requests
+FOR EACH ROW
+EXECUTE FUNCTION set_updated_at();
+
+CREATE INDEX IF NOT EXISTS idx_booking_change_requests_booking
+  ON booking_change_requests(booking_id);
+CREATE INDEX IF NOT EXISTS idx_booking_change_requests_client
+  ON booking_change_requests(client_profile_id);
+CREATE INDEX IF NOT EXISTS idx_booking_change_requests_status
+  ON booking_change_requests(status, created_at DESC);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_booking_change_requests_one_pending
+  ON booking_change_requests(booking_id)
+  WHERE status = 'pending';
+
 -- -----------------------------------------------------
 -- Native email studio
 -- -----------------------------------------------------
@@ -322,6 +372,11 @@ CREATE TABLE IF NOT EXISTS courses (
   title TEXT NOT NULL,
   slug TEXT UNIQUE NOT NULL,
   description TEXT,
+  category TEXT NOT NULL DEFAULT 'Personal Growth',
+  cover_image_url TEXT,
+  estimated_minutes INTEGER NOT NULL DEFAULT 30,
+  access_mode TEXT NOT NULL DEFAULT 'assigned_clients'
+    CHECK (access_mode IN ('all_clients', 'assigned_clients')),
   status TEXT NOT NULL DEFAULT 'draft'
     CHECK (status IN ('draft', 'published', 'archived')),
   cover_file_id UUID,
@@ -362,7 +417,10 @@ CREATE TABLE IF NOT EXISTS course_lessons (
     CHECK (lesson_type IN ('text', 'video', 'download', 'reflection')),
   content_html TEXT,
   video_url TEXT,
+  external_url TEXT,
   download_file_id UUID,
+  estimated_minutes INTEGER NOT NULL DEFAULT 5,
+  is_preview BOOLEAN NOT NULL DEFAULT false,
   position INTEGER NOT NULL DEFAULT 0,
   status TEXT NOT NULL DEFAULT 'draft'
     CHECK (status IN ('draft', 'published', 'archived')),
@@ -395,6 +453,7 @@ CREATE TABLE IF NOT EXISTS lesson_progress (
   completed_at TIMESTAMPTZ,
   last_viewed_at TIMESTAMPTZ,
   notes TEXT,
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   UNIQUE (lesson_id, client_profile_id)
 );
 
@@ -402,13 +461,18 @@ CREATE TABLE IF NOT EXISTS memberships (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   name TEXT NOT NULL,
   slug TEXT UNIQUE NOT NULL,
+  tagline TEXT,
   description TEXT,
+  benefits JSONB NOT NULL DEFAULT '[]'::jsonb,
+  welcome_message TEXT,
   status TEXT NOT NULL DEFAULT 'draft'
     CHECK (status IN ('draft', 'active', 'archived')),
   price_cents INTEGER,
-  currency TEXT DEFAULT 'USD',
+  currency TEXT NOT NULL DEFAULT 'USD',
   billing_interval TEXT
     CHECK (billing_interval IN ('one_time', 'monthly', 'quarterly', 'yearly')),
+  created_by UUID REFERENCES system_users(id) ON DELETE SET NULL,
+  updated_by UUID REFERENCES system_users(id) ON DELETE SET NULL,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
@@ -426,9 +490,69 @@ CREATE TABLE IF NOT EXISTS membership_enrollments (
   status TEXT NOT NULL DEFAULT 'active'
     CHECK (status IN ('active', 'paused', 'cancelled', 'expired')),
   started_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  renewal_at TIMESTAMPTZ,
   ends_at TIMESTAMPTZ,
+  notes TEXT,
+  assigned_by UUID REFERENCES system_users(id) ON DELETE SET NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   UNIQUE (membership_id, client_profile_id)
 );
+
+DROP TRIGGER IF EXISTS set_membership_enrollments_updated_at ON membership_enrollments;
+CREATE TRIGGER set_membership_enrollments_updated_at
+BEFORE UPDATE ON membership_enrollments
+FOR EACH ROW
+EXECUTE FUNCTION set_updated_at();
+
+CREATE TABLE IF NOT EXISTS membership_course_links (
+  membership_id UUID REFERENCES memberships(id) ON DELETE CASCADE,
+  course_id UUID REFERENCES courses(id) ON DELETE CASCADE,
+  created_by UUID REFERENCES system_users(id) ON DELETE SET NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  PRIMARY KEY (membership_id, course_id)
+);
+
+CREATE TABLE IF NOT EXISTS membership_resources (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  membership_id UUID REFERENCES memberships(id) ON DELETE CASCADE,
+  title TEXT NOT NULL,
+  resource_type TEXT NOT NULL DEFAULT 'link'
+    CHECK (resource_type IN ('guide', 'worksheet', 'link', 'video', 'download', 'note')),
+  description TEXT,
+  resource_url TEXT,
+  status TEXT NOT NULL DEFAULT 'active'
+    CHECK (status IN ('active', 'archived')),
+  position INTEGER NOT NULL DEFAULT 0,
+  created_by UUID REFERENCES system_users(id) ON DELETE SET NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+DROP TRIGGER IF EXISTS set_membership_resources_updated_at ON membership_resources;
+CREATE TRIGGER set_membership_resources_updated_at
+BEFORE UPDATE ON membership_resources
+FOR EACH ROW
+EXECUTE FUNCTION set_updated_at();
+
+CREATE TABLE IF NOT EXISTS membership_announcements (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  membership_id UUID REFERENCES memberships(id) ON DELETE CASCADE,
+  title TEXT NOT NULL,
+  body TEXT NOT NULL,
+  status TEXT NOT NULL DEFAULT 'draft'
+    CHECK (status IN ('draft', 'published', 'archived')),
+  published_at TIMESTAMPTZ,
+  created_by UUID REFERENCES system_users(id) ON DELETE SET NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+DROP TRIGGER IF EXISTS set_membership_announcements_updated_at ON membership_announcements;
+CREATE TRIGGER set_membership_announcements_updated_at
+BEFORE UPDATE ON membership_announcements
+FOR EACH ROW
+EXECUTE FUNCTION set_updated_at();
 
 -- -----------------------------------------------------
 -- Files and audit logs
@@ -493,3 +617,113 @@ CREATE INDEX IF NOT EXISTS idx_encouragement_posts_status ON encouragement_posts
 CREATE INDEX IF NOT EXISTS idx_courses_status ON courses(status);
 CREATE INDEX IF NOT EXISTS idx_audit_logs_actor ON audit_logs(actor_user_id);
 CREATE INDEX IF NOT EXISTS idx_audit_logs_entity ON audit_logs(entity_type, entity_id);
+
+
+-- the-circle-community-pass-20-schema-start
+CREATE TABLE IF NOT EXISTS circle_posts (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  membership_id UUID REFERENCES memberships(id) ON DELETE SET NULL,
+  author_user_id UUID REFERENCES system_users(id) ON DELETE SET NULL,
+  post_type TEXT NOT NULL DEFAULT 'post' CHECK (post_type IN ('post', 'announcement', 'event', 'challenge')),
+  title TEXT NOT NULL,
+  body TEXT NOT NULL,
+  status TEXT NOT NULL DEFAULT 'draft' CHECK (status IN ('draft', 'published', 'archived')),
+  is_pinned BOOLEAN NOT NULL DEFAULT FALSE,
+  comments_enabled BOOLEAN NOT NULL DEFAULT TRUE,
+  reactions_enabled BOOLEAN NOT NULL DEFAULT TRUE,
+  event_starts_at TIMESTAMPTZ,
+  event_ends_at TIMESTAMPTZ,
+  published_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  CHECK (event_ends_at IS NULL OR event_starts_at IS NULL OR event_ends_at > event_starts_at)
+);
+
+CREATE TABLE IF NOT EXISTS circle_comments (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  post_id UUID NOT NULL REFERENCES circle_posts(id) ON DELETE CASCADE,
+  author_user_id UUID REFERENCES system_users(id) ON DELETE SET NULL,
+  body TEXT NOT NULL,
+  status TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'hidden', 'deleted')),
+  hidden_by_user_id UUID REFERENCES system_users(id) ON DELETE SET NULL,
+  hidden_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE TABLE IF NOT EXISTS circle_reactions (
+  post_id UUID NOT NULL REFERENCES circle_posts(id) ON DELETE CASCADE,
+  user_id UUID NOT NULL REFERENCES system_users(id) ON DELETE CASCADE,
+  reaction_type TEXT NOT NULL CHECK (reaction_type IN ('heart', 'celebrate', 'support')),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  PRIMARY KEY (post_id, user_id)
+);
+
+CREATE TABLE IF NOT EXISTS circle_reports (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  post_id UUID REFERENCES circle_posts(id) ON DELETE CASCADE,
+  comment_id UUID REFERENCES circle_comments(id) ON DELETE CASCADE,
+  reporter_user_id UUID REFERENCES system_users(id) ON DELETE SET NULL,
+  reason TEXT NOT NULL,
+  details TEXT,
+  status TEXT NOT NULL DEFAULT 'open' CHECK (status IN ('open', 'resolved', 'dismissed')),
+  reviewed_by_user_id UUID REFERENCES system_users(id) ON DELETE SET NULL,
+  reviewed_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  CHECK (post_id IS NOT NULL OR comment_id IS NOT NULL)
+);
+
+CREATE INDEX IF NOT EXISTS idx_circle_posts_status_published ON circle_posts(status, published_at DESC);
+CREATE INDEX IF NOT EXISTS idx_circle_posts_membership_status ON circle_posts(membership_id, status);
+CREATE INDEX IF NOT EXISTS idx_circle_comments_post_status ON circle_comments(post_id, status, created_at);
+CREATE INDEX IF NOT EXISTS idx_circle_reports_status_created ON circle_reports(status, created_at DESC);
+-- the-circle-community-pass-20-schema-end
+
+-- secure-client-inbox-pass-22-schema-start
+CREATE TABLE IF NOT EXISTS client_conversations (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  client_profile_id UUID NOT NULL REFERENCES client_profiles(id) ON DELETE CASCADE,
+  subject TEXT NOT NULL,
+  status TEXT NOT NULL DEFAULT 'open'
+    CHECK (status IN ('open', 'waiting_on_client', 'waiting_on_team', 'closed')),
+  priority TEXT NOT NULL DEFAULT 'normal'
+    CHECK (priority IN ('normal', 'high', 'urgent')),
+  assigned_user_id UUID REFERENCES system_users(id) ON DELETE SET NULL,
+  created_by_user_id UUID REFERENCES system_users(id) ON DELETE SET NULL,
+  last_message_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  closed_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+DROP TRIGGER IF EXISTS set_client_conversations_updated_at ON client_conversations;
+CREATE TRIGGER set_client_conversations_updated_at
+BEFORE UPDATE ON client_conversations
+FOR EACH ROW
+EXECUTE FUNCTION set_updated_at();
+
+CREATE TABLE IF NOT EXISTS client_conversation_messages (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  conversation_id UUID NOT NULL REFERENCES client_conversations(id) ON DELETE CASCADE,
+  sender_user_id UUID REFERENCES system_users(id) ON DELETE SET NULL,
+  sender_role TEXT NOT NULL CHECK (sender_role IN ('developer', 'owner', 'admin', 'staff', 'client')),
+  body TEXT NOT NULL,
+  attachment_url TEXT,
+  attachment_label TEXT,
+  is_internal_note BOOLEAN NOT NULL DEFAULT FALSE,
+  read_by_client_at TIMESTAMPTZ,
+  read_by_team_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  CHECK ((attachment_url IS NULL AND attachment_label IS NULL) OR attachment_url IS NOT NULL)
+);
+
+CREATE INDEX IF NOT EXISTS idx_client_conversations_client
+  ON client_conversations(client_profile_id, last_message_at DESC);
+CREATE INDEX IF NOT EXISTS idx_client_conversations_status_priority
+  ON client_conversations(status, priority, last_message_at DESC);
+CREATE INDEX IF NOT EXISTS idx_client_conversations_assignee
+  ON client_conversations(assigned_user_id, status, last_message_at DESC);
+CREATE INDEX IF NOT EXISTS idx_client_conversation_messages_conversation
+  ON client_conversation_messages(conversation_id, created_at ASC);
+-- secure-client-inbox-pass-22-schema-end

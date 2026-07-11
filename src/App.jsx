@@ -7,6 +7,7 @@ import Footer from './components/Footer'
 import ScrollToTop from './components/ScrollToTop'
 import AdminRouteGuard from './components/admin/AdminRouteGuard'
 import AdminOwnerRouteGuard from './components/admin/AdminOwnerRouteGuard'
+import AdminDeveloperRouteGuard from './components/admin/AdminDeveloperRouteGuard'
 
 const Home = lazy(() => import('./pages/Home'))
 const Experiences = lazy(() => import('./pages/Experiences'))
@@ -25,14 +26,22 @@ const Contact = lazy(() => import('./pages/Contact'))
 const ClientPortalInvite = lazy(() => import('./pages/ClientPortalInvite'))
 const ClientPortalLogin = lazy(() => import('./pages/ClientPortalLogin'))
 const ClientPortalDashboard = lazy(() => import('./pages/ClientPortalDashboard'))
+const ClientPortalSessions = lazy(() => import('./pages/ClientPortalSessions'))
+const ClientPortalInbox = lazy(() => import('./pages/ClientPortalInbox'))
+const ClientCircleCommunity = lazy(() => import('./pages/ClientCircleCommunity'))
 const NotFound = lazy(() => import('./pages/NotFound'))
 const PrivacyPolicy = lazy(() => import('./pages/PrivacyPolicy'))
 const TermsAndConditions = lazy(() => import('./pages/TermsAndConditions'))
 const SessionRequest = lazy(() => import('./pages/SessionRequest'))
 const AdminScheduler = lazy(() => import('./pages/admin/AdminScheduler'))
+const AdminSessionChangeRequests = lazy(() => import('./pages/admin/AdminSessionChangeRequests'))
+const AdminInbox = lazy(() => import('./pages/admin/AdminInbox'))
 const AdminAuditLog = lazy(() => import('./pages/admin/AdminAuditLog'))
-const AdminPlaceholder = lazy(() => import('./pages/admin/AdminPlaceholder'))
 const AdminMailStudio = lazy(() => import('./pages/admin/AdminMailStudio'))
+const AdminEncouragements = lazy(() => import('./pages/admin/AdminEncouragements'))
+const AdminLearningLibrary = lazy(() => import('./pages/admin/AdminLearningLibrary'))
+const AdminMembershipCircle = lazy(() => import('./pages/admin/AdminMembershipCircle'))
+const AdminCircleCommunity = lazy(() => import('./pages/admin/AdminCircleCommunity'))
 const AdminClients = lazy(() => import('./pages/admin/AdminClients'))
 const AdminDashboard = lazy(() => import('./pages/admin/AdminDashboard'))
 const AdminFoundersView = lazy(() => import('./pages/admin/AdminFoundersView'))
@@ -40,6 +49,7 @@ const AdminFounderCalendar = lazy(() => import('./pages/admin/AdminFounderCalend
 const AdminFounderAvailability = lazy(() => import('./pages/admin/AdminFounderAvailability'))
 const AdminLogin = lazy(() => import('./pages/admin/AdminLogin'))
 const AdminChangePassword = lazy(() => import('./pages/admin/AdminChangePassword'))
+const AdminDeveloperPanel = lazy(() => import('./pages/admin/AdminDeveloperPanel'))
 const SITE_URL = 'https://www.kimmittelstadt.com'
 
 const routeMetadata = {
@@ -313,7 +323,17 @@ function App() {
         <Route path="/client-portal" element={<Navigate to="/client-portal/login" replace />} />
         <Route path="/client-portal/invite/:token" element={<ClientPortalInvite />} />
         <Route path="/client-portal/login" element={<ClientPortalLogin />} />
-        <Route path="/client-portal/dashboard" element={<ClientPortalDashboard />} />
+        <Route path="/client-portal/dashboard" element={<Navigate to="/client-portal/home" replace />} />
+        <Route path="/client-portal/home" element={<ClientPortalDashboard />} />
+        <Route path="/client-portal/journey" element={<ClientPortalDashboard />} />
+        <Route path="/client-portal/resources" element={<ClientPortalDashboard />} />
+        <Route path="/client-portal/learning" element={<ClientPortalDashboard />} />
+        <Route path="/client-portal/membership" element={<ClientPortalDashboard />} />
+        <Route path="/client-portal/circle" element={<ClientCircleCommunity />} />
+        <Route path="/client-portal/sessions" element={<ClientPortalSessions />} />
+        <Route path="/client-portal/messages" element={<ClientPortalInbox />} />
+        <Route path="/client-portal/messages/:conversationId" element={<ClientPortalInbox />} />
+        <Route path="/client-portal/profile" element={<ClientPortalDashboard />} />
         <Route path="/teens" element={<TeenPrograms />} />
 
         <Route path="/admin" element={<AdminLogin />} />
@@ -326,6 +346,15 @@ function App() {
             <AdminRouteGuard>
               <AdminDashboard />
             </AdminRouteGuard>
+          }
+        />
+
+        <Route
+          path="/admin/developer"
+          element={
+            <AdminDeveloperRouteGuard>
+              <AdminDeveloperPanel />
+            </AdminDeveloperRouteGuard>
           }
         />
 
@@ -394,6 +423,24 @@ function App() {
         />
 
         <Route
+          path="/admin/session-changes"
+          element={
+            <AdminRouteGuard>
+              <AdminSessionChangeRequests />
+            </AdminRouteGuard>
+          }
+        />
+
+        <Route
+          path="/admin/inbox"
+          element={
+            <AdminRouteGuard>
+              <AdminInbox />
+            </AdminRouteGuard>
+          }
+        />
+
+        <Route
           path="/admin/email-studio"
           element={
             <AdminRouteGuard>
@@ -406,11 +453,7 @@ function App() {
           path="/admin/courses"
           element={
             <AdminRouteGuard>
-              <AdminPlaceholder
-                eyebrow="Learning Library"
-                title="Learning Library"
-                description="Manage lessons, downloads, reflections, and guided learning experiences for clients and members."
-              />
+              <AdminLearningLibrary />
             </AdminRouteGuard>
           }
         />
@@ -419,11 +462,16 @@ function App() {
           path="/admin/memberships"
           element={
             <AdminRouteGuard>
-              <AdminPlaceholder
-                eyebrow="Membership Circle"
-                title="Membership Circle"
-                description="Care for active members, private access, community spaces, and ongoing transformation."
-              />
+              <AdminMembershipCircle />
+            </AdminRouteGuard>
+          }
+        />
+
+        <Route
+          path="/admin/circle"
+          element={
+            <AdminRouteGuard>
+              <AdminCircleCommunity />
             </AdminRouteGuard>
           }
         />
@@ -432,11 +480,7 @@ function App() {
           path="/admin/encouragements"
           element={
             <AdminRouteGuard>
-              <AdminPlaceholder
-                eyebrow="Daily Encouragements"
-                title="Daily Encouragements"
-                description="Share words that steady, uplift, and reconnect your community to confidence and presence."
-              />
+              <AdminEncouragements />
             </AdminRouteGuard>
           }
         />

@@ -65,17 +65,21 @@ function AdminLogin() {
 
       const destination = requestedPath?.startsWith('/admin/')
         ? requestedPath
-        : result.user?.role === 'owner'
-          ? '/admin/founders-view'
-          : '/admin/dashboard'
+        : result.user?.role === 'developer'
+          ? '/admin/developer'
+          : result.user?.role === 'owner'
+            ? '/admin/founders-view'
+            : '/admin/dashboard'
 
       setStatus({
         loading: false,
         error: '',
         message:
-          result.user?.role === 'owner'
-            ? 'Login successful. Opening Founder’s View...'
-            : 'Login successful. Opening The Studio...',
+          result.user?.role === 'developer'
+            ? 'Login successful. Opening the Developer Control Center...'
+            : result.user?.role === 'owner'
+              ? 'Login successful. Opening Founder’s View...'
+              : 'Login successful. Opening The Studio...',
       })
 
       navigate(destination)
@@ -94,7 +98,7 @@ function AdminLogin() {
         <p className="eyebrow">Admin Access</p>
         <h1>Power Within Admin</h1>
         <p>
-          Sign in to manage sessions, clients, messages, resources, and private portal access.
+          Sign in to manage the platform, sessions, clients, messages, resources, and private portal access.
         </p>
 
         <form className="pwc-admin-login-form" onSubmit={handleSubmit}>

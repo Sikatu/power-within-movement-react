@@ -64,6 +64,10 @@ export async function checkFounderAccess() {
   return apiRequest('/api/auth/founder-check')
 }
 
+export async function checkDeveloperAccess() {
+  return apiRequest('/api/auth/developer-check')
+}
+
 export async function logoutAdmin() {
   return apiRequest('/api/auth/logout', {
     method: 'POST',
@@ -255,6 +259,60 @@ export async function getClientPortalResources() {
 }
 // phase-3-9d-client-portal-resource-api-end
 
+// client-portal-foundation-pass-13-start
+export async function getClientPortalMessages() {
+  return apiRequest('/api/public/client-portal/messages')
+}
+
+export async function markClientPortalMessageRead(messageId) {
+  return apiRequest(`/api/public/client-portal/messages/${messageId}/read`, {
+    method: 'PATCH',
+  })
+}
+
+export async function updateClientPortalProfile(payload) {
+  return apiRequest('/api/public/client-portal/profile', {
+    method: 'PATCH',
+    body: JSON.stringify(payload),
+  })
+}
+
+export async function changeClientPortalPassword(payload) {
+  return apiRequest('/api/public/client-portal/change-password', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  })
+}
+// client-portal-foundation-pass-13-end
+
+
+// client-session-self-service-pass-21-start
+export async function createClientPortalBooking(payload) {
+  return apiRequest('/api/public/client-portal/bookings', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  })
+}
+
+export async function createClientPortalBookingChangeRequest(bookingId, payload) {
+  return apiRequest(`/api/public/client-portal/bookings/${bookingId}/change-requests`, {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  })
+}
+
+export async function getAdminSessionChangeRequests() {
+  return apiRequest('/api/admin/session-change-requests')
+}
+
+export async function reviewAdminSessionChangeRequest(requestId, payload) {
+  return apiRequest(`/api/admin/session-change-requests/${requestId}`, {
+    method: 'PATCH',
+    body: JSON.stringify(payload),
+  })
+}
+// client-session-self-service-pass-21-end
+
 // phase-3-9h-portal-invite-management-api-start
 export async function getAdminClientPortalInvites(clientId) {
   return apiRequest(`/api/admin/clients/${clientId}/portal-invites`)
@@ -343,6 +401,54 @@ export async function sendAdminMailStudioEmail(payload) {
   })
 }
 // phase-3-10b-mail-studio-composer-api-end
+
+
+// encouragement-studio-pass-17-start
+export async function getAdminEncouragements(filters = {}) {
+  const params = new URLSearchParams()
+
+  if (filters.status && filters.status !== 'all') params.set('status', filters.status)
+  if (filters.visibility && filters.visibility !== 'all') {
+    params.set('visibility', filters.visibility)
+  }
+  if (filters.search) params.set('search', filters.search)
+
+  const query = params.toString()
+  return apiRequest(`/api/admin/encouragements${query ? `?${query}` : ''}`)
+}
+
+export async function createAdminEncouragement(payload) {
+  return apiRequest('/api/admin/encouragements', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  })
+}
+
+export async function updateAdminEncouragement(encouragementId, payload) {
+  return apiRequest(`/api/admin/encouragements/${encouragementId}`, {
+    method: 'PATCH',
+    body: JSON.stringify(payload),
+  })
+}
+
+export async function publishAdminEncouragement(encouragementId) {
+  return apiRequest(`/api/admin/encouragements/${encouragementId}/publish`, {
+    method: 'POST',
+  })
+}
+
+export async function archiveAdminEncouragement(encouragementId) {
+  return apiRequest(`/api/admin/encouragements/${encouragementId}/archive`, {
+    method: 'POST',
+  })
+}
+
+export async function deleteAdminEncouragement(encouragementId) {
+  return apiRequest(`/api/admin/encouragements/${encouragementId}`, {
+    method: 'DELETE',
+  })
+}
+// encouragement-studio-pass-17-end
 
 // phase-3-12a-founders-view-api-start
 export async function getAdminFoundersViewOverview() {
@@ -440,3 +546,463 @@ export async function submitPublicContactInquiry(payload) {
   })
 }
 
+// developer-control-center-api-start
+export async function getDeveloperOverview() {
+  return apiRequest('/api/admin/developer/overview')
+}
+
+export async function getDeveloperUsers() {
+  return apiRequest('/api/admin/developer/users')
+}
+
+export async function issueDeveloperTemporaryPassword(userId, expirationHours = 48) {
+  return apiRequest(`/api/admin/developer/users/${userId}/temporary-password`, {
+    method: 'POST',
+    body: JSON.stringify({ expirationHours }),
+  })
+}
+
+export async function updateDeveloperUserStatus(userId, status) {
+  return apiRequest(`/api/admin/developer/users/${userId}/status`, {
+    method: 'PATCH',
+    body: JSON.stringify({ status }),
+  })
+}
+// developer-control-center-api-end
+
+// developer-operations-phase-2-api-start
+export async function createDeveloperManagedUser(payload) {
+  return apiRequest('/api/admin/developer/users', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  })
+}
+
+export async function updateDeveloperUserRole(userId, role) {
+  return apiRequest(`/api/admin/developer/users/${userId}/role`, {
+    method: 'PATCH',
+    body: JSON.stringify({ role }),
+  })
+}
+
+export async function revokeDeveloperUserSessions(userId) {
+  return apiRequest(`/api/admin/developer/users/${userId}/revoke-sessions`, {
+    method: 'POST',
+  })
+}
+
+export async function getDeveloperClientAccess() {
+  return apiRequest('/api/admin/developer/client-access')
+}
+
+export async function getDeveloperSystemHealth() {
+  return apiRequest('/api/admin/developer/system-health')
+}
+
+export async function getDeveloperSettings() {
+  return apiRequest('/api/admin/developer/settings')
+}
+
+export async function updateDeveloperSettings(settings) {
+  return apiRequest('/api/admin/developer/settings', {
+    method: 'PATCH',
+    body: JSON.stringify(settings),
+  })
+}
+
+export async function getDeveloperFounderPreview() {
+  return apiRequest('/api/admin/developer/preview/founder')
+}
+
+export async function getDeveloperClientPreview(clientProfileId) {
+  return apiRequest(`/api/admin/developer/preview/client/${clientProfileId}`)
+}
+// developer-operations-phase-2-api-end
+
+// learning-library-pass-18-api-start
+export async function getAdminLearningLibrary() {
+  return apiRequest('/api/admin/learning-library')
+}
+
+export async function getAdminLearningCourse(courseId) {
+  return apiRequest(`/api/admin/learning-library/${courseId}`)
+}
+
+export async function createAdminLearningCourse(payload) {
+  return apiRequest('/api/admin/learning-library', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  })
+}
+
+export async function updateAdminLearningCourse(courseId, payload) {
+  return apiRequest(`/api/admin/learning-library/${courseId}`, {
+    method: 'PATCH',
+    body: JSON.stringify(payload),
+  })
+}
+
+export async function publishAdminLearningCourse(courseId) {
+  return apiRequest(`/api/admin/learning-library/${courseId}/publish`, {
+    method: 'POST',
+  })
+}
+
+export async function archiveAdminLearningCourse(courseId) {
+  return apiRequest(`/api/admin/learning-library/${courseId}/archive`, {
+    method: 'POST',
+  })
+}
+
+export async function deleteAdminLearningCourse(courseId) {
+  return apiRequest(`/api/admin/learning-library/${courseId}`, {
+    method: 'DELETE',
+  })
+}
+
+export async function createAdminLearningModule(courseId, payload) {
+  return apiRequest(`/api/admin/learning-library/${courseId}/modules`, {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  })
+}
+
+export async function updateAdminLearningModule(moduleId, payload) {
+  return apiRequest(`/api/admin/learning-library/modules/${moduleId}`, {
+    method: 'PATCH',
+    body: JSON.stringify(payload),
+  })
+}
+
+export async function deleteAdminLearningModule(moduleId) {
+  return apiRequest(`/api/admin/learning-library/modules/${moduleId}`, {
+    method: 'DELETE',
+  })
+}
+
+export async function createAdminLearningLesson(moduleId, payload) {
+  return apiRequest(`/api/admin/learning-library/modules/${moduleId}/lessons`, {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  })
+}
+
+export async function updateAdminLearningLesson(lessonId, payload) {
+  return apiRequest(`/api/admin/learning-library/lessons/${lessonId}`, {
+    method: 'PATCH',
+    body: JSON.stringify(payload),
+  })
+}
+
+export async function deleteAdminLearningLesson(lessonId) {
+  return apiRequest(`/api/admin/learning-library/lessons/${lessonId}`, {
+    method: 'DELETE',
+  })
+}
+
+export async function updateAdminLearningAccess(courseId, payload) {
+  return apiRequest(`/api/admin/learning-library/${courseId}/access`, {
+    method: 'PUT',
+    body: JSON.stringify(payload),
+  })
+}
+
+export async function getClientLearningLibrary() {
+  return apiRequest('/api/public/client-portal/learning')
+}
+
+export async function getClientLearningCourse(courseId) {
+  return apiRequest(`/api/public/client-portal/learning/${courseId}`)
+}
+
+export async function updateClientLearningProgress(lessonId, payload) {
+  return apiRequest(`/api/public/client-portal/learning/lessons/${lessonId}/progress`, {
+    method: 'PATCH',
+    body: JSON.stringify(payload),
+  })
+}
+// learning-library-pass-18-api-end
+
+// membership-circle-pass-19-api-start
+export async function getAdminMembershipCircle() {
+  return apiRequest('/api/admin/memberships')
+}
+
+export async function getAdminMembership(membershipId) {
+  return apiRequest(`/api/admin/memberships/${membershipId}`)
+}
+
+export async function createAdminMembership(payload) {
+  return apiRequest('/api/admin/memberships', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  })
+}
+
+export async function updateAdminMembership(membershipId, payload) {
+  return apiRequest(`/api/admin/memberships/${membershipId}`, {
+    method: 'PATCH',
+    body: JSON.stringify(payload),
+  })
+}
+
+export async function activateAdminMembership(membershipId) {
+  return apiRequest(`/api/admin/memberships/${membershipId}/activate`, {
+    method: 'POST',
+  })
+}
+
+export async function archiveAdminMembership(membershipId) {
+  return apiRequest(`/api/admin/memberships/${membershipId}/archive`, {
+    method: 'POST',
+  })
+}
+
+export async function deleteAdminMembership(membershipId) {
+  return apiRequest(`/api/admin/memberships/${membershipId}`, {
+    method: 'DELETE',
+  })
+}
+
+export async function upsertAdminMembershipEnrollment(membershipId, payload) {
+  return apiRequest(`/api/admin/memberships/${membershipId}/enrollments`, {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  })
+}
+
+export async function updateAdminMembershipEnrollment(enrollmentId, payload) {
+  return apiRequest(`/api/admin/memberships/enrollments/${enrollmentId}`, {
+    method: 'PATCH',
+    body: JSON.stringify(payload),
+  })
+}
+
+export async function deleteAdminMembershipEnrollment(enrollmentId) {
+  return apiRequest(`/api/admin/memberships/enrollments/${enrollmentId}`, {
+    method: 'DELETE',
+  })
+}
+
+export async function updateAdminMembershipCourses(membershipId, courseIds) {
+  return apiRequest(`/api/admin/memberships/${membershipId}/courses`, {
+    method: 'PUT',
+    body: JSON.stringify({ courseIds }),
+  })
+}
+
+export async function createAdminMembershipResource(membershipId, payload) {
+  return apiRequest(`/api/admin/memberships/${membershipId}/resources`, {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  })
+}
+
+export async function updateAdminMembershipResource(resourceId, payload) {
+  return apiRequest(`/api/admin/memberships/resources/${resourceId}`, {
+    method: 'PATCH',
+    body: JSON.stringify(payload),
+  })
+}
+
+export async function deleteAdminMembershipResource(resourceId) {
+  return apiRequest(`/api/admin/memberships/resources/${resourceId}`, {
+    method: 'DELETE',
+  })
+}
+
+export async function createAdminMembershipAnnouncement(membershipId, payload) {
+  return apiRequest(`/api/admin/memberships/${membershipId}/announcements`, {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  })
+}
+
+export async function updateAdminMembershipAnnouncement(announcementId, payload) {
+  return apiRequest(`/api/admin/memberships/announcements/${announcementId}`, {
+    method: 'PATCH',
+    body: JSON.stringify(payload),
+  })
+}
+
+export async function publishAdminMembershipAnnouncement(announcementId) {
+  return apiRequest(`/api/admin/memberships/announcements/${announcementId}/publish`, {
+    method: 'POST',
+  })
+}
+
+export async function archiveAdminMembershipAnnouncement(announcementId) {
+  return apiRequest(`/api/admin/memberships/announcements/${announcementId}/archive`, {
+    method: 'POST',
+  })
+}
+
+export async function deleteAdminMembershipAnnouncement(announcementId) {
+  return apiRequest(`/api/admin/memberships/announcements/${announcementId}`, {
+    method: 'DELETE',
+  })
+}
+
+export async function getClientMemberships() {
+  return apiRequest('/api/public/client-portal/memberships')
+}
+// membership-circle-pass-19-api-end
+
+// the-circle-community-pass-20-api-start
+export async function getAdminCircleCommunity() {
+  return apiRequest('/api/admin/circle')
+}
+
+export async function getAdminCirclePost(postId) {
+  return apiRequest(`/api/admin/circle/posts/${postId}`)
+}
+
+export async function createAdminCirclePost(payload) {
+  return apiRequest('/api/admin/circle/posts', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  })
+}
+
+export async function updateAdminCirclePost(postId, payload) {
+  return apiRequest(`/api/admin/circle/posts/${postId}`, {
+    method: 'PATCH',
+    body: JSON.stringify(payload),
+  })
+}
+
+export async function publishAdminCirclePost(postId) {
+  return apiRequest(`/api/admin/circle/posts/${postId}/publish`, {
+    method: 'POST',
+  })
+}
+
+export async function archiveAdminCirclePost(postId) {
+  return apiRequest(`/api/admin/circle/posts/${postId}/archive`, {
+    method: 'POST',
+  })
+}
+
+export async function pinAdminCirclePost(postId, isPinned) {
+  return apiRequest(`/api/admin/circle/posts/${postId}/pin`, {
+    method: 'POST',
+    body: JSON.stringify({ isPinned }),
+  })
+}
+
+export async function deleteAdminCirclePost(postId) {
+  return apiRequest(`/api/admin/circle/posts/${postId}`, {
+    method: 'DELETE',
+  })
+}
+
+export async function moderateAdminCircleComment(commentId, status) {
+  return apiRequest(`/api/admin/circle/comments/${commentId}/moderation`, {
+    method: 'PATCH',
+    body: JSON.stringify({ status }),
+  })
+}
+
+export async function reviewAdminCircleReport(reportId, status) {
+  return apiRequest(`/api/admin/circle/reports/${reportId}`, {
+    method: 'PATCH',
+    body: JSON.stringify({ status }),
+  })
+}
+
+export async function getClientCircleCommunity() {
+  return apiRequest('/api/public/client-portal/circle')
+}
+
+export async function createClientCircleComment(postId, body) {
+  return apiRequest(`/api/public/client-portal/circle/posts/${postId}/comments`, {
+    method: 'POST',
+    body: JSON.stringify({ body }),
+  })
+}
+
+export async function deleteClientCircleComment(commentId) {
+  return apiRequest(`/api/public/client-portal/circle/comments/${commentId}`, {
+    method: 'DELETE',
+  })
+}
+
+export async function setClientCircleReaction(postId, reactionType) {
+  return apiRequest(`/api/public/client-portal/circle/posts/${postId}/reaction`, {
+    method: 'POST',
+    body: JSON.stringify({ reactionType }),
+  })
+}
+
+export async function reportClientCircleContent(payload) {
+  return apiRequest('/api/public/client-portal/circle/reports', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  })
+}
+// the-circle-community-pass-20-api-end
+
+// secure-client-inbox-pass-22-api-start
+export async function getAdminInbox(filters = {}) {
+  const params = new URLSearchParams()
+  if (filters.status) params.set('status', filters.status)
+  if (filters.priority) params.set('priority', filters.priority)
+  if (filters.search) params.set('search', filters.search)
+  const query = params.toString()
+  return apiRequest(`/api/admin/inbox${query ? `?${query}` : ''}`)
+}
+
+export async function getAdminInboxConversation(conversationId) {
+  return apiRequest(`/api/admin/inbox/${conversationId}`)
+}
+
+export async function createAdminInboxConversation(payload) {
+  return apiRequest('/api/admin/inbox', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  })
+}
+
+export async function sendAdminInboxMessage(conversationId, payload) {
+  return apiRequest(`/api/admin/inbox/${conversationId}/messages`, {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  })
+}
+
+export async function updateAdminInboxConversation(conversationId, payload) {
+  return apiRequest(`/api/admin/inbox/${conversationId}`, {
+    method: 'PATCH',
+    body: JSON.stringify(payload),
+  })
+}
+
+export async function getClientPortalInbox() {
+  return apiRequest('/api/public/client-portal/inbox')
+}
+
+export async function getClientPortalInboxConversation(conversationId) {
+  return apiRequest(`/api/public/client-portal/inbox/${conversationId}`)
+}
+
+export async function createClientPortalInboxConversation(payload) {
+  return apiRequest('/api/public/client-portal/inbox', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  })
+}
+
+export async function sendClientPortalInboxMessage(conversationId, payload) {
+  return apiRequest(`/api/public/client-portal/inbox/${conversationId}/messages`, {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  })
+}
+
+export async function updateClientPortalInboxConversation(conversationId, status) {
+  return apiRequest(`/api/public/client-portal/inbox/${conversationId}`, {
+    method: 'PATCH',
+    body: JSON.stringify({ status }),
+  })
+}
+// secure-client-inbox-pass-22-api-end

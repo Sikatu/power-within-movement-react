@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import FounderDeveloperBanner from '../../components/admin/FounderDeveloperBanner'
 import {
   getAdminFounderCalendar,
   logoutAdmin,
@@ -329,6 +330,7 @@ export default function AdminFounderCalendar() {
 
   return (
     <main className="founder-calendar">
+      <FounderDeveloperBanner />
       <header className="founder-calendar__header">
         <Link to="/admin/founders-view" className="founder-calendar__brand">
           <span aria-hidden="true" />

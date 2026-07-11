@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import FounderDeveloperBanner from '../../components/admin/FounderDeveloperBanner'
 import {
   getAdminFoundersViewOverview,
   updateAdminFounderDateAvailability,
@@ -301,6 +302,7 @@ export default function AdminFoundersView() {
 
   return (
     <main className="founder-home">
+      <FounderDeveloperBanner />
       <header className="founder-home__topbar">
         <Link to="/admin/founders-view" className="founder-home__brand">
           <span aria-hidden="true" />

@@ -120,9 +120,11 @@ function AdminChangePassword() {
       }))
 
       navigate(
-        result.user?.role === 'owner'
-          ? '/admin/founders-view'
-          : '/admin/dashboard',
+        result.user?.role === 'developer'
+          ? '/admin/developer'
+          : result.user?.role === 'owner'
+            ? '/admin/founders-view'
+            : '/admin/dashboard',
         { replace: true },
       )
     } catch (error) {
@@ -153,7 +155,7 @@ function AdminChangePassword() {
         <h1>Create your private password</h1>
         <p>
           For your security, please replace the temporary password before entering
-          Founder’s View.
+          your private workspace.
         </p>
 
         {account?.email && (

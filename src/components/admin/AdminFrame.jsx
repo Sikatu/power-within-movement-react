@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link, NavLink } from 'react-router-dom'
 
 const studioNavGroups = [
@@ -7,7 +7,9 @@ const studioNavGroups = [
     items: [
       { to: '/admin/dashboard', label: 'Overview' },
       { to: '/admin/clients', label: 'Clients' },
+      { to: '/admin/inbox', label: 'Secure Inbox' },
       { to: '/admin/scheduler', label: 'Sessions' },
+      { to: '/admin/session-changes', label: 'Session Changes' },
       { to: '/admin/email-studio', label: 'Communications' },
     ],
   },
@@ -16,6 +18,7 @@ const studioNavGroups = [
     items: [
       { to: '/admin/courses', label: 'Learning Library' },
       { to: '/admin/memberships', label: 'Memberships' },
+      { to: '/admin/circle', label: 'The Circle' },
       { to: '/admin/encouragements', label: 'Encouragements' },
     ],
   },
@@ -24,7 +27,6 @@ const studioNavGroups = [
     items: [{ to: '/admin/audit-log', label: 'Activity Journal' }],
   },
 ]
-
 
 function AdminFrame({ children }) {
   const [adminUser] = useState(() => {
@@ -38,6 +40,24 @@ function AdminFrame({ children }) {
   })
 
   const isOwner = adminUser?.role === 'owner'
+  const isDeveloper = adminUser?.role === 'developer'
+
+  const navigationGroups = useMemo(
+    () =>
+      studioNavGroups.map((group) => {
+        if (group.label !== 'System' || !isDeveloper) return group
+
+        return {
+          ...group,
+          items: [
+            { to: '/admin/developer', label: 'Developer Control Center' },
+            ...group.items,
+          ],
+        }
+      }),
+    [isDeveloper],
+  )
+
   useEffect(() => {
     document.body.classList.add('admin-app-mode')
 
@@ -55,6 +75,30 @@ function AdminFrame({ children }) {
           <span>A private space for meaningful transformation.</span>
         </div>
 
+        {isDeveloper && (
+          <>
+            <NavLink
+              className={({ isActive }) =>
+                `pwc-studio-founder-switch${isActive ? ' is-active' : ''}`
+              }
+              to="/admin/developer"
+            >
+              <span>Developer workspace</span>
+              <strong>Control Center</strong>
+            </NavLink>
+
+            <NavLink
+              className={({ isActive }) =>
+                `pwc-studio-founder-switch${isActive ? ' is-active' : ''}`
+              }
+              to="/admin/founders-view"
+            >
+              <span>Live owner workspace</span>
+              <strong>Founder’s View</strong>
+            </NavLink>
+          </>
+        )}
+
         {isOwner && (
           <NavLink
             className={({ isActive }) =>
@@ -68,7 +112,7 @@ function AdminFrame({ children }) {
         )}
 
         <nav className="pwc-admin-nav pwc-studio-nav" aria-label="Studio navigation">
-          {studioNavGroups.map((group) => (
+          {navigationGroups.map((group) => (
             <section className="pwc-studio-nav-group" key={group.label}>
               <p>{group.label}</p>
               <div>
@@ -87,9 +131,9 @@ function AdminFrame({ children }) {
         </nav>
 
         <div className="pwc-studio-profile-note">
-          <span>Coming Later</span>
-          <strong>Studio Profile</strong>
-          <p>Photo, bio, signature, and brand details will live here soon.</p>
+          <span>Signed in as</span>
+          <strong>{isDeveloper ? 'Developer' : isOwner ? 'Owner' : 'Studio Team'}</strong>
+          <p>{adminUser?.email || 'Private account'}</p>
         </div>
 
         <Link className="pwc-admin-back-link pwc-studio-back-link" to="/">
@@ -97,9 +141,7 @@ function AdminFrame({ children }) {
         </Link>
       </aside>
 
-      <section className="pwc-admin-main pwc-studio-main">
-        {children}
-      </section>
+      <section className="pwc-admin-main pwc-studio-main">{children}</section>
     </main>
   )
 }

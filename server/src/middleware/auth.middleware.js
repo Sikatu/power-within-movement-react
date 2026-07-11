@@ -53,6 +53,7 @@ async function requireAuth(req, res, next) {
         must_change_password,
         temporary_password_expires_at,
         password_changed_at,
+        session_version,
         last_login_at,
         created_at,
         updated_at
@@ -69,6 +70,17 @@ async function requireAuth(req, res, next) {
       return res.status(401).json({
         ok: false,
         error: 'User is not active.',
+      })
+    }
+
+    const tokenSessionVersion = Number(payload.sessionVersion || 1)
+    const currentSessionVersion = Number(user.session_version || 1)
+
+    if (tokenSessionVersion !== currentSessionVersion) {
+      return res.status(401).json({
+        ok: false,
+        code: 'SESSION_REVOKED',
+        error: 'This session has been revoked. Please sign in again.',
       })
     }
 

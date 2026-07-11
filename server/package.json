@@ -2,7 +2,7 @@
   "name": "power-within-native-backend",
   "version": "0.1.0",
   "private": true,
-  "description": "Native backend API for Power Within Collective admin, client portal, scheduler, email studio, courses, and memberships.",
+  "description": "Native backend API for Power Within Collective admin, client portal, scheduler, communications, learning, memberships, and community.",
   "main": "src/server.js",
   "type": "commonjs",
   "scripts": {
@@ -16,7 +16,16 @@
     "dev-reset-cherry-portal-password": "node ./scripts/dev-reset-cherry-portal-password.cjs",
     "db:migrate-owner-password-reset": "node scripts/add-owner-password-reset-fields.cjs",
     "db:seed-owner-temporary": "node scripts/seed-owner-temporary-password.cjs",
-    "db:migrate-founder-availability": "node scripts/create-founder-availability-settings.cjs"
+    "db:migrate-founder-availability": "node scripts/create-founder-availability-settings.cjs",
+    "db:migrate-client-portal-foundation": "node scripts/ensure-client-portal-foundation.cjs",
+    "db:migrate-developer-access": "node scripts/ensure-developer-access.cjs",
+    "db:seed-developer-temporary": "node scripts/seed-developer-temporary-password.cjs",
+    "db:migrate-developer-operations": "node scripts/ensure-developer-operations.cjs",
+    "db:migrate-learning-library": "node scripts/ensure-learning-library.cjs",
+    "db:migrate-membership-circle": "node scripts/ensure-membership-circle.cjs",
+    "db:migrate-circle-community": "node scripts/ensure-circle-community.cjs",
+    "db:migrate-client-session-self-service": "node scripts/ensure-client-session-self-service.cjs",
+    "db:migrate-secure-client-inbox": "node scripts/ensure-secure-client-inbox.cjs"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",

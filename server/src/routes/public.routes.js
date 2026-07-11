@@ -1,4 +1,4 @@
-﻿const express = require('express')
+const express = require('express')
 const { z } = require('zod')
 
 const { pool } = require('../db/pool')
@@ -8,6 +8,18 @@ const {
   isRequestedSlotAvailable,
   addDateKey: addFounderDateKey,
 } = require('../services/founderAvailability.service')
+const { getPlatformSettings } = require('../services/platformSettings.service')
+const { publishDueEncouragements } = require('../services/encouragements.service')
+const {
+  clientCanAccessCourse,
+  getCourseTree,
+  listClientCourses,
+} = require('../services/learningLibrary.service')
+const { listClientMemberships } = require('../services/membershipCircle.service')
+const {
+  clientCanAccessCirclePost,
+  listClientCircleFeed,
+} = require('../services/circleCommunity.service')
 
 const router = express.Router()
 const contactDbModule = require('../db/pool')
@@ -586,6 +598,18 @@ router.post('/booking-requests', async (req, res, next) => {
       })
     }
 
+    const platformSettings = await getPlatformSettings(pool)
+
+    if (platformSettings.maintenanceMode || platformSettings.bookingsPaused) {
+      return res.status(503).json({
+        ok: false,
+        code: 'BOOKINGS_PAUSED',
+        error: platformSettings.maintenanceMode
+          ? platformSettings.maintenanceMessage
+          : 'New booking requests are temporarily paused. Please try again later.',
+      })
+    }
+
     const parsed = publicBookingSchema.safeParse(req.body)
 
     if (!parsed.success) {
@@ -909,6 +933,24 @@ router.post('/client-portal/invites/:token/accept', async (req, res, next) => {
     })
   }
 
+  let platformSettings
+
+  try {
+    platformSettings = await getPlatformSettings(pool)
+  } catch (error) {
+    return next(error)
+  }
+
+  if (platformSettings.maintenanceMode || platformSettings.clientLoginsPaused) {
+    return res.status(503).json({
+      ok: false,
+      code: 'CLIENT_LOGINS_PAUSED',
+      error: platformSettings.maintenanceMode
+        ? platformSettings.maintenanceMessage
+        : 'Client Portal sign-in is temporarily paused. Please try again later.',
+    })
+  }
+
   const bcrypt = require('bcryptjs')
   const dbClient = await pool.connect()
 
@@ -916,10 +958,18 @@ router.post('/client-portal/invites/:token/accept', async (req, res, next) => {
     const password = String(req.body?.password || '')
     const confirmPassword = String(req.body?.confirmPassword || '')
 
-    if (password.length < 8) {
+    const passwordRule =
+      password.length >= 12 &&
+      /[a-z]/.test(password) &&
+      /[A-Z]/.test(password) &&
+      /[0-9]/.test(password) &&
+      /[^A-Za-z0-9]/.test(password)
+
+    if (!passwordRule) {
       return res.status(400).json({
         ok: false,
-        error: 'Please choose a password with at least 8 characters.',
+        error:
+          'Choose a password with at least 12 characters, including uppercase, lowercase, a number, and a symbol.',
       })
     }
 
@@ -999,6 +1049,8 @@ router.post('/client-portal/invites/:token/accept', async (req, res, next) => {
       SET
         password_hash = $1,
         status = 'active',
+        password_changed_at = now(),
+        session_version = COALESCE(session_version, 1) + 1,
         updated_at = now()
       WHERE id = $2
       `,
@@ -1109,6 +1161,7 @@ function signClientPortalToken(user) {
       email: user.email,
       role: user.role,
       portal: 'client',
+      sessionVersion: Number(user.session_version || 1),
     },
     secret,
     {
@@ -1152,6 +1205,16 @@ async function requireClientPortalUser(req, res, next) {
   }
 
   try {
+    const platformSettings = await getPlatformSettings(pool)
+
+    if (platformSettings.maintenanceMode) {
+      return res.status(503).json({
+        ok: false,
+        code: 'MAINTENANCE_MODE',
+        error: platformSettings.maintenanceMessage,
+      })
+    }
+
     const userResult = await pool.query(
       `
       SELECT
@@ -1159,6 +1222,9 @@ async function requireClientPortalUser(req, res, next) {
         email,
         role,
         status,
+        password_changed_at,
+        session_version,
+        last_login_at,
         created_at,
         updated_at
       FROM system_users
@@ -1176,6 +1242,17 @@ async function requireClientPortalUser(req, res, next) {
       return res.status(401).json({
         ok: false,
         error: 'Client portal login required.',
+      })
+    }
+
+    const tokenSessionVersion = Number(payload.sessionVersion || 1)
+    const currentSessionVersion = Number(user.session_version || 1)
+
+    if (tokenSessionVersion !== currentSessionVersion) {
+      return res.status(401).json({
+        ok: false,
+        code: 'SESSION_REVOKED',
+        error: 'This client session has been revoked. Please sign in again.',
       })
     }
 
@@ -1219,11 +1296,74 @@ function sanitizeClientProfile(user, profile) {
       user.email ||
       'Client',
     phone: profile.phone,
+    emergencyContactName: profile.emergency_contact_name,
+    emergencyContactPhone: profile.emergency_contact_phone,
     clientStatus: profile.client_status,
     portalStatus: user.status,
     clientVisibleNotes: profile.client_visible_notes || '',
     intakeCompletedAt: profile.intake_completed_at,
+    passwordChangedAt: user.password_changed_at,
+    lastLoginAt: user.last_login_at,
     createdAt: profile.created_at,
+    updatedAt: profile.updated_at,
+  }
+}
+
+const clientPortalProfileSchema = z.object({
+  firstName: z.string().trim().min(1, 'First name is required.').max(80),
+  lastName: z.string().trim().max(80).default(''),
+  phone: z.string().trim().max(40).default(''),
+  emergencyContactName: z.string().trim().max(120).default(''),
+  emergencyContactPhone: z.string().trim().max(40).default(''),
+})
+
+const clientPortalPasswordSchema = z
+  .object({
+    currentPassword: z.string().min(1, 'Current password is required.'),
+    newPassword: z
+      .string()
+      .min(12, 'New password must be at least 12 characters.')
+      .max(128, 'New password must be 128 characters or fewer.')
+      .regex(/[a-z]/, 'New password must include a lowercase letter.')
+      .regex(/[A-Z]/, 'New password must include an uppercase letter.')
+      .regex(/[0-9]/, 'New password must include a number.')
+      .regex(/[^A-Za-z0-9]/, 'New password must include a symbol.'),
+    confirmPassword: z.string().min(1, 'Please confirm the new password.'),
+  })
+  .refine((values) => values.newPassword === values.confirmPassword, {
+    message: 'New passwords do not match.',
+    path: ['confirmPassword'],
+  })
+
+async function writeClientPortalAuditLog(req, action, entityType, entityId, beforeData, afterData) {
+  try {
+    await pool.query(
+      `
+      INSERT INTO audit_logs (
+        actor_user_id,
+        action,
+        entity_type,
+        entity_id,
+        before_data,
+        after_data,
+        ip_address,
+        user_agent
+      )
+      VALUES ($1, $2, $3, $4, $5::jsonb, $6::jsonb, $7, $8)
+      `,
+      [
+        req.clientPortalUser?.id || null,
+        action,
+        entityType,
+        entityId || null,
+        JSON.stringify(beforeData || {}),
+        JSON.stringify(afterData || {}),
+        req.ip || null,
+        req.get('user-agent') || null,
+      ],
+    )
+  } catch {
+    // A client action should not fail only because the audit log is unavailable.
   }
 }
 
@@ -1232,6 +1372,24 @@ router.post('/client-portal/login', async (req, res, next) => {
     return res.status(503).json({
       ok: false,
       error: 'Database is not configured.',
+    })
+  }
+
+  let platformSettings
+
+  try {
+    platformSettings = await getPlatformSettings(pool)
+  } catch (error) {
+    return next(error)
+  }
+
+  if (platformSettings.maintenanceMode || platformSettings.clientLoginsPaused) {
+    return res.status(503).json({
+      ok: false,
+      code: 'CLIENT_LOGINS_PAUSED',
+      error: platformSettings.maintenanceMode
+        ? platformSettings.maintenanceMessage
+        : 'Client Portal sign-in is temporarily paused. Please try again later.',
     })
   }
 
@@ -1255,7 +1413,12 @@ router.post('/client-portal/login', async (req, res, next) => {
         email,
         password_hash,
         role,
-        status
+        status,
+        password_changed_at,
+        session_version,
+        last_login_at,
+        created_at,
+        updated_at
       FROM system_users
       WHERE lower(email) = lower($1)
         AND role = 'client'
@@ -1301,13 +1464,34 @@ router.post('/client-portal/login', async (req, res, next) => {
       })
     }
 
-    const token = signClientPortalToken(user)
+    const loginResult = await pool.query(
+      `
+      UPDATE system_users
+      SET last_login_at = now(),
+          updated_at = now()
+      WHERE id = $1
+      RETURNING
+        id,
+        email,
+        role,
+        status,
+        password_changed_at,
+        session_version,
+        last_login_at,
+        created_at,
+        updated_at
+      `,
+      [user.id],
+    )
+
+    const authenticatedUser = loginResult.rows[0] || user
+    const token = signClientPortalToken(authenticatedUser)
 
     res.cookie('pwc_client_token', token, getClientPortalCookieOptions())
 
     return res.json({
       ok: true,
-      client: sanitizeClientProfile(user, profile),
+      client: sanitizeClientProfile(authenticatedUser, profile),
     })
   } catch (error) {
     return next(error)
@@ -1362,19 +1546,45 @@ router.get('/client-portal/dashboard', requireClientPortalUser, async (req, res,
       `
       SELECT
         b.id,
+        b.appointment_type_id,
         b.status,
         b.starts_at,
         b.ends_at,
         b.timezone,
         b.guest_name,
         b.guest_email,
-        at.name AS appointment_type_name
+        b.cancellation_reason,
+        at.name AS appointment_type_name,
+        at.duration_minutes,
+        at.requires_approval
       FROM bookings b
       LEFT JOIN appointment_types at
         ON at.id = b.appointment_type_id
       WHERE b.client_profile_id = $1
       ORDER BY b.starts_at DESC
       LIMIT 20
+      `,
+      [profile.id],
+    )
+
+    const changeRequestsResult = await pool.query(
+      `
+      SELECT
+        id,
+        booking_id,
+        request_type,
+        requested_starts_at,
+        requested_ends_at,
+        reason,
+        status,
+        reviewer_notes,
+        reviewed_at,
+        created_at,
+        updated_at
+      FROM booking_change_requests
+      WHERE client_profile_id = $1
+      ORDER BY created_at DESC
+      LIMIT 50
       `,
       [profile.id],
     )
@@ -1396,6 +1606,7 @@ router.get('/client-portal/dashboard', requireClientPortalUser, async (req, res,
       visibleNotes,
       followUps,
       bookings: bookingsResult.rows,
+      bookingChangeRequests: changeRequestsResult.rows,
       stats: {
         serviceRecords: records.length,
         visibleNotes: visibleNotes.length,
@@ -1407,6 +1618,357 @@ router.get('/client-portal/dashboard', requireClientPortalUser, async (req, res,
     return next(error)
   }
 })
+
+
+// client-session-self-service-pass-21-start
+const clientPortalBookingSchema = z.object({
+  appointmentTypeId: z.string().uuid(),
+  startsAt: z.string().datetime(),
+  timezone: z.string().trim().min(1).default('America/New_York'),
+  intakeAnswers: z.record(z.any()).optional().default({}),
+})
+
+const clientPortalBookingChangeSchema = z
+  .object({
+    requestType: z.enum(['reschedule', 'cancel']),
+    startsAt: z.string().datetime().optional().nullable(),
+    reason: z.string().trim().min(3, 'Please share a short reason.').max(1000),
+  })
+  .superRefine((value, context) => {
+    if (value.requestType === 'reschedule' && !value.startsAt) {
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['startsAt'],
+        message: 'Choose a new session time.',
+      })
+    }
+  })
+
+async function getClientOwnedBooking(profileId, bookingId) {
+  const result = await pool.query(
+    `
+    SELECT
+      b.*,
+      at.name AS appointment_type_name,
+      at.duration_minutes,
+      at.buffer_before_minutes,
+      at.buffer_after_minutes,
+      at.requires_approval,
+      at.is_active AS appointment_type_active
+    FROM bookings b
+    LEFT JOIN appointment_types at ON at.id = b.appointment_type_id
+    WHERE b.id = $1
+      AND b.client_profile_id = $2
+    LIMIT 1
+    `,
+    [bookingId, profileId],
+  )
+
+  return result.rows[0] || null
+}
+
+router.post('/client-portal/bookings', requireClientPortalUser, async (req, res, next) => {
+  try {
+    const platformSettings = await getPlatformSettings(pool)
+
+    if (platformSettings.maintenanceMode || platformSettings.bookingsPaused) {
+      return res.status(503).json({
+        ok: false,
+        code: 'BOOKINGS_PAUSED',
+        error: platformSettings.maintenanceMode
+          ? platformSettings.maintenanceMessage
+          : 'New booking requests are temporarily paused. Please try again later.',
+      })
+    }
+
+    const parsed = clientPortalBookingSchema.safeParse(req.body)
+
+    if (!parsed.success) {
+      return res.status(400).json({
+        ok: false,
+        error: parsed.error.issues[0]?.message || 'Invalid session request.',
+      })
+    }
+
+    const input = parsed.data
+    const appointmentResult = await pool.query(
+      `
+      SELECT *
+      FROM appointment_types
+      WHERE id = $1
+        AND is_active = true
+      LIMIT 1
+      `,
+      [input.appointmentTypeId],
+    )
+    const appointmentType = appointmentResult.rows[0]
+
+    if (!appointmentType) {
+      return res.status(404).json({ ok: false, error: 'Session type is not available.' })
+    }
+
+    const startsAt = new Date(input.startsAt)
+
+    if (Number.isNaN(startsAt.getTime()) || startsAt.getTime() <= Date.now()) {
+      return res.status(400).json({ ok: false, error: 'Choose a future session time.' })
+    }
+
+    const slotAvailability = await isRequestedSlotAvailable({ pool, appointmentType, startsAt })
+
+    if (!slotAvailability.available) {
+      return res.status(409).json({
+        ok: false,
+        availabilityBlocked: true,
+        error: 'That time is no longer available. Please choose another option.',
+      })
+    }
+
+    const endsAt = new Date(
+      startsAt.getTime() + Number(appointmentType.duration_minutes || 60) * 60 * 1000,
+    )
+    const status = appointmentType.requires_approval ? 'requested' : 'confirmed'
+    const profile = req.clientProfile
+    const user = req.clientPortalUser
+    const guestName = [profile.first_name, profile.last_name].filter(Boolean).join(' ') || user.email
+
+    const inserted = await pool.query(
+      `
+      INSERT INTO bookings (
+        appointment_type_id,
+        client_profile_id,
+        guest_name,
+        guest_email,
+        guest_phone,
+        starts_at,
+        ends_at,
+        timezone,
+        status,
+        intake_answers
+      )
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10::jsonb)
+      RETURNING *
+      `,
+      [
+        appointmentType.id,
+        profile.id,
+        guestName,
+        user.email,
+        profile.phone || '',
+        startsAt.toISOString(),
+        endsAt.toISOString(),
+        input.timezone,
+        status,
+        JSON.stringify(input.intakeAnswers || {}),
+      ],
+    )
+
+    await writeClientPortalAuditLog(
+      req,
+      'client_booking_created',
+      'bookings',
+      inserted.rows[0].id,
+      {},
+      inserted.rows[0],
+    )
+
+    return res.status(201).json({
+      ok: true,
+      message: status === 'requested'
+        ? 'Your session request was sent for review.'
+        : 'Your session is confirmed.',
+      booking: {
+        ...inserted.rows[0],
+        appointment_type_name: appointmentType.name,
+      },
+    })
+  } catch (error) {
+    return next(error)
+  }
+})
+
+router.post(
+  '/client-portal/bookings/:bookingId/change-requests',
+  requireClientPortalUser,
+  async (req, res, next) => {
+    const dbClient = await pool.connect()
+
+    try {
+      const parsed = clientPortalBookingChangeSchema.safeParse(req.body)
+
+      if (!parsed.success) {
+        return res.status(400).json({
+          ok: false,
+          error: parsed.error.issues[0]?.message || 'Invalid session change request.',
+        })
+      }
+
+      const booking = await getClientOwnedBooking(
+        req.clientProfile.id,
+        req.params.bookingId,
+      )
+
+      if (!booking) {
+        return res.status(404).json({ ok: false, error: 'Session not found.' })
+      }
+
+      const status = String(booking.status || '').toLowerCase()
+      const startsAtTime = new Date(booking.starts_at).getTime()
+
+      if (
+        !['requested', 'approved', 'confirmed'].includes(status) ||
+        !Number.isFinite(startsAtTime) ||
+        startsAtTime <= Date.now()
+      ) {
+        return res.status(409).json({
+          ok: false,
+          error: 'This session can no longer be changed from the portal.',
+        })
+      }
+
+      const input = parsed.data
+      let requestedStartsAt = null
+      let requestedEndsAt = null
+
+      if (input.requestType === 'reschedule') {
+        if (!booking.appointment_type_id || !booking.appointment_type_active) {
+          return res.status(409).json({
+            ok: false,
+            error: 'This session type is not currently available for rescheduling.',
+          })
+        }
+
+        requestedStartsAt = new Date(input.startsAt)
+
+        if (
+          Number.isNaN(requestedStartsAt.getTime()) ||
+          requestedStartsAt.getTime() <= Date.now()
+        ) {
+          return res.status(400).json({ ok: false, error: 'Choose a future session time.' })
+        }
+
+        const slotAvailability = await isRequestedSlotAvailable({
+          pool,
+          appointmentType: booking,
+          startsAt: requestedStartsAt,
+        })
+
+        if (!slotAvailability.available) {
+          return res.status(409).json({
+            ok: false,
+            availabilityBlocked: true,
+            error: 'That replacement time is no longer available.',
+          })
+        }
+
+        requestedEndsAt = new Date(
+          requestedStartsAt.getTime() + Number(booking.duration_minutes || 60) * 60 * 1000,
+        )
+      }
+
+      await dbClient.query('BEGIN')
+
+      const existingPending = await dbClient.query(
+        `
+        SELECT id
+        FROM booking_change_requests
+        WHERE booking_id = $1
+          AND status = 'pending'
+        LIMIT 1
+        `,
+        [booking.id],
+      )
+
+      if (existingPending.rows.length > 0) {
+        await dbClient.query('ROLLBACK')
+        return res.status(409).json({
+          ok: false,
+          error: 'A change request for this session is already awaiting review.',
+        })
+      }
+
+      const autoApproveCancellation =
+        input.requestType === 'cancel' && status === 'requested'
+      const requestStatus = autoApproveCancellation ? 'approved' : 'pending'
+
+      const inserted = await dbClient.query(
+        `
+        INSERT INTO booking_change_requests (
+          booking_id,
+          client_profile_id,
+          request_type,
+          requested_starts_at,
+          requested_ends_at,
+          reason,
+          status,
+          reviewed_at
+        )
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+        RETURNING *
+        `,
+        [
+          booking.id,
+          req.clientProfile.id,
+          input.requestType,
+          requestedStartsAt?.toISOString() || null,
+          requestedEndsAt?.toISOString() || null,
+          input.reason,
+          requestStatus,
+          autoApproveCancellation ? new Date().toISOString() : null,
+        ],
+      )
+
+      if (autoApproveCancellation) {
+        await dbClient.query(
+          `
+          UPDATE bookings
+          SET status = 'cancelled',
+              cancellation_reason = $1,
+              updated_at = now()
+          WHERE id = $2
+          `,
+          [input.reason, booking.id],
+        )
+      }
+
+      await dbClient.query('COMMIT')
+
+      await writeClientPortalAuditLog(
+        req,
+        autoApproveCancellation
+          ? 'client_booking_cancelled'
+          : 'client_booking_change_requested',
+        'booking_change_requests',
+        inserted.rows[0].id,
+        { bookingId: booking.id, status: booking.status },
+        inserted.rows[0],
+      )
+
+      return res.status(201).json({
+        ok: true,
+        message: autoApproveCancellation
+          ? 'Your unconfirmed request was cancelled.'
+          : 'Your request was sent to Power Within for review.',
+        changeRequest: inserted.rows[0],
+        bookingStatus: autoApproveCancellation ? 'cancelled' : booking.status,
+      })
+    } catch (error) {
+      try { await dbClient.query('ROLLBACK') } catch {}
+
+      if (error?.code === '23505') {
+        return res.status(409).json({
+          ok: false,
+          error: 'A change request for this session is already awaiting review.',
+        })
+      }
+
+      return next(error)
+    } finally {
+      dbClient.release()
+    }
+  },
+)
+// client-session-self-service-pass-21-end
+
 // phase-3-9c-client-portal-auth-dashboard-end
 
 
@@ -1442,6 +2004,308 @@ router.get('/client-portal/resources', requireClientPortalUser, async (req, res,
   }
 })
 // phase-3-9d-client-portal-resources-public-end
+
+
+// client-portal-foundation-pass-13-start
+
+router.get('/client-portal/messages', requireClientPortalUser, async (req, res, next) => {
+  try {
+    const platformSettings = await getPlatformSettings(pool)
+
+    if (!platformSettings.featureFlags?.clientMessages) {
+      return res.json({
+        ok: true,
+        messages: [],
+        unreadCount: 0,
+        featureEnabled: false,
+      })
+    }
+
+    await publishDueEncouragements(pool)
+
+    const result = await pool.query(
+      `
+      SELECT
+        ep.id,
+        ep.title,
+        ep.body,
+        ep.visibility,
+        COALESCE(ep.published_at, ep.created_at) AS published_at,
+        ep.created_at,
+        er.read_at
+      FROM encouragement_posts ep
+      LEFT JOIN encouragement_recipients er
+        ON er.encouragement_post_id = ep.id
+       AND er.client_profile_id = $1
+      WHERE ep.status = 'published'
+        AND COALESCE(ep.published_at, ep.created_at) <= now()
+        AND (
+          ep.visibility = 'all_members'
+          OR er.client_profile_id = $1
+        )
+      ORDER BY COALESCE(ep.published_at, ep.created_at) DESC
+      LIMIT 100
+      `,
+      [req.clientProfile.id],
+    )
+
+    return res.json({
+      ok: true,
+      messages: result.rows,
+      unreadCount: result.rows.filter((message) => !message.read_at).length,
+      featureEnabled: true,
+    })
+  } catch (error) {
+    return next(error)
+  }
+})
+
+router.patch(
+  '/client-portal/messages/:messageId/read',
+  requireClientPortalUser,
+  async (req, res, next) => {
+    try {
+      const platformSettings = await getPlatformSettings(pool)
+
+      if (!platformSettings.featureFlags?.clientMessages) {
+        return res.status(404).json({
+          ok: false,
+          error: 'Messages are not currently available.',
+        })
+      }
+
+      await publishDueEncouragements(pool)
+
+      const messageId = String(req.params.messageId || '')
+
+      if (!z.string().uuid().safeParse(messageId).success) {
+        return res.status(400).json({
+          ok: false,
+          error: 'Invalid message.',
+        })
+      }
+
+      const visibleMessageResult = await pool.query(
+        `
+        SELECT ep.id
+        FROM encouragement_posts ep
+        LEFT JOIN encouragement_recipients er
+          ON er.encouragement_post_id = ep.id
+         AND er.client_profile_id = $2
+        WHERE ep.id = $1
+          AND ep.status = 'published'
+          AND COALESCE(ep.published_at, ep.created_at) <= now()
+          AND (
+            ep.visibility = 'all_members'
+            OR er.client_profile_id = $2
+          )
+        LIMIT 1
+        `,
+        [messageId, req.clientProfile.id],
+      )
+
+      if (!visibleMessageResult.rows[0]) {
+        return res.status(404).json({
+          ok: false,
+          error: 'Message not found.',
+        })
+      }
+
+      const result = await pool.query(
+        `
+        INSERT INTO encouragement_recipients (
+          encouragement_post_id,
+          client_profile_id,
+          read_at
+        )
+        VALUES ($1, $2, now())
+        ON CONFLICT (encouragement_post_id, client_profile_id)
+        DO UPDATE SET read_at = COALESCE(encouragement_recipients.read_at, EXCLUDED.read_at)
+        RETURNING read_at
+        `,
+        [messageId, req.clientProfile.id],
+      )
+
+      return res.json({
+        ok: true,
+        messageId,
+        readAt: result.rows[0]?.read_at || new Date().toISOString(),
+      })
+    } catch (error) {
+      return next(error)
+    }
+  },
+)
+
+router.patch('/client-portal/profile', requireClientPortalUser, async (req, res, next) => {
+  try {
+    const parsed = clientPortalProfileSchema.safeParse(req.body || {})
+
+    if (!parsed.success) {
+      return res.status(400).json({
+        ok: false,
+        error: parsed.error.issues[0]?.message || 'Please review your profile details.',
+      })
+    }
+
+    const beforeData = sanitizeClientProfile(req.clientPortalUser, req.clientProfile)
+    const values = parsed.data
+
+    const result = await pool.query(
+      `
+      UPDATE client_profiles
+      SET
+        first_name = $1,
+        last_name = NULLIF($2, ''),
+        phone = NULLIF($3, ''),
+        emergency_contact_name = NULLIF($4, ''),
+        emergency_contact_phone = NULLIF($5, ''),
+        updated_at = now()
+      WHERE id = $6
+      RETURNING *
+      `,
+      [
+        values.firstName,
+        values.lastName,
+        values.phone,
+        values.emergencyContactName,
+        values.emergencyContactPhone,
+        req.clientProfile.id,
+      ],
+    )
+
+    const updatedProfile = result.rows[0]
+
+    await writeClientPortalAuditLog(
+      req,
+      'client_portal_profile_updated',
+      'client_profiles',
+      req.clientProfile.id,
+      beforeData,
+      sanitizeClientProfile(req.clientPortalUser, updatedProfile),
+    )
+
+    return res.json({
+      ok: true,
+      message: 'Your profile details were saved.',
+      client: sanitizeClientProfile(req.clientPortalUser, updatedProfile),
+    })
+  } catch (error) {
+    return next(error)
+  }
+})
+
+router.post(
+  '/client-portal/change-password',
+  requireClientPortalUser,
+  async (req, res, next) => {
+    const bcrypt = require('bcryptjs')
+
+    try {
+      const parsed = clientPortalPasswordSchema.safeParse(req.body || {})
+
+      if (!parsed.success) {
+        return res.status(400).json({
+          ok: false,
+          error: parsed.error.issues[0]?.message || 'Please review your password.',
+        })
+      }
+
+      const userResult = await pool.query(
+        `
+        SELECT password_hash, session_version, email, role, status
+        FROM system_users
+        WHERE id = $1
+          AND role = 'client'
+          AND status = 'active'
+        LIMIT 1
+        `,
+        [req.clientPortalUser.id],
+      )
+
+      const user = userResult.rows[0]
+
+      if (!user) {
+        return res.status(401).json({
+          ok: false,
+          error: 'Client portal login required.',
+        })
+      }
+
+      const currentPasswordMatches = await bcrypt.compare(
+        parsed.data.currentPassword,
+        user.password_hash,
+      )
+
+      if (!currentPasswordMatches) {
+        return res.status(400).json({
+          ok: false,
+          error: 'Your current password is not correct.',
+        })
+      }
+
+      const passwordIsUnchanged = await bcrypt.compare(
+        parsed.data.newPassword,
+        user.password_hash,
+      )
+
+      if (passwordIsUnchanged) {
+        return res.status(400).json({
+          ok: false,
+          error: 'Choose a new password that is different from your current password.',
+        })
+      }
+
+      const passwordHash = await bcrypt.hash(parsed.data.newPassword, 12)
+
+      const result = await pool.query(
+        `
+        UPDATE system_users
+        SET
+          password_hash = $1,
+          password_changed_at = now(),
+          session_version = COALESCE(session_version, 1) + 1,
+          updated_at = now()
+        WHERE id = $2
+        RETURNING password_changed_at, session_version, email, role, status
+        `,
+        [passwordHash, req.clientPortalUser.id],
+      )
+
+      const refreshedUser = {
+        ...req.clientPortalUser,
+        ...result.rows[0],
+      }
+
+      res.cookie(
+        'pwc_client_token',
+        signClientPortalToken(refreshedUser),
+        getClientPortalCookieOptions(),
+      )
+
+      await writeClientPortalAuditLog(
+        req,
+        'client_portal_password_changed',
+        'system_users',
+        req.clientPortalUser.id,
+        {},
+        {
+          passwordChangedAt: result.rows[0]?.password_changed_at || null,
+        },
+      )
+
+      return res.json({
+        ok: true,
+        message: 'Your password was changed successfully.',
+        passwordChangedAt: result.rows[0]?.password_changed_at || null,
+      })
+    } catch (error) {
+      return next(error)
+    }
+  },
+)
+
+// client-portal-foundation-pass-13-end
 
 
 
@@ -1743,8 +2607,877 @@ router.post('/contact-inquiries', async (req, res, next) => {
   }
 })
 
+// learning-library-pass-18-public-start
+const clientLearningProgressSchema = z.object({
+  completed: z.boolean().optional().default(false),
+  notes: z.string().trim().max(5000).optional().default(''),
+})
+
+router.get('/client-portal/learning', requireClientPortalUser, async (req, res, next) => {
+  try {
+    const settings = await getPlatformSettings(pool)
+
+    if (!settings.featureFlags?.courses) {
+      return res.json({
+        ok: true,
+        featureEnabled: false,
+        courses: [],
+      })
+    }
+
+    const courses = await listClientCourses(req.clientProfile.id, pool)
+
+    return res.json({
+      ok: true,
+      featureEnabled: true,
+      courses,
+    })
+  } catch (error) {
+    return next(error)
+  }
+})
+
+router.get('/client-portal/learning/:courseId', requireClientPortalUser, async (req, res, next) => {
+  try {
+    const settings = await getPlatformSettings(pool)
+
+    if (!settings.featureFlags?.courses) {
+      return res.status(404).json({
+        ok: false,
+        error: 'The Learning Library is not available right now.',
+      })
+    }
+
+    const canAccess = await clientCanAccessCourse(
+      req.params.courseId,
+      req.clientProfile.id,
+      pool,
+    )
+
+    if (!canAccess) {
+      return res.status(404).json({
+        ok: false,
+        error: 'This learning program is not available in your portal.',
+      })
+    }
+
+    const course = await getCourseTree(
+      req.params.courseId,
+      {
+        publishedOnly: true,
+        clientProfileId: req.clientProfile.id,
+      },
+      pool,
+    )
+
+    return res.json({ ok: true, course })
+  } catch (error) {
+    return next(error)
+  }
+})
+
+router.patch(
+  '/client-portal/learning/lessons/:lessonId/progress',
+  requireClientPortalUser,
+  async (req, res, next) => {
+    const parsed = clientLearningProgressSchema.safeParse(req.body)
+
+    if (!parsed.success) {
+      return res.status(400).json({
+        ok: false,
+        error: parsed.error.issues[0]?.message || 'Please check your lesson progress.',
+      })
+    }
+
+    try {
+      const lessonResult = await pool.query(
+        `
+        SELECT
+          cl.id,
+          cl.title,
+          cm.course_id
+        FROM course_lessons cl
+        JOIN course_modules cm ON cm.id = cl.module_id
+        WHERE cl.id = $1
+          AND cl.status = 'published'
+          AND cm.status = 'published'
+        LIMIT 1
+        `,
+        [req.params.lessonId],
+      )
+
+      const lesson = lessonResult.rows[0]
+
+      if (!lesson) {
+        return res.status(404).json({ ok: false, error: 'Lesson not found.' })
+      }
+
+      const canAccess = await clientCanAccessCourse(
+        lesson.course_id,
+        req.clientProfile.id,
+        pool,
+      )
+
+      if (!canAccess) {
+        return res.status(403).json({
+          ok: false,
+          error: 'This lesson is not available in your portal.',
+        })
+      }
+
+      const result = await pool.query(
+        `
+        INSERT INTO lesson_progress (
+          lesson_id,
+          client_profile_id,
+          completed_at,
+          last_viewed_at,
+          notes,
+          updated_at
+        )
+        VALUES (
+          $1,
+          $2,
+          CASE WHEN $3 THEN now() ELSE NULL END,
+          now(),
+          $4,
+          now()
+        )
+        ON CONFLICT (lesson_id, client_profile_id)
+        DO UPDATE SET
+          completed_at = CASE WHEN $3 THEN COALESCE(lesson_progress.completed_at, now()) ELSE NULL END,
+          last_viewed_at = now(),
+          notes = EXCLUDED.notes,
+          updated_at = now()
+        RETURNING *
+        `,
+        [
+          lesson.id,
+          req.clientProfile.id,
+          parsed.data.completed,
+          parsed.data.notes || null,
+        ],
+      )
+
+      return res.json({
+        ok: true,
+        message: parsed.data.completed
+          ? 'Lesson marked complete.'
+          : 'Lesson progress updated.',
+        progress: result.rows[0],
+      })
+    } catch (error) {
+      return next(error)
+    }
+  },
+)
+// learning-library-pass-18-public-end
+
+
+// membership-circle-pass-19-public-start
+router.get('/client-portal/memberships', requireClientPortalUser, async (req, res, next) => {
+  try {
+    const settings = await getPlatformSettings(pool)
+
+    if (!settings.featureFlags?.memberships) {
+      return res.json({
+        ok: true,
+        memberships: [],
+        featureEnabled: false,
+      })
+    }
+
+    const memberships = await listClientMemberships(req.clientProfile.id, pool)
+
+    return res.json({
+      ok: true,
+      memberships,
+      featureEnabled: true,
+    })
+  } catch (error) {
+    return next(error)
+  }
+})
+// membership-circle-pass-19-public-end
+
+
+// the-circle-community-pass-20-public-start
+const circleClientCommentSchema = z.object({
+  body: z.string().trim().min(1, 'Write a comment before posting.').max(1500),
+})
+const circleClientReactionSchema = z.object({
+  reactionType: z.enum(['heart', 'celebrate', 'support']).nullable(),
+})
+const circleClientReportSchema = z.object({
+  postId: z.string().uuid().optional(),
+  commentId: z.string().uuid().optional(),
+  reason: z.enum(['privacy', 'harassment', 'spam', 'misinformation', 'other']),
+  details: z.string().trim().max(1000).optional().default(''),
+}).refine((value) => value.postId || value.commentId, {
+  message: 'Choose a post or comment to report.',
+})
+
+async function requireCircleFeatureAndMembership(req, res, next) {
+  try {
+    const settings = await getPlatformSettings(pool)
+    if (!settings.featureFlags?.circleCommunity) {
+      return res.status(403).json({
+        ok: false,
+        code: 'CIRCLE_DISABLED',
+        error: 'The Circle is taking a quiet pause right now.',
+      })
+    }
+
+    const activeMembershipResult = await pool.query(
+      `
+      SELECT 1
+      FROM membership_enrollments me
+      JOIN memberships m ON m.id = me.membership_id
+      WHERE me.client_profile_id = $1
+        AND me.status = 'active'
+        AND m.status = 'active'
+        AND (me.started_at IS NULL OR me.started_at <= now())
+        AND (me.ends_at IS NULL OR me.ends_at > now())
+      LIMIT 1
+      `,
+      [req.clientProfile.id],
+    )
+
+    if (!activeMembershipResult.rows[0]) {
+      return res.status(403).json({
+        ok: false,
+        code: 'MEMBERSHIP_REQUIRED',
+        error: 'The Circle is available to active members.',
+      })
+    }
+
+    return next()
+  } catch (error) {
+    return next(error)
+  }
+}
+
+router.get(
+  '/client-portal/circle',
+  requireClientPortalUser,
+  async (req, res, next) => {
+    try {
+      const settings = await getPlatformSettings(pool)
+      if (!settings.featureFlags?.circleCommunity) {
+        return res.json({
+          ok: true,
+          featureEnabled: false,
+          hasMembershipAccess: false,
+          memberships: [],
+          posts: [],
+        })
+      }
+
+      const feed = await listClientCircleFeed(
+        req.clientProfile.id,
+        req.clientPortalUser.id,
+        pool,
+      )
+
+      return res.json({
+        ok: true,
+        featureEnabled: true,
+        hasMembershipAccess: feed.memberships.length > 0,
+        memberships: feed.memberships,
+        posts: feed.posts,
+      })
+    } catch (error) {
+      return next(error)
+    }
+  },
+)
+
+router.post(
+  '/client-portal/circle/posts/:postId/comments',
+  requireClientPortalUser,
+  requireCircleFeatureAndMembership,
+  async (req, res, next) => {
+    const parsed = circleClientCommentSchema.safeParse(req.body)
+    if (!parsed.success) {
+      return res.status(400).json({ ok: false, error: parsed.error.issues[0]?.message || 'Please check your comment.' })
+    }
+
+    try {
+      const canAccess = await clientCanAccessCirclePost(
+        req.params.postId,
+        req.clientProfile.id,
+        pool,
+      )
+      if (!canAccess) return res.status(404).json({ ok: false, error: 'This Circle post is not available.' })
+
+      const postResult = await pool.query(
+        'SELECT comments_enabled FROM circle_posts WHERE id = $1 LIMIT 1',
+        [req.params.postId],
+      )
+      if (!postResult.rows[0]?.comments_enabled) {
+        return res.status(409).json({ ok: false, error: 'Comments are closed for this post.' })
+      }
+
+      const result = await pool.query(
+        `
+        INSERT INTO circle_comments (post_id, author_user_id, body)
+        VALUES ($1, $2, $3)
+        RETURNING *
+        `,
+        [req.params.postId, req.clientPortalUser.id, parsed.data.body],
+      )
+      const comment = result.rows[0]
+      await writeClientPortalAuditLog(req, 'circle_comment_created', 'circle_comments', comment.id, {}, {
+        postId: req.params.postId,
+        commentId: comment.id,
+      })
+      return res.status(201).json({ ok: true, message: 'Your comment was added.', comment })
+    } catch (error) {
+      return next(error)
+    }
+  },
+)
+
+router.delete(
+  '/client-portal/circle/comments/:commentId',
+  requireClientPortalUser,
+  requireCircleFeatureAndMembership,
+  async (req, res, next) => {
+    try {
+      const result = await pool.query(
+        `
+        UPDATE circle_comments
+        SET status = 'deleted', body = '[Comment removed by member]', updated_at = now()
+        WHERE id = $1 AND author_user_id = $2 AND status = 'active'
+        RETURNING *
+        `,
+        [req.params.commentId, req.clientPortalUser.id],
+      )
+      const comment = result.rows[0]
+      if (!comment) return res.status(404).json({ ok: false, error: 'Your comment could not be found.' })
+      await writeClientPortalAuditLog(req, 'circle_comment_deleted_by_author', 'circle_comments', comment.id, {}, { commentId: comment.id })
+      return res.json({ ok: true, message: 'Your comment was removed.' })
+    } catch (error) {
+      return next(error)
+    }
+  },
+)
+
+router.post(
+  '/client-portal/circle/posts/:postId/reaction',
+  requireClientPortalUser,
+  requireCircleFeatureAndMembership,
+  async (req, res, next) => {
+    const parsed = circleClientReactionSchema.safeParse(req.body)
+    if (!parsed.success) return res.status(400).json({ ok: false, error: 'Choose a valid reaction.' })
+
+    try {
+      const canAccess = await clientCanAccessCirclePost(req.params.postId, req.clientProfile.id, pool)
+      if (!canAccess) return res.status(404).json({ ok: false, error: 'This Circle post is not available.' })
+
+      const postResult = await pool.query('SELECT reactions_enabled FROM circle_posts WHERE id = $1 LIMIT 1', [req.params.postId])
+      if (!postResult.rows[0]?.reactions_enabled) {
+        return res.status(409).json({ ok: false, error: 'Reactions are closed for this post.' })
+      }
+
+      if (!parsed.data.reactionType) {
+        await pool.query('DELETE FROM circle_reactions WHERE post_id = $1 AND user_id = $2', [req.params.postId, req.clientPortalUser.id])
+      } else {
+        await pool.query(
+          `
+          INSERT INTO circle_reactions (post_id, user_id, reaction_type)
+          VALUES ($1, $2, $3)
+          ON CONFLICT (post_id, user_id)
+          DO UPDATE SET reaction_type = EXCLUDED.reaction_type, created_at = now()
+          `,
+          [req.params.postId, req.clientPortalUser.id, parsed.data.reactionType],
+        )
+      }
+
+      await writeClientPortalAuditLog(req, 'circle_reaction_changed', 'circle_posts', req.params.postId, {}, {
+        reactionType: parsed.data.reactionType,
+      })
+      return res.json({ ok: true, message: parsed.data.reactionType ? 'Reaction saved.' : 'Reaction removed.' })
+    } catch (error) {
+      return next(error)
+    }
+  },
+)
+
+router.post(
+  '/client-portal/circle/reports',
+  requireClientPortalUser,
+  requireCircleFeatureAndMembership,
+  async (req, res, next) => {
+    const parsed = circleClientReportSchema.safeParse(req.body)
+    if (!parsed.success) return res.status(400).json({ ok: false, error: parsed.error.issues[0]?.message || 'Please check the report.' })
+
+    try {
+      let postId = parsed.data.postId || null
+      if (parsed.data.commentId) {
+        const commentResult = await pool.query('SELECT post_id FROM circle_comments WHERE id = $1 LIMIT 1', [parsed.data.commentId])
+        if (!commentResult.rows[0]) return res.status(404).json({ ok: false, error: 'Comment not found.' })
+        postId = commentResult.rows[0].post_id
+      }
+
+      const canAccess = await clientCanAccessCirclePost(postId, req.clientProfile.id, pool)
+      if (!canAccess) return res.status(404).json({ ok: false, error: 'This Circle content is not available.' })
+
+      const result = await pool.query(
+        `
+        INSERT INTO circle_reports (
+          post_id,
+          comment_id,
+          reporter_user_id,
+          reason,
+          details
+        )
+        VALUES ($1, $2, $3, $4, $5)
+        RETURNING *
+        `,
+        [postId, parsed.data.commentId || null, req.clientPortalUser.id, parsed.data.reason, parsed.data.details || null],
+      )
+      const report = result.rows[0]
+      await writeClientPortalAuditLog(req, 'circle_content_reported', 'circle_reports', report.id, {}, {
+        postId,
+        commentId: parsed.data.commentId || null,
+        reason: parsed.data.reason,
+      })
+      return res.status(201).json({ ok: true, message: 'Thank you. Power Within will review this privately.' })
+    } catch (error) {
+      return next(error)
+    }
+  },
+)
+// the-circle-community-pass-20-public-end
+
+
+// secure-client-inbox-pass-22-public-start
+const clientInboxAttachmentSchema = {
+  attachmentUrl: z.string().trim().url('Attachment link must be a valid URL.').max(2000).optional().or(z.literal('')),
+  attachmentLabel: z.string().trim().max(160).optional().default(''),
+}
+
+const clientInboxCreateSchema = z.object({
+  subject: z.string().trim().min(1, 'Add a subject.').max(180),
+  body: z.string().trim().min(1, 'Write your message.').max(10000),
+  ...clientInboxAttachmentSchema,
+})
+
+const clientInboxReplySchema = z.object({
+  body: z.string().trim().min(1, 'Write your reply.').max(10000),
+  ...clientInboxAttachmentSchema,
+})
+
+const clientInboxStatusSchema = z.object({
+  status: z.enum(['open', 'closed']),
+})
+
+async function requireSecureClientInbox(req, res, next) {
+  try {
+    const settings = await getPlatformSettings(pool)
+    if (settings.featureFlags?.secureClientInbox === false) {
+      return res.status(503).json({
+        ok: false,
+        code: 'SECURE_INBOX_DISABLED',
+        error: 'Private messaging is temporarily unavailable.',
+      })
+    }
+    return next()
+  } catch (error) {
+    return next(error)
+  }
+}
+
+async function getClientInboxConversation(conversationId, clientProfileId, db = pool) {
+  const conversationResult = await db.query(
+    `
+    SELECT
+      cc.id,
+      cc.subject,
+      cc.status,
+      cc.priority,
+      cc.last_message_at,
+      cc.closed_at,
+      cc.created_at,
+      cc.updated_at,
+      assignee.role AS assigned_role
+    FROM client_conversations cc
+    LEFT JOIN system_users assignee ON assignee.id = cc.assigned_user_id
+    WHERE cc.id = $1
+      AND cc.client_profile_id = $2
+    LIMIT 1
+    `,
+    [conversationId, clientProfileId],
+  )
+
+  const conversation = conversationResult.rows[0]
+  if (!conversation) return null
+
+  const messagesResult = await db.query(
+    `
+    SELECT
+      ccm.id,
+      ccm.body,
+      ccm.attachment_url,
+      ccm.attachment_label,
+      ccm.sender_role,
+      ccm.read_by_client_at,
+      ccm.created_at,
+      CASE
+        WHEN ccm.sender_role = 'client' THEN 'You'
+        WHEN ccm.sender_role = 'owner' THEN 'Kim · Power Within'
+        ELSE 'Power Within Team'
+      END AS sender_name
+    FROM client_conversation_messages ccm
+    WHERE ccm.conversation_id = $1
+      AND ccm.is_internal_note = FALSE
+    ORDER BY ccm.created_at ASC
+    `,
+    [conversationId],
+  )
+
+  return { ...conversation, messages: messagesResult.rows }
+}
+
+router.get(
+  '/client-portal/inbox',
+  requireClientPortalUser,
+  requireSecureClientInbox,
+  async (req, res, next) => {
+    try {
+      const result = await pool.query(
+        `
+        SELECT
+          cc.id,
+          cc.subject,
+          cc.status,
+          cc.priority,
+          cc.last_message_at,
+          cc.closed_at,
+          cc.created_at,
+          cc.updated_at,
+          COALESCE(counts.message_count, 0)::int AS message_count,
+          COALESCE(counts.unread_client_count, 0)::int AS unread_client_count,
+          latest.body AS latest_message,
+          latest.sender_role AS latest_sender_role
+        FROM client_conversations cc
+        LEFT JOIN LATERAL (
+          SELECT
+            COUNT(*) FILTER (WHERE is_internal_note = FALSE)::int AS message_count,
+            COUNT(*) FILTER (
+              WHERE sender_role <> 'client'
+                AND is_internal_note = FALSE
+                AND read_by_client_at IS NULL
+            )::int AS unread_client_count
+          FROM client_conversation_messages
+          WHERE conversation_id = cc.id
+        ) counts ON true
+        LEFT JOIN LATERAL (
+          SELECT body, sender_role
+          FROM client_conversation_messages
+          WHERE conversation_id = cc.id
+            AND is_internal_note = FALSE
+          ORDER BY created_at DESC
+          LIMIT 1
+        ) latest ON true
+        WHERE cc.client_profile_id = $1
+        ORDER BY cc.last_message_at DESC
+        LIMIT 100
+        `,
+        [req.clientProfile.id],
+      )
+
+      const unreadCount = result.rows.reduce(
+        (total, conversation) => total + Number(conversation.unread_client_count || 0),
+        0,
+      )
+
+      return res.json({
+        ok: true,
+        conversations: result.rows,
+        unreadCount,
+      })
+    } catch (error) {
+      return next(error)
+    }
+  },
+)
+
+router.get(
+  '/client-portal/inbox/:conversationId',
+  requireClientPortalUser,
+  requireSecureClientInbox,
+  async (req, res, next) => {
+    try {
+      const conversation = await getClientInboxConversation(
+        req.params.conversationId,
+        req.clientProfile.id,
+      )
+      if (!conversation) {
+        return res.status(404).json({ ok: false, error: 'Conversation not found.' })
+      }
+
+      await pool.query(
+        `
+        UPDATE client_conversation_messages
+        SET read_by_client_at = COALESCE(read_by_client_at, now())
+        WHERE conversation_id = $1
+          AND sender_role <> 'client'
+          AND is_internal_note = FALSE
+          AND read_by_client_at IS NULL
+        `,
+        [conversation.id],
+      )
+
+      return res.json({
+        ok: true,
+        conversation: await getClientInboxConversation(
+          conversation.id,
+          req.clientProfile.id,
+        ),
+      })
+    } catch (error) {
+      return next(error)
+    }
+  },
+)
+
+router.post(
+  '/client-portal/inbox',
+  requireClientPortalUser,
+  requireSecureClientInbox,
+  async (req, res, next) => {
+    const parsed = clientInboxCreateSchema.safeParse(req.body)
+    if (!parsed.success) {
+      return res.status(400).json({
+        ok: false,
+        error: parsed.error.issues[0]?.message || 'Please check your message.',
+      })
+    }
+
+    const db = await pool.connect()
+    try {
+      await db.query('BEGIN')
+      const conversationResult = await db.query(
+        `
+        INSERT INTO client_conversations (
+          client_profile_id,
+          subject,
+          status,
+          priority,
+          created_by_user_id
+        )
+        VALUES ($1, $2, 'waiting_on_team', 'normal', $3)
+        RETURNING *
+        `,
+        [req.clientProfile.id, parsed.data.subject, req.clientPortalUser.id],
+      )
+      const conversation = conversationResult.rows[0]
+
+      await db.query(
+        `
+        INSERT INTO client_conversation_messages (
+          conversation_id,
+          sender_user_id,
+          sender_role,
+          body,
+          attachment_url,
+          attachment_label,
+          read_by_client_at
+        )
+        VALUES ($1, $2, 'client', $3, $4, $5, now())
+        `,
+        [
+          conversation.id,
+          req.clientPortalUser.id,
+          parsed.data.body,
+          parsed.data.attachmentUrl || null,
+          parsed.data.attachmentLabel || null,
+        ],
+      )
+
+      await db.query('COMMIT')
+      await writeClientPortalAuditLog(
+        req,
+        'client_conversation_created',
+        'client_conversations',
+        conversation.id,
+        {},
+        { subject: conversation.subject },
+      )
+
+      return res.status(201).json({
+        ok: true,
+        message: 'Your private message was sent to Power Within.',
+        conversation: await getClientInboxConversation(
+          conversation.id,
+          req.clientProfile.id,
+        ),
+      })
+    } catch (error) {
+      await db.query('ROLLBACK')
+      return next(error)
+    } finally {
+      db.release()
+    }
+  },
+)
+
+router.post(
+  '/client-portal/inbox/:conversationId/messages',
+  requireClientPortalUser,
+  requireSecureClientInbox,
+  async (req, res, next) => {
+    const parsed = clientInboxReplySchema.safeParse(req.body)
+    if (!parsed.success) {
+      return res.status(400).json({
+        ok: false,
+        error: parsed.error.issues[0]?.message || 'Please check your reply.',
+      })
+    }
+
+    const db = await pool.connect()
+    try {
+      await db.query('BEGIN')
+      const conversationResult = await db.query(
+        `
+        SELECT *
+        FROM client_conversations
+        WHERE id = $1
+          AND client_profile_id = $2
+        FOR UPDATE
+        `,
+        [req.params.conversationId, req.clientProfile.id],
+      )
+      const conversation = conversationResult.rows[0]
+      if (!conversation) {
+        await db.query('ROLLBACK')
+        return res.status(404).json({ ok: false, error: 'Conversation not found.' })
+      }
+
+      const messageResult = await db.query(
+        `
+        INSERT INTO client_conversation_messages (
+          conversation_id,
+          sender_user_id,
+          sender_role,
+          body,
+          attachment_url,
+          attachment_label,
+          read_by_client_at
+        )
+        VALUES ($1, $2, 'client', $3, $4, $5, now())
+        RETURNING id
+        `,
+        [
+          conversation.id,
+          req.clientPortalUser.id,
+          parsed.data.body,
+          parsed.data.attachmentUrl || null,
+          parsed.data.attachmentLabel || null,
+        ],
+      )
+
+      await db.query(
+        `
+        UPDATE client_conversations
+        SET
+          status = 'waiting_on_team',
+          closed_at = NULL,
+          last_message_at = now(),
+          updated_at = now()
+        WHERE id = $1
+        `,
+        [conversation.id],
+      )
+
+      await db.query('COMMIT')
+      await writeClientPortalAuditLog(
+        req,
+        'client_conversation_reply_sent',
+        'client_conversations',
+        conversation.id,
+        {},
+        { messageId: messageResult.rows[0].id },
+      )
+
+      return res.status(201).json({
+        ok: true,
+        message: 'Your reply was sent.',
+        conversation: await getClientInboxConversation(
+          conversation.id,
+          req.clientProfile.id,
+        ),
+      })
+    } catch (error) {
+      await db.query('ROLLBACK')
+      return next(error)
+    } finally {
+      db.release()
+    }
+  },
+)
+
+router.patch(
+  '/client-portal/inbox/:conversationId',
+  requireClientPortalUser,
+  requireSecureClientInbox,
+  async (req, res, next) => {
+    const parsed = clientInboxStatusSchema.safeParse(req.body)
+    if (!parsed.success) {
+      return res.status(400).json({ ok: false, error: 'Choose open or closed.' })
+    }
+
+    try {
+      const beforeResult = await pool.query(
+        `
+        SELECT *
+        FROM client_conversations
+        WHERE id = $1
+          AND client_profile_id = $2
+        LIMIT 1
+        `,
+        [req.params.conversationId, req.clientProfile.id],
+      )
+      const before = beforeResult.rows[0]
+      if (!before) return res.status(404).json({ ok: false, error: 'Conversation not found.' })
+
+      const nextStatus = parsed.data.status === 'closed' ? 'closed' : 'waiting_on_team'
+      const result = await pool.query(
+        `
+        UPDATE client_conversations
+        SET
+          status = $3,
+          closed_at = CASE WHEN $3 = 'closed' THEN now() ELSE NULL END,
+          updated_at = now()
+        WHERE id = $1
+          AND client_profile_id = $2
+        RETURNING *
+        `,
+        [before.id, req.clientProfile.id, nextStatus],
+      )
+
+      await writeClientPortalAuditLog(
+        req,
+        nextStatus === 'closed' ? 'client_conversation_closed_by_client' : 'client_conversation_reopened_by_client',
+        'client_conversations',
+        before.id,
+        before,
+        result.rows[0],
+      )
+
+      return res.json({
+        ok: true,
+        message: nextStatus === 'closed' ? 'Conversation closed.' : 'Conversation reopened.',
+        conversation: await getClientInboxConversation(before.id, req.clientProfile.id),
+      })
+    } catch (error) {
+      return next(error)
+    }
+  },
+)
+// secure-client-inbox-pass-22-public-end
+
+
 module.exports = router
-
-
-
-

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
+import FounderDeveloperBanner from '../../components/admin/FounderDeveloperBanner'
 import {
   getAdminFounderAvailability,
   logoutAdmin,
@@ -599,6 +600,7 @@ export default function AdminFounderAvailability() {
 
   return (
     <main className="founder-hours">
+      <FounderDeveloperBanner />
       <header className="founder-hours__header">
         <Link to="/admin/founders-view" className="founder-hours__brand">
           <span aria-hidden="true" />
