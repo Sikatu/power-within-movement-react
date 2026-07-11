@@ -674,6 +674,33 @@ export async function updateDeveloperTeamAssignments(userId, assignments) {
 }
 // staff-team-management-pass-26-api-end
 
+// client-360-pass-27-api-start
+export async function getAdminClient360(clientId) {
+  return apiRequest(`/api/admin/clients/${clientId}/360`)
+}
+
+export async function updateAdminClientCarePlan(clientId, payload) {
+  return apiRequest(`/api/admin/clients/${clientId}/care-plan`, {
+    method: 'PATCH',
+    body: JSON.stringify(payload),
+  })
+}
+
+export async function createAdminClientCareAction(clientId, payload) {
+  return apiRequest(`/api/admin/clients/${clientId}/care-actions`, {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  })
+}
+
+export async function updateAdminClientCareAction(clientId, actionId, payload) {
+  return apiRequest(`/api/admin/clients/${clientId}/care-actions/${actionId}`, {
+    method: 'PATCH',
+    body: JSON.stringify(payload),
+  })
+}
+// client-360-pass-27-api-end
+
 // learning-library-pass-18-api-start
 export async function getAdminLearningLibrary() {
   return apiRequest('/api/admin/learning-library')

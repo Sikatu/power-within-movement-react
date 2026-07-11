@@ -61,11 +61,19 @@ const {
   FULL_ACCESS: TEAM_FULL_ACCESS,
   PERMISSION_MODULES: TEAM_PERMISSION_MODULES,
   TEMPLATE_PERMISSIONS: TEAM_TEMPLATE_PERMISSIONS,
+  enforceTeamClientAssignment,
   enforceTeamPermission,
   getTeamAccessForUser,
   normalizePermissions: normalizeTeamPermissions,
   permissionsFromRow: teamPermissionsFromRow,
 } = require('../services/teamManagement.service')
+const {
+  clientExists: client360ClientExists,
+  createClientCareAction,
+  getClient360Snapshot,
+  saveClientCarePlan,
+  updateClientCareAction,
+} = require('../services/client360.service')
 
 const router = express.Router()
 
@@ -73,6 +81,7 @@ const requireAdmin = [
   requireAuth,
   requireRole(['developer', 'owner', 'admin', 'staff']),
   enforceTeamPermission,
+  enforceTeamClientAssignment,
 ]
 
 const requireDeveloper = [
@@ -221,7 +230,7 @@ function attachPublicInquiryEmail(client) {
   }
 }
 
-async function getClients() {
+async function getClients(teamUserId = null) {
   const result = await pool.query(
     `
     SELECT
@@ -258,6 +267,15 @@ async function getClients() {
       ON ctl.client_profile_id = cp.id
     LEFT JOIN client_tags ct
       ON ct.id = ctl.client_tag_id
+    WHERE (
+      $1::uuid IS NULL
+      OR EXISTS (
+        SELECT 1
+        FROM team_client_assignments tca
+        WHERE tca.team_user_id = $1
+          AND tca.client_profile_id = cp.id
+      )
+    )
     GROUP BY
       cp.id,
       su.email,
@@ -266,6 +284,7 @@ async function getClients() {
     ORDER BY cp.created_at DESC
     LIMIT 100
     `,
+    [teamUserId],
   )
   return result.rows.map(attachPublicInquiryEmail)
 }
@@ -417,7 +436,8 @@ router.get('/clients', requireAdmin, async (req, res, next) => {
       })
     }
 
-        const clients = (await getClients()).map(attachAdminClientDisplayEmailV2)
+        const clients = (await getClients(req.user.role === 'staff' ? req.user.id : null))
+      .map(attachAdminClientDisplayEmailV2)
 
     res.json({
       ok: true,
@@ -541,6 +561,22 @@ router.post('/clients', requireAdmin, async (req, res, next) => {
 
     const profile = insertedProfile.rows[0]
 
+    if (req.user.role === 'staff') {
+      await dbClient.query(
+        `
+        INSERT INTO team_client_assignments (
+          team_user_id,
+          client_profile_id,
+          assignment_role,
+          assigned_by_user_id
+        )
+        VALUES ($1, $2, 'primary', $1)
+        ON CONFLICT (team_user_id, client_profile_id) DO NOTHING
+        `,
+        [req.user.id, profile.id],
+      )
+    }
+
     await dbClient.query(
       `
       INSERT INTO audit_logs (
@@ -566,7 +602,7 @@ router.post('/clients', requireAdmin, async (req, res, next) => {
 
     await dbClient.query('COMMIT')
 
-    const clients = await getClients()
+    const clients = await getClients(req.user.role === 'staff' ? req.user.id : null)
     const client = await getClientById(profile.id)
 
     res.status(201).json({
@@ -676,7 +712,7 @@ router.patch('/clients/:clientId', requireAdmin, async (req, res, next) => {
     await dbClient.query('COMMIT')
 
     const client = await getClientById(profile.id)
-    const clients = await getClients()
+    const clients = await getClients(req.user.role === 'staff' ? req.user.id : null)
 
     res.json({
       ok: true,
@@ -2598,6 +2634,226 @@ router.patch('/service-records/:serviceRecordId', requireAdmin, async (req, res,
   }
 })
 // phase-3-7-service-records-end
+
+// client-360-pass-27-start
+const clientCarePlanSchema = z.object({
+  journeyStage: z.enum(['onboarding', 'clarity', 'active_work', 'integration', 'maintenance', 'complete']),
+  careStatus: z.enum(['not_started', 'on_track', 'attention', 'paused', 'completed']),
+  primaryGoal: z.string().trim().max(2000).optional().default(''),
+  transformationFocus: z.string().trim().max(4000).optional().default(''),
+  successDefinition: z.string().trim().max(4000).optional().default(''),
+  clientVisibleFocus: z.string().trim().max(4000).optional().default(''),
+  privateStrategyNotes: z.string().trim().max(10000).optional().default(''),
+  nextReviewAt: z.string().trim().nullable().optional(),
+})
+
+const clientCareActionCreateSchema = z.object({
+  title: z.string().trim().min(1, 'Action title is required.').max(240),
+  description: z.string().trim().max(4000).optional().default(''),
+  ownerUserId: z.string().uuid().nullable().optional(),
+  dueAt: z.string().trim().nullable().optional(),
+  priority: z.enum(['normal', 'high', 'urgent']).optional().default('normal'),
+  status: z.enum(['open', 'in_progress', 'completed', 'cancelled']).optional().default('open'),
+  visibility: z.enum(['team', 'client']).optional().default('team'),
+})
+
+const clientCareActionUpdateSchema = clientCareActionCreateSchema.partial()
+
+async function isAssignedClientCareOwner(clientProfileId, ownerUserId) {
+  if (!ownerUserId) return true
+
+  const result = await pool.query(
+    `
+    SELECT 1
+    FROM team_client_assignments tca
+    JOIN system_users su ON su.id = tca.team_user_id
+    WHERE tca.client_profile_id = $1
+      AND tca.team_user_id = $2
+      AND su.role IN ('admin', 'staff')
+      AND su.status = 'active'
+    LIMIT 1
+    `,
+    [clientProfileId, ownerUserId],
+  )
+
+  return Boolean(result.rows[0])
+}
+
+router.get('/clients/:clientId/360', requireAdmin, async (req, res, next) => {
+  try {
+    const snapshot = await getClient360Snapshot(req.params.clientId)
+
+    if (!snapshot) {
+      return res.status(404).json({ ok: false, error: 'Client profile not found.' })
+    }
+
+    return res.json({ ok: true, snapshot })
+  } catch (error) {
+    return next(error)
+  }
+})
+
+router.patch('/clients/:clientId/care-plan', requireAdmin, async (req, res, next) => {
+  const parsed = clientCarePlanSchema.safeParse(req.body)
+
+  if (!parsed.success) {
+    return res.status(400).json({
+      ok: false,
+      error: parsed.error.issues[0]?.message || 'Please check the care plan details.',
+    })
+  }
+
+  try {
+    if (!(await client360ClientExists(req.params.clientId))) {
+      return res.status(404).json({ ok: false, error: 'Client profile not found.' })
+    }
+
+    const beforeResult = await pool.query(
+      'SELECT * FROM client_care_plans WHERE client_profile_id = $1 LIMIT 1',
+      [req.params.clientId],
+    )
+    const plan = await saveClientCarePlan(req.params.clientId, parsed.data, req.user.id)
+
+    await pool.query(
+      `
+      INSERT INTO audit_logs (
+        actor_user_id, action, entity_type, entity_id, before_data, after_data, ip_address, user_agent
+      )
+      VALUES ($1, 'client_care_plan_updated', 'client_care_plans', $2, $3::jsonb, $4::jsonb, $5, $6)
+      `,
+      [
+        req.user.id,
+        req.params.clientId,
+        JSON.stringify(beforeResult.rows[0] || null),
+        JSON.stringify(plan),
+        req.ip || null,
+        req.get('user-agent') || null,
+      ],
+    )
+
+    return res.json({
+      ok: true,
+      message: 'Client care plan saved.',
+      snapshot: await getClient360Snapshot(req.params.clientId),
+    })
+  } catch (error) {
+    return next(error)
+  }
+})
+
+router.post('/clients/:clientId/care-actions', requireAdmin, async (req, res, next) => {
+  const parsed = clientCareActionCreateSchema.safeParse(req.body)
+
+  if (!parsed.success) {
+    return res.status(400).json({
+      ok: false,
+      error: parsed.error.issues[0]?.message || 'Please check the action item.',
+    })
+  }
+
+  try {
+    if (!(await client360ClientExists(req.params.clientId))) {
+      return res.status(404).json({ ok: false, error: 'Client profile not found.' })
+    }
+
+    if (!(await isAssignedClientCareOwner(req.params.clientId, parsed.data.ownerUserId))) {
+      return res.status(400).json({
+        ok: false,
+        error: 'The selected action owner is not assigned to this client.',
+      })
+    }
+
+    const action = await createClientCareAction(
+      req.params.clientId,
+      parsed.data,
+      req.user.id,
+    )
+
+    await pool.query(
+      `
+      INSERT INTO audit_logs (
+        actor_user_id, action, entity_type, entity_id, before_data, after_data, ip_address, user_agent
+      )
+      VALUES ($1, 'client_care_action_created', 'client_care_actions', $2, '{}'::jsonb, $3::jsonb, $4, $5)
+      `,
+      [
+        req.user.id,
+        action.id,
+        JSON.stringify(action),
+        req.ip || null,
+        req.get('user-agent') || null,
+      ],
+    )
+
+    return res.status(201).json({
+      ok: true,
+      message: 'Care action created.',
+      snapshot: await getClient360Snapshot(req.params.clientId),
+    })
+  } catch (error) {
+    return next(error)
+  }
+})
+
+router.patch('/clients/:clientId/care-actions/:actionId', requireAdmin, async (req, res, next) => {
+  const parsed = clientCareActionUpdateSchema.safeParse(req.body)
+
+  if (!parsed.success) {
+    return res.status(400).json({
+      ok: false,
+      error: parsed.error.issues[0]?.message || 'Please check the action item.',
+    })
+  }
+
+  try {
+    if (
+      Object.prototype.hasOwnProperty.call(parsed.data, 'ownerUserId') &&
+      !(await isAssignedClientCareOwner(req.params.clientId, parsed.data.ownerUserId))
+    ) {
+      return res.status(400).json({
+        ok: false,
+        error: 'The selected action owner is not assigned to this client.',
+      })
+    }
+
+    const updated = await updateClientCareAction(
+      req.params.clientId,
+      req.params.actionId,
+      parsed.data,
+      req.user.id,
+    )
+
+    if (!updated) {
+      return res.status(404).json({ ok: false, error: 'Care action not found.' })
+    }
+
+    await pool.query(
+      `
+      INSERT INTO audit_logs (
+        actor_user_id, action, entity_type, entity_id, before_data, after_data, ip_address, user_agent
+      )
+      VALUES ($1, 'client_care_action_updated', 'client_care_actions', $2, $3::jsonb, $4::jsonb, $5, $6)
+      `,
+      [
+        req.user.id,
+        req.params.actionId,
+        JSON.stringify(updated.before),
+        JSON.stringify(updated.after),
+        req.ip || null,
+        req.get('user-agent') || null,
+      ],
+    )
+
+    return res.json({
+      ok: true,
+      message: 'Care action updated.',
+      snapshot: await getClient360Snapshot(req.params.clientId),
+    })
+  } catch (error) {
+    return next(error)
+  }
+})
+// client-360-pass-27-end
 
 // phase-3-8-follow-up-care-queue-start
 router.get('/follow-ups', requireAdmin, async (req, res, next) => {

@@ -1776,6 +1776,16 @@ export default function AdminClients() {
                                 type="button"
                                 onClick={(event) => {
                                   event.currentTarget.closest('details')?.removeAttribute('open')
+                                  navigate(`/admin/client-360/${client.id}`)
+                                }}
+                              >
+                                Open Client 360
+                              </button>
+
+                              <button
+                                type="button"
+                                onClick={(event) => {
+                                  event.currentTarget.closest('details')?.removeAttribute('open')
                                   handleEditClient(client)
                                 }}
                               >
@@ -1803,6 +1813,14 @@ export default function AdminClients() {
                 </div>
 
                 <div className="client-detail-header-actions-v2">
+                  <button
+                    type="button"
+                    className="client-detail-edit-shortcut-v2"
+                    onClick={() => navigate(`/admin/client-360/${selectedClient.id}`)}
+                  >
+                    Open Client 360
+                  </button>
+
                   <button
                     type="button"
                     className="client-detail-edit-shortcut-v2"

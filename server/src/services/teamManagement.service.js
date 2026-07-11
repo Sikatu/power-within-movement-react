@@ -180,6 +180,41 @@ async function getTeamAccessForUser(user) {
   }
 }
 
+
+async function enforceTeamClientAssignment(req, res, next) {
+  if (req.user?.role !== 'staff') return next()
+
+  const clientProfileId = req.params?.clientId
+  if (!clientProfileId) return next()
+
+  try {
+    const result = await pool.query(
+      `
+      SELECT 1
+      FROM team_client_assignments
+      WHERE team_user_id = $1
+        AND client_profile_id = $2
+      LIMIT 1
+      `,
+      [req.user.id, clientProfileId],
+    )
+
+    if (!result.rows[0]) {
+      return res.status(403).json({
+        ok: false,
+        code: 'TEAM_CLIENT_ASSIGNMENT_REQUIRED',
+        clientProfileId,
+        error: 'This client is not assigned to your team profile.',
+      })
+    }
+
+    req.teamClientAssignmentVerified = true
+    return next()
+  } catch (error) {
+    return next(error)
+  }
+}
+
 async function enforceTeamPermission(req, res, next) {
   if (req.user?.role !== 'staff') return next()
 
@@ -227,6 +262,7 @@ module.exports = {
   FULL_ACCESS,
   PERMISSION_MODULES,
   TEMPLATE_PERMISSIONS,
+  enforceTeamClientAssignment,
   enforceTeamPermission,
   getTeamAccessForUser,
   normalizePermissions,
