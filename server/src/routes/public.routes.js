@@ -32,6 +32,16 @@ const {
   saveNotificationPreferences,
 } = require('../services/notificationCenter.service')
 const { enrollMatchingAutomations } = require('../services/automationStudio.service')
+const {
+  ensureBookingClientProfile,
+  getClientPortalOnboarding,
+  listPublicAppointmentTypes,
+  processDueBookingCommunications,
+  saveClientPortalOnboarding,
+  scheduleBookingCommunications,
+  startClientOnboarding: startBookingClientOnboarding,
+  validateBookingIntake,
+} = require('../services/bookingOnboarding.service')
 
 const router = express.Router()
 const contactDbModule = require('../db/pool')
@@ -412,29 +422,11 @@ router.get('/appointment-types', async (req, res, next) => {
       })
     }
 
-    const result = await pool.query(
-      `
-      SELECT
-        id,
-        name,
-        slug,
-        description,
-        duration_minutes,
-        price_cents,
-        currency,
-        requires_approval,
-        buffer_before_minutes,
-        buffer_after_minutes
-      FROM appointment_types
-      WHERE is_active = true
-      ORDER BY created_at DESC
-      LIMIT 100
-      `,
-    )
+    const appointmentTypes = await listPublicAppointmentTypes(pool)
 
     res.json({
       ok: true,
-      appointmentTypes: result.rows,
+      appointmentTypes,
     })
   } catch (error) {
     next(error)
@@ -602,14 +594,17 @@ async function preventBlockedBookingTimes(req, res, next) {
 
 
 router.post('/booking-requests', async (req, res, next) => {
-  try {
-    if (!pool) {
-      return res.status(503).json({
-        ok: false,
-        error: 'Database is not configured.',
-      })
-    }
+  if (!pool) {
+    return res.status(503).json({
+      ok: false,
+      error: 'Database is not configured.',
+    })
+  }
 
+  const dbClient = await pool.connect()
+  let transactionStarted = false
+
+  try {
     const platformSettings = await getPlatformSettings(pool)
 
     if (platformSettings.maintenanceMode || platformSettings.bookingsPaused) {
@@ -642,7 +637,14 @@ router.post('/booking-requests', async (req, res, next) => {
         buffer_before_minutes,
         buffer_after_minutes,
         requires_approval,
-        is_active
+        is_active,
+        booking_intake_template_id,
+        onboarding_template_id,
+        auto_create_client_profile,
+        auto_start_onboarding,
+        send_confirmation_email,
+        reminder_24h_enabled,
+        reminder_2h_enabled
       FROM appointment_types
       WHERE id = $1
       LIMIT 1
@@ -658,6 +660,12 @@ router.post('/booking-requests', async (req, res, next) => {
         error: 'Appointment type is not available.',
       })
     }
+
+    await validateBookingIntake(
+      appointmentType.booking_intake_template_id,
+      input.intakeAnswers,
+      pool,
+    )
 
     const startsAt = new Date(input.startsAt)
 
@@ -687,7 +695,10 @@ router.post('/booking-requests', async (req, res, next) => {
 
     const status = appointmentType.requires_approval ? 'requested' : 'confirmed'
 
-    const inserted = await pool.query(
+    await dbClient.query('BEGIN')
+    transactionStarted = true
+
+    const inserted = await dbClient.query(
       `
       INSERT INTO bookings (
         appointment_type_id,
@@ -701,15 +712,7 @@ router.post('/booking-requests', async (req, res, next) => {
         intake_answers
       )
       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9::jsonb)
-      RETURNING
-        id,
-        guest_name,
-        guest_email,
-        starts_at,
-        ends_at,
-        timezone,
-        status,
-        created_at
+      RETURNING *
       `,
       [
         input.appointmentTypeId,
@@ -724,15 +727,122 @@ router.post('/booking-requests', async (req, res, next) => {
       ],
     )
 
-    res.status(201).json({
+    let booking = inserted.rows[0]
+    booking.appointment_type_name = appointmentType.name
+
+    let clientProfile = null
+
+    if (appointmentType.auto_create_client_profile) {
+      clientProfile = await ensureBookingClientProfile({
+        booking,
+        appointmentType,
+      }, dbClient)
+
+      if (clientProfile) {
+        booking = {
+          ...booking,
+          client_profile_id: clientProfile.id,
+        }
+      }
+    }
+
+    if (
+      clientProfile &&
+      appointmentType.auto_start_onboarding &&
+      appointmentType.onboarding_template_id
+    ) {
+      await startBookingClientOnboarding({
+        clientProfileId: clientProfile.id,
+        payload: {
+          templateId: appointmentType.onboarding_template_id,
+          clientWelcomeMessage:
+            'Welcome to your private onboarding space. Complete the intake when you are ready.',
+        },
+      }, dbClient)
+    }
+
+    await scheduleBookingCommunications(booking.id, { status }, dbClient)
+
+    await dbClient.query(
+      `
+      INSERT INTO audit_logs (
+        action,
+        entity_type,
+        entity_id,
+        after_data,
+        ip_address,
+        user_agent
+      )
+      VALUES ('public_booking_created', 'bookings', $1, $2::jsonb, $3, $4)
+      `,
+      [
+        booking.id,
+        JSON.stringify({
+          appointmentTypeId: appointmentType.id,
+          appointmentTypeName: appointmentType.name,
+          clientProfileId: clientProfile?.id || null,
+          status,
+          autoStartedOnboarding: Boolean(
+            clientProfile &&
+            appointmentType.auto_start_onboarding &&
+            appointmentType.onboarding_template_id,
+          ),
+        }),
+        req.ip || null,
+        req.get('user-agent') || null,
+      ],
+    )
+
+    await dbClient.query('COMMIT')
+    transactionStarted = false
+
+    if (clientProfile?.id) {
+      try {
+        await enrollMatchingAutomations({
+          clientProfileId: clientProfile.id,
+          triggerType: 'pipeline_stage',
+          triggerStage: 'consultation_booked',
+        })
+      } catch (automationError) {
+        console.error('Booking pipeline automation enrollment failed:', automationError.message)
+      }
+    }
+
+    try {
+      await processDueBookingCommunications({ bookingId: booking.id }, pool)
+    } catch (emailError) {
+      console.error('Immediate booking communication failed:', emailError.message)
+    }
+
+    return res.status(201).json({
       ok: true,
       message: status === 'requested'
         ? 'Booking request received. An admin will review it.'
         : 'Booking confirmed.',
-      booking: inserted.rows[0],
+      booking: {
+        id: booking.id,
+        client_profile_id: clientProfile?.id || null,
+        guest_name: booking.guest_name,
+        guest_email: booking.guest_email,
+        starts_at: booking.starts_at,
+        ends_at: booking.ends_at,
+        timezone: booking.timezone,
+        status: booking.status,
+        created_at: booking.created_at,
+      },
+      onboardingStarted: Boolean(
+        clientProfile &&
+        appointmentType.auto_start_onboarding &&
+        appointmentType.onboarding_template_id,
+      ),
     })
   } catch (error) {
-    next(error)
+    if (transactionStarted) {
+      try { await dbClient.query('ROLLBACK') } catch {}
+    }
+    return next(error)
+  } finally {
+    dbClient.release()
   }
 })
 
@@ -1525,6 +1635,83 @@ router.get('/client-portal/me', requireClientPortalUser, async (req, res) => {
     client: sanitizeClientProfile(req.clientPortalUser, req.clientProfile),
   })
 })
+
+// booking-intake-onboarding-pass-30-client-start
+const clientPortalOnboardingSchema = z.object({
+  answers: z.record(z.any()).optional().default({}),
+})
+
+router.get('/client-portal/onboarding', requireClientPortalUser, async (req, res, next) => {
+  try {
+    const snapshot = await getClientPortalOnboarding(req.clientProfile.id, pool)
+    return res.json({ ok: true, ...snapshot })
+  } catch (error) {
+    return next(error)
+  }
+})
+
+router.patch('/client-portal/onboarding', requireClientPortalUser, async (req, res, next) => {
+  try {
+    const parsed = clientPortalOnboardingSchema.safeParse(req.body || {})
+    if (!parsed.success) {
+      return res.status(400).json({
+        ok: false,
+        error: parsed.error.issues[0]?.message || 'Please review your onboarding responses.',
+      })
+    }
+
+    const snapshot = await saveClientPortalOnboarding({
+      clientProfileId: req.clientProfile.id,
+      answers: parsed.data.answers,
+      submit: false,
+    }, pool)
+
+    await writeClientPortalAuditLog(
+      req,
+      'client_onboarding_draft_saved',
+      'client_profiles',
+      req.clientProfile.id,
+      null,
+      { status: snapshot.onboarding?.status || null },
+    )
+
+    return res.json({ ok: true, message: 'Your onboarding progress was saved.', ...snapshot })
+  } catch (error) {
+    return next(error)
+  }
+})
+
+router.post('/client-portal/onboarding/submit', requireClientPortalUser, async (req, res, next) => {
+  try {
+    const parsed = clientPortalOnboardingSchema.safeParse(req.body || {})
+    if (!parsed.success) {
+      return res.status(400).json({
+        ok: false,
+        error: parsed.error.issues[0]?.message || 'Please review your onboarding responses.',
+      })
+    }
+
+    const snapshot = await saveClientPortalOnboarding({
+      clientProfileId: req.clientProfile.id,
+      answers: parsed.data.answers,
+      submit: true,
+    }, pool)
+
+    await writeClientPortalAuditLog(
+      req,
+      'client_onboarding_submitted',
+      'client_profiles',
+      req.clientProfile.id,
+      null,
+      { status: snapshot.onboarding?.status || null },
+    )
+
+    return res.json({ ok: true, message: 'Your onboarding intake was submitted.', ...snapshot })
+  } catch (error) {
+    return next(error)
+  }
+})
+// booking-intake-onboarding-pass-30-client-end
 
 router.get('/client-portal/dashboard', requireClientPortalUser, async (req, res, next) => {
   try {

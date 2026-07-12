@@ -90,6 +90,12 @@ const {
   saveWorkflow: saveAutomationWorkflow,
   updateEnrollmentStatus: updateAutomationEnrollmentStatus,
 } = require('../services/automationStudio.service')
+const onboardingRouter = require('./onboarding.routes')
+const {
+  processDueBookingCommunications,
+  scheduleBookingCommunications,
+  startClientOnboarding: startBookingClientOnboarding,
+} = require('../services/bookingOnboarding.service')
 
 const router = express.Router()
 
@@ -1806,6 +1812,42 @@ router.patch('/bookings/:bookingId/status', requireAdmin, async (req, res, next)
     )
 
     await dbClient.query('COMMIT')
+
+    try {
+      await scheduleBookingCommunications(booking.id, { status: booking.status }, pool)
+
+      if (['approved', 'confirmed'].includes(booking.status) && booking.client_profile_id) {
+        const onboardingResult = await pool.query(
+          `
+          SELECT
+            at.onboarding_template_id,
+            at.auto_start_onboarding
+          FROM bookings b
+          LEFT JOIN appointment_types at ON at.id = b.appointment_type_id
+          WHERE b.id = $1
+          LIMIT 1
+          `,
+          [booking.id],
+        )
+        const onboarding = onboardingResult.rows[0]
+
+        if (onboarding?.auto_start_onboarding && onboarding?.onboarding_template_id) {
+          await startBookingClientOnboarding({
+            clientProfileId: booking.client_profile_id,
+            payload: {
+              templateId: onboarding.onboarding_template_id,
+              assignedToUserId: req.user.id,
+              clientWelcomeMessage: 'Welcome to your private onboarding space. Complete the intake when you are ready.',
+            },
+            actorUserId: req.user.id,
+          }, pool)
+        }
+      }
+
+      await processDueBookingCommunications({ bookingId: booking.id }, pool)
+    } catch (automationError) {
+      console.error('Booking onboarding automation failed:', automationError.message)
+    }
 
     const bookings = await getBookings()
 
@@ -12181,6 +12223,17 @@ router.post('/automation-studio/run-due', requireAdmin, async (req, res, next) =
   }
 })
 // automation-studio-pass-29-admin-end
+
+
+// booking-intake-onboarding-pass-30-admin-start
+router.use(
+  '/onboarding-studio',
+  requireAuth,
+  requireRole(['developer', 'owner', 'admin', 'staff']),
+  enforceTeamPermission,
+  onboardingRouter,
+)
+// booking-intake-onboarding-pass-30-admin-end
 
 // unified-notification-center-pass-25-admin-start
 const notificationPreferencesSchema = z.object({

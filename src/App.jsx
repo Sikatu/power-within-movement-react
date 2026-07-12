@@ -54,6 +54,7 @@ const AdminTeamManagement = lazy(() => import('./pages/admin/AdminTeamManagement
 const AdminClient360 = lazy(() => import('./pages/admin/AdminClient360'))
 const AdminLeadPipeline = lazy(() => import('./pages/admin/AdminLeadPipeline'))
 const AdminAutomationStudio = lazy(() => import('./pages/admin/AdminAutomationStudio'))
+const AdminOnboardingStudio = lazy(() => import('./pages/admin/AdminOnboardingStudio'))
 const SITE_URL = 'https://www.kimmittelstadt.com'
 
 const routeMetadata = {
@@ -329,6 +330,7 @@ function App() {
         <Route path="/client-portal/login" element={<ClientPortalLogin />} />
         <Route path="/client-portal/dashboard" element={<Navigate to="/client-portal/home" replace />} />
         <Route path="/client-portal/home" element={<ClientPortalDashboard />} />
+        <Route path="/client-portal/onboarding" element={<ClientPortalDashboard />} />
         <Route path="/client-portal/journey" element={<ClientPortalDashboard />} />
         <Route path="/client-portal/resources" element={<ClientPortalDashboard />} />
         <Route path="/client-portal/learning" element={<ClientPortalDashboard />} />
@@ -486,6 +488,14 @@ function App() {
           element={
             <AdminRouteGuard>
               <AdminAutomationStudio />
+            </AdminRouteGuard>
+          }
+        />
+        <Route
+          path="/admin/onboarding"
+          element={
+            <AdminRouteGuard>
+              <AdminOnboardingStudio />
             </AdminRouteGuard>
           }
         />

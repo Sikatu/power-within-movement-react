@@ -32,6 +32,7 @@
     "db:migrate-client-360": "node scripts/ensure-client-360.cjs",
     "db:migrate-lead-pipeline": "node scripts/ensure-lead-pipeline.cjs",
     "db:migrate-automation-studio": "node scripts/ensure-automation-studio.cjs",
+    "db:migrate-booking-onboarding": "node scripts/ensure-booking-onboarding.cjs",
     "db:migrate-notification-center": "node scripts/ensure-notification-center.cjs",
     "db:migrate:ordered": "node scripts/run-ordered-migrations.cjs"
   },

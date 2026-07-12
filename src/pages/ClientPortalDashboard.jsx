@@ -4,6 +4,7 @@ import NotificationCenter from '../components/NotificationCenter'
 import {
   changeClientPortalPassword,
   getClientPortalDashboard,
+  getClientPortalOnboarding,
   getClientPortalMessages,
   getClientPortalResources,
   getClientLearningLibrary,
@@ -11,6 +12,8 @@ import {
   logoutClientPortal,
   markClientPortalMessageRead,
   updateClientPortalProfile,
+  saveClientPortalOnboarding,
+  submitClientPortalOnboarding,
   updateClientLearningProgress,
 } from '../lib/nativeApi'
 
@@ -24,6 +27,12 @@ const portalSections = [
     path: '/client-portal/home',
     label: 'Home',
     shortLabel: 'Home',
+  },
+  {
+    key: 'onboarding',
+    path: '/client-portal/onboarding',
+    label: 'Start Here',
+    shortLabel: 'Start Here',
   },
   {
     key: 'journey',
@@ -81,6 +90,12 @@ const sectionCopy = {
     title: 'A calm place to return to.',
     description:
       'See the next meaningful step in your Power Within journey without searching through every detail.',
+  },
+  onboarding: {
+    eyebrow: 'Start Here',
+    title: 'Your private welcome and intake.',
+    description:
+      'Complete your onboarding at your own pace so the Power Within team can prepare thoughtful, personalized support.',
   },
   journey: {
     eyebrow: 'My Journey',
@@ -306,6 +321,11 @@ export default function ClientPortalDashboard() {
   const [savingLessonId, setSavingLessonId] = useState('')
   const [messages, setMessages] = useState([])
   const [messagesFeatureEnabled, setMessagesFeatureEnabled] = useState(true)
+  const [onboardingSnapshot, setOnboardingSnapshot] = useState({ available: false, onboarding: null, template: null })
+  const [onboardingAnswers, setOnboardingAnswers] = useState({})
+  const [onboardingNotice, setOnboardingNotice] = useState('')
+  const [onboardingError, setOnboardingError] = useState('')
+  const [isSavingOnboarding, setIsSavingOnboarding] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const [isLoggingOut, setIsLoggingOut] = useState(false)
   const [error, setError] = useState('')
@@ -360,6 +380,7 @@ export default function ClientPortalDashboard() {
           learningResponse,
           membershipResponse,
           messagesResponse,
+          onboardingResponse,
         ] = await Promise.all([
           getClientPortalDashboard(),
           getClientPortalResources().catch(() => ({ resources: [] })),
@@ -375,6 +396,11 @@ export default function ClientPortalDashboard() {
             messages: [],
             unreadCount: 0,
             featureEnabled: true,
+          })),
+          getClientPortalOnboarding().catch(() => ({
+            available: false,
+            onboarding: null,
+            template: null,
           })),
         ])
 
@@ -400,6 +426,12 @@ export default function ClientPortalDashboard() {
         )
         setMessages(messagesResponse.messages || [])
         setMessagesFeatureEnabled(messagesResponse.featureEnabled !== false)
+        setOnboardingSnapshot({
+          available: onboardingResponse.available === true,
+          onboarding: onboardingResponse.onboarding || null,
+          template: onboardingResponse.template || null,
+        })
+        setOnboardingAnswers(onboardingResponse.onboarding?.answers || {})
 
         const loadedClient = dashboardResponse.client
 
@@ -863,6 +895,218 @@ export default function ClientPortalDashboard() {
             )}
           </PortalPanel>
         </div>
+      </div>
+    )
+  }
+
+  function updateOnboardingAnswer(fieldKey, value) {
+    setOnboardingAnswers((current) => ({
+      ...current,
+      [fieldKey]: value,
+    }))
+    setOnboardingNotice('')
+    setOnboardingError('')
+  }
+
+  async function handleSaveOnboarding() {
+    setIsSavingOnboarding(true)
+    setOnboardingNotice('')
+    setOnboardingError('')
+
+    try {
+      const response = await saveClientPortalOnboarding(onboardingAnswers)
+      setOnboardingSnapshot({
+        available: response.available === true,
+        onboarding: response.onboarding || null,
+        template: response.template || null,
+      })
+      setOnboardingAnswers(response.onboarding?.answers || onboardingAnswers)
+      setOnboardingNotice(response.message || 'Your onboarding progress was saved.')
+    } catch (saveError) {
+      setOnboardingError(saveError.message || 'Unable to save your onboarding progress.')
+    } finally {
+      setIsSavingOnboarding(false)
+    }
+  }
+
+  async function handleSubmitOnboarding(event) {
+    event.preventDefault()
+    setIsSavingOnboarding(true)
+    setOnboardingNotice('')
+    setOnboardingError('')
+
+    try {
+      const response = await submitClientPortalOnboarding(onboardingAnswers)
+      setOnboardingSnapshot({
+        available: response.available === true,
+        onboarding: response.onboarding || null,
+        template: response.template || null,
+      })
+      setOnboardingAnswers(response.onboarding?.answers || onboardingAnswers)
+      setOnboardingNotice(response.message || 'Your onboarding intake was submitted.')
+    } catch (submitError) {
+      setOnboardingError(submitError.message || 'Unable to submit your onboarding intake.')
+    } finally {
+      setIsSavingOnboarding(false)
+    }
+  }
+
+  function renderOnboardingField(field) {
+    const value = onboardingAnswers[field.fieldKey]
+    const common = {
+      id: `onboarding-${field.fieldKey}`,
+      required: field.required,
+    }
+
+    if (field.fieldType === 'long_text') {
+      return (
+        <textarea
+          {...common}
+          rows="5"
+          value={value || ''}
+          placeholder={field.placeholder || ''}
+          onChange={(event) => updateOnboardingAnswer(field.fieldKey, event.target.value)}
+        />
+      )
+    }
+
+    if (field.fieldType === 'select') {
+      return (
+        <select
+          {...common}
+          value={value || ''}
+          onChange={(event) => updateOnboardingAnswer(field.fieldKey, event.target.value)}
+        >
+          <option value="">Choose an option</option>
+          {(field.options || []).map((option) => <option key={option} value={option}>{option}</option>)}
+        </select>
+      )
+    }
+
+    if (field.fieldType === 'multiselect') {
+      const selected = Array.isArray(value) ? value : []
+      return (
+        <div className="client-onboarding-choice-grid-v1">
+          {(field.options || []).map((option) => (
+            <label key={option}>
+              <input
+                type="checkbox"
+                checked={selected.includes(option)}
+                onChange={(event) => {
+                  const next = event.target.checked
+                    ? [...selected, option]
+                    : selected.filter((item) => item !== option)
+                  updateOnboardingAnswer(field.fieldKey, next)
+                }}
+              />
+              <span>{option}</span>
+            </label>
+          ))}
+        </div>
+      )
+    }
+
+    if (field.fieldType === 'checkbox') {
+      return (
+        <label className="client-onboarding-consent-v1">
+          <input
+            type="checkbox"
+            checked={Boolean(value)}
+            onChange={(event) => updateOnboardingAnswer(field.fieldKey, event.target.checked)}
+            required={field.required}
+          />
+          <span>{field.label}</span>
+        </label>
+      )
+    }
+
+    const inputType = {
+      email: 'email',
+      phone: 'tel',
+      date: 'date',
+    }[field.fieldType] || 'text'
+
+    return (
+      <input
+        {...common}
+        type={inputType}
+        value={value || ''}
+        placeholder={field.placeholder || ''}
+        onChange={(event) => updateOnboardingAnswer(field.fieldKey, event.target.value)}
+      />
+    )
+  }
+
+  function renderOnboarding() {
+    if (!onboardingSnapshot.available) {
+      return (
+        <PortalPanel eyebrow="Private Onboarding" title="Your onboarding space is not open yet.">
+          <EmptyState title="The Power Within team is preparing your next step.">
+            When onboarding is assigned to your account, your private welcome, intake questions,
+            and progress will appear here.
+          </EmptyState>
+        </PortalPanel>
+      )
+    }
+
+    const onboarding = onboardingSnapshot.onboarding || {}
+    const template = onboardingSnapshot.template || { fields: [] }
+    const isSubmitted = ['submitted', 'reviewed', 'completed'].includes(onboarding.status)
+
+    return (
+      <div className="client-onboarding-layout-v1">
+        <PortalPanel
+          eyebrow="Welcome"
+          title={template.name || 'Your Power Within onboarding'}
+          action={<span className={`client-onboarding-status-v1 is-${onboarding.status || 'not_started'}`}>{formatLabel(onboarding.status || 'not_started')}</span>}
+        >
+          <div className="client-onboarding-welcome-v1">
+            <p>{onboarding.clientWelcomeMessage || template.welcomeMessage || 'Complete this private intake at your own pace.'}</p>
+            <div>
+              <span>Due date</span>
+              <strong>{onboarding.dueAt ? formatDate(onboarding.dueAt) : 'No deadline'}</strong>
+            </div>
+          </div>
+        </PortalPanel>
+
+        <PortalPanel eyebrow="Private Intake" title="Help us prepare thoughtful support.">
+          {onboardingError && <div className="client-portal-form-alert-v3 is-error">{onboardingError}</div>}
+          {onboardingNotice && <div className="client-portal-form-alert-v3 is-success">{onboardingNotice}</div>}
+
+          {isSubmitted ? (
+            <div className="client-onboarding-complete-v1">
+              <strong>Your responses have been submitted.</strong>
+              <p>{onboarding.completionMessage || 'The Power Within team will review your intake and prepare your next step.'}</p>
+              <small>Submitted {formatDateTime(onboarding.submittedAt)}</small>
+            </div>
+          ) : (
+            <form className="client-portal-profile-form-v3 client-onboarding-form-v1" onSubmit={handleSubmitOnboarding}>
+              {(template.fields || []).map((field) => (
+                field.fieldType === 'checkbox' ? (
+                  <div key={field.id || field.fieldKey} className="client-onboarding-field-v1 is-consent">
+                    {renderOnboardingField(field)}
+                    {field.helpText && <small>{field.helpText}</small>}
+                  </div>
+                ) : (
+                  <label key={field.id || field.fieldKey} className="client-onboarding-field-v1">
+                    <span>{field.label}{field.required ? ' *' : ''}</span>
+                    {renderOnboardingField(field)}
+                    {field.helpText && <small>{field.helpText}</small>}
+                  </label>
+                )
+              ))}
+
+              <div className="client-onboarding-actions-v1">
+                <button type="button" onClick={handleSaveOnboarding} disabled={isSavingOnboarding}>
+                  {isSavingOnboarding ? 'Saving...' : 'Save and Continue Later'}
+                </button>
+                <button className="is-primary" type="submit" disabled={isSavingOnboarding}>
+                  {isSavingOnboarding ? 'Submitting...' : 'Submit My Intake'}
+                </button>
+              </div>
+            </form>
+          )}
+        </PortalPanel>
       </div>
     )
   }
@@ -1707,6 +1951,7 @@ export default function ClientPortalDashboard() {
   }
 
   function renderActiveSection() {
+    if (activeSection === 'onboarding') return renderOnboarding()
     if (activeSection === 'journey') return renderJourney()
     if (activeSection === 'resources') return renderResources()
     if (activeSection === 'learning') return renderLearning()

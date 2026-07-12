@@ -585,6 +585,131 @@ FOR EACH ROW
 EXECUTE FUNCTION set_updated_at();
 
 
+-- -----------------------------------------------------
+-- Booking intake and client onboarding
+-- -----------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS intake_form_templates (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  name TEXT NOT NULL,
+  description TEXT,
+  form_scope TEXT NOT NULL DEFAULT 'booking'
+    CHECK (form_scope IN ('booking', 'onboarding')),
+  status TEXT NOT NULL DEFAULT 'draft'
+    CHECK (status IN ('draft', 'active', 'archived')),
+  welcome_message TEXT,
+  completion_message TEXT,
+  created_by_user_id UUID REFERENCES system_users(id) ON DELETE SET NULL,
+  updated_by_user_id UUID REFERENCES system_users(id) ON DELETE SET NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE TABLE IF NOT EXISTS intake_form_fields (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  template_id UUID NOT NULL REFERENCES intake_form_templates(id) ON DELETE CASCADE,
+  field_key TEXT NOT NULL,
+  label TEXT NOT NULL,
+  help_text TEXT,
+  placeholder TEXT,
+  field_type TEXT NOT NULL DEFAULT 'short_text'
+    CHECK (field_type IN ('short_text', 'long_text', 'email', 'phone', 'date', 'select', 'multiselect', 'checkbox')),
+  required BOOLEAN NOT NULL DEFAULT false,
+  options JSONB NOT NULL DEFAULT '[]'::jsonb,
+  position INTEGER NOT NULL DEFAULT 1 CHECK (position > 0),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  UNIQUE (template_id, field_key)
+);
+
+CREATE TABLE IF NOT EXISTS client_onboarding_records (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  client_profile_id UUID NOT NULL UNIQUE REFERENCES client_profiles(id) ON DELETE CASCADE,
+  template_id UUID REFERENCES intake_form_templates(id) ON DELETE SET NULL,
+  status TEXT NOT NULL DEFAULT 'not_started'
+    CHECK (status IN ('not_started', 'in_progress', 'submitted', 'reviewed', 'completed', 'paused')),
+  assigned_to_user_id UUID REFERENCES system_users(id) ON DELETE SET NULL,
+  due_at TIMESTAMPTZ,
+  answers JSONB NOT NULL DEFAULT '{}'::jsonb,
+  consent_accepted_at TIMESTAMPTZ,
+  client_welcome_message TEXT,
+  private_notes TEXT,
+  started_at TIMESTAMPTZ,
+  submitted_at TIMESTAMPTZ,
+  reviewed_at TIMESTAMPTZ,
+  completed_at TIMESTAMPTZ,
+  created_by_user_id UUID REFERENCES system_users(id) ON DELETE SET NULL,
+  updated_by_user_id UUID REFERENCES system_users(id) ON DELETE SET NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE TABLE IF NOT EXISTS booking_communications (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  booking_id UUID NOT NULL REFERENCES bookings(id) ON DELETE CASCADE,
+  communication_type TEXT NOT NULL
+    CHECK (communication_type IN ('request_received', 'booking_confirmed', 'reminder_24h', 'reminder_2h', 'booking_cancelled')),
+  status TEXT NOT NULL DEFAULT 'pending'
+    CHECK (status IN ('pending', 'sent', 'failed', 'skipped', 'cancelled')),
+  scheduled_at TIMESTAMPTZ NOT NULL,
+  sent_at TIMESTAMPTZ,
+  email_to TEXT NOT NULL,
+  subject TEXT NOT NULL,
+  body_text TEXT NOT NULL,
+  attempts INTEGER NOT NULL DEFAULT 0 CHECK (attempts >= 0),
+  last_error TEXT,
+  provider_message_id TEXT,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  UNIQUE (booking_id, communication_type)
+);
+
+ALTER TABLE appointment_types
+  ADD COLUMN IF NOT EXISTS booking_intake_template_id UUID REFERENCES intake_form_templates(id) ON DELETE SET NULL,
+  ADD COLUMN IF NOT EXISTS onboarding_template_id UUID REFERENCES intake_form_templates(id) ON DELETE SET NULL,
+  ADD COLUMN IF NOT EXISTS auto_create_client_profile BOOLEAN NOT NULL DEFAULT false,
+  ADD COLUMN IF NOT EXISTS auto_start_onboarding BOOLEAN NOT NULL DEFAULT false,
+  ADD COLUMN IF NOT EXISTS send_confirmation_email BOOLEAN NOT NULL DEFAULT false,
+  ADD COLUMN IF NOT EXISTS reminder_24h_enabled BOOLEAN NOT NULL DEFAULT false,
+  ADD COLUMN IF NOT EXISTS reminder_2h_enabled BOOLEAN NOT NULL DEFAULT false;
+
+ALTER TABLE bookings
+  ADD COLUMN IF NOT EXISTS confirmation_sent_at TIMESTAMPTZ,
+  ADD COLUMN IF NOT EXISTS reminder_24h_sent_at TIMESTAMPTZ,
+  ADD COLUMN IF NOT EXISTS reminder_2h_sent_at TIMESTAMPTZ;
+
+DROP TRIGGER IF EXISTS set_intake_form_templates_updated_at ON intake_form_templates;
+CREATE TRIGGER set_intake_form_templates_updated_at
+BEFORE UPDATE ON intake_form_templates
+FOR EACH ROW EXECUTE FUNCTION set_updated_at();
+
+DROP TRIGGER IF EXISTS set_intake_form_fields_updated_at ON intake_form_fields;
+CREATE TRIGGER set_intake_form_fields_updated_at
+BEFORE UPDATE ON intake_form_fields
+FOR EACH ROW EXECUTE FUNCTION set_updated_at();
+
+DROP TRIGGER IF EXISTS set_client_onboarding_records_updated_at ON client_onboarding_records;
+CREATE TRIGGER set_client_onboarding_records_updated_at
+BEFORE UPDATE ON client_onboarding_records
+FOR EACH ROW EXECUTE FUNCTION set_updated_at();
+
+DROP TRIGGER IF EXISTS set_booking_communications_updated_at ON booking_communications;
+CREATE TRIGGER set_booking_communications_updated_at
+BEFORE UPDATE ON booking_communications
+FOR EACH ROW EXECUTE FUNCTION set_updated_at();
+
+CREATE INDEX IF NOT EXISTS idx_intake_form_templates_scope_status
+  ON intake_form_templates(form_scope, status, updated_at DESC);
+CREATE INDEX IF NOT EXISTS idx_intake_form_fields_template_position
+  ON intake_form_fields(template_id, position);
+CREATE INDEX IF NOT EXISTS idx_client_onboarding_status_due
+  ON client_onboarding_records(status, due_at, updated_at DESC);
+CREATE INDEX IF NOT EXISTS idx_client_onboarding_assignee_status
+  ON client_onboarding_records(assigned_to_user_id, status, due_at);
+CREATE INDEX IF NOT EXISTS idx_booking_communications_due
+  ON booking_communications(status, scheduled_at, attempts);
+
+
 CREATE TABLE IF NOT EXISTS booking_change_requests (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   booking_id UUID NOT NULL REFERENCES bookings(id) ON DELETE CASCADE,

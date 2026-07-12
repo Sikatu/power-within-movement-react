@@ -26139,3 +26139,132 @@ body [class*="client-profile"] {
     transition: none !important;
   }
 }
+
+/* Booking, Intake & Onboarding Pass 30 */
+.session-request-intake-section-v5 {
+  display: grid;
+  gap: 1.25rem;
+  padding: clamp(1.15rem, 3vw, 1.75rem);
+  border: 1px solid rgba(97, 75, 58, 0.18);
+  border-radius: 1.4rem;
+  background: linear-gradient(145deg, rgba(255, 252, 248, 0.98), rgba(245, 237, 228, 0.86));
+}
+
+.session-request-intake-heading-v5 {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.session-request-intake-heading-v5 p {
+  margin: 0;
+  color: #8f654e;
+  font-size: 0.73rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.session-request-intake-heading-v5 h3 {
+  margin: 0;
+  color: #2f2723;
+  font-family: var(--font-display, Georgia, serif);
+  font-size: clamp(1.35rem, 3vw, 1.8rem);
+  font-weight: 500;
+}
+
+.session-request-intake-heading-v5 > span {
+  color: #6d625c;
+  line-height: 1.65;
+}
+
+.session-request-intake-fields-v5 {
+  display: grid;
+  gap: 1rem;
+}
+
+.session-request-intake-fields-v5 label > small {
+  display: block;
+  margin: -0.25rem 0 0.45rem;
+  color: #786d66;
+  font-size: 0.82rem;
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+.session-request-intake-check-v5 {
+  display: grid !important;
+  grid-template-columns: auto 1fr;
+  align-items: start;
+  gap: 0.75rem;
+  padding: 0.95rem 1rem;
+  border: 1px solid rgba(97, 75, 58, 0.16);
+  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.72);
+  cursor: pointer;
+}
+
+.session-request-intake-check-v5 input,
+.session-request-intake-multiselect-v5 input {
+  width: 1.05rem !important;
+  min-height: 1.05rem !important;
+  margin-top: 0.12rem;
+  accent-color: #8f654e;
+}
+
+.session-request-intake-check-v5 > span,
+.session-request-intake-multiselect-v5 label > span {
+  color: #3d342f !important;
+  font-size: 0.92rem !important;
+  font-weight: 650 !important;
+  letter-spacing: 0 !important;
+  line-height: 1.5;
+  text-transform: none !important;
+}
+
+.session-request-intake-multiselect-v5 {
+  display: grid;
+  gap: 0.65rem;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.session-request-intake-multiselect-v5 legend {
+  margin-bottom: 0.35rem;
+  color: #3d342f;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.session-request-intake-multiselect-v5 > p {
+  margin: -0.15rem 0 0.25rem;
+  color: #786d66;
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+
+.session-request-intake-multiselect-v5 > div {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.65rem;
+}
+
+.session-request-intake-multiselect-v5 label {
+  display: grid !important;
+  grid-template-columns: auto 1fr;
+  align-items: start;
+  gap: 0.65rem;
+  padding: 0.8rem 0.9rem;
+  border: 1px solid rgba(97, 75, 58, 0.14);
+  border-radius: 0.9rem;
+  background: rgba(255, 255, 255, 0.72);
+  cursor: pointer;
+}
+
+@media (max-width: 680px) {
+  .session-request-intake-multiselect-v5 > div {
+    grid-template-columns: 1fr;
+  }
+}

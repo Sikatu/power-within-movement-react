@@ -98,6 +98,7 @@ function routePermissionModule(pathname = '') {
   if (path.startsWith('/overview')) return 'dashboard'
   if (
     path.startsWith('/clients') ||
+    path.startsWith('/onboarding-studio') ||
     path.startsWith('/lead-pipeline') ||
     path.startsWith('/follow-ups') ||
     path.startsWith('/service-records') ||
@@ -220,7 +221,10 @@ async function enforceTeamPermission(req, res, next) {
   if (req.user?.role !== 'staff') return next()
 
   try {
-    const moduleName = routePermissionModule(req.path)
+    const permissionPath = req.originalUrl
+      ? req.originalUrl.replace(/^\/api\/admin/, '')
+      : req.path
+    const moduleName = routePermissionModule(permissionPath)
 
     if (!moduleName) return next()
 

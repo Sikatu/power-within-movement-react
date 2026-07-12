@@ -1196,3 +1196,68 @@ export async function clearReadClientNotifications() { return apiRequest('/api/p
 export async function getClientNotificationPreferences() { return apiRequest('/api/public/client-portal/notifications/preferences') }
 export async function updateClientNotificationPreferences(payload) { return apiRequest('/api/public/client-portal/notifications/preferences', { method: 'PATCH', body: JSON.stringify(payload) }) }
 // unified-notification-center-pass-25-api-end
+
+// booking-intake-onboarding-pass-30-api-start
+export async function getAdminOnboardingStudio() {
+  return apiRequest('/api/admin/onboarding-studio')
+}
+
+export async function createAdminIntakeTemplate(payload) {
+  return apiRequest('/api/admin/onboarding-studio/templates', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  })
+}
+
+export async function updateAdminIntakeTemplate(templateId, payload) {
+  return apiRequest(`/api/admin/onboarding-studio/templates/${templateId}`, {
+    method: 'PUT',
+    body: JSON.stringify(payload),
+  })
+}
+
+export async function updateAdminAppointmentOnboarding(appointmentTypeId, payload) {
+  return apiRequest(`/api/admin/onboarding-studio/appointment-types/${appointmentTypeId}`, {
+    method: 'PATCH',
+    body: JSON.stringify(payload),
+  })
+}
+
+export async function startAdminClientOnboarding(clientId, payload) {
+  return apiRequest(`/api/admin/onboarding-studio/clients/${clientId}/start`, {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  })
+}
+
+export async function updateAdminClientOnboarding(clientId, payload) {
+  return apiRequest(`/api/admin/onboarding-studio/clients/${clientId}`, {
+    method: 'PATCH',
+    body: JSON.stringify(payload),
+  })
+}
+
+export async function runAdminBookingCommunications() {
+  return apiRequest('/api/admin/onboarding-studio/run-due', {
+    method: 'POST',
+  })
+}
+
+export async function getClientPortalOnboarding() {
+  return apiRequest('/api/public/client-portal/onboarding')
+}
+
+export async function saveClientPortalOnboarding(answers) {
+  return apiRequest('/api/public/client-portal/onboarding', {
+    method: 'PATCH',
+    body: JSON.stringify({ answers }),
+  })
+}
+
+export async function submitClientPortalOnboarding(answers) {
+  return apiRequest('/api/public/client-portal/onboarding/submit', {
+    method: 'POST',
+    body: JSON.stringify({ answers }),
+  })
+}
+// booking-intake-onboarding-pass-30-api-end

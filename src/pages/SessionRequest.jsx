@@ -146,6 +146,17 @@ function getAppointmentPrice(appointmentType) {
   return price ? String(price) : ''
 }
 
+
+function getAppointmentIntakeForm(appointmentType) {
+  return appointmentType?.intake_form || appointmentType?.intakeForm || null
+}
+
+function hasIntakeAnswer(value) {
+  if (Array.isArray(value)) return value.length > 0
+  if (typeof value === 'boolean') return value
+  return String(value ?? '').trim().length > 0
+}
+
 function normalizeAppointmentRows(response) {
   if (Array.isArray(response)) return response
 
@@ -213,6 +224,7 @@ export default function SessionRequest() {
     preferredTime: '',
     message: '',
   })
+  const [intakeAnswers, setIntakeAnswers] = useState({})
 
   const isLoading = isLoadingAppointments || isLoadingAvailability
 
@@ -229,6 +241,16 @@ export default function SessionRequest() {
   const selectedDurationMinutes = useMemo(
     () => getAppointmentDuration(selectedAppointment),
     [selectedAppointment],
+  )
+
+  const selectedIntakeForm = useMemo(
+    () => getAppointmentIntakeForm(selectedAppointment),
+    [selectedAppointment],
+  )
+
+  const selectedIntakeFields = useMemo(
+    () => selectedIntakeForm?.fields || [],
+    [selectedIntakeForm],
   )
 
   const availabilityByDate = useMemo(
@@ -395,10 +417,42 @@ export default function SessionRequest() {
     setNotice('')
     setError('')
     setLastSubmission(null)
+    if (field === 'appointmentTypeId' && value !== form.appointmentTypeId) {
+      setIntakeAnswers({})
+    }
     setForm((current) => ({
       ...current,
       [field]: value,
     }))
+  }
+
+  function updateIntakeAnswer(fieldKey, value) {
+    setNotice('')
+    setError('')
+    setLastSubmission(null)
+    setIntakeAnswers((current) => ({
+      ...current,
+      [fieldKey]: value,
+    }))
+  }
+
+  function toggleIntakeOption(fieldKey, option) {
+    setIntakeAnswers((current) => {
+      const currentValues = Array.isArray(current[fieldKey])
+        ? current[fieldKey]
+        : []
+      const nextValues = currentValues.includes(option)
+        ? currentValues.filter((value) => value !== option)
+        : [...currentValues, option]
+
+      return {
+        ...current,
+        [fieldKey]: nextValues,
+      }
+    })
+    setNotice('')
+    setError('')
+    setLastSubmission(null)
   }
 
   function resetBookingExperience() {
@@ -412,6 +466,7 @@ export default function SessionRequest() {
       guestPhone: '',
       message: '',
     }))
+    setIntakeAnswers({})
   }
 
   function selectPreferredDate(dateValue) {
@@ -456,9 +511,32 @@ export default function SessionRequest() {
       return
     }
 
+    const missingIntakeFields = selectedIntakeFields.filter(
+      (field) => field.required && !hasIntakeAnswer(intakeAnswers[field.fieldKey]),
+    )
+
+    if (missingIntakeFields.length > 0) {
+      setError(
+        `Please complete: ${missingIntakeFields
+          .map((field) => field.label)
+          .join(', ')}.`,
+      )
+      return
+    }
+
     setIsSubmitting(true)
 
     try {
+      const supportMessage = String(
+        intakeAnswers.support_focus || intakeAnswers.message || form.message || '',
+      ).trim()
+      const combinedIntakeAnswers = {
+        ...intakeAnswers,
+        message: supportMessage,
+        preferredDate: form.preferredDate,
+        preferredTime: form.preferredTime,
+      }
+
       const submissionResponse = await createPublicBookingRequest({
         appointmentTypeId: form.appointmentTypeId,
         appointment_type_id: form.appointmentTypeId,
@@ -473,16 +551,8 @@ export default function SessionRequest() {
         endsAt: selectedSlot.endsAt,
         ends_at: selectedSlot.endsAt,
         timezone: availabilityTimezone,
-        intakeAnswers: {
-          message: form.message.trim(),
-          preferredDate: form.preferredDate,
-          preferredTime: form.preferredTime,
-        },
-        intake_answers: {
-          message: form.message.trim(),
-          preferredDate: form.preferredDate,
-          preferredTime: form.preferredTime,
-        },
+        intakeAnswers: combinedIntakeAnswers,
+        intake_answers: combinedIntakeAnswers,
       })
 
       setLastSubmission({
@@ -813,15 +883,165 @@ export default function SessionRequest() {
             />
           </label>
 
-          <label>
-            <span>What would you like support with?</span>
-            <textarea
-              value={form.message}
-              onChange={(event) => updateField('message', event.target.value)}
-              placeholder="Share anything helpful for the team before your appointment."
-              rows={5}
-            />
-          </label>
+          {selectedIntakeFields.length > 0 ? (
+            <section className="session-request-intake-section-v5">
+              <div className="session-request-intake-heading-v5">
+                <p>Private Intake</p>
+                <h3>{selectedIntakeForm?.name || 'Before your appointment'}</h3>
+                <span>
+                  {selectedIntakeForm?.welcomeMessage ||
+                    selectedIntakeForm?.description ||
+                    'Share only what feels useful so the team can prepare with care.'}
+                </span>
+              </div>
+
+              <div className="session-request-intake-fields-v5">
+                {selectedIntakeFields.map((field) => {
+                  const value = intakeAnswers[field.fieldKey]
+                  const fieldId = `booking-intake-${field.fieldKey}`
+
+                  if (field.fieldType === 'checkbox') {
+                    return (
+                      <label
+                        key={field.id || field.fieldKey}
+                        className="session-request-intake-check-v5"
+                        htmlFor={fieldId}
+                      >
+                        <input
+                          id={fieldId}
+                          type="checkbox"
+                          checked={Boolean(value)}
+                          onChange={(event) =>
+                            updateIntakeAnswer(field.fieldKey, event.target.checked)
+                          }
+                        />
+                        <span>
+                          {field.label}
+                          {field.required ? ' *' : ''}
+                        </span>
+                      </label>
+                    )
+                  }
+
+                  if (field.fieldType === 'multiselect') {
+                    const selectedValues = Array.isArray(value) ? value : []
+
+                    return (
+                      <fieldset
+                        key={field.id || field.fieldKey}
+                        className="session-request-intake-multiselect-v5"
+                      >
+                        <legend>
+                          {field.label}
+                          {field.required ? ' *' : ''}
+                        </legend>
+                        {field.helpText && <p>{field.helpText}</p>}
+                        <div>
+                          {(field.options || []).map((option) => (
+                            <label key={option}>
+                              <input
+                                type="checkbox"
+                                checked={selectedValues.includes(option)}
+                                onChange={() =>
+                                  toggleIntakeOption(field.fieldKey, option)
+                                }
+                              />
+                              <span>{option}</span>
+                            </label>
+                          ))}
+                        </div>
+                      </fieldset>
+                    )
+                  }
+
+                  if (field.fieldType === 'long_text') {
+                    return (
+                      <label key={field.id || field.fieldKey} htmlFor={fieldId}>
+                        <span>
+                          {field.label}
+                          {field.required ? ' *' : ''}
+                        </span>
+                        {field.helpText && <small>{field.helpText}</small>}
+                        <textarea
+                          id={fieldId}
+                          value={value || ''}
+                          onChange={(event) =>
+                            updateIntakeAnswer(field.fieldKey, event.target.value)
+                          }
+                          placeholder={field.placeholder || ''}
+                          rows={5}
+                        />
+                      </label>
+                    )
+                  }
+
+                  if (field.fieldType === 'select') {
+                    return (
+                      <label key={field.id || field.fieldKey} htmlFor={fieldId}>
+                        <span>
+                          {field.label}
+                          {field.required ? ' *' : ''}
+                        </span>
+                        {field.helpText && <small>{field.helpText}</small>}
+                        <select
+                          id={fieldId}
+                          value={value || ''}
+                          onChange={(event) =>
+                            updateIntakeAnswer(field.fieldKey, event.target.value)
+                          }
+                        >
+                          <option value="">Choose an option</option>
+                          {(field.options || []).map((option) => (
+                            <option key={option} value={option}>
+                              {option}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+                    )
+                  }
+
+                  const inputType =
+                    field.fieldType === 'email'
+                      ? 'email'
+                      : field.fieldType === 'phone'
+                        ? 'tel'
+                        : field.fieldType === 'date'
+                          ? 'date'
+                          : 'text'
+
+                  return (
+                    <label key={field.id || field.fieldKey} htmlFor={fieldId}>
+                      <span>
+                        {field.label}
+                        {field.required ? ' *' : ''}
+                      </span>
+                      {field.helpText && <small>{field.helpText}</small>}
+                      <input
+                        id={fieldId}
+                        type={inputType}
+                        value={value || ''}
+                        onChange={(event) =>
+                          updateIntakeAnswer(field.fieldKey, event.target.value)
+                        }
+                        placeholder={field.placeholder || ''}
+                      />
+                    </label>
+                  )
+                })}
+              </div>
+            </section>
+          ) : (
+            <label>
+              <span>What would you like support with?</span>
+              <textarea
+                value={form.message}
+                onChange={(event) => updateField('message', event.target.value)}
+                placeholder="Share anything helpful for the team before your appointment."
+                rows={5}
+              />
+            </label>
+          )}
 
           <button
             type="submit"

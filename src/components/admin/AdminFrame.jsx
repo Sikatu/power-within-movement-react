@@ -15,6 +15,7 @@ const studioNavGroups = [
       { to: '/admin/session-changes', label: 'Session Changes', module: 'sessions' },
       { to: '/admin/email-studio', label: 'Communications', module: 'communications' },
       { to: '/admin/automations', label: 'Automations', module: 'communications' },
+      { to: '/admin/onboarding', label: 'Booking & Onboarding', module: 'clients' },
     ],
   },
   {
