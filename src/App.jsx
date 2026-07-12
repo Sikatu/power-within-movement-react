@@ -53,6 +53,7 @@ const AdminDeveloperPanel = lazy(() => import('./pages/admin/AdminDeveloperPanel
 const AdminTeamManagement = lazy(() => import('./pages/admin/AdminTeamManagement'))
 const AdminClient360 = lazy(() => import('./pages/admin/AdminClient360'))
 const AdminLeadPipeline = lazy(() => import('./pages/admin/AdminLeadPipeline'))
+const AdminAutomationStudio = lazy(() => import('./pages/admin/AdminAutomationStudio'))
 const SITE_URL = 'https://www.kimmittelstadt.com'
 
 const routeMetadata = {
@@ -476,6 +477,15 @@ function App() {
           element={
             <AdminRouteGuard>
               <AdminMailStudio />
+            </AdminRouteGuard>
+          }
+        />
+
+        <Route
+          path="/admin/automations"
+          element={
+            <AdminRouteGuard>
+              <AdminAutomationStudio />
             </AdminRouteGuard>
           }
         />

@@ -31,6 +31,7 @@ const {
   markNotificationRead,
   saveNotificationPreferences,
 } = require('../services/notificationCenter.service')
+const { enrollMatchingAutomations } = require('../services/automationStudio.service')
 
 const router = express.Router()
 const contactDbModule = require('../db/pool')
@@ -2592,6 +2593,21 @@ router.post('/contact-inquiries', async (req, res, next) => {
     }
 
     const adminSaveResult = await saveContactInquiryAsClientLead(inquiry)
+
+    if (
+      adminSaveResult.mode === 'created_new_client_lead' &&
+      adminSaveResult.client?.id
+    ) {
+      try {
+        await enrollMatchingAutomations({
+          clientProfileId: adminSaveResult.client.id,
+          triggerType: 'new_lead',
+          triggerStage: 'new_inquiry',
+        })
+      } catch (automationError) {
+        console.error('Public inquiry automation enrollment failed:', automationError.message)
+      }
+    }
 
     console.log('\n[PUBLIC CONTACT INQUIRY SAVED TO ADMIN]')
     console.log(JSON.stringify({

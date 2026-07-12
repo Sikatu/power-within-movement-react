@@ -1,0 +1,483 @@
+.automation-studio-page {
+  display: grid;
+  gap: 1.4rem;
+  padding: clamp(1rem, 2vw, 2rem);
+}
+
+.automation-studio-header,
+.automation-workflow-editor > header,
+.automation-steps-section > header,
+.automation-enrollment-panel > header,
+.automation-workflow-list > header {
+  align-items: flex-start;
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+}
+
+.automation-studio-header h1,
+.automation-workflow-editor h2,
+.automation-steps-section h3,
+.automation-enrollment-panel h3,
+.automation-workflow-list h2 {
+  margin: 0.2rem 0 0.45rem;
+}
+
+.automation-studio-header p,
+.automation-workflow-editor header p,
+.automation-enrollment-panel header p {
+  color: rgba(46, 28, 32, 0.64);
+  margin: 0;
+  max-width: 68ch;
+}
+
+.automation-studio-header-actions,
+.automation-step-add-actions,
+.automation-step-controls,
+.automation-enrollment-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+}
+
+.automation-studio-alert {
+  border: 1px solid rgba(112, 78, 64, 0.16);
+  border-radius: 1rem;
+  padding: 0.9rem 1rem;
+}
+
+.automation-studio-alert.is-error {
+  background: #fff3f5;
+  color: #8a2943;
+}
+
+.automation-studio-alert.is-success {
+  background: #f1f8f2;
+  color: #335f42;
+}
+
+.automation-studio-metrics {
+  display: grid;
+  gap: 0.8rem;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+.automation-studio-metrics article {
+  background: rgba(255, 252, 248, 0.9);
+  border: 1px solid rgba(112, 78, 64, 0.13);
+  border-radius: 1.05rem;
+  box-shadow: 0 12px 32px rgba(65, 38, 44, 0.05);
+  display: grid;
+  gap: 0.25rem;
+  padding: 1rem;
+}
+
+.automation-studio-metrics span,
+.automation-studio-metrics small {
+  color: rgba(46, 28, 32, 0.58);
+  font-size: 0.73rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.automation-studio-metrics strong {
+  font-family: Georgia, serif;
+  font-size: 1.8rem;
+}
+
+.automation-studio-layout {
+  align-items: start;
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: minmax(250px, 320px) minmax(0, 1fr);
+}
+
+.automation-workflow-list,
+.automation-workflow-editor,
+.automation-enrollment-panel {
+  background: rgba(255, 252, 248, 0.88);
+  border: 1px solid rgba(112, 78, 64, 0.13);
+  border-radius: 1.2rem;
+  box-shadow: 0 16px 38px rgba(65, 38, 44, 0.055);
+}
+
+.automation-workflow-list {
+  max-height: calc(100vh - 190px);
+  overflow: hidden;
+  position: sticky;
+  top: 1rem;
+}
+
+.automation-workflow-list > header,
+.automation-workflow-editor > header,
+.automation-enrollment-panel > header {
+  border-bottom: 1px solid rgba(112, 78, 64, 0.1);
+  padding: 1rem 1.1rem;
+}
+
+.automation-workflow-list > header > span,
+.automation-enrollment-panel > header > span {
+  background: rgba(99, 61, 72, 0.08);
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  padding: 0.35rem 0.65rem;
+}
+
+.automation-workflow-list-body {
+  display: grid;
+  gap: 0.6rem;
+  max-height: calc(100vh - 285px);
+  overflow-y: auto;
+  padding: 0.8rem;
+}
+
+.automation-workflow-card {
+  background: rgba(255, 255, 255, 0.86);
+  border: 1px solid rgba(112, 78, 64, 0.12);
+  border-radius: 0.95rem;
+  color: inherit;
+  cursor: pointer;
+  display: grid;
+  gap: 0.45rem;
+  padding: 0.85rem;
+  text-align: left;
+  transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+}
+
+.automation-workflow-card:hover,
+.automation-workflow-card.is-selected {
+  border-color: rgba(143, 91, 96, 0.52);
+  box-shadow: 0 12px 26px rgba(65, 38, 44, 0.08);
+  transform: translateY(-1px);
+}
+
+.automation-workflow-card > div {
+  align-items: center;
+  display: flex;
+  gap: 0.45rem;
+  justify-content: space-between;
+}
+
+.automation-workflow-card p,
+.automation-workflow-card small {
+  color: rgba(46, 28, 32, 0.58);
+  margin: 0;
+}
+
+.automation-workflow-card p {
+  font-size: 0.82rem;
+}
+
+.automation-workflow-card small {
+  font-size: 0.73rem;
+}
+
+.automation-status {
+  border-radius: 999px;
+  display: inline-flex;
+  font-size: 0.66rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  padding: 0.25rem 0.5rem;
+  text-transform: uppercase;
+}
+
+.automation-status-active { background: #eaf6ec; color: #2e6841; }
+.automation-status-draft { background: #f5efe7; color: #745d47; }
+.automation-status-paused { background: #fff4dc; color: #88611b; }
+.automation-status-completed { background: #eaf3f7; color: #355f73; }
+.automation-status-cancelled,
+.automation-status-archived { background: #eeeeef; color: #5e5b60; }
+.automation-status-failed { background: #fff0f2; color: #9b2f49; }
+
+.automation-studio-workspace {
+  display: grid;
+  gap: 1rem;
+}
+
+.automation-workflow-editor {
+  overflow: hidden;
+}
+
+.automation-form-grid,
+.automation-step-grid {
+  display: grid;
+  gap: 0.85rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.automation-form-grid {
+  padding: 1rem 1.1rem;
+}
+
+.automation-field {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.automation-field-wide {
+  grid-column: 1 / -1;
+}
+
+.automation-field > span,
+.automation-checkbox-field > span {
+  color: rgba(46, 28, 32, 0.68);
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.automation-field input,
+.automation-field select,
+.automation-field textarea {
+  background: rgba(255, 255, 255, 0.86);
+  border: 1px solid rgba(112, 78, 64, 0.18);
+  border-radius: 0.82rem;
+  color: inherit;
+  font: inherit;
+  padding: 0.76rem 0.84rem;
+  width: 100%;
+}
+
+.automation-field textarea {
+  resize: vertical;
+}
+
+.automation-steps-section {
+  border-top: 1px solid rgba(112, 78, 64, 0.1);
+  padding: 1rem 1.1rem 1.2rem;
+}
+
+.automation-step-add-actions button,
+.automation-step-controls button,
+.automation-enrollment-actions button {
+  background: rgba(255, 255, 255, 0.86);
+  border: 1px solid rgba(112, 78, 64, 0.18);
+  border-radius: 999px;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.75rem;
+  font-weight: 800;
+  padding: 0.48rem 0.72rem;
+}
+
+.automation-step-controls button:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+.automation-step-controls .is-danger,
+.automation-enrollment-actions .is-danger {
+  color: #9a304b;
+}
+
+.automation-steps-list {
+  display: grid;
+  gap: 0.8rem;
+  margin-top: 0.9rem;
+}
+
+.automation-step-card {
+  background: rgba(249, 245, 241, 0.74);
+  border: 1px solid rgba(112, 78, 64, 0.12);
+  border-radius: 1rem;
+  padding: 0.9rem;
+}
+
+.automation-step-card > header {
+  align-items: center;
+  display: grid;
+  gap: 0.7rem;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  margin-bottom: 0.85rem;
+}
+
+.automation-step-number {
+  align-items: center;
+  background: #673d49;
+  border-radius: 50%;
+  color: #fff;
+  display: inline-flex;
+  font-size: 0.78rem;
+  font-weight: 800;
+  height: 2rem;
+  justify-content: center;
+  width: 2rem;
+}
+
+.automation-step-card > header > div:nth-child(2) {
+  display: grid;
+  gap: 0.15rem;
+}
+
+.automation-step-card > header span {
+  color: rgba(46, 28, 32, 0.56);
+  font-size: 0.75rem;
+}
+
+.automation-delay-input {
+  align-items: center;
+  display: grid;
+  gap: 0.5rem;
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.automation-delay-input em {
+  color: rgba(46, 28, 32, 0.58);
+  font-size: 0.78rem;
+  font-style: normal;
+}
+
+.automation-variable-note {
+  color: rgba(46, 28, 32, 0.58);
+  font-size: 0.78rem;
+  margin: 0.9rem 0 0;
+}
+
+.automation-variable-note code {
+  background: rgba(103, 61, 73, 0.08);
+  border-radius: 0.35rem;
+  padding: 0.12rem 0.28rem;
+}
+
+.automation-enrollment-form {
+  align-items: end;
+  display: grid;
+  gap: 0.85rem;
+  grid-template-columns: minmax(260px, 1fr) auto auto;
+  padding: 1rem 1.1rem;
+}
+
+.automation-checkbox-field {
+  align-items: center;
+  display: flex;
+  gap: 0.5rem;
+  min-height: 2.8rem;
+}
+
+.automation-checkbox-field input {
+  height: 1rem;
+  width: 1rem;
+}
+
+.automation-enrollment-list {
+  display: grid;
+  gap: 0.7rem;
+  padding: 0.9rem;
+}
+
+.automation-enrollment-card {
+  align-items: start;
+  background: rgba(255, 255, 255, 0.86);
+  border: 1px solid rgba(112, 78, 64, 0.12);
+  border-radius: 0.95rem;
+  display: grid;
+  gap: 0.8rem;
+  grid-template-columns: minmax(180px, 1fr) minmax(260px, 1.3fr) auto;
+  padding: 0.85rem;
+}
+
+.automation-enrollment-card > div:first-child {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.automation-enrollment-card p {
+  color: rgba(46, 28, 32, 0.58);
+  margin: 0;
+}
+
+.automation-enrollment-card dl {
+  display: grid;
+  gap: 0.5rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin: 0;
+}
+
+.automation-enrollment-card dl div {
+  display: grid;
+  gap: 0.15rem;
+}
+
+.automation-enrollment-card dt {
+  color: rgba(46, 28, 32, 0.52);
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.automation-enrollment-card dd {
+  font-size: 0.78rem;
+  margin: 0;
+}
+
+.automation-enrollment-error {
+  background: #fff3f5;
+  border-radius: 0.7rem;
+  color: #8a2943 !important;
+  font-size: 0.75rem;
+  grid-column: 1 / -1;
+  padding: 0.65rem;
+}
+
+.automation-studio-empty {
+  color: rgba(46, 28, 32, 0.58);
+  padding: 1.2rem;
+  text-align: center;
+}
+
+@media (max-width: 1180px) {
+  .automation-studio-metrics {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .automation-studio-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .automation-workflow-list {
+    max-height: none;
+    position: static;
+  }
+
+  .automation-workflow-list-body {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    max-height: none;
+  }
+}
+
+@media (max-width: 780px) {
+  .automation-studio-header,
+  .automation-workflow-editor > header,
+  .automation-steps-section > header,
+  .automation-enrollment-panel > header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .automation-studio-metrics,
+  .automation-form-grid,
+  .automation-step-grid,
+  .automation-workflow-list-body,
+  .automation-enrollment-form,
+  .automation-enrollment-card {
+    grid-template-columns: 1fr;
+  }
+
+  .automation-field-wide {
+    grid-column: auto;
+  }
+
+  .automation-step-card > header {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .automation-step-controls {
+    grid-column: 1 / -1;
+  }
+
+  .automation-enrollment-card dl {
+    grid-template-columns: 1fr;
+  }
+}

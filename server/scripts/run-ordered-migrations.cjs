@@ -12,6 +12,7 @@ const orderedMigrations = [
   'db:migrate-team-management',
   'db:migrate-client-360',
   'db:migrate-lead-pipeline',
+  'db:migrate-automation-studio',
   'db:migrate-learning-library',
   'db:migrate-membership-circle',
   'db:migrate-circle-community',

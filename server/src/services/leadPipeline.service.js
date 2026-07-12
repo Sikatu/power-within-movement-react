@@ -1,4 +1,5 @@
 const { pool } = require('../db/pool')
+const { enrollMatchingAutomations } = require('./automationStudio.service')
 
 const PIPELINE_STAGES = [
   'new_inquiry',
@@ -435,6 +436,29 @@ async function updateLeadProfile(clientProfileId, payload, actorUserId) {
     }
 
     await db.query('COMMIT')
+
+    if (before.pipeline_stage !== after.pipeline_stage) {
+      try {
+        await enrollMatchingAutomations({
+          clientProfileId,
+          triggerType: 'pipeline_stage',
+          triggerStage: after.pipeline_stage,
+          actorUserId,
+        })
+
+        if (after.pipeline_stage === 'converted') {
+          await enrollMatchingAutomations({
+            clientProfileId,
+            triggerType: 'client_converted',
+            triggerStage: 'converted',
+            actorUserId,
+          })
+        }
+      } catch (automationError) {
+        console.error('Lead automation enrollment failed:', automationError.message)
+      }
+    }
+
     return { before, after }
   } catch (error) {
     await db.query('ROLLBACK')

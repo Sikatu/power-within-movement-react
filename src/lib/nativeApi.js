@@ -1128,6 +1128,46 @@ export async function addAdminLeadNote(clientId, note) {
 }
 // leads-intake-pipeline-pass-28-api-end
 
+// automation-studio-pass-29-api-start
+export async function getAdminAutomationStudio() {
+  return apiRequest('/api/admin/automation-studio')
+}
+
+export async function createAdminAutomationWorkflow(payload) {
+  return apiRequest('/api/admin/automation-studio/workflows', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  })
+}
+
+export async function updateAdminAutomationWorkflow(workflowId, payload) {
+  return apiRequest(`/api/admin/automation-studio/workflows/${workflowId}`, {
+    method: 'PUT',
+    body: JSON.stringify(payload),
+  })
+}
+
+export async function enrollAdminAutomationClient(workflowId, payload) {
+  return apiRequest(`/api/admin/automation-studio/workflows/${workflowId}/enroll`, {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  })
+}
+
+export async function updateAdminAutomationEnrollment(enrollmentId, action) {
+  return apiRequest(`/api/admin/automation-studio/enrollments/${enrollmentId}/action`, {
+    method: 'POST',
+    body: JSON.stringify({ action }),
+  })
+}
+
+export async function runAdminDueAutomations() {
+  return apiRequest('/api/admin/automation-studio/run-due', {
+    method: 'POST',
+  })
+}
+// automation-studio-pass-29-api-end
+
 // unified-notification-center-pass-25-api-start
 function buildNotificationQuery(filters = {}) {
   const params = new URLSearchParams()

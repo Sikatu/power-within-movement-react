@@ -179,6 +179,133 @@ CREATE INDEX IF NOT EXISTS idx_lead_pipeline_activities_client_created
   ON lead_pipeline_activities(client_profile_id, created_at DESC);
 
 -- -----------------------------------------------------
+-- Mail Studio foundation
+-- -----------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS mail_templates (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  template_key TEXT NOT NULL UNIQUE,
+  name TEXT NOT NULL,
+  category TEXT NOT NULL DEFAULT 'general',
+  subject TEXT NOT NULL,
+  body_text TEXT NOT NULL,
+  body_html TEXT,
+  status TEXT NOT NULL DEFAULT 'active',
+  created_by_user_id UUID REFERENCES system_users(id) ON DELETE SET NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE TABLE IF NOT EXISTS client_portal_email_logs (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  client_profile_id UUID NOT NULL REFERENCES client_profiles(id) ON DELETE CASCADE,
+  invite_id UUID REFERENCES client_portal_invites(id) ON DELETE SET NULL,
+  email_type TEXT NOT NULL DEFAULT 'general',
+  email_to TEXT NOT NULL,
+  subject TEXT NOT NULL,
+  body_text TEXT NOT NULL,
+  status TEXT NOT NULL DEFAULT 'drafted',
+  sent_at TIMESTAMPTZ,
+  provider TEXT,
+  provider_message_id TEXT,
+  provider_response JSONB NOT NULL DEFAULT '{}'::jsonb,
+  error_message TEXT,
+  created_by_user_id UUID REFERENCES system_users(id) ON DELETE SET NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+-- -----------------------------------------------------
+-- Automation Studio and nurture workflows
+-- -----------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS automation_workflows (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  workflow_key TEXT NOT NULL UNIQUE,
+  name TEXT NOT NULL,
+  description TEXT,
+  trigger_type TEXT NOT NULL DEFAULT 'manual'
+    CHECK (trigger_type IN ('manual', 'new_lead', 'pipeline_stage', 'client_converted')),
+  trigger_stage TEXT,
+  status TEXT NOT NULL DEFAULT 'draft'
+    CHECK (status IN ('draft', 'active', 'paused', 'archived')),
+  default_assignee_user_id UUID REFERENCES system_users(id) ON DELETE SET NULL,
+  created_by_user_id UUID REFERENCES system_users(id) ON DELETE SET NULL,
+  updated_by_user_id UUID REFERENCES system_users(id) ON DELETE SET NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE TABLE IF NOT EXISTS automation_steps (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  workflow_id UUID NOT NULL REFERENCES automation_workflows(id) ON DELETE CASCADE,
+  position INTEGER NOT NULL CHECK (position > 0),
+  step_type TEXT NOT NULL
+    CHECK (step_type IN ('email', 'follow_up_task', 'internal_notification')),
+  delay_minutes INTEGER NOT NULL DEFAULT 0 CHECK (delay_minutes >= 0),
+  template_id UUID REFERENCES mail_templates(id) ON DELETE SET NULL,
+  subject TEXT,
+  body_text TEXT,
+  task_title TEXT,
+  task_notes TEXT,
+  task_priority TEXT NOT NULL DEFAULT 'normal'
+    CHECK (task_priority IN ('low', 'normal', 'high', 'urgent')),
+  notification_title TEXT,
+  notification_body TEXT,
+  notification_importance TEXT NOT NULL DEFAULT 'normal'
+    CHECK (notification_importance IN ('normal', 'high', 'urgent')),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  UNIQUE (workflow_id, position)
+);
+
+CREATE TABLE IF NOT EXISTS automation_enrollments (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  workflow_id UUID NOT NULL REFERENCES automation_workflows(id) ON DELETE CASCADE,
+  client_profile_id UUID NOT NULL REFERENCES client_profiles(id) ON DELETE CASCADE,
+  trigger_source TEXT NOT NULL DEFAULT 'manual',
+  trigger_key TEXT NOT NULL,
+  status TEXT NOT NULL DEFAULT 'active'
+    CHECK (status IN ('active', 'paused', 'completed', 'cancelled', 'failed')),
+  current_step_position INTEGER NOT NULL DEFAULT 1,
+  next_run_at TIMESTAMPTZ,
+  failure_count INTEGER NOT NULL DEFAULT 0 CHECK (failure_count >= 0),
+  last_error TEXT,
+  created_by_user_id UUID REFERENCES system_users(id) ON DELETE SET NULL,
+  completed_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  UNIQUE (workflow_id, client_profile_id, trigger_key)
+);
+
+CREATE TABLE IF NOT EXISTS automation_step_runs (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  enrollment_id UUID NOT NULL REFERENCES automation_enrollments(id) ON DELETE CASCADE,
+  step_id UUID REFERENCES automation_steps(id) ON DELETE SET NULL,
+  step_position INTEGER NOT NULL,
+  step_type TEXT NOT NULL,
+  status TEXT NOT NULL DEFAULT 'processing'
+    CHECK (status IN ('processing', 'completed', 'skipped', 'failed')),
+  attempts INTEGER NOT NULL DEFAULT 1,
+  scheduled_for TIMESTAMPTZ,
+  completed_at TIMESTAMPTZ,
+  error_message TEXT,
+  result JSONB NOT NULL DEFAULT '{}'::jsonb,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_automation_workflows_status_trigger
+  ON automation_workflows(status, trigger_type, trigger_stage);
+CREATE INDEX IF NOT EXISTS idx_automation_steps_workflow_position
+  ON automation_steps(workflow_id, position);
+CREATE INDEX IF NOT EXISTS idx_automation_enrollments_status_next_run
+  ON automation_enrollments(status, next_run_at);
+CREATE INDEX IF NOT EXISTS idx_automation_enrollments_client
+  ON automation_enrollments(client_profile_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_automation_step_runs_enrollment_created
+  ON automation_step_runs(enrollment_id, created_at DESC);
+
+-- -----------------------------------------------------
 -- Staff and team management
 -- -----------------------------------------------------
 
