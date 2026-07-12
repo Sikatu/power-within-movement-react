@@ -1,0 +1,68 @@
+.pwc-app-error-boundary {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 2rem;
+  background: #f7f1ea;
+  color: #332b2b;
+}
+
+.pwc-app-error-boundary section {
+  width: min(620px, 100%);
+  padding: clamp(2rem, 5vw, 4rem);
+  border: 1px solid rgba(74, 52, 52, 0.16);
+  border-radius: 28px;
+  background: rgba(255, 255, 255, 0.88);
+  box-shadow: 0 24px 70px rgba(68, 47, 47, 0.12);
+  text-align: center;
+}
+
+.pwc-app-error-boundary h1 {
+  margin: 0.45rem 0 1rem;
+  font-size: clamp(2rem, 5vw, 3.4rem);
+  line-height: 1.02;
+}
+
+.pwc-app-error-boundary p {
+  margin: 0 auto;
+  max-width: 48ch;
+  line-height: 1.7;
+}
+
+.pwc-app-error-boundary small {
+  display: block;
+  margin-top: 1rem;
+  opacity: 0.62;
+}
+
+.pwc-app-error-boundary div {
+  display: flex;
+  justify-content: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-top: 1.5rem;
+}
+
+.pwc-app-error-boundary button,
+.pwc-app-error-boundary a {
+  min-height: 46px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 1.15rem;
+  border-radius: 999px;
+  border: 1px solid #6d4e4e;
+  text-decoration: none;
+  font: inherit;
+  cursor: pointer;
+}
+
+.pwc-app-error-boundary button {
+  background: #6d4e4e;
+  color: #fff;
+}
+
+.pwc-app-error-boundary a {
+  color: #6d4e4e;
+  background: transparent;
+}

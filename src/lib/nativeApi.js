@@ -1,3 +1,5 @@
+import { reportClientError } from './errorReporter'
+
 const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL ||
   (import.meta.env.PROD ? '' : 'http://localhost:8787')
@@ -16,16 +18,53 @@ async function parseResponse(response) {
 }
 
 export async function apiRequest(path, options = {}) {
-  const response = await fetch(`${API_BASE_URL}${path}`, {
-    credentials: 'include',
-    headers: {
-      'Content-Type': 'application/json',
-      ...(options.headers || {}),
-    },
-    ...options,
-  })
+  const method = options.method || 'GET'
+  let response
 
-  return parseResponse(response)
+  try {
+    response = await fetch(`${API_BASE_URL}${path}`, {
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(options.headers || {}),
+      },
+      ...options,
+    })
+  } catch (networkError) {
+    if (!path.startsWith('/api/public/error-reports')) {
+      reportClientError({
+        type: 'network',
+        severity: 'high',
+        title: 'Frontend API network failure',
+        message: networkError.message || `Unable to reach ${path}.`,
+        route: path,
+        method,
+        metadata: { apiPath: path.split('?')[0] },
+      })
+    }
+    throw networkError
+  }
+
+  try {
+    return await parseResponse(response)
+  } catch (responseError) {
+    if (response.status >= 500 && !path.startsWith('/api/public/error-reports')) {
+      reportClientError({
+        type: 'api',
+        severity: response.status >= 503 ? 'critical' : 'high',
+        title: `API request returned HTTP ${response.status}`,
+        message: responseError.message,
+        route: path,
+        method,
+        httpStatus: response.status,
+        metadata: {
+          apiPath: path.split('?')[0],
+          requestId: response.headers.get('x-request-id'),
+        },
+      })
+    }
+    throw responseError
+  }
 }
 
 export async function loginAdmin({ email, password }) {
@@ -1261,3 +1300,50 @@ export async function submitClientPortalOnboarding(answers) {
   })
 }
 // booking-intake-onboarding-pass-30-api-end
+
+
+export async function getDeveloperErrorCenter(query = '') {
+  const suffix = query ? `?${query}` : ''
+  const [summary, errors] = await Promise.all([
+    apiRequest('/api/admin/developer/errors/summary'),
+    apiRequest(`/api/admin/developer/errors${suffix}`),
+  ])
+
+  return {
+    summary: summary.summary,
+    settings: summary.settings,
+    errors: errors.errors || [],
+  }
+}
+
+export async function updateDeveloperErrorStatus(errorId, status) {
+  return apiRequest(`/api/admin/developer/errors/${errorId}/status`, {
+    method: 'PATCH',
+    body: JSON.stringify({ status }),
+  })
+}
+
+export async function deleteDeveloperError(errorId) {
+  return apiRequest(`/api/admin/developer/errors/${errorId}`, {
+    method: 'DELETE',
+  })
+}
+
+export async function runDeveloperErrorChecks() {
+  return apiRequest('/api/admin/developer/errors/run-checks', {
+    method: 'POST',
+  })
+}
+
+export async function saveDeveloperErrorSettings(settings) {
+  return apiRequest('/api/admin/developer/errors/settings', {
+    method: 'PUT',
+    body: JSON.stringify(settings),
+  })
+}
+
+export async function createDeveloperErrorTest() {
+  return apiRequest('/api/admin/developer/errors/test', {
+    method: 'POST',
+  })
+}

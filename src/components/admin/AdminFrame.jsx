@@ -76,6 +76,7 @@ function AdminFrame({ children }) {
         ...group,
         items: [
           { to: '/admin/developer', label: 'Developer Control Center' },
+          { to: '/admin/developer/errors', label: 'Developer Error Center' },
           { to: '/admin/team', label: 'Staff & Team Management' },
           ...group.items,
         ],

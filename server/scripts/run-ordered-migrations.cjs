@@ -14,6 +14,7 @@ const orderedMigrations = [
   'db:migrate-lead-pipeline',
   'db:migrate-automation-studio',
   'db:migrate-booking-onboarding',
+  'db:migrate-developer-error-center',
   'db:migrate-learning-library',
   'db:migrate-membership-circle',
   'db:migrate-circle-community',
