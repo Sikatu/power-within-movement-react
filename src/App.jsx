@@ -52,6 +52,7 @@ const AdminChangePassword = lazy(() => import('./pages/admin/AdminChangePassword
 const AdminDeveloperPanel = lazy(() => import('./pages/admin/AdminDeveloperPanel'))
 const AdminTeamManagement = lazy(() => import('./pages/admin/AdminTeamManagement'))
 const AdminClient360 = lazy(() => import('./pages/admin/AdminClient360'))
+const AdminLeadPipeline = lazy(() => import('./pages/admin/AdminLeadPipeline'))
 const SITE_URL = 'https://www.kimmittelstadt.com'
 
 const routeMetadata = {
@@ -394,6 +395,16 @@ function App() {
             <AdminOwnerRouteGuard>
               <AdminFounderAvailability />
             </AdminOwnerRouteGuard>
+          }
+        />
+
+
+        <Route
+          path="/admin/leads"
+          element={
+            <AdminRouteGuard>
+              <AdminLeadPipeline />
+            </AdminRouteGuard>
           }
         />
 

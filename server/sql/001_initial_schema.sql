@@ -80,6 +80,105 @@ EXECUTE FUNCTION set_updated_at();
 
 
 -- -----------------------------------------------------
+-- Client Portal invites
+-- -----------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS client_portal_invites (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  client_profile_id UUID NOT NULL REFERENCES client_profiles(id) ON DELETE CASCADE,
+  user_id UUID REFERENCES system_users(id) ON DELETE CASCADE,
+  invite_token_hash TEXT NOT NULL,
+  invite_token_preview TEXT,
+  invite_link TEXT,
+  status TEXT NOT NULL DEFAULT 'pending'
+    CHECK (status IN ('pending', 'accepted', 'revoked', 'expired')),
+  expires_at TIMESTAMPTZ NOT NULL DEFAULT now() + interval '14 days',
+  accepted_at TIMESTAMPTZ,
+  revoked_at TIMESTAMPTZ,
+  created_by_user_id UUID REFERENCES system_users(id) ON DELETE SET NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_client_portal_invites_client_profile_id
+  ON client_portal_invites(client_profile_id);
+CREATE INDEX IF NOT EXISTS idx_client_portal_invites_user_id
+  ON client_portal_invites(user_id);
+CREATE INDEX IF NOT EXISTS idx_client_portal_invites_token_hash
+  ON client_portal_invites(invite_token_hash);
+
+-- -----------------------------------------------------
+-- Leads and intake pipeline
+-- -----------------------------------------------------
+
+ALTER TABLE client_profiles
+  ADD COLUMN IF NOT EXISTS pipeline_stage TEXT NOT NULL DEFAULT 'new_inquiry',
+  ADD COLUMN IF NOT EXISTS lead_priority TEXT NOT NULL DEFAULT 'normal',
+  ADD COLUMN IF NOT EXISTS next_follow_up_at TIMESTAMPTZ,
+  ADD COLUMN IF NOT EXISTS lead_owner_user_id UUID REFERENCES system_users(id) ON DELETE SET NULL,
+  ADD COLUMN IF NOT EXISTS lead_summary TEXT,
+  ADD COLUMN IF NOT EXISTS lost_reason TEXT,
+  ADD COLUMN IF NOT EXISTS converted_at TIMESTAMPTZ;
+
+CREATE TABLE IF NOT EXISTS lead_follow_ups (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  client_profile_id UUID NOT NULL REFERENCES client_profiles(id) ON DELETE CASCADE,
+  assigned_to_user_id UUID REFERENCES system_users(id) ON DELETE SET NULL,
+  created_by_user_id UUID REFERENCES system_users(id) ON DELETE SET NULL,
+  title TEXT NOT NULL,
+  notes TEXT,
+  status TEXT NOT NULL DEFAULT 'open'
+    CHECK (status IN ('open', 'completed', 'cancelled')),
+  priority TEXT NOT NULL DEFAULT 'normal'
+    CHECK (priority IN ('low', 'normal', 'high', 'urgent')),
+  due_at TIMESTAMPTZ,
+  completed_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE TABLE IF NOT EXISTS lead_pipeline_activities (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  client_profile_id UUID NOT NULL REFERENCES client_profiles(id) ON DELETE CASCADE,
+  actor_user_id UUID REFERENCES system_users(id) ON DELETE SET NULL,
+  activity_type TEXT NOT NULL
+    CHECK (activity_type IN (
+      'created',
+      'stage_change',
+      'priority_change',
+      'owner_change',
+      'note',
+      'follow_up_scheduled',
+      'follow_up_updated',
+      'follow_up_completed',
+      'converted'
+    )),
+  title TEXT NOT NULL,
+  details TEXT,
+  metadata JSONB NOT NULL DEFAULT '{}'::jsonb,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+DROP TRIGGER IF EXISTS set_lead_follow_ups_updated_at ON lead_follow_ups;
+CREATE TRIGGER set_lead_follow_ups_updated_at
+BEFORE UPDATE ON lead_follow_ups
+FOR EACH ROW
+EXECUTE FUNCTION set_updated_at();
+
+CREATE INDEX IF NOT EXISTS idx_client_profiles_pipeline_stage
+  ON client_profiles(pipeline_stage);
+CREATE INDEX IF NOT EXISTS idx_client_profiles_next_follow_up_at
+  ON client_profiles(next_follow_up_at);
+CREATE INDEX IF NOT EXISTS idx_client_profiles_lead_owner_user_id
+  ON client_profiles(lead_owner_user_id);
+CREATE INDEX IF NOT EXISTS idx_lead_follow_ups_client_status_due
+  ON lead_follow_ups(client_profile_id, status, due_at);
+CREATE INDEX IF NOT EXISTS idx_lead_follow_ups_assignee_status_due
+  ON lead_follow_ups(assigned_to_user_id, status, due_at);
+CREATE INDEX IF NOT EXISTS idx_lead_pipeline_activities_client_created
+  ON lead_pipeline_activities(client_profile_id, created_at DESC);
+
+-- -----------------------------------------------------
 -- Staff and team management
 -- -----------------------------------------------------
 

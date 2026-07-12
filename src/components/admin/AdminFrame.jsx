@@ -9,6 +9,7 @@ const studioNavGroups = [
     items: [
       { to: '/admin/dashboard', label: 'Overview', module: 'dashboard' },
       { to: '/admin/clients', label: 'Clients', module: 'clients' },
+      { to: '/admin/leads', label: 'Leads & Intake', module: 'clients' },
       { to: '/admin/inbox', label: 'Secure Inbox', module: 'inbox' },
       { to: '/admin/scheduler', label: 'Sessions', module: 'sessions' },
       { to: '/admin/session-changes', label: 'Session Changes', module: 'sessions' },

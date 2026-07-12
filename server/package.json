@@ -18,6 +18,7 @@
     "db:seed-owner-temporary": "node scripts/seed-owner-temporary-password.cjs",
     "db:migrate-founder-availability": "node scripts/create-founder-availability-settings.cjs",
     "db:migrate-client-portal-foundation": "node scripts/ensure-client-portal-foundation.cjs",
+    "db:migrate-client-portal-invites": "node scripts/repair-client-portal-invites.cjs",
     "db:migrate-developer-access": "node scripts/ensure-developer-access.cjs",
     "db:seed-developer-temporary": "node scripts/seed-developer-temporary-password.cjs",
     "db:migrate-developer-operations": "node scripts/ensure-developer-operations.cjs",
@@ -29,6 +30,7 @@
     "db:migrate-account-governance": "node scripts/ensure-account-governance.cjs",
     "db:migrate-team-management": "node scripts/ensure-team-management.cjs",
     "db:migrate-client-360": "node scripts/ensure-client-360.cjs",
+    "db:migrate-lead-pipeline": "node scripts/ensure-lead-pipeline.cjs",
     "db:migrate-notification-center": "node scripts/ensure-notification-center.cjs",
     "db:migrate:ordered": "node scripts/run-ordered-migrations.cjs"
   },

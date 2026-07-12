@@ -74,6 +74,14 @@ const {
   saveClientCarePlan,
   updateClientCareAction,
 } = require('../services/client360.service')
+const {
+  addLeadNote,
+  createLeadFollowUp,
+  getLeadDetail,
+  listLeadPipeline,
+  updateLeadFollowUp,
+  updateLeadProfile,
+} = require('../services/leadPipeline.service')
 
 const router = express.Router()
 
@@ -2854,6 +2862,293 @@ router.patch('/clients/:clientId/care-actions/:actionId', requireAdmin, async (r
   }
 })
 // client-360-pass-27-end
+
+
+// leads-intake-pipeline-pass-28-start
+const leadPipelineUpdateSchema = z.object({
+  pipelineStage: z.enum([
+    'new_inquiry',
+    'contacted',
+    'consultation_booked',
+    'qualified',
+    'nurturing',
+    'converted',
+    'not_a_fit',
+  ]).optional(),
+  priority: z.enum(['low', 'normal', 'high', 'urgent']).optional(),
+  ownerUserId: z.string().uuid().nullable().optional(),
+  summary: z.string().trim().max(6000).optional(),
+  lostReason: z.string().trim().max(4000).optional(),
+  nextFollowUpAt: z.string().trim().nullable().optional(),
+})
+
+const leadFollowUpCreateSchema = z.object({
+  title: z.string().trim().min(1, 'Follow-up title is required.').max(240),
+  notes: z.string().trim().max(4000).optional().default(''),
+  assignedToUserId: z.string().uuid().nullable().optional(),
+  priority: z.enum(['low', 'normal', 'high', 'urgent']).optional().default('normal'),
+  dueAt: z.string().trim().nullable().optional(),
+})
+
+const leadFollowUpUpdateSchema = leadFollowUpCreateSchema.partial().extend({
+  status: z.enum(['open', 'completed', 'cancelled']).optional(),
+})
+
+const leadNoteSchema = z.object({
+  note: z.string().trim().min(1, 'Write a note before saving.').max(6000),
+})
+
+router.get('/lead-pipeline', requireAdmin, async (req, res, next) => {
+  try {
+    const teamUserId = req.user?.role === 'staff' ? req.user.id : null
+    return res.json({
+      ok: true,
+      ...(await listLeadPipeline(teamUserId)),
+    })
+  } catch (error) {
+    return next(error)
+  }
+})
+
+router.get('/lead-pipeline/:clientId', requireAdmin, async (req, res, next) => {
+  try {
+    const detail = await getLeadDetail(req.params.clientId)
+
+    if (!detail) {
+      return res.status(404).json({ ok: false, error: 'Lead profile not found.' })
+    }
+
+    return res.json({ ok: true, detail })
+  } catch (error) {
+    return next(error)
+  }
+})
+
+router.patch('/lead-pipeline/:clientId', requireAdmin, async (req, res, next) => {
+  const parsed = leadPipelineUpdateSchema.safeParse(req.body)
+
+  if (!parsed.success) {
+    return res.status(400).json({
+      ok: false,
+      error: parsed.error.issues[0]?.message || 'Please check the lead details.',
+    })
+  }
+
+  try {
+    const updated = await updateLeadProfile(req.params.clientId, parsed.data, req.user.id)
+
+    if (!updated) {
+      return res.status(404).json({ ok: false, error: 'Lead profile not found.' })
+    }
+
+    await pool.query(
+      `
+      INSERT INTO audit_logs (
+        actor_user_id,
+        action,
+        entity_type,
+        entity_id,
+        before_data,
+        after_data,
+        ip_address,
+        user_agent
+      )
+      VALUES ($1, 'lead_pipeline_profile_updated', 'client_profiles', $2, $3::jsonb, $4::jsonb, $5, $6)
+      `,
+      [
+        req.user.id,
+        req.params.clientId,
+        JSON.stringify(updated.before),
+        JSON.stringify(updated.after),
+        req.ip || null,
+        req.get('user-agent') || null,
+      ],
+    )
+
+    return res.json({
+      ok: true,
+      message: parsed.data.pipelineStage === 'converted'
+        ? 'Lead converted to an active client.'
+        : 'Lead details saved.',
+      detail: await getLeadDetail(req.params.clientId),
+      pipeline: await listLeadPipeline(req.user?.role === 'staff' ? req.user.id : null),
+    })
+  } catch (error) {
+    if (error.code === 'INVALID_LEAD_OWNER') {
+      return res.status(400).json({ ok: false, error: error.message })
+    }
+    return next(error)
+  }
+})
+
+router.post('/lead-pipeline/:clientId/follow-ups', requireAdmin, async (req, res, next) => {
+  const parsed = leadFollowUpCreateSchema.safeParse(req.body)
+
+  if (!parsed.success) {
+    return res.status(400).json({
+      ok: false,
+      error: parsed.error.issues[0]?.message || 'Please check the follow-up details.',
+    })
+  }
+
+  try {
+    const followUp = await createLeadFollowUp(
+      req.params.clientId,
+      parsed.data,
+      req.user.id,
+    )
+
+    if (!followUp) {
+      return res.status(404).json({ ok: false, error: 'Lead profile not found.' })
+    }
+
+    await pool.query(
+      `
+      INSERT INTO audit_logs (
+        actor_user_id,
+        action,
+        entity_type,
+        entity_id,
+        after_data,
+        ip_address,
+        user_agent
+      )
+      VALUES ($1, 'lead_follow_up_created', 'lead_follow_ups', $2, $3::jsonb, $4, $5)
+      `,
+      [
+        req.user.id,
+        followUp.id,
+        JSON.stringify(followUp),
+        req.ip || null,
+        req.get('user-agent') || null,
+      ],
+    )
+
+    return res.status(201).json({
+      ok: true,
+      message: 'Lead follow-up scheduled.',
+      detail: await getLeadDetail(req.params.clientId),
+      pipeline: await listLeadPipeline(req.user?.role === 'staff' ? req.user.id : null),
+    })
+  } catch (error) {
+    if (error.code === 'INVALID_FOLLOW_UP_ASSIGNEE') {
+      return res.status(400).json({ ok: false, error: error.message })
+    }
+    return next(error)
+  }
+})
+
+router.patch('/lead-pipeline/:clientId/follow-ups/:followUpId', requireAdmin, async (req, res, next) => {
+  const parsed = leadFollowUpUpdateSchema.safeParse(req.body)
+
+  if (!parsed.success) {
+    return res.status(400).json({
+      ok: false,
+      error: parsed.error.issues[0]?.message || 'Please check the follow-up details.',
+    })
+  }
+
+  try {
+    const updated = await updateLeadFollowUp(
+      req.params.clientId,
+      req.params.followUpId,
+      parsed.data,
+      req.user.id,
+    )
+
+    if (!updated) {
+      return res.status(404).json({ ok: false, error: 'Lead follow-up not found.' })
+    }
+
+    await pool.query(
+      `
+      INSERT INTO audit_logs (
+        actor_user_id,
+        action,
+        entity_type,
+        entity_id,
+        before_data,
+        after_data,
+        ip_address,
+        user_agent
+      )
+      VALUES ($1, 'lead_follow_up_updated', 'lead_follow_ups', $2, $3::jsonb, $4::jsonb, $5, $6)
+      `,
+      [
+        req.user.id,
+        req.params.followUpId,
+        JSON.stringify(updated.before),
+        JSON.stringify(updated.after),
+        req.ip || null,
+        req.get('user-agent') || null,
+      ],
+    )
+
+    return res.json({
+      ok: true,
+      message: updated.after.status === 'completed'
+        ? 'Lead follow-up completed.'
+        : 'Lead follow-up updated.',
+      detail: await getLeadDetail(req.params.clientId),
+      pipeline: await listLeadPipeline(req.user?.role === 'staff' ? req.user.id : null),
+    })
+  } catch (error) {
+    if (error.code === 'INVALID_FOLLOW_UP_ASSIGNEE') {
+      return res.status(400).json({ ok: false, error: error.message })
+    }
+    return next(error)
+  }
+})
+
+router.post('/lead-pipeline/:clientId/notes', requireAdmin, async (req, res, next) => {
+  const parsed = leadNoteSchema.safeParse(req.body)
+
+  if (!parsed.success) {
+    return res.status(400).json({
+      ok: false,
+      error: parsed.error.issues[0]?.message || 'Please check the note.',
+    })
+  }
+
+  try {
+    const activity = await addLeadNote(req.params.clientId, parsed.data.note, req.user.id)
+
+    if (!activity) {
+      return res.status(404).json({ ok: false, error: 'Lead profile not found.' })
+    }
+
+    await pool.query(
+      `
+      INSERT INTO audit_logs (
+        actor_user_id,
+        action,
+        entity_type,
+        entity_id,
+        after_data,
+        ip_address,
+        user_agent
+      )
+      VALUES ($1, 'lead_pipeline_note_added', 'client_profiles', $2, $3::jsonb, $4, $5)
+      `,
+      [
+        req.user.id,
+        req.params.clientId,
+        JSON.stringify({ activityId: activity.id }),
+        req.ip || null,
+        req.get('user-agent') || null,
+      ],
+    )
+
+    return res.status(201).json({
+      ok: true,
+      message: 'Lead note added.',
+      detail: await getLeadDetail(req.params.clientId),
+    })
+  } catch (error) {
+    return next(error)
+  }
+})
+// leads-intake-pipeline-pass-28-end
 
 // phase-3-8-follow-up-care-queue-start
 router.get('/follow-ups', requireAdmin, async (req, res, next) => {

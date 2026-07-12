@@ -1089,6 +1089,45 @@ export async function updateClientPortalInboxConversation(conversationId, status
 }
 // secure-client-inbox-pass-22-api-end
 
+
+// leads-intake-pipeline-pass-28-api-start
+export async function getAdminLeadPipeline() {
+  return apiRequest('/api/admin/lead-pipeline')
+}
+
+export async function getAdminLeadDetail(clientId) {
+  return apiRequest(`/api/admin/lead-pipeline/${clientId}`)
+}
+
+export async function updateAdminLead(clientId, payload) {
+  return apiRequest(`/api/admin/lead-pipeline/${clientId}`, {
+    method: 'PATCH',
+    body: JSON.stringify(payload),
+  })
+}
+
+export async function createAdminLeadFollowUp(clientId, payload) {
+  return apiRequest(`/api/admin/lead-pipeline/${clientId}/follow-ups`, {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  })
+}
+
+export async function updateAdminLeadFollowUp(clientId, followUpId, payload) {
+  return apiRequest(`/api/admin/lead-pipeline/${clientId}/follow-ups/${followUpId}`, {
+    method: 'PATCH',
+    body: JSON.stringify(payload),
+  })
+}
+
+export async function addAdminLeadNote(clientId, note) {
+  return apiRequest(`/api/admin/lead-pipeline/${clientId}/notes`, {
+    method: 'POST',
+    body: JSON.stringify({ note }),
+  })
+}
+// leads-intake-pipeline-pass-28-api-end
+
 // unified-notification-center-pass-25-api-start
 function buildNotificationQuery(filters = {}) {
   const params = new URLSearchParams()
