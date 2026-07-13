@@ -4,6 +4,7 @@ import './ClientPortalChrome.css'
 
 const portalLinks = [
   ['/client-portal/home', 'Home'],
+  ['/client-portal/circle', 'The Circle'],
   ['/client-portal/sessions', 'Sessions'],
   ['/client-portal/messages', 'Messages'],
 ]

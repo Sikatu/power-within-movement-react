@@ -8,6 +8,7 @@ import Contact from './pages/Contact.jsx'
 import ClientPortalInvite from './pages/ClientPortalInvite.jsx'
 import ClientPortalLogin from './pages/ClientPortalLogin.jsx'
 import ClientPortalDashboard from './pages/ClientPortalDashboard.jsx'
+import ClientPortalCircle from './pages/ClientPortalCircle.jsx'
 import ClientPortalMessages from './pages/ClientPortalMessages.jsx'
 import ClientPortalSessions from './pages/ClientPortalSessions.jsx'
 import Experiences from './pages/Experiences.jsx'
@@ -113,6 +114,10 @@ const routeMetadata = {
     title: 'My Sessions | Power Within Collective',
     description: 'Book and manage private Power Within Collective client sessions.',
   },
+  '/client-portal/circle': {
+    title: 'The Circle | Power Within Collective',
+    description: 'A private Power Within Collective community for member reflection, encouragement, and conversation.',
+  },
   '/client-portal/messages': {
     title: 'Private Messages | Power Within Collective',
     description: 'Secure private client communication with the Power Within Collective team.',
@@ -201,6 +206,7 @@ function AppShell() {
         <Route path="/client-portal/invite/:token" element={<ClientPortalInvite />} />
         <Route path="/client-portal/dashboard" element={<Navigate to="/client-portal/home" replace />} />
         <Route path="/client-portal/home" element={<ClientPortalDashboard />} />
+        <Route path="/client-portal/circle" element={<ClientPortalCircle />} />
         <Route path="/client-portal/sessions" element={<ClientPortalSessions />} />
         <Route path="/client-portal/messages" element={<ClientPortalMessages />} />
         <Route path="/client-portal/messages/:conversationId" element={<ClientPortalMessages />} />
