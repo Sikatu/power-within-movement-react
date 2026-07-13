@@ -158,10 +158,9 @@
 
 .about-team-grid img {
   width: 100%;
-  aspect-ratio: 4 / 4.2;
+  height: auto;
   margin-bottom: 18px;
   border-radius: 16px;
-  object-fit: cover;
 }
 
 .about-team-grid article > span {
@@ -304,7 +303,7 @@
   .about-team-grid img {
     grid-row: 1 / 4;
     width: 112px;
-    height: 142px;
+    height: auto;
     margin: 0;
     border-radius: 13px;
   }
@@ -375,6 +374,5 @@
 
   .about-team-grid img {
     width: 94px;
-    height: 128px;
   }
 }
