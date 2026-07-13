@@ -1,9 +1,11 @@
 # Power Within Movement
 
-The frontend is intentionally at a clean-slate checkpoint.
+The frontend is being rebuilt from the approved elevated design handoff. The first implementation slice includes the shared visual foundation and complete responsive Home experience.
 
-- `src/App.jsx` renders no interface.
-- The previous pages, components, styles, visual assets, public site files, and UI helper scripts have been removed.
-- `src/lib/nativeApi.js`, `src/lib/errorReporter.js`, and the complete `server/` application remain available for the new frontend integration.
+- `src/pages/Home.jsx` contains the handoff-driven Home page.
+- `src/components/` contains the new shared header and footer.
+- `src/styles/` contains the new design tokens and global styles.
+- Routes not yet rebuilt display a temporary rebuild notice instead of restoring retired UI.
+- `src/lib/nativeApi.js`, `src/lib/errorReporter.js`, and the complete `server/` application remain available for continued frontend integration.
 
-Run `npm run dev` to start the blank Vite frontend and `npm --prefix server run dev` to start the existing backend.
+Run `npm run dev` to start the Vite frontend and `npm --prefix server run dev` to start the existing backend.
