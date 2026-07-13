@@ -181,8 +181,8 @@ body.admin-app-mode {
   background: #fffaf6;
 }
 
-body.admin-app-mode header,
-body.admin-app-mode footer,
+body.admin-app-mode #root > header,
+body.admin-app-mode #root > footer,
 body.admin-app-mode .site-header,
 body.admin-app-mode .main-header,
 body.admin-app-mode .footer,

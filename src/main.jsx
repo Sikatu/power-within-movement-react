@@ -4,6 +4,7 @@ import App from './App.jsx'
 import AppErrorBoundary from './components/AppErrorBoundary.jsx'
 import { installGlobalErrorReporting } from './lib/errorReporter.js'
 import './styles/global.css'
+import './styles/interface-polish.css'
 
 installGlobalErrorReporting()
 
@@ -14,4 +15,3 @@ ReactDOM.createRoot(document.getElementById('root')).render(
     </AppErrorBoundary>
   </React.StrictMode>,
 )
-

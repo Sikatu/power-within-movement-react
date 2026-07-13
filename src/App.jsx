@@ -205,6 +205,15 @@ function RouteMetadata() {
       document.head.appendChild(canonical)
     }
     canonical.setAttribute('href', canonicalUrl)
+
+    const surface = pathname.startsWith('/admin')
+      ? 'admin'
+      : pathname.startsWith('/client-portal')
+        ? 'client'
+        : 'public'
+
+    document.body.dataset.pwcSurface = surface
+    document.body.dataset.pwcRoute = pathname
   }, [pathname])
 
   return null
@@ -304,11 +313,15 @@ function App() {
       <BackToTopButton />
       <ScrollToHash />
       <RouteMetadata />
+      <a className="skip-to-content" href="#main-content">
+        Skip to main content
+      </a>
       <Navbar />
       <ScrollToTop />
 
-      <Suspense fallback={<PageLoading />}>
-        <Routes>
+      <div id="main-content" className="app-route-content" tabIndex="-1">
+        <Suspense fallback={<PageLoading />}>
+          <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/experiences" element={<Experiences />} />
         <Route path="/appointments" element={<Appointments />} />
@@ -562,8 +575,9 @@ function App() {
         <Route path="/personal-presence-consultation" element={<SessionRequest />} />
         <Route path="/consultation" element={<SessionRequest />} />
         <Route path="*" element={<NotFound />} />
-        </Routes>
-      </Suspense>
+          </Routes>
+        </Suspense>
+      </div>
 
       <Footer />
     </BrowserRouter>
@@ -571,7 +585,6 @@ function App() {
 }
 
 export default App
-
 
 
 

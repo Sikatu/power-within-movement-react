@@ -22,18 +22,29 @@ function Navbar() {
     return () => window.removeEventListener('resize', syncMobileState)
   }, [])
 
+  useEffect(() => {
+    if (!isOpen) return undefined
+
+    const handleEscape = (event) => {
+      if (event.key === 'Escape') setIsOpen(false)
+    }
+
+    document.addEventListener('keydown', handleEscape)
+    return () => document.removeEventListener('keydown', handleEscape)
+  }, [isOpen])
+
   const closeMenu = () => setIsOpen(false)
   const shouldShowLinks = !isMobile || isOpen
 
   return (
     <header className="site-header">
       <nav className="navbar navbar-premium">
-                        <NavLink to="/" className="premium-logo-image" onClick={closeMenu}>
+        <NavLink to="/" className="premium-logo-image" onClick={closeMenu}>
           <img src={headerLogo} alt="Power Within Collective" />
         </NavLink>
 
         {shouldShowLinks && (
-          <ul className={isOpen ? 'nav-links open' : 'nav-links'}>
+          <ul id="primary-navigation" className={isOpen ? 'nav-links open' : 'nav-links'}>
             <li><NavLink to="/" onClick={closeMenu}>Home</NavLink></li>
             <li><NavLink to="/experiences" onClick={closeMenu}>Experiences</NavLink></li>
             <li><NavLink to="/resources" onClick={closeMenu}>The Vault</NavLink></li>
@@ -67,6 +78,7 @@ function Navbar() {
             type="button"
             aria-label={isOpen ? 'Close navigation menu' : 'Open navigation menu'}
             aria-expanded={isOpen}
+            aria-controls="primary-navigation"
             onClick={() => setIsOpen(!isOpen)}
           >
             {isOpen ? 'Close' : 'Menu'}
@@ -78,8 +90,6 @@ function Navbar() {
 }
 
 export default Navbar
-
-
 
 
 

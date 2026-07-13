@@ -167,7 +167,7 @@ const workspaceDefinitions = [
   },
   {
     id: 'founder',
-    label: 'Founderâ€™s View',
+    label: 'Founder’s View',
     description: 'Owner clarity and approvals',
     to: '/admin/founders-view',
     roles: ['developer', 'owner'],
@@ -516,7 +516,7 @@ function AdminFrame({ children }) {
             <Link
               className="pwc-nav33-brand-link"
               to="/admin/dashboard"
-              aria-label="Power Within Collective â€” The Studio home"
+              aria-label="Power Within Collective — The Studio home"
               onClick={prepareForNavigation}
             >
               <span className="pwc-nav33-logo-mark" aria-hidden="true">
@@ -534,7 +534,7 @@ function AdminFrame({ children }) {
               aria-label="Close Studio navigation"
               onClick={() => setMobileOpen(false)}
             >
-              Ã—
+              ×
             </button>
           </div>
 
@@ -586,7 +586,7 @@ function AdminFrame({ children }) {
               ref={searchInputRef}
               type="search"
               value={searchQuery}
-              placeholder="Jump toâ€¦"
+              placeholder="Jump to…"
               onChange={(event) => setSearchQuery(event.target.value)}
             />
             <kbd>Ctrl K</kbd>
@@ -704,7 +704,7 @@ function AdminFrame({ children }) {
           <div className="pwc-nav33-utilities">
             <Link to="/" onClick={prepareForNavigation}>View public site</Link>
             <button type="button" disabled={signingOut} onClick={handleSignOut}>
-              {signingOut ? 'Signing outâ€¦' : 'Sign out'}
+              {signingOut ? 'Signing out…' : 'Sign out'}
             </button>
           </div>
         </div>
