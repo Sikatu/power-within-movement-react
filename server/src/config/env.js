@@ -1,6 +1,10 @@
 require('dotenv').config()
 
-const DEFAULT_DEV_CLIENT_ORIGIN = 'http://localhost:5173'
+const DEFAULT_DEV_CLIENT_ORIGINS = [
+  'http://localhost:5173',
+  'http://localhost:5174',
+]
+const DEFAULT_DEV_CLIENT_ORIGIN = DEFAULT_DEV_CLIENT_ORIGINS[0]
 const DEFAULT_DEV_JWT_SECRET = 'change-this-dev-secret-before-production'
 
 function parseCsv(value, fallback = []) {
@@ -33,10 +37,13 @@ function normalizeSameSite(value, fallback) {
 const nodeEnv = process.env.NODE_ENV || 'development'
 const isProduction = nodeEnv === 'production'
 
-const clientOrigins = parseCsv(
+const configuredClientOrigins = parseCsv(
   process.env.CLIENT_ORIGINS || process.env.CLIENT_ORIGIN,
   [DEFAULT_DEV_CLIENT_ORIGIN],
 )
+const clientOrigins = isProduction
+  ? configuredClientOrigins
+  : [...new Set([...DEFAULT_DEV_CLIENT_ORIGINS, ...configuredClientOrigins])]
 
 const jwtSecret = process.env.JWT_SECRET || DEFAULT_DEV_JWT_SECRET
 

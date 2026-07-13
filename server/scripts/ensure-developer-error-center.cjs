@@ -84,6 +84,82 @@ async function main() {
       )
     `)
 
+    // Older installations may already have this table without the unique
+    // fingerprint constraint required by ON CONFLICT (fingerprint). Preserve
+    // the newest record and its accumulated occurrence history before repair.
+    await client.query(`
+      CREATE TEMP TABLE pwc_application_error_fingerprint_repair
+      ON COMMIT DROP
+      AS
+      SELECT
+        fingerprint,
+        (array_agg(
+          id
+          ORDER BY
+            last_seen_at DESC NULLS LAST,
+            updated_at DESC NULLS LAST,
+            created_at DESC NULLS LAST,
+            id DESC
+        ))[1] AS keeper_id,
+        LEAST(
+          SUM(GREATEST(COALESCE(occurrence_count, 1), 1)),
+          2147483647
+        )::INTEGER AS total_occurrence_count,
+        MIN(first_seen_at) AS earliest_first_seen_at,
+        MAX(last_seen_at) AS latest_last_seen_at
+      FROM application_errors
+      WHERE fingerprint IS NOT NULL
+      GROUP BY fingerprint
+      HAVING COUNT(*) > 1
+    `)
+
+    await client.query(`
+      UPDATE application_errors target
+      SET
+        occurrence_count = repair.total_occurrence_count,
+        first_seen_at = COALESCE(repair.earliest_first_seen_at, target.first_seen_at),
+        last_seen_at = COALESCE(repair.latest_last_seen_at, target.last_seen_at),
+        updated_at = now()
+      FROM pwc_application_error_fingerprint_repair repair
+      WHERE target.id = repair.keeper_id
+    `)
+
+    await client.query(`
+      DELETE FROM application_errors duplicate
+      USING pwc_application_error_fingerprint_repair repair
+      WHERE duplicate.fingerprint = repair.fingerprint
+        AND duplicate.id <> repair.keeper_id
+    `)
+
+    await client.query(`
+      DO $$
+      BEGIN
+        IF NOT EXISTS (
+          SELECT 1
+          FROM pg_index index_record
+          JOIN pg_class table_record
+            ON table_record.oid = index_record.indrelid
+          JOIN pg_namespace schema_record
+            ON schema_record.oid = table_record.relnamespace
+          JOIN pg_attribute attribute_record
+            ON attribute_record.attrelid = table_record.oid
+           AND attribute_record.attnum = ANY(index_record.indkey::smallint[])
+          WHERE schema_record.nspname = current_schema()
+            AND table_record.relname = 'application_errors'
+            AND index_record.indisunique
+            AND index_record.indpred IS NULL
+            AND index_record.indexprs IS NULL
+            AND index_record.indnkeyatts = 1
+            AND attribute_record.attname = 'fingerprint'
+        ) THEN
+          ALTER TABLE application_errors
+            ADD CONSTRAINT application_errors_fingerprint_unique
+            UNIQUE (fingerprint);
+        END IF;
+      END
+      $$
+    `)
+
     await client.query(`
       CREATE UNIQUE INDEX IF NOT EXISTS idx_application_errors_detector_key
       ON application_errors(detector_key)
