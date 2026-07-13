@@ -1437,7 +1437,6 @@ body[data-pwc-surface='admin'] :where(.pwc-admin-shell, .founder-home) :where(
   [class*='client-'][class*='card'],
   [class*='automation-'][class*='card'],
   [class*='circle-'][class*='card'],
-  .founder-home__panel,
   .founder-home__pulse > div,
   .developer-account-section,
   .developer-governance-card,
@@ -1522,7 +1521,7 @@ body[data-pwc-surface='admin'].founders-view-standalone-mode .founder-home__shel
 body[data-pwc-surface='admin'].founders-view-standalone-mode .founder-home__intro h1 {
   color: var(--pwc-elevated-ink) !important;
   font-family: var(--pwc-elevated-display) !important;
-  font-size: clamp(38px, 4.5vw, 54px) !important;
+  font-size: clamp(38px, 5vw, 62px) !important;
   font-weight: 600 !important;
   line-height: 0.98 !important;
 }
@@ -1920,14 +1919,13 @@ body[data-pwc-surface='admin'] .pwc-admin-auth-card h1 {
     .admin-inbox__metrics,
     .automation-studio-metrics,
     .circle-admin-metrics,
-    .founder-home__pulse,
     .founder-home__grid
   ) {
     grid-template-columns: minmax(0, 1fr) !important;
   }
 
   body[data-pwc-surface='admin'].founders-view-standalone-mode .founder-home__topbar {
-    position: static;
+    position: sticky;
   }
 
   body[data-pwc-surface='admin'].founders-view-standalone-mode .founder-home__intro {

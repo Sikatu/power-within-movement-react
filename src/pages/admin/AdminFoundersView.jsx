@@ -304,32 +304,34 @@ export default function AdminFoundersView() {
     <main className="founder-home">
       <FounderDeveloperBanner />
       <header className="founder-home__topbar">
-        <Link to="/admin/founders-view" className="founder-home__brand">
-          <span aria-hidden="true" />
-          <div>
-            <strong>Power Within Collective</strong>
-            <small>Founder’s View</small>
-          </div>
-        </Link>
+        <div className="founder-home__topbar-inner">
+          <Link to="/admin/founders-view" className="founder-home__brand">
+            <span aria-hidden="true" />
+            <div>
+              <strong>Power Within Collective</strong>
+              <small>Founder’s View</small>
+            </div>
+          </Link>
 
-        <div className="founder-home__top-actions">
-          <Link to="/admin/founders-calendar" className="founder-home__calendar-link">
-            Open calendar
-          </Link>
-          <Link to="/admin/founders-availability" className="founder-home__calendar-link">
-            Availability
-          </Link>
-          <Link to="/admin/dashboard" className="founder-home__studio-link">
-            Open The Studio
-          </Link>
-          <button
-            type="button"
-            className="founder-home__signout"
-            onClick={handleLogout}
-            disabled={isSigningOut}
-          >
-            {isSigningOut ? 'Signing out…' : 'Sign out'}
-          </button>
+          <div className="founder-home__top-actions">
+            <Link to="/admin/founders-calendar" className="founder-home__calendar-link">
+              Open calendar
+            </Link>
+            <Link to="/admin/founders-availability" className="founder-home__calendar-link">
+              Availability
+            </Link>
+            <Link to="/admin/dashboard" className="founder-home__studio-link">
+              Open The Studio
+            </Link>
+            <button
+              type="button"
+              className="founder-home__signout"
+              onClick={handleLogout}
+              disabled={isSigningOut}
+            >
+              {isSigningOut ? 'Signing out…' : 'Sign out'}
+            </button>
+          </div>
         </div>
       </header>
 
