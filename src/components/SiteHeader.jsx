@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react'
-import { NavLink } from 'react-router-dom'
+import { NavLink, useLocation } from 'react-router-dom'
 import logo from '../assets/images/logo.webp'
 import './SiteHeader.css'
 
 const navigation = [
   { label: 'Home', to: '/' },
-  { label: 'Experiences', to: '/experiences' },
+  { label: 'Experiences', to: '/experiences', relatedPaths: ['/color-analysis', '/style-analysis', '/blend-cosmetics', '/radiance-reclaimed'] },
   { label: 'The Vault', to: '/resources' },
   { label: 'Professionals', to: '/professionals' },
   { label: 'Podcast', to: '/podcast' },
@@ -16,6 +16,7 @@ const navigation = [
 
 function SiteHeader() {
   const [isOpen, setIsOpen] = useState(false)
+  const { pathname } = useLocation()
 
   useEffect(() => {
     if (!isOpen) return undefined
@@ -52,7 +53,7 @@ function SiteHeader() {
                 to={item.to}
                 end={item.to === '/'}
                 onClick={closeMenu}
-                className={({ isActive }) => (isActive ? 'is-active' : undefined)}
+                className={({ isActive }) => (isActive || item.relatedPaths?.includes(pathname) ? 'is-active' : undefined)}
               >
                 {item.label}
               </NavLink>
