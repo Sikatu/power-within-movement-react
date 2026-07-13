@@ -11,6 +11,7 @@ import RadianceReclaimed from './pages/RadianceReclaimed.jsx'
 import ResourceArticle from './pages/ResourceArticle.jsx'
 import Resources from './pages/Resources.jsx'
 import SignatureExperiencePage from './pages/SignatureExperiencePage.jsx'
+import TeenPrograms from './pages/TeenPrograms.jsx'
 
 const routeMetadata = {
   '/': {
@@ -72,6 +73,14 @@ const routeMetadata = {
   '/podcast': {
     title: 'Raising Her Confidence Podcast | Teen Confidence & Mother-Daughter Conversations',
     description: 'A podcast for mothers, mentors, and adults supporting girls through confidence, identity, emotional wellness, self-expression, and presence.',
+  },
+  '/teen-programs': {
+    title: 'Teen Confidence Programs for Girls | Power Within Collective',
+    description: 'Supportive teen confidence programs for girls and young women building identity, emotional awareness, self-expression, and grounded self-trust.',
+  },
+  '/teens': {
+    title: 'Teen Confidence Programs for Girls | Power Within Collective',
+    description: 'Supportive teen confidence programs for girls and young women building identity, emotional awareness, self-expression, and grounded self-trust.',
   },
 }
 
@@ -140,6 +149,8 @@ function AppShell() {
         <Route path="/professionals" element={<Professionals />} />
         <Route path="/power-within-professional" element={<Professionals />} />
         <Route path="/podcast" element={<Podcast />} />
+        <Route path="/teen-programs" element={<TeenPrograms />} />
+        <Route path="/teens" element={<TeenPrograms />} />
         <Route path="*" element={<BuildNotice />} />
       </Routes>
       <SiteFooter />

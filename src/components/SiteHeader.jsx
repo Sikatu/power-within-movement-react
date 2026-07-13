@@ -9,7 +9,7 @@ const navigation = [
   { label: 'The Vault', to: '/resources' },
   { label: 'Professionals', to: '/professionals', relatedPaths: ['/power-within-professional'] },
   { label: 'Podcast', to: '/podcast' },
-  { label: 'Teen Programs', to: '/teen-programs' },
+  { label: 'Teen Programs', to: '/teen-programs', relatedPaths: ['/teens'] },
   { label: 'About', to: '/about' },
   { label: 'Contact', to: '/contact' },
 ]
