@@ -306,17 +306,20 @@ function BackToTopButton() {
   )
 }
 
-function App() {
+function AppShell() {
+  const { pathname } = useLocation()
+  const isPublicSurface = !pathname.startsWith('/admin') && !pathname.startsWith('/client-portal')
+
   return (
-    <BrowserRouter>
+    <>
       <InitialBrandLoader />
-      <BackToTopButton />
+      {isPublicSurface && <BackToTopButton />}
       <ScrollToHash />
       <RouteMetadata />
       <a className="skip-to-content" href="#main-content">
         Skip to main content
       </a>
-      <Navbar />
+      {isPublicSurface && <Navbar />}
       <ScrollToTop />
 
       <div id="main-content" className="app-route-content" tabIndex="-1">
@@ -579,13 +582,20 @@ function App() {
         </Suspense>
       </div>
 
-      <Footer />
+      {isPublicSurface && <Footer />}
+    </>
+  )
+}
+
+function App() {
+  return (
+    <BrowserRouter>
+      <AppShell />
     </BrowserRouter>
   )
 }
 
 export default App
-
 
 
 

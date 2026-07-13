@@ -1,9 +1,10 @@
 /*
- * Unified interface layer
+ * Canonical elevated interface
  *
- * This file is intentionally small and imported after the shared historical styles.
- * It provides shared accessibility, rhythm, and responsive behavior without
- * changing the established footer design or erasing page-specific art direction.
+ * This is the production visual system for public, client, Studio, Founder, and
+ * Developer surfaces. Route and page styles retain functional layout ownership;
+ * this layer owns the final tokens, shared chrome, accessibility, and responsive
+ * behavior. The established footer design remains unchanged.
  */
 
 :root {

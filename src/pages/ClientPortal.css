@@ -7,17 +7,6 @@
 */
 /* phase-3-9b-client-portal-visual-polish-start */
 
-body.client-portal-mode #root > header,
-body.client-portal-mode #root > footer,
-body.client-portal-mode .site-header,
-body.client-portal-mode .site-footer,
-body.client-portal-mode .main-header,
-body.client-portal-mode .main-footer,
-body.client-portal-mode .app-header,
-body.client-portal-mode .app-footer {
-  display: none !important;
-}
-
 body.client-portal-mode {
   background:
     radial-gradient(circle at top left, rgba(196, 154, 90, 0.18), transparent 36%),
