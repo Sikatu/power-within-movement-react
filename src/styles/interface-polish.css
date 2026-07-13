@@ -1326,6 +1326,7 @@ body[data-pwc-surface='admin'] :where(button, input, select, textarea) {
 }
 
 body[data-pwc-surface='admin'] .pwc-nav33-shell {
+  --nav33-width: 250px;
   grid-template-columns: 250px minmax(0, 1fr) !important;
   min-height: 100vh !important;
   background: var(--pwc-elevated-bg) !important;
@@ -1334,8 +1335,10 @@ body[data-pwc-surface='admin'] .pwc-nav33-shell {
 body[data-pwc-surface='admin'] .pwc-nav33-sidebar {
   position: sticky !important;
   top: 0 !important;
+  width: 250px !important;
   height: 100vh !important;
   padding: 24px 18px 18px !important;
+  box-sizing: border-box;
   border: 0 !important;
   background: linear-gradient(180deg, #2f2024, #241619) !important;
   box-shadow: none !important;
@@ -1884,12 +1887,20 @@ body[data-pwc-surface='admin'] .pwc-admin-auth-card h1 {
 
   body[data-pwc-surface='admin'] .pwc-nav33-sidebar {
     position: fixed !important;
-    z-index: 100 !important;
+    z-index: 220 !important;
     inset: 0 auto 0 0 !important;
     width: min(86vw, 320px) !important;
     height: 100dvh !important;
     transform: translateX(-102%);
     transition: transform 220ms ease;
+  }
+
+  body[data-pwc-surface='admin'] .pwc-nav33-mobile-backdrop {
+    z-index: 210 !important;
+  }
+
+  body[data-pwc-surface='admin'] .pwc-nav33-footer .pwc-notification-trigger span {
+    display: inline !important;
   }
 
   body[data-pwc-surface='admin'] .pwc-nav33-sidebar.is-open {
