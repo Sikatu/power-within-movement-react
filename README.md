@@ -1,6 +1,6 @@
 # Power Within Movement
 
-The frontend is being rebuilt from the approved elevated design handoff. The current implementation includes the shared visual foundation, Home, Experiences, the four Signature Experience routes, The Vault resource environment, Power Within Professional, the Raising Her Confidence Podcast, Teen Programs, and About.
+The frontend is being rebuilt from the approved elevated design handoff. The current implementation includes the shared visual foundation, Home, Experiences, the four Signature Experience routes, The Vault resource environment, Power Within Professional, the Raising Her Confidence Podcast, Teen Programs, About, and Contact.
 
 - `src/pages/Home.jsx` contains the handoff-driven Home page.
 - `src/pages/Experiences.jsx` contains the complete service overview, appointment options, and decision guidance.
@@ -12,6 +12,7 @@ The frontend is being rebuilt from the approved elevated design handoff. The cur
 - `src/pages/Podcast.jsx` contains the listening destinations, Spotify trailer, audience pathways, and conversation themes.
 - `src/pages/TeenPrograms.jsx` contains the complete confidence-support journey for teen girls, mothers, mentors, and families.
 - `src/pages/About.jsx` contains Kim Mittelstadt's founder story, earned wisdom, and the Collective Team.
+- `src/pages/Contact.jsx` contains the guided inquiry form and routes public submissions into the existing admin lead system.
 - `src/components/` contains the new shared header and footer.
 - `src/styles/` contains the new design tokens and global styles.
 - Routes not yet rebuilt display a temporary rebuild notice instead of restoring retired UI.

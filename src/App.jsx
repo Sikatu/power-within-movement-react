@@ -4,6 +4,7 @@ import SiteFooter from './components/SiteFooter.jsx'
 import SiteHeader from './components/SiteHeader.jsx'
 import { signatureExperiences } from './data/signatureExperiences.js'
 import About from './pages/About.jsx'
+import Contact from './pages/Contact.jsx'
 import Experiences from './pages/Experiences.jsx'
 import Home from './pages/Home.jsx'
 import Podcast from './pages/Podcast.jsx'
@@ -87,6 +88,10 @@ const routeMetadata = {
     title: 'About Kim Mittelstadt | Power Within Collective',
     description: 'Learn about Kim Mittelstadt, founder of Power Within Collective, and the whole-person foundation behind her confidence, style, beauty, and transformation work.',
   },
+  '/contact': {
+    title: 'Contact Power Within Collective | Private Consultations & Speaking',
+    description: 'Contact Power Within Collective about private consultations, color analysis, personal style guidance, Radiance Reclaimed, professional education, speaking, podcast, or collaboration.',
+  },
 }
 
 function RouteMetadata() {
@@ -135,6 +140,11 @@ function BuildNotice() {
   )
 }
 
+function ContactRoute() {
+  const { search } = useLocation()
+  return <Contact key={search || 'general-contact'} />
+}
+
 function AppShell() {
   return (
     <>
@@ -157,6 +167,7 @@ function AppShell() {
         <Route path="/teen-programs" element={<TeenPrograms />} />
         <Route path="/teens" element={<TeenPrograms />} />
         <Route path="/about" element={<About />} />
+        <Route path="/contact" element={<ContactRoute />} />
         <Route path="*" element={<BuildNotice />} />
       </Routes>
       <SiteFooter />

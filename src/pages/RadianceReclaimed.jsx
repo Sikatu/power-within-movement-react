@@ -21,7 +21,7 @@ function RadianceReclaimed() {
             <p className="eyebrow">Radiance Reclaimed™</p>
             <h2>A personal, high-touch experience for the woman ready to inhabit the life that fits who she has become.</h2>
             <p>This is not about becoming someone new. It is about returning to the woman who was always there — more whole, more deliberate, and more willing to inhabit her own life without apology.</p>
-            <Link className="button radiance-gold-button" to="/contact">Apply for Radiance Reclaimed™</Link>
+            <Link className="button radiance-gold-button" to="/contact?interest=radiance">Apply for Radiance Reclaimed™</Link>
           </header>
 
           <div className="radiance-story-grid">
@@ -90,7 +90,7 @@ function RadianceReclaimed() {
             <h3>Radiance Reclaimed™ is offered by application only.</h3>
             <p>If there appears to be alignment, you will be invited into a guided conversation — not a sales call, but a genuine exploration of where you are, what you are navigating, and whether this experience is the right fit.</p>
             <div>
-              <Link className="button radiance-gold-button" to="/contact">Apply for Radiance Reclaimed™</Link>
+              <Link className="button radiance-gold-button" to="/contact?interest=radiance">Apply for Radiance Reclaimed™</Link>
               <Link className="button radiance-outline-button" to="/experiences">Explore Other Experiences</Link>
             </div>
           </section>

@@ -46,7 +46,7 @@ function SiteFooter() {
           <h3>Resources</h3>
           <Link to="/resources#100-conversation-starters">100 Conversation Starters</Link>
           <Link to="/#newsletter">Newsletter</Link>
-          <Link to="/contact">Book Kim to Speak</Link>
+          <Link to="/contact?interest=speaking">Book Kim to Speak</Link>
           <Link to="/#faq">FAQ</Link>
           <Link to="/privacy-policy">Privacy Policy</Link>
           <Link to="/terms-and-conditions">Terms &amp; Conditions</Link>

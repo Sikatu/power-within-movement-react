@@ -39,6 +39,7 @@ export const signatureExperiences = {
       'A cohesive palette designed to support confidence and presence',
     ],
     cta: 'Reserve Your Color Direction',
+    contactInterest: 'color-analysis',
   },
   style: {
     anchor: 'style-analysis',
@@ -70,6 +71,7 @@ export const signatureExperiences = {
       'A more cohesive and refined personal style direction',
     ],
     cta: 'Reserve Your Style Direction',
+    contactInterest: 'style-analysis',
   },
   makeup: {
     anchor: 'makeup-direction',
@@ -99,6 +101,7 @@ export const signatureExperiences = {
       'Guidance in developing or offering professional cosmetic lines with confidence and clarity',
     ],
     cta: 'Reserve Your Makeup Direction',
+    contactInterest: 'makeup-lesson',
   },
 }
 

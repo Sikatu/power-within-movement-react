@@ -24,7 +24,7 @@ const beginOptions = [
     title: 'Start with Clarity',
     text: 'A one-hour, whole-person conversation designed to identify what no longer feels aligned and begin mapping a more intentional path forward.',
     action: 'Book a Clarity Session',
-    to: '/contact',
+    to: '/contact?interest=clarity',
   },
   {
     number: '02',
@@ -66,7 +66,7 @@ function Home() {
           <p className="home-hero-lead">A premium whole-person experience for women in a new season who are ready for confidence, color, style, and presence to feel congruent again.</p>
           <div className="home-hero-actions">
             <Link className="button button-primary" to="/experiences">Explore Experiences</Link>
-            <Link className="button button-secondary" to="/contact">Book a Clarity Session</Link>
+            <Link className="button button-secondary" to="/contact?interest=clarity">Book a Clarity Session</Link>
             <Link className="button button-text" to="/professionals">For Professionals</Link>
           </div>
           <div className="home-focus-tags" aria-label="Power Within focus areas">
@@ -179,7 +179,7 @@ function Home() {
         <p>Whether you need clarity, a practical appointment, or a deeper whole-person experience, the next step can be calm, personal, and clear.</p>
         <div>
           <Link className="button button-primary" to="/experiences">Explore Experiences</Link>
-          <Link className="button button-secondary" to="/contact">Book a Clarity Session</Link>
+          <Link className="button button-secondary" to="/contact?interest=clarity">Book a Clarity Session</Link>
         </div>
       </section>
     </main>
