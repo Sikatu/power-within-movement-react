@@ -1,16 +1,9 @@
-# React + Vite
+# Power Within Movement
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+The frontend is intentionally at a clean-slate checkpoint.
 
-Currently, two official plugins are available:
+- `src/App.jsx` renders no interface.
+- The previous pages, components, styles, visual assets, public site files, and UI helper scripts have been removed.
+- `src/lib/nativeApi.js`, `src/lib/errorReporter.js`, and the complete `server/` application remain available for the new frontend integration.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
-
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+Run `npm run dev` to start the blank Vite frontend and `npm --prefix server run dev` to start the existing backend.
