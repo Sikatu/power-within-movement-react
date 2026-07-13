@@ -12,91 +12,6 @@ body.client-dashboard-mode {
   min-height: 100vh;
 }
 
-.client-dashboard-header {
-  position: sticky;
-  z-index: 40;
-  top: 0;
-  border-bottom: 1px solid var(--color-border);
-  background: rgba(249, 242, 236, 0.88);
-  backdrop-filter: blur(12px);
-}
-
-.client-dashboard-header > div {
-  display: flex;
-  width: min(100%, 1140px);
-  min-height: 66px;
-  margin: 0 auto;
-  padding: 10px 40px;
-  gap: 20px;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.client-dashboard-brand {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-}
-
-.client-dashboard-brand img {
-  width: 30px;
-  height: 30px;
-}
-
-.client-dashboard-brand strong {
-  color: var(--color-heading);
-  font-family: var(--font-display);
-  font-size: 17px;
-  font-weight: 600;
-}
-
-.client-dashboard-header-actions {
-  display: flex;
-  gap: 12px;
-  align-items: center;
-}
-
-.client-dashboard-header-actions > div {
-  text-align: right;
-}
-
-.client-dashboard-header-actions > div span {
-  display: block;
-  color: var(--color-gold-label);
-  font-size: 8px;
-  font-weight: 800;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-}
-
-.client-dashboard-header-actions > div strong {
-  display: block;
-  max-width: 180px;
-  overflow: hidden;
-  color: var(--color-heading);
-  font-size: 11px;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.client-dashboard-header-actions > a {
-  color: var(--color-link);
-  font-size: 11.5px;
-  font-weight: 700;
-}
-
-.client-dashboard-header-actions > button {
-  min-height: 38px;
-  padding: 0 18px;
-  border: 1px solid rgba(124, 81, 75, 0.25);
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.5);
-  color: var(--color-burgundy);
-  cursor: pointer;
-  font-size: 11.5px;
-  font-weight: 700;
-}
-
 .client-dashboard-main {
   width: min(100%, 1140px);
   margin: 0 auto;
@@ -544,21 +459,6 @@ body.client-dashboard-mode {
 }
 
 @media (max-width: 720px) {
-  .client-dashboard-header > div {
-    min-height: 60px;
-    padding: 10px 20px;
-  }
-
-  .client-dashboard-brand strong span,
-  .client-dashboard-header-actions > div,
-  .client-dashboard-header-actions > a {
-    display: none;
-  }
-
-  .client-dashboard-brand strong {
-    font-size: 15px;
-  }
-
   .client-dashboard-main {
     padding: 32px 20px 56px;
   }

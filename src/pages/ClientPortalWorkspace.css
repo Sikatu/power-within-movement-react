@@ -1,0 +1,966 @@
+.portal-workspace {
+  background:
+    radial-gradient(circle at 92% 5%, rgba(212, 167, 125, 0.13), transparent 27rem),
+    #f5eee8;
+  color: #461628;
+  min-height: 100vh;
+}
+
+.portal-workspace-inner {
+  margin: 0 auto;
+  max-width: 1320px;
+  padding: 76px clamp(24px, 5vw, 72px) 100px;
+}
+
+.portal-page-intro {
+  max-width: 785px;
+  padding-bottom: 48px;
+}
+
+.portal-page-intro .eyebrow,
+.portal-card-heading .eyebrow,
+.portal-modal > .eyebrow {
+  color: #ae6b43;
+  font-size: 0.68rem;
+  letter-spacing: 0.18em;
+  margin: 0 0 12px;
+  text-transform: uppercase;
+}
+
+.portal-page-intro h1,
+.portal-card-heading h2,
+.portal-modal h2,
+.message-thread-header h2,
+.session-upcoming-item h3,
+.session-history-list h3 {
+  font-family: var(--font-display);
+  font-weight: 500;
+}
+
+.portal-page-intro h1 {
+  font-size: clamp(2.55rem, 5vw, 4.4rem);
+  letter-spacing: -0.035em;
+  line-height: 0.97;
+  margin: 0 0 20px;
+}
+
+.portal-page-intro > p:last-child {
+  color: #785363;
+  font-size: 1rem;
+  line-height: 1.75;
+  margin: 0;
+  max-width: 670px;
+}
+
+.portal-card {
+  background: rgba(255, 253, 250, 0.94);
+  border: 1px solid rgba(90, 36, 54, 0.13);
+  border-radius: 24px;
+  box-shadow: 0 22px 55px rgba(80, 36, 49, 0.07);
+}
+
+.portal-card-heading {
+  align-items: flex-start;
+  display: flex;
+  gap: 20px;
+  justify-content: space-between;
+}
+
+.portal-card-heading h2 {
+  font-size: clamp(1.75rem, 3vw, 2.3rem);
+  line-height: 1;
+  margin: 0;
+}
+
+.portal-card-heading > span {
+  color: #9a7180;
+  flex: 0 0 auto;
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  padding-top: 7px;
+  text-transform: uppercase;
+}
+
+.portal-notice {
+  background: #f8f0e6;
+  border: 1px solid #d8b792;
+  border-radius: 13px;
+  color: #673422;
+  line-height: 1.55;
+  margin: -18px 0 30px;
+  padding: 13px 17px;
+}
+
+.portal-notice.is-error {
+  background: #fff2f2;
+  border-color: #d9a7a7;
+  color: #7d202b;
+}
+
+.portal-loading {
+  background: #fffdfa;
+  border: 1px solid rgba(90, 36, 54, 0.12);
+  border-radius: 22px;
+  color: #7a5965;
+  padding: 64px 24px;
+  text-align: center;
+}
+
+.portal-empty {
+  color: #856775;
+  line-height: 1.6;
+  padding: 28px 4px;
+}
+
+.portal-empty strong {
+  color: #4d1a2d;
+  display: block;
+  font-size: 1rem;
+  margin-bottom: 5px;
+}
+
+.portal-empty p {
+  margin: 0;
+}
+
+.portal-empty.is-dark,
+.portal-empty.is-dark strong {
+  color: rgba(255, 248, 242, 0.78);
+}
+
+.portal-form {
+  display: grid;
+  gap: 22px;
+}
+
+.portal-form label {
+  display: grid;
+  gap: 8px;
+}
+
+.portal-form label > span,
+.session-slots legend {
+  color: #5f3343;
+  font-size: 0.73rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.portal-form label > span em {
+  color: #9b7d87;
+  font-size: 0.66rem;
+  font-style: normal;
+  font-weight: 400;
+  margin-left: 5px;
+}
+
+.portal-form input,
+.portal-form select,
+.portal-form textarea {
+  background: #fffefa;
+  border: 1px solid rgba(82, 31, 48, 0.23);
+  border-radius: 12px;
+  color: #421426;
+  font: inherit;
+  line-height: 1.45;
+  outline: none;
+  padding: 13px 14px;
+  width: 100%;
+}
+
+.portal-form textarea {
+  min-height: 108px;
+  resize: vertical;
+}
+
+.portal-form input:focus,
+.portal-form select:focus,
+.portal-form textarea:focus {
+  border-color: #9e593c;
+  box-shadow: 0 0 0 3px rgba(158, 89, 60, 0.11);
+}
+
+.portal-primary-button,
+.message-toolbar > button {
+  background: #57172f;
+  border: 1px solid #57172f;
+  border-radius: 999px;
+  color: #fffaf5;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.72rem;
+  font-weight: 600;
+  justify-self: start;
+  letter-spacing: 0.11em;
+  min-height: 48px;
+  padding: 0 25px;
+  text-transform: uppercase;
+}
+
+.portal-primary-button:hover,
+.message-toolbar > button:hover {
+  background: #702440;
+}
+
+.portal-primary-button:disabled,
+.message-toolbar > button:disabled {
+  cursor: not-allowed;
+  opacity: 0.48;
+}
+
+/* Sessions */
+
+.session-grid {
+  align-items: start;
+  display: grid;
+  gap: 25px;
+  grid-template-columns: minmax(0, 1.12fr) minmax(340px, 0.88fr);
+}
+
+.session-booking-card,
+.session-upcoming-card,
+.session-history-card {
+  padding: clamp(27px, 3vw, 39px);
+}
+
+.session-booking-card .portal-card-heading,
+.session-upcoming-card .portal-card-heading {
+  margin-bottom: 30px;
+}
+
+.session-slots {
+  border: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+  margin: 0;
+  padding: 0;
+}
+
+.session-slots legend {
+  margin-bottom: 10px;
+  width: 100%;
+}
+
+.session-slots button {
+  background: transparent;
+  border: 1px solid rgba(91, 34, 52, 0.23);
+  border-radius: 999px;
+  color: #5c2a3d;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.8rem;
+  padding: 10px 15px;
+}
+
+.session-slots button:hover,
+.session-slots button.is-selected {
+  background: #57172f;
+  border-color: #57172f;
+  color: #fffaf5;
+}
+
+.session-slots p {
+  color: #9b7b86;
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+.session-upcoming-card {
+  background:
+    radial-gradient(circle at 100% 0%, rgba(205, 151, 106, 0.2), transparent 18rem),
+    #51162c;
+  border-radius: 24px;
+  box-shadow: 0 28px 65px rgba(73, 23, 42, 0.18);
+  color: #fffaf5;
+}
+
+.session-upcoming-card .portal-card-heading .eyebrow,
+.session-upcoming-card .portal-card-heading > span {
+  color: #ddb88f;
+}
+
+.session-upcoming-card .portal-card-heading h2 {
+  color: #fffaf5;
+}
+
+.session-upcoming-item {
+  border-top: 1px solid rgba(255, 248, 242, 0.17);
+  padding: 27px 0 4px;
+}
+
+.session-upcoming-item + .session-upcoming-item {
+  margin-top: 23px;
+}
+
+.portal-status-pill {
+  border: 1px solid rgba(232, 199, 165, 0.5);
+  border-radius: 99px;
+  color: #e7c49f;
+  display: inline-flex;
+  font-size: 0.62rem;
+  letter-spacing: 0.11em;
+  margin-bottom: 13px;
+  padding: 6px 10px;
+  text-transform: uppercase;
+}
+
+.session-upcoming-item h3 {
+  font-size: 1.55rem;
+  margin: 0 0 6px;
+}
+
+.session-upcoming-item > p {
+  color: rgba(255, 248, 242, 0.72);
+  font-size: 0.88rem;
+  line-height: 1.55;
+  margin: 0;
+}
+
+.session-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 22px;
+}
+
+.session-actions button {
+  background: transparent;
+  border: 1px solid rgba(255, 248, 242, 0.36);
+  border-radius: 999px;
+  color: #fffaf5;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.68rem;
+  letter-spacing: 0.07em;
+  padding: 9px 13px;
+  text-transform: uppercase;
+}
+
+.session-actions button:hover {
+  background: #fffaf5;
+  color: #51162c;
+}
+
+.session-pending-request {
+  background: rgba(255, 248, 242, 0.09);
+  border-radius: 12px;
+  margin-top: 20px;
+  padding: 13px 15px;
+}
+
+.session-pending-request strong {
+  color: #e7c49f;
+  font-size: 0.77rem;
+  text-transform: uppercase;
+}
+
+.session-pending-request p {
+  color: rgba(255, 248, 242, 0.7);
+  font-size: 0.8rem;
+  margin: 5px 0 0;
+}
+
+.session-history-card {
+  grid-column: 1 / -1;
+}
+
+.session-history-card .portal-card-heading {
+  margin-bottom: 20px;
+}
+
+.session-history-list article {
+  align-items: center;
+  border-top: 1px solid rgba(78, 24, 43, 0.12);
+  display: flex;
+  gap: 20px;
+  justify-content: space-between;
+  padding: 19px 0;
+}
+
+.session-history-list h3 {
+  font-size: 1.25rem;
+  margin: 0 0 4px;
+}
+
+.session-history-list p {
+  color: #8a6b77;
+  font-size: 0.82rem;
+  margin: 0;
+}
+
+.session-history-list article > span {
+  border: 1px solid rgba(78, 24, 43, 0.17);
+  border-radius: 99px;
+  color: #775262;
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+  padding: 7px 10px;
+  text-transform: uppercase;
+}
+
+/* Messages */
+
+.portal-message-intro {
+  padding-bottom: 34px;
+}
+
+.message-tabs {
+  border-bottom: 1px solid rgba(82, 31, 48, 0.16);
+  display: flex;
+  gap: 32px;
+  margin-bottom: 27px;
+}
+
+.message-tabs button {
+  align-items: center;
+  background: none;
+  border: 0;
+  border-bottom: 3px solid transparent;
+  color: #8a6975;
+  cursor: pointer;
+  display: flex;
+  font: inherit;
+  font-size: 0.75rem;
+  gap: 8px;
+  letter-spacing: 0.1em;
+  margin-bottom: -1px;
+  padding: 0 0 15px;
+  text-transform: uppercase;
+}
+
+.message-tabs button.is-active {
+  border-bottom-color: #7e324c;
+  color: #50162b;
+}
+
+.message-tabs button span,
+.message-conversation-list button em {
+  align-items: center;
+  background: #57172f;
+  border-radius: 99px;
+  color: #fffaf5;
+  display: inline-flex;
+  font-size: 0.65rem;
+  font-style: normal;
+  height: 21px;
+  justify-content: center;
+  min-width: 21px;
+  padding: 0 6px;
+}
+
+.message-toolbar {
+  align-items: center;
+  display: flex;
+  gap: 20px;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+
+.message-toolbar > div {
+  display: flex;
+  gap: 13px;
+}
+
+.message-toolbar > div strong,
+.message-toolbar > div span {
+  color: #674051;
+  font-size: 0.76rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.message-toolbar > div span {
+  color: #9b7d88;
+}
+
+.message-workspace {
+  background: #fffdfa;
+  border: 1px solid rgba(82, 31, 48, 0.13);
+  border-radius: 24px;
+  box-shadow: 0 25px 60px rgba(80, 36, 49, 0.08);
+  display: grid;
+  grid-template-columns: minmax(270px, 0.36fr) minmax(0, 0.64fr);
+  min-height: 650px;
+  overflow: hidden;
+}
+
+.message-conversation-list {
+  background: #fbf7f2;
+  border-right: 1px solid rgba(82, 31, 48, 0.12);
+  padding: 15px;
+}
+
+.message-conversation-list > button {
+  background: transparent;
+  border: 0;
+  border-radius: 14px;
+  color: #4d1a2d;
+  cursor: pointer;
+  display: block;
+  font: inherit;
+  padding: 17px;
+  text-align: left;
+  width: 100%;
+}
+
+.message-conversation-list > button + button {
+  margin-top: 5px;
+}
+
+.message-conversation-list > button:hover,
+.message-conversation-list > button.is-active {
+  background: #eee1d7;
+}
+
+.message-conversation-list button > span {
+  align-items: flex-start;
+  display: flex;
+  gap: 8px;
+  justify-content: space-between;
+}
+
+.message-conversation-list button strong {
+  font-size: 0.92rem;
+  line-height: 1.35;
+}
+
+.message-conversation-list button p {
+  color: #826471;
+  display: -webkit-box;
+  font-size: 0.79rem;
+  line-height: 1.45;
+  margin: 8px 0;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.message-conversation-list button small {
+  color: #a1818c;
+  font-size: 0.65rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.message-thread {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.message-thread > .portal-empty.is-large {
+  margin: auto;
+  padding: 50px;
+  text-align: center;
+}
+
+.message-thread-header {
+  align-items: center;
+  border-bottom: 1px solid rgba(82, 31, 48, 0.12);
+  display: flex;
+  gap: 20px;
+  justify-content: space-between;
+  padding: 25px 29px;
+}
+
+.message-thread-header p {
+  color: #ad704f;
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  margin: 0 0 5px;
+  text-transform: uppercase;
+}
+
+.message-thread-header h2 {
+  font-size: 1.7rem;
+  line-height: 1;
+  margin: 0 0 7px;
+}
+
+.message-thread-header span {
+  color: #947581;
+  font-size: 0.67rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.message-thread-header > button {
+  background: transparent;
+  border: 1px solid rgba(82, 31, 48, 0.23);
+  border-radius: 99px;
+  color: #632b41;
+  cursor: pointer;
+  flex: 0 0 auto;
+  font: inherit;
+  font-size: 0.65rem;
+  letter-spacing: 0.07em;
+  padding: 9px 12px;
+  text-transform: uppercase;
+}
+
+.message-thread-list {
+  background: linear-gradient(180deg, #fffdfa, #f9f2ec);
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 14px;
+  max-height: 560px;
+  min-height: 260px;
+  overflow-y: auto;
+  padding: 29px;
+}
+
+.message-thread-list article {
+  align-self: flex-start;
+  background: #fff;
+  border: 1px solid rgba(82, 31, 48, 0.12);
+  border-radius: 4px 18px 18px 18px;
+  box-shadow: 0 10px 25px rgba(67, 27, 41, 0.05);
+  max-width: 77%;
+  padding: 15px 17px;
+}
+
+.message-thread-list article.is-client {
+  align-self: flex-end;
+  background: #59182f;
+  border: 0;
+  border-radius: 18px 4px 18px 18px;
+  color: #fffaf5;
+}
+
+.message-thread-list article > div {
+  align-items: center;
+  display: flex;
+  gap: 14px;
+  justify-content: space-between;
+}
+
+.message-thread-list article strong {
+  font-size: 0.74rem;
+}
+
+.message-thread-list article time {
+  color: #9d7e89;
+  font-size: 0.63rem;
+}
+
+.message-thread-list article.is-client time {
+  color: rgba(255, 248, 242, 0.62);
+}
+
+.message-thread-list article p {
+  font-size: 0.88rem;
+  line-height: 1.65;
+  margin: 9px 0 0;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+.message-thread-list article a {
+  color: #9b5339;
+  display: inline-flex;
+  font-size: 0.78rem;
+  margin-top: 10px;
+}
+
+.message-thread-list article.is-client a {
+  color: #e6c4a1;
+}
+
+.message-reply {
+  border-top: 1px solid rgba(82, 31, 48, 0.12);
+  padding: 23px 29px 28px;
+}
+
+.message-reply textarea {
+  min-height: 92px;
+}
+
+.message-closed-note {
+  background: #f7eee7;
+  color: #795767;
+  font-size: 0.83rem;
+  line-height: 1.5;
+  padding: 25px 29px;
+}
+
+.portal-link-details summary {
+  color: #754b5b;
+  cursor: pointer;
+  font-size: 0.76rem;
+}
+
+.portal-link-details > div {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: 1fr 0.7fr;
+  padding-top: 15px;
+}
+
+.encouragement-list {
+  display: grid;
+  gap: 17px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.encouragement-card {
+  background: #fffdfa;
+  border: 1px solid rgba(82, 31, 48, 0.13);
+  border-radius: 21px;
+  color: #684252;
+  cursor: pointer;
+  display: grid;
+  font: inherit;
+  gap: 14px;
+  line-height: 1.68;
+  padding: 27px;
+  text-align: left;
+}
+
+.encouragement-card:hover {
+  box-shadow: 0 18px 38px rgba(80, 36, 49, 0.08);
+  transform: translateY(-2px);
+}
+
+.encouragement-card.is-unread {
+  border-left: 4px solid #a66041;
+}
+
+.encouragement-meta {
+  align-items: center;
+  color: #9b7a86;
+  display: flex;
+  font-size: 0.67rem;
+  gap: 12px;
+  justify-content: space-between;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.encouragement-meta em {
+  color: #a45f40;
+  font-style: normal;
+}
+
+.encouragement-card > strong {
+  color: #4a172b;
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  font-weight: 500;
+  line-height: 1.05;
+}
+
+/* Shared modal */
+
+.portal-modal-backdrop {
+  align-items: center;
+  background: rgba(38, 13, 24, 0.64);
+  display: flex;
+  inset: 0;
+  justify-content: center;
+  overflow-y: auto;
+  padding: 28px;
+  position: fixed;
+  z-index: 1000;
+}
+
+.portal-modal {
+  background: #fffdfa;
+  border-radius: 23px;
+  box-shadow: 0 35px 90px rgba(28, 8, 16, 0.28);
+  max-height: calc(100vh - 56px);
+  max-width: 660px;
+  overflow-y: auto;
+  padding: clamp(29px, 5vw, 47px);
+  position: relative;
+  width: 100%;
+}
+
+.portal-modal-close {
+  background: none;
+  border: 0;
+  color: #76515f;
+  cursor: pointer;
+  font-size: 1.8rem;
+  line-height: 1;
+  padding: 7px;
+  position: absolute;
+  right: 18px;
+  top: 15px;
+}
+
+.portal-modal h2 {
+  font-size: clamp(2rem, 4vw, 2.8rem);
+  line-height: 1;
+  margin: 0 35px 12px 0;
+}
+
+.portal-modal-context {
+  color: #826471;
+  line-height: 1.6;
+  margin: 0 0 26px;
+}
+
+.portal-modal-actions {
+  align-items: center;
+  display: flex;
+  gap: 13px;
+  justify-content: flex-end;
+  margin-top: 4px;
+}
+
+.portal-modal-actions > button:not(.portal-primary-button) {
+  background: transparent;
+  border: 0;
+  color: #6c4353;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.72rem;
+  letter-spacing: 0.07em;
+  padding: 12px;
+  text-transform: uppercase;
+}
+
+@media (max-width: 920px) {
+  .session-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .session-history-card {
+    grid-column: auto;
+  }
+
+  .message-workspace {
+    grid-template-columns: minmax(230px, 0.4fr) minmax(0, 0.6fr);
+  }
+
+  .message-thread-list article {
+    max-width: 88%;
+  }
+}
+
+@media (max-width: 720px) {
+  .portal-workspace-inner {
+    padding: 49px 18px 72px;
+  }
+
+  .portal-page-intro {
+    padding-bottom: 32px;
+  }
+
+  .portal-page-intro h1 {
+    font-size: 2.8rem;
+  }
+
+  .portal-notice {
+    margin-top: -8px;
+  }
+
+  .portal-card-heading {
+    display: block;
+  }
+
+  .portal-card-heading > span {
+    display: inline-block;
+    margin-top: 9px;
+  }
+
+  .session-booking-card,
+  .session-upcoming-card,
+  .session-history-card {
+    padding: 25px 21px;
+  }
+
+  .session-history-list article {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 11px;
+  }
+
+  .message-tabs {
+    gap: 21px;
+    overflow-x: auto;
+  }
+
+  .message-tabs button {
+    flex: 0 0 auto;
+  }
+
+  .message-toolbar {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .message-workspace {
+    display: block;
+    min-height: 0;
+    overflow: visible;
+  }
+
+  .message-conversation-list {
+    border-bottom: 1px solid rgba(82, 31, 48, 0.12);
+    border-right: 0;
+    display: flex;
+    gap: 8px;
+    max-width: 100%;
+    overflow-x: auto;
+  }
+
+  .message-conversation-list > button {
+    flex: 0 0 265px;
+  }
+
+  .message-conversation-list > button + button {
+    margin-top: 0;
+  }
+
+  .message-thread-header {
+    align-items: flex-start;
+    flex-direction: column;
+    padding: 23px 20px;
+  }
+
+  .message-thread-list {
+    max-height: 520px;
+    padding: 22px 17px;
+  }
+
+  .message-thread-list article {
+    max-width: 92%;
+  }
+
+  .message-reply {
+    padding: 21px 18px 25px;
+  }
+
+  .portal-link-details > div,
+  .encouragement-list {
+    grid-template-columns: 1fr;
+  }
+
+  .portal-modal-backdrop {
+    align-items: flex-end;
+    padding: 0;
+  }
+
+  .portal-modal {
+    border-radius: 22px 22px 0 0;
+    max-height: 92vh;
+    padding: 33px 21px 28px;
+  }
+
+  .portal-modal-actions {
+    align-items: stretch;
+    flex-direction: column-reverse;
+  }
+
+  .portal-modal-actions .portal-primary-button,
+  .portal-modal-actions > button:not(.portal-primary-button) {
+    justify-content: center;
+    text-align: center;
+    width: 100%;
+  }
+}

@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import ClientPortalChrome from '../components/ClientPortalChrome.jsx'
 import logo from '../assets/images/logo.webp'
 import { getClientPortalDashboard, getClientPortalResources, logoutClientPortal } from '../lib/nativeApi.js'
 import './ClientPortalDashboard.css'
@@ -234,24 +235,7 @@ function ClientPortalDashboard() {
 
   return (
     <div className="client-dashboard-page">
-      <header className="client-dashboard-header">
-        <div>
-          <Link to="/client-portal/home" className="client-dashboard-brand">
-            <img src={logo} alt="" />
-            <strong><span>Power Within</span> Client Portal</strong>
-          </Link>
-          <div className="client-dashboard-header-actions">
-            <div>
-              <span>Signed in as</span>
-              <strong>{client?.name || client?.email || 'Client'}</strong>
-            </div>
-            <Link to="/">Website</Link>
-            <button type="button" onClick={handleLogout} disabled={status.state === 'logging-out'}>
-              {status.state === 'logging-out' ? 'Signing Out…' : 'Sign Out'}
-            </button>
-          </div>
-        </div>
-      </header>
+      <ClientPortalChrome client={client} loggingOut={status.state === 'logging-out'} onLogout={handleLogout} />
 
       <main id="main-content" className="client-dashboard-main">
         {status.message && <div className="client-dashboard-alert" role="alert">{status.message}</div>}

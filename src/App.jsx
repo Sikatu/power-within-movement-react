@@ -8,6 +8,8 @@ import Contact from './pages/Contact.jsx'
 import ClientPortalInvite from './pages/ClientPortalInvite.jsx'
 import ClientPortalLogin from './pages/ClientPortalLogin.jsx'
 import ClientPortalDashboard from './pages/ClientPortalDashboard.jsx'
+import ClientPortalMessages from './pages/ClientPortalMessages.jsx'
+import ClientPortalSessions from './pages/ClientPortalSessions.jsx'
 import Experiences from './pages/Experiences.jsx'
 import Home from './pages/Home.jsx'
 import Podcast from './pages/Podcast.jsx'
@@ -107,6 +109,14 @@ const routeMetadata = {
     title: 'My Client Portal | Power Within Collective',
     description: 'Private client notes, resources, reminders, session history, and care records from Power Within Collective.',
   },
+  '/client-portal/sessions': {
+    title: 'My Sessions | Power Within Collective',
+    description: 'Book and manage private Power Within Collective client sessions.',
+  },
+  '/client-portal/messages': {
+    title: 'Private Messages | Power Within Collective',
+    description: 'Secure private client communication with the Power Within Collective team.',
+  },
 }
 
 function RouteMetadata() {
@@ -115,6 +125,7 @@ function RouteMetadata() {
   useEffect(() => {
     const metadata = routeMetadata[pathname]
       || (pathname.startsWith('/client-portal/invite/') ? routeMetadata['/client-portal/invite'] : null)
+      || (pathname.startsWith('/client-portal/messages/') ? routeMetadata['/client-portal/messages'] : null)
       || {
       title: 'Power Within Collective',
       description: 'A thoughtful whole-person experience for confidence, style, personal presence, and self-recognition.',
@@ -190,6 +201,9 @@ function AppShell() {
         <Route path="/client-portal/invite/:token" element={<ClientPortalInvite />} />
         <Route path="/client-portal/dashboard" element={<Navigate to="/client-portal/home" replace />} />
         <Route path="/client-portal/home" element={<ClientPortalDashboard />} />
+        <Route path="/client-portal/sessions" element={<ClientPortalSessions />} />
+        <Route path="/client-portal/messages" element={<ClientPortalMessages />} />
+        <Route path="/client-portal/messages/:conversationId" element={<ClientPortalMessages />} />
         <Route path="*" element={<BuildNotice />} />
       </Routes>
       <SiteFooter />
