@@ -6,6 +6,8 @@ import { signatureExperiences } from './data/signatureExperiences.js'
 import Experiences from './pages/Experiences.jsx'
 import Home from './pages/Home.jsx'
 import RadianceReclaimed from './pages/RadianceReclaimed.jsx'
+import ResourceArticle from './pages/ResourceArticle.jsx'
+import Resources from './pages/Resources.jsx'
 import SignatureExperiencePage from './pages/SignatureExperiencePage.jsx'
 
 const routeMetadata = {
@@ -32,6 +34,30 @@ const routeMetadata = {
   '/radiance-reclaimed': {
     title: 'Women’s Confidence & Presence Coaching | Radiance Reclaimed',
     description: 'A private confidence and presence coaching experience for women ready for whole-person transformation, self-trust, image alignment, and renewed identity.',
+  },
+  '/resources': {
+    title: 'Confidence, Style & Self-Reflection Resources | Power Within Collective',
+    description: 'Curated confidence, personal presence, style, wellness, self-reflection, and self-leadership resources for women returning to themselves.',
+  },
+  '/resources/what-is-color-analysis': {
+    title: 'What Is Color Analysis? | Power Within Collective',
+    description: 'Learn what color analysis is and how it supports clothing, makeup, accessories, hair direction, personal presence, and confidence.',
+  },
+  '/resources/what-is-personal-style-analysis': {
+    title: 'What Is Personal Style Analysis? | Power Within Collective',
+    description: 'Learn how personal style analysis supports wardrobe clarity, body shape, proportion, outfit direction, and confidence for women.',
+  },
+  '/resources/fashion-advice-for-women-over-40': {
+    title: 'Fashion Advice for Women Over 40 | Power Within Collective',
+    description: 'Fashion advice for women over 40 focused on identity, body confidence, wardrobe clarity, color, proportion, and personal presence.',
+  },
+  '/resources/rebuild-confidence-through-personal-style': {
+    title: 'How to Rebuild Confidence Through Personal Style | Power Within Collective',
+    description: 'Learn how personal style, color, wardrobe direction, and image alignment can help women rebuild confidence and self-trust.',
+  },
+  '/resources/confidence-coaching-for-women': {
+    title: 'Confidence Coaching for Women | Power Within Collective',
+    description: 'Confidence coaching for women in a new season of life, with support for identity, presence, image alignment, self-trust, and transformation.',
   },
 }
 
@@ -95,6 +121,8 @@ function AppShell() {
         <Route path="/style-analysis" element={<SignatureExperiencePage experience={signatureExperiences.style} activePath="/style-analysis" />} />
         <Route path="/blend-cosmetics" element={<SignatureExperiencePage experience={signatureExperiences.makeup} activePath="/blend-cosmetics" />} />
         <Route path="/radiance-reclaimed" element={<RadianceReclaimed />} />
+        <Route path="/resources" element={<Resources />} />
+        <Route path="/resources/:slug" element={<ResourceArticle />} />
         <Route path="*" element={<BuildNotice />} />
       </Routes>
       <SiteFooter />
