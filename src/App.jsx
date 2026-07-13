@@ -10,6 +10,8 @@ import ClientPortalLogin from './pages/ClientPortalLogin.jsx'
 import ClientPortalDashboard from './pages/ClientPortalDashboard.jsx'
 import ClientPortalCircle from './pages/ClientPortalCircle.jsx'
 import ClientPortalJourney from './pages/ClientPortalJourney.jsx'
+import ClientPortalLearning from './pages/ClientPortalLearning.jsx'
+import ClientPortalMembership from './pages/ClientPortalMembership.jsx'
 import ClientPortalMessages from './pages/ClientPortalMessages.jsx'
 import ClientPortalResources from './pages/ClientPortalResources.jsx'
 import ClientPortalSessions from './pages/ClientPortalSessions.jsx'
@@ -120,6 +122,14 @@ const routeMetadata = {
     title: 'My Resources | Power Within Collective',
     description: 'A private library of guides, worksheets, videos, links, reminders, and notes selected for your care.',
   },
+  '/client-portal/learning': {
+    title: 'Learning Library | Power Within Collective',
+    description: 'Private guided courses, lessons, reflections, and learning progress selected for your Power Within journey.',
+  },
+  '/client-portal/membership': {
+    title: 'My Membership | Power Within Collective',
+    description: 'Active membership benefits, resources, learning, announcements, and renewal information.',
+  },
   '/client-portal/sessions': {
     title: 'My Sessions | Power Within Collective',
     description: 'Book and manage private Power Within Collective client sessions.',
@@ -218,6 +228,8 @@ function AppShell() {
         <Route path="/client-portal/home" element={<ClientPortalDashboard />} />
         <Route path="/client-portal/journey" element={<ClientPortalJourney />} />
         <Route path="/client-portal/resources" element={<ClientPortalResources />} />
+        <Route path="/client-portal/learning" element={<ClientPortalLearning />} />
+        <Route path="/client-portal/membership" element={<ClientPortalMembership />} />
         <Route path="/client-portal/circle" element={<ClientPortalCircle />} />
         <Route path="/client-portal/sessions" element={<ClientPortalSessions />} />
         <Route path="/client-portal/messages" element={<ClientPortalMessages />} />

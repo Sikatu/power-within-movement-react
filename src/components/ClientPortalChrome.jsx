@@ -6,6 +6,8 @@ const portalLinks = [
   ['/client-portal/home', 'Home'],
   ['/client-portal/journey', 'Journey'],
   ['/client-portal/resources', 'Resources'],
+  ['/client-portal/learning', 'Learning'],
+  ['/client-portal/membership', 'Membership'],
   ['/client-portal/circle', 'The Circle'],
   ['/client-portal/sessions', 'Sessions'],
   ['/client-portal/messages', 'Messages'],
