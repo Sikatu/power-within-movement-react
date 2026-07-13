@@ -7,6 +7,7 @@ import About from './pages/About.jsx'
 import Contact from './pages/Contact.jsx'
 import ClientPortalInvite from './pages/ClientPortalInvite.jsx'
 import ClientPortalLogin from './pages/ClientPortalLogin.jsx'
+import ClientPortalDashboard from './pages/ClientPortalDashboard.jsx'
 import Experiences from './pages/Experiences.jsx'
 import Home from './pages/Home.jsx'
 import Podcast from './pages/Podcast.jsx'
@@ -102,6 +103,10 @@ const routeMetadata = {
     title: 'Set Up Your Client Portal | Power Within Collective',
     description: 'Accept your private Power Within Collective client portal invitation and create secure access.',
   },
+  '/client-portal/home': {
+    title: 'My Client Portal | Power Within Collective',
+    description: 'Private client notes, resources, reminders, session history, and care records from Power Within Collective.',
+  },
 }
 
 function RouteMetadata() {
@@ -183,6 +188,8 @@ function AppShell() {
         <Route path="/client-portal" element={<Navigate to="/client-portal/login" replace />} />
         <Route path="/client-portal/login" element={<ClientPortalLogin />} />
         <Route path="/client-portal/invite/:token" element={<ClientPortalInvite />} />
+        <Route path="/client-portal/dashboard" element={<Navigate to="/client-portal/home" replace />} />
+        <Route path="/client-portal/home" element={<ClientPortalDashboard />} />
         <Route path="*" element={<BuildNotice />} />
       </Routes>
       <SiteFooter />
