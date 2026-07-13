@@ -6,6 +6,10 @@ const { z } = require('zod')
 const { env } = require('../config/env')
 const { pool } = require('../db/pool')
 const { requireAuth, requireRole } = require('../middleware/auth.middleware')
+const {
+  authenticationRateLimit,
+  passwordChangeRateLimit,
+} = require('../middleware/securityRateLimits.middleware')
 
 const router = express.Router()
 
@@ -215,7 +219,7 @@ async function getPasswordChangeUser(req) {
   return user
 }
 
-router.post('/login', async (req, res, next) => {
+router.post('/login', authenticationRateLimit, async (req, res, next) => {
   try {
     if (!pool) {
       return res.status(503).json({
@@ -364,14 +368,13 @@ router.post('/login', async (req, res, next) => {
       message: 'Login successful.',
       passwordChangeRequired: false,
       user: publicUser(refreshedUser),
-      token,
     })
   } catch (error) {
     next(error)
   }
 })
 
-router.get('/password-change-status', async (req, res, next) => {
+router.get('/password-change-status', async (req, res) => {
   try {
     if (!pool) {
       return res.status(503).json({
@@ -398,7 +401,7 @@ router.get('/password-change-status', async (req, res, next) => {
   }
 })
 
-router.post('/change-password', async (req, res, next) => {
+router.post('/change-password', passwordChangeRateLimit, async (req, res, next) => {
   try {
     if (!pool) {
       return res.status(503).json({

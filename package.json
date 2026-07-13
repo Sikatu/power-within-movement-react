@@ -6,7 +6,8 @@
     "scripts":  {
                     "dev":  "vite",
                     "build":  "vite build \u0026\u0026 node scripts/prerender-seo.cjs",
-                    "lint":  "eslint src",
+                    "lint":  "eslint src server/src server/scripts server/tests",
+                    "test":  "npm --prefix server test",
                     "preview":  "vite preview",
                     "launch:check":  "npm run build \u0026\u0026 npm run lint \u0026\u0026 npm --prefix server run smoke \u0026\u0026 npm --prefix server run db:check \u0026\u0026 npm --prefix server run launch:check"
                 },

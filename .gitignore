@@ -13,3 +13,9 @@ server/dist/
 phase-*-inspection/
 phase-*-inspection.zip
 *.bak
+
+# Repository backups and one-off transfer artifacts
+*.bundle
+*.diff
+*.zip
+*.APPEND_AT_END.txt
