@@ -41,6 +41,9 @@ function Navbar() {
       <nav className="navbar navbar-premium">
         <NavLink to="/" className="premium-logo-image" onClick={closeMenu}>
           <img src={headerLogo} alt="Power Within Collective" />
+          <span className="premium-logo-wordmark" aria-hidden="true">
+            Power Within Collective
+          </span>
         </NavLink>
 
         {shouldShowLinks && (
@@ -90,7 +93,6 @@ function Navbar() {
 }
 
 export default Navbar
-
 
 
 

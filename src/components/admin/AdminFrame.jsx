@@ -494,7 +494,7 @@ function AdminFrame({ children }) {
         aria-expanded={mobileOpen}
         onClick={() => setMobileOpen(true)}
       >
-        <span aria-hidden="true">â˜°</span>
+        <span aria-hidden="true">☰</span>
         <strong>{activeWorkspace.label}</strong>
       </button>
 
