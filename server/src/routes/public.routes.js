@@ -4,6 +4,11 @@ const { z } = require('zod')
 const { pool } = require('../db/pool')
 const { env } = require('../config/env')
 const {
+  authenticationRateLimit,
+  passwordChangeRateLimit,
+  publicSubmissionRateLimit,
+} = require('../middleware/securityRateLimits.middleware')
+const {
   buildAvailabilityDays,
   isRequestedSlotAvailable,
   addDateKey: addFounderDateKey,
@@ -203,61 +208,6 @@ function phase312bAddDays(date, days) {
   return next
 }
 
-function phase312bGetBookingStart(body = {}) {
-  return (
-    body.startsAt ||
-    body.starts_at ||
-    body.startTime ||
-    body.start_time ||
-    body.start ||
-    body.preferredStart ||
-    body.preferred_start ||
-    body.requestedStart ||
-    body.requested_start
-  )
-}
-
-function phase312bGetBookingEnd(body = {}) {
-  return (
-    body.endsAt ||
-    body.ends_at ||
-    body.endTime ||
-    body.end_time ||
-    body.end ||
-    body.preferredEnd ||
-    body.preferred_end ||
-    body.requestedEnd ||
-    body.requested_end
-  )
-}
-
-async function phase312bFindAvailabilityConflict(startsAt, endsAt) {
-  const startDate = phase312bNormalizeDate(startsAt)
-
-  if (!startDate) return null
-
-  const endDate =
-    phase312bNormalizeDate(endsAt) ||
-    new Date(startDate.getTime() + 60 * 60 * 1000)
-
-  const conflictSql = [
-    'SELECT id, title, exception_type, starts_at, ends_at, timezone, notes',
-    'FROM availability_exceptions',
-    "WHERE status = 'active'",
-    'AND starts_at <= $2::timestamptz',
-    'AND ends_at >= $1::timestamptz',
-    'ORDER BY starts_at ASC',
-    'LIMIT 1',
-  ].join(' ')
-
-  const result = await pool.query(conflictSql, [
-    startDate.toISOString(),
-    endDate.toISOString(),
-  ])
-
-  return result.rows[0] || null
-}
-
 router.get('/availability-exceptions', async (req, res, next) => {
   try {
     const startDate = phase312bNormalizeDate(req.query.start) || new Date()
@@ -292,34 +242,6 @@ router.get('/availability-exceptions', async (req, res, next) => {
     return next(error)
   }
 })
-
-async function phase312bPreventBlockedBookingTimes(req, res, next) {
-  try {
-    const startsAt = phase312bGetBookingStart(req.body)
-    const endsAt = phase312bGetBookingEnd(req.body)
-
-    if (!startsAt) return next()
-
-    const conflict = await phase312bFindAvailabilityConflict(startsAt, endsAt)
-
-    if (!conflict) return next()
-
-    return res.status(409).json({
-      ok: false,
-      availabilityBlocked: true,
-      error:
-        'Kim is unavailable during this date or time. Please choose another available option.',
-      conflict: {
-        id: conflict.id,
-        title: conflict.title,
-        startsAt: conflict.starts_at,
-        endsAt: conflict.ends_at,
-      },
-    })
-  } catch (error) {
-    return next(error)
-  }
-}
 
 // Final booking validation now uses the complete founder availability engine.
 // phase-3-12b-hotfix-2-safe-public-availability-end
@@ -451,67 +373,6 @@ function normalizeBookingDateValue(value) {
   return date
 }
 
-function getBookingStartFromBody(body = {}) {
-  return (
-    body.startsAt ||
-    body.starts_at ||
-    body.startTime ||
-    body.start_time ||
-    body.start ||
-    body.preferredStart ||
-    body.preferred_start ||
-    body.requestedStart ||
-    body.requested_start
-  )
-}
-
-function getBookingEndFromBody(body = {}) {
-  return (
-    body.endsAt ||
-    body.ends_at ||
-    body.endTime ||
-    body.end_time ||
-    body.end ||
-    body.preferredEnd ||
-    body.preferred_end ||
-    body.requestedEnd ||
-    body.requested_end
-  )
-}
-
-async function findAvailabilityConflict({ startsAt, endsAt }) {
-  if (!pool || !startsAt) return null
-
-  const startDate = normalizeBookingDateValue(startsAt)
-
-  if (!startDate) return null
-
-  const endDate =
-    normalizeBookingDateValue(endsAt) ||
-    new Date(startDate.getTime() + 60 * 60 * 1000)
-
-  const result = await pool.query(
-    `
-    SELECT
-      id,
-      title,
-      exception_type,
-      starts_at,
-      ends_at,
-      timezone,
-      notes
-    FROM availability_exceptions
-    WHERE status = $3
-      AND starts_at <= $2
-      AND ends_at >= $1
-    ORDER BY starts_at ASC
-    `,
-    [startDate.toISOString(), endDate.toISOString(), 'active'],
-  )
-
-  return result.rows[0] || null
-}
-
 router.get('/availability-exceptions', async (req, res, next) => {
   if (!pool) {
     return res.status(503).json({
@@ -558,42 +419,10 @@ router.get('/availability-exceptions', async (req, res, next) => {
   }
 })
 
-async function preventBlockedBookingTimes(req, res, next) {
-  if (req.method !== 'POST') return next()
-
-  try {
-    const startsAt = getBookingStartFromBody(req.body)
-    const endsAt = getBookingEndFromBody(req.body)
-
-    if (!startsAt) return next()
-
-    const conflict = await findAvailabilityConflict({
-      startsAt,
-      endsAt,
-    })
-
-    if (!conflict) return next()
-
-    return res.status(409).json({
-      ok: false,
-      availabilityBlocked: true,
-      error:
-        'Kim is unavailable during this date or time. Please choose another available option.',
-      conflict: {
-        id: conflict.id,
-        title: conflict.title,
-        startsAt: conflict.starts_at,
-        endsAt: conflict.ends_at,
-      },
-    })
-  } catch (error) {
-    return next(error)
-  }
-}
 // phase-3-12b-booking-availability-engine-end
 
 
-router.post('/booking-requests', async (req, res, next) => {
+router.post('/booking-requests', publicSubmissionRateLimit, async (req, res, next) => {
   if (!pool) {
     return res.status(503).json({
       ok: false,
@@ -838,7 +667,11 @@ router.post('/booking-requests', async (req, res, next) => {
     })
   } catch (error) {
     if (transactionStarted) {
-      try { await dbClient.query('ROLLBACK') } catch {}
+      try {
+        await dbClient.query('ROLLBACK')
+      } catch {
+        // Preserve the original transaction error.
+      }
     }
     return next(error)
   } finally {
@@ -1047,7 +880,10 @@ router.get('/client-portal/invites/:token', async (req, res, next) => {
   }
 })
 
-router.post('/client-portal/invites/:token/accept', async (req, res, next) => {
+router.post(
+  '/client-portal/invites/:token/accept',
+  passwordChangeRateLimit,
+  async (req, res, next) => {
   if (!pool) {
     return res.status(503).json({
       ok: false,
@@ -1239,7 +1075,8 @@ router.post('/client-portal/invites/:token/accept', async (req, res, next) => {
   } finally {
     dbClient.release()
   }
-})
+  },
+)
 // phase-3-9b-client-portal-invite-acceptance-end
 
 
@@ -1489,7 +1326,7 @@ async function writeClientPortalAuditLog(req, action, entityType, entityId, befo
   }
 }
 
-router.post('/client-portal/login', async (req, res, next) => {
+router.post('/client-portal/login', authenticationRateLimit, async (req, res, next) => {
   if (!pool) {
     return res.status(503).json({
       ok: false,
@@ -2151,7 +1988,11 @@ router.post(
         bookingStatus: autoApproveCancellation ? 'cancelled' : booking.status,
       })
     } catch (error) {
-      try { await dbClient.query('ROLLBACK') } catch {}
+      try {
+        await dbClient.query('ROLLBACK')
+      } catch {
+        // Preserve the original transaction error.
+      }
 
       if (error?.code === '23505') {
         return res.status(409).json({
@@ -2693,13 +2534,11 @@ async function saveContactInquiryAsClientLead(inquiry) {
     first_name: firstName,
     last_name: lastName,
     name: inquiry.name,
-    full_name: inquiry.name,
     display_name: inquiry.name,
     full_name: inquiry.name,
     email: inquiry.email,
     public_contact_email: inquiry.email,
     lead_interest: inquiry.interest,
-    lead_source: 'Public Contact Form',
     inquiry_received_at: inquiry.receivedAt,
     primary_email: inquiry.email,
     user_email: inquiry.email,
@@ -2751,7 +2590,7 @@ async function saveContactInquiryAsClientLead(inquiry) {
   }
 }
 
-router.post('/contact-inquiries', async (req, res, next) => {
+router.post('/contact-inquiries', publicSubmissionRateLimit, async (req, res, next) => {
   try {
     const name = String(req.body?.name || '').trim()
     const email = String(req.body?.email || '').trim().toLowerCase()

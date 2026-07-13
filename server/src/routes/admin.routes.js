@@ -14,7 +14,6 @@ const {
 } = require('../services/founderAvailability.service')
 const { env } = require('../config/env')
 const {
-  DEFAULT_PLATFORM_SETTINGS,
   getPlatformSettings,
   normalizePlatformSettings,
   savePlatformSettings,
@@ -1700,7 +1699,11 @@ router.patch(
         requests: await getSessionChangeRequests(),
       })
     } catch (error) {
-      try { await dbClient.query('ROLLBACK') } catch {}
+      try {
+        await dbClient.query('ROLLBACK')
+      } catch {
+        // Preserve the original transaction error.
+      }
       return next(error)
     } finally {
       dbClient.release()
@@ -5277,7 +5280,7 @@ async function buildMailStudioComposerDraft({ clientProfileId, templateId, varia
   }
 }
 
-router.post('/mail-studio/preview', requireAdmin, async (req, res, next) => {
+router.post('/mail-studio/preview', requireAdmin, async (req, res) => {
   if (!pool) {
     return res.status(503).json({
       ok: false,
@@ -5306,7 +5309,7 @@ router.post('/mail-studio/preview', requireAdmin, async (req, res, next) => {
   }
 })
 
-router.post('/mail-studio/draft', requireAdmin, async (req, res, next) => {
+router.post('/mail-studio/draft', requireAdmin, async (req, res) => {
   if (!pool) {
     return res.status(503).json({
       ok: false,

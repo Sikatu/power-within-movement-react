@@ -1,6 +1,6 @@
 const { captureApplicationError } = require('../services/developerErrorCenter.service')
 
-function notFound(req, res, next) {
+function notFound(req, res, _next) {
   res.status(404).json({
     ok: false,
     error: 'Route not found',
@@ -8,7 +8,7 @@ function notFound(req, res, next) {
   })
 }
 
-function errorHandler(error, req, res, next) {
+function errorHandler(error, req, res, _next) {
   console.error(error)
 
   const status = Number(error.status || error.statusCode || 500)
@@ -35,9 +35,14 @@ function errorHandler(error, req, res, next) {
     }).catch(() => {})
   }
 
+  const publicMessage =
+    status >= 500
+      ? 'An unexpected server error occurred.'
+      : error.message || 'Request failed.'
+
   res.status(status).json({
     ok: false,
-    error: error.message || 'Internal server error',
+    error: publicMessage,
     requestId: req.requestId || undefined,
   })
 }

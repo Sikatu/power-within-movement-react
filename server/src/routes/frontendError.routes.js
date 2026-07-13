@@ -1,6 +1,9 @@
 const express = require('express')
 const { z } = require('zod')
 const { captureApplicationError } = require('../services/developerErrorCenter.service')
+const {
+  frontendErrorReportRateLimit,
+} = require('../middleware/securityRateLimits.middleware')
 
 const router = express.Router()
 
@@ -15,10 +18,13 @@ const frontendErrorSchema = z.object({
   httpStatus: z.coerce.number().int().min(0).max(599).nullable().optional(),
   buildVersion: z.string().max(120).optional(),
   browser: z.string().max(500).optional(),
-  metadata: z.record(z.unknown()).optional(),
+  metadata: z.record(z.unknown()).optional().refine(
+    (value) => !value || JSON.stringify(value).length <= 5000,
+    'Error metadata is too large.',
+  ),
 })
 
-router.post('/', async (req, res, next) => {
+router.post('/', frontendErrorReportRateLimit, async (req, res, next) => {
   try {
     const payload = frontendErrorSchema.parse(req.body || {})
     const source = payload.type === 'asset' ? 'asset' : payload.type === 'api' ? 'api' : 'frontend'
