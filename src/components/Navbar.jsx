@@ -2,16 +2,18 @@ import { useEffect, useState } from 'react'
 import { NavLink } from 'react-router-dom'
 import headerLogo from '../assets/images/logo.webp'
 
+const MOBILE_NAV_BREAKPOINT = 1080
+
 function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
   const [isMobile, setIsMobile] = useState(() => {
     if (typeof window === 'undefined') return false
-    return window.innerWidth <= 820
+    return window.innerWidth <= MOBILE_NAV_BREAKPOINT
   })
 
   useEffect(() => {
     const syncMobileState = () => {
-      const mobile = window.innerWidth <= 820
+      const mobile = window.innerWidth <= MOBILE_NAV_BREAKPOINT
       setIsMobile(mobile)
       if (!mobile) setIsOpen(false)
     }
@@ -93,7 +95,6 @@ function Navbar() {
 }
 
 export default Navbar
-
 
 
 

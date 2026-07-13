@@ -6,7 +6,7 @@ function NotFound() {
       <section className="section not-found-section">
         <div className="section-header">
           <p className="eyebrow">Page Not Found</p>
-          <h2>This page may have moved, but you can still return to what matters.</h2>
+          <h1>This page may have moved, but you can still return to what matters.</h1>
           <p>Use the links below to continue exploring Power Within Collective.</p>
 
           <div className="hero-actions">

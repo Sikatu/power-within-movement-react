@@ -24,7 +24,7 @@ function RadianceReclaimed() {
         <Link to="/experiences" className="radiance-back-link">← Back to Experiences</Link>
         <div className="section-header">
           <p className="eyebrow">Radiance Reclaimed™</p>
-          <h2>A personal, high-touch experience for the woman ready to inhabit the life that fits who she has become.</h2>
+          <h1>A personal, high-touch experience for the woman ready to inhabit the life that fits who she has become.</h1>
           <p>
             This is not about becoming someone new. It is about returning to the woman
             who was always there — more whole, more deliberate, and more willing to
@@ -169,5 +169,4 @@ function RadianceReclaimed() {
 }
 
 export default RadianceReclaimed
-
 
