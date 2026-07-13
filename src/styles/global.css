@@ -223,3 +223,14 @@ p {
     transition-duration: 0.01ms !important;
   }
 }
+
+.route-loading {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 40px;
+  background: #f7f2ec;
+  color: var(--color-heading);
+  font-family: var(--font-display);
+  font-size: clamp(28px, 4vw, 42px);
+}

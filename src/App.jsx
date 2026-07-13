@@ -1,7 +1,10 @@
-import { useEffect } from 'react'
+import { lazy, Suspense, useEffect } from 'react'
 import { BrowserRouter, Link, Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import SiteFooter from './components/SiteFooter.jsx'
 import SiteHeader from './components/SiteHeader.jsx'
+import AdminDeveloperRouteGuard from './components/admin/AdminDeveloperRouteGuard.jsx'
+import AdminOwnerRouteGuard from './components/admin/AdminOwnerRouteGuard.jsx'
+import AdminRouteGuard from './components/admin/AdminRouteGuard.jsx'
 import { signatureExperiences } from './data/signatureExperiences.js'
 import About from './pages/About.jsx'
 import Contact from './pages/Contact.jsx'
@@ -24,6 +27,30 @@ import ResourceArticle from './pages/ResourceArticle.jsx'
 import Resources from './pages/Resources.jsx'
 import SignatureExperiencePage from './pages/SignatureExperiencePage.jsx'
 import TeenPrograms from './pages/TeenPrograms.jsx'
+
+const AdminAuditLog = lazy(() => import('./pages/admin/AdminAuditLog.jsx'))
+const AdminAutomationStudio = lazy(() => import('./pages/admin/AdminAutomationStudio.jsx'))
+const AdminChangePassword = lazy(() => import('./pages/admin/AdminChangePassword.jsx'))
+const AdminCircleCommunity = lazy(() => import('./pages/admin/AdminCircleCommunity.jsx'))
+const AdminClient360 = lazy(() => import('./pages/admin/AdminClient360.jsx'))
+const AdminClients = lazy(() => import('./pages/admin/AdminClients.jsx'))
+const AdminDashboard = lazy(() => import('./pages/admin/AdminDashboard.jsx'))
+const AdminDeveloperErrors = lazy(() => import('./pages/admin/AdminDeveloperErrors.jsx'))
+const AdminDeveloperPanel = lazy(() => import('./pages/admin/AdminDeveloperPanel.jsx'))
+const AdminEncouragements = lazy(() => import('./pages/admin/AdminEncouragements.jsx'))
+const AdminFounderAvailability = lazy(() => import('./pages/admin/AdminFounderAvailability.jsx'))
+const AdminFounderCalendar = lazy(() => import('./pages/admin/AdminFounderCalendar.jsx'))
+const AdminFoundersView = lazy(() => import('./pages/admin/AdminFoundersView.jsx'))
+const AdminInbox = lazy(() => import('./pages/admin/AdminInbox.jsx'))
+const AdminLeadPipeline = lazy(() => import('./pages/admin/AdminLeadPipeline.jsx'))
+const AdminLearningLibrary = lazy(() => import('./pages/admin/AdminLearningLibrary.jsx'))
+const AdminLogin = lazy(() => import('./pages/admin/AdminLogin.jsx'))
+const AdminMailStudio = lazy(() => import('./pages/admin/AdminMailStudio.jsx'))
+const AdminMembershipCircle = lazy(() => import('./pages/admin/AdminMembershipCircle.jsx'))
+const AdminOnboardingStudio = lazy(() => import('./pages/admin/AdminOnboardingStudio.jsx'))
+const AdminScheduler = lazy(() => import('./pages/admin/AdminScheduler.jsx'))
+const AdminSessionChangeRequests = lazy(() => import('./pages/admin/AdminSessionChangeRequests.jsx'))
+const AdminTeamManagement = lazy(() => import('./pages/admin/AdminTeamManagement.jsx'))
 
 const routeMetadata = {
   '/': {
@@ -142,6 +169,26 @@ const routeMetadata = {
     title: 'Private Messages | Power Within Collective',
     description: 'Secure private client communication with the Power Within Collective team.',
   },
+  '/admin/login': {
+    title: 'The Studio Login | Power Within Collective',
+    description: 'Private access to The Studio, Founder’s View, and Developer Operations.',
+  },
+  '/admin/dashboard': {
+    title: 'The Studio | Power Within Collective',
+    description: 'Private studio operations for client care, sessions, and communications.',
+  },
+  '/admin/founders-view': {
+    title: 'Founder’s View | Power Within Collective',
+    description: 'Private founder overview for priorities, schedule, and availability.',
+  },
+  '/admin/developer': {
+    title: 'Developer Control Center | Power Within Collective',
+    description: 'Private platform operations, access governance, and release visibility.',
+  },
+  '/admin/developer/errors': {
+    title: 'Developer Error Center | Power Within Collective',
+    description: 'Private platform monitoring and error review.',
+  },
 }
 
 function RouteMetadata() {
@@ -199,13 +246,17 @@ function ContactRoute() {
 }
 
 function AppShell() {
+  const { pathname } = useLocation()
+  const isInternalRoute = pathname.startsWith('/admin')
+
   return (
     <>
       <ScrollManager />
       <RouteMetadata />
       <a className="skip-link" href="#main-content">Skip to content</a>
-      <SiteHeader />
-      <Routes>
+      {!isInternalRoute && <SiteHeader />}
+      <Suspense fallback={<main className="route-loading">Opening your private workspace…</main>}>
+        <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/experiences" element={<Experiences />} />
         <Route path="/color-analysis" element={<SignatureExperiencePage experience={signatureExperiences.color} activePath="/color-analysis" />} />
@@ -234,9 +285,36 @@ function AppShell() {
         <Route path="/client-portal/sessions" element={<ClientPortalSessions />} />
         <Route path="/client-portal/messages" element={<ClientPortalMessages />} />
         <Route path="/client-portal/messages/:conversationId" element={<ClientPortalMessages />} />
+        <Route path="/admin" element={<Navigate to="/admin/login" replace />} />
+        <Route path="/admin/login" element={<AdminLogin />} />
+        <Route path="/admin/change-password" element={<AdminChangePassword />} />
+        <Route path="/admin/dashboard" element={<AdminRouteGuard><AdminDashboard /></AdminRouteGuard>} />
+        <Route path="/admin/developer" element={<AdminDeveloperRouteGuard><AdminDeveloperPanel /></AdminDeveloperRouteGuard>} />
+        <Route path="/admin/developer/errors" element={<AdminDeveloperRouteGuard><AdminDeveloperErrors /></AdminDeveloperRouteGuard>} />
+        <Route path="/admin/team" element={<AdminDeveloperRouteGuard><AdminTeamManagement /></AdminDeveloperRouteGuard>} />
+        <Route path="/admin/founders-view" element={<AdminOwnerRouteGuard><AdminFoundersView /></AdminOwnerRouteGuard>} />
+        <Route path="/admin/founders-calendar" element={<AdminOwnerRouteGuard><AdminFounderCalendar /></AdminOwnerRouteGuard>} />
+        <Route path="/admin/founders-availability" element={<AdminOwnerRouteGuard><AdminFounderAvailability /></AdminOwnerRouteGuard>} />
+        <Route path="/admin/leads" element={<AdminRouteGuard><AdminLeadPipeline /></AdminRouteGuard>} />
+        <Route path="/admin/client-360/:clientId" element={<AdminRouteGuard><AdminClient360 /></AdminRouteGuard>} />
+        <Route path="/admin/clients" element={<AdminRouteGuard><AdminClients /></AdminRouteGuard>} />
+        <Route path="/admin/clients/:clientId" element={<AdminRouteGuard><AdminClients /></AdminRouteGuard>} />
+        <Route path="/admin/clients/:clientId/:section" element={<AdminRouteGuard><AdminClients /></AdminRouteGuard>} />
+        <Route path="/admin/scheduler" element={<AdminRouteGuard><AdminScheduler /></AdminRouteGuard>} />
+        <Route path="/admin/session-changes" element={<AdminRouteGuard><AdminSessionChangeRequests /></AdminRouteGuard>} />
+        <Route path="/admin/inbox" element={<AdminRouteGuard><AdminInbox /></AdminRouteGuard>} />
+        <Route path="/admin/email-studio" element={<AdminRouteGuard><AdminMailStudio /></AdminRouteGuard>} />
+        <Route path="/admin/automations" element={<AdminRouteGuard><AdminAutomationStudio /></AdminRouteGuard>} />
+        <Route path="/admin/onboarding" element={<AdminRouteGuard><AdminOnboardingStudio /></AdminRouteGuard>} />
+        <Route path="/admin/courses" element={<AdminRouteGuard><AdminLearningLibrary /></AdminRouteGuard>} />
+        <Route path="/admin/memberships" element={<AdminRouteGuard><AdminMembershipCircle /></AdminRouteGuard>} />
+        <Route path="/admin/circle" element={<AdminRouteGuard><AdminCircleCommunity /></AdminRouteGuard>} />
+        <Route path="/admin/encouragements" element={<AdminRouteGuard><AdminEncouragements /></AdminRouteGuard>} />
+        <Route path="/admin/audit-log" element={<AdminRouteGuard><AdminAuditLog /></AdminRouteGuard>} />
         <Route path="*" element={<BuildNotice />} />
-      </Routes>
-      <SiteFooter />
+        </Routes>
+      </Suspense>
+      {!isInternalRoute && <SiteFooter />}
     </>
   )
 }
