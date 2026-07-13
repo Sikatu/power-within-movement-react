@@ -5,6 +5,7 @@ import SiteHeader from './components/SiteHeader.jsx'
 import { signatureExperiences } from './data/signatureExperiences.js'
 import Experiences from './pages/Experiences.jsx'
 import Home from './pages/Home.jsx'
+import Professionals from './pages/Professionals.jsx'
 import RadianceReclaimed from './pages/RadianceReclaimed.jsx'
 import ResourceArticle from './pages/ResourceArticle.jsx'
 import Resources from './pages/Resources.jsx'
@@ -58,6 +59,14 @@ const routeMetadata = {
   '/resources/confidence-coaching-for-women': {
     title: 'Confidence Coaching for Women | Power Within Collective',
     description: 'Confidence coaching for women in a new season of life, with support for identity, presence, image alignment, self-trust, and transformation.',
+  },
+  '/professionals': {
+    title: 'Image Consultant & Beauty Professional Training | Power Within Professional',
+    description: 'Professional education for beauty, image, style, and wellness professionals who want to turn their expertise into a premium transformation-centered client experience.',
+  },
+  '/power-within-professional': {
+    title: 'Image Consultant & Beauty Professional Training | Power Within Professional',
+    description: 'Professional education for beauty, image, style, and wellness professionals who want to turn their expertise into a premium transformation-centered client experience.',
   },
 }
 
@@ -123,6 +132,8 @@ function AppShell() {
         <Route path="/radiance-reclaimed" element={<RadianceReclaimed />} />
         <Route path="/resources" element={<Resources />} />
         <Route path="/resources/:slug" element={<ResourceArticle />} />
+        <Route path="/professionals" element={<Professionals />} />
+        <Route path="/power-within-professional" element={<Professionals />} />
         <Route path="*" element={<BuildNotice />} />
       </Routes>
       <SiteFooter />
