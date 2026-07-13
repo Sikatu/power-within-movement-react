@@ -5,6 +5,7 @@ import SiteHeader from './components/SiteHeader.jsx'
 import { signatureExperiences } from './data/signatureExperiences.js'
 import Experiences from './pages/Experiences.jsx'
 import Home from './pages/Home.jsx'
+import Podcast from './pages/Podcast.jsx'
 import Professionals from './pages/Professionals.jsx'
 import RadianceReclaimed from './pages/RadianceReclaimed.jsx'
 import ResourceArticle from './pages/ResourceArticle.jsx'
@@ -68,6 +69,10 @@ const routeMetadata = {
     title: 'Image Consultant & Beauty Professional Training | Power Within Professional',
     description: 'Professional education for beauty, image, style, and wellness professionals who want to turn their expertise into a premium transformation-centered client experience.',
   },
+  '/podcast': {
+    title: 'Raising Her Confidence Podcast | Teen Confidence & Mother-Daughter Conversations',
+    description: 'A podcast for mothers, mentors, and adults supporting girls through confidence, identity, emotional wellness, self-expression, and presence.',
+  },
 }
 
 function RouteMetadata() {
@@ -110,7 +115,7 @@ function BuildNotice() {
     <main id="main-content" className="build-notice">
       <p className="eyebrow">New experience in progress</p>
       <h1>This page is the next part of the rebuild.</h1>
-      <p>The new Home experience is live. The remaining handoff pages will be added in the next focused slices.</p>
+      <p>This route is queued for an upcoming focused slice. The completed public experiences remain available through the main navigation.</p>
       <Link className="button button-primary" to="/">Return Home</Link>
     </main>
   )
@@ -134,6 +139,7 @@ function AppShell() {
         <Route path="/resources/:slug" element={<ResourceArticle />} />
         <Route path="/professionals" element={<Professionals />} />
         <Route path="/power-within-professional" element={<Professionals />} />
+        <Route path="/podcast" element={<Podcast />} />
         <Route path="*" element={<BuildNotice />} />
       </Routes>
       <SiteFooter />
