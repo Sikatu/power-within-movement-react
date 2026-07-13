@@ -1,10 +1,12 @@
 import { useEffect } from 'react'
-import { BrowserRouter, Link, Route, Routes, useLocation } from 'react-router-dom'
+import { BrowserRouter, Link, Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import SiteFooter from './components/SiteFooter.jsx'
 import SiteHeader from './components/SiteHeader.jsx'
 import { signatureExperiences } from './data/signatureExperiences.js'
 import About from './pages/About.jsx'
 import Contact from './pages/Contact.jsx'
+import ClientPortalInvite from './pages/ClientPortalInvite.jsx'
+import ClientPortalLogin from './pages/ClientPortalLogin.jsx'
 import Experiences from './pages/Experiences.jsx'
 import Home from './pages/Home.jsx'
 import Podcast from './pages/Podcast.jsx'
@@ -92,13 +94,23 @@ const routeMetadata = {
     title: 'Contact Power Within Collective | Private Consultations & Speaking',
     description: 'Contact Power Within Collective about private consultations, color analysis, personal style guidance, Radiance Reclaimed, professional education, speaking, podcast, or collaboration.',
   },
+  '/client-portal/login': {
+    title: 'Client Portal Login | Power Within Collective',
+    description: 'Secure client portal access for Power Within Collective clients.',
+  },
+  '/client-portal/invite': {
+    title: 'Set Up Your Client Portal | Power Within Collective',
+    description: 'Accept your private Power Within Collective client portal invitation and create secure access.',
+  },
 }
 
 function RouteMetadata() {
   const { pathname } = useLocation()
 
   useEffect(() => {
-    const metadata = routeMetadata[pathname] || {
+    const metadata = routeMetadata[pathname]
+      || (pathname.startsWith('/client-portal/invite/') ? routeMetadata['/client-portal/invite'] : null)
+      || {
       title: 'Power Within Collective',
       description: 'A thoughtful whole-person experience for confidence, style, personal presence, and self-recognition.',
     }
@@ -168,6 +180,9 @@ function AppShell() {
         <Route path="/teens" element={<TeenPrograms />} />
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<ContactRoute />} />
+        <Route path="/client-portal" element={<Navigate to="/client-portal/login" replace />} />
+        <Route path="/client-portal/login" element={<ClientPortalLogin />} />
+        <Route path="/client-portal/invite/:token" element={<ClientPortalInvite />} />
         <Route path="*" element={<BuildNotice />} />
       </Routes>
       <SiteFooter />
