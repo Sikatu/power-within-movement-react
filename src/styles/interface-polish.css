@@ -1423,7 +1423,7 @@ body[data-pwc-surface='admin'] :where(.admin-page-heading, .developer-control-he
   line-height: 1.02 !important;
 }
 
-body[data-pwc-surface='admin'] :where(.admin-eyebrow, .developer-section-heading > span, .founder-home__eyebrow) {
+body[data-pwc-surface='admin'] :where(.admin-eyebrow, .developer-section-heading > span) {
   color: var(--pwc-elevated-gold-dark) !important;
   font-size: 9.5px !important;
   font-weight: 800 !important;
@@ -1431,13 +1431,12 @@ body[data-pwc-surface='admin'] :where(.admin-eyebrow, .developer-section-heading
   text-transform: uppercase;
 }
 
-body[data-pwc-surface='admin'] :where(.pwc-admin-shell, .founder-home) :where(
+body[data-pwc-surface='admin'] .pwc-admin-shell :where(
   [class*='admin-'][class*='card'],
   [class*='developer-'][class*='card'],
   [class*='client-'][class*='card'],
   [class*='automation-'][class*='card'],
   [class*='circle-'][class*='card'],
-  .founder-home__pulse > div,
   .developer-account-section,
   .developer-governance-card,
   .developer-quick-links,
@@ -1494,36 +1493,6 @@ body[data-pwc-surface='admin'] :where(.btn.secondary) {
   border-radius: 999px !important;
   background: rgba(255, 252, 249, 0.7) !important;
   color: var(--pwc-elevated-burgundy) !important;
-}
-
-body[data-pwc-surface='admin'].founders-view-standalone-mode .founder-home {
-  min-height: 100vh;
-  background:
-    radial-gradient(circle at 10% 0%, rgba(228, 203, 195, 0.34), transparent 30rem),
-    linear-gradient(180deg, var(--pwc-elevated-bg-top), var(--pwc-elevated-bg)) !important;
-  color: var(--pwc-elevated-copy);
-  font-family: var(--pwc-elevated-ui);
-}
-
-body[data-pwc-surface='admin'].founders-view-standalone-mode .founder-home__topbar {
-  border-bottom: 1px solid var(--pwc-elevated-border) !important;
-  background: rgba(249, 242, 236, 0.88) !important;
-  box-shadow: none !important;
-  backdrop-filter: blur(14px);
-}
-
-body[data-pwc-surface='admin'].founders-view-standalone-mode .founder-home__shell {
-  width: min(100%, 1180px) !important;
-  margin-inline: auto !important;
-  padding: clamp(36px, 5vw, 62px) var(--pwc-elevated-gutter) 72px !important;
-}
-
-body[data-pwc-surface='admin'].founders-view-standalone-mode .founder-home__intro h1 {
-  color: var(--pwc-elevated-ink) !important;
-  font-family: var(--pwc-elevated-display) !important;
-  font-size: clamp(38px, 5vw, 62px) !important;
-  font-weight: 600 !important;
-  line-height: 0.98 !important;
 }
 
 /* High-specificity corrections for legacy headline rules that also use !important. */
@@ -1918,19 +1887,11 @@ body[data-pwc-surface='admin'] .pwc-admin-auth-card h1 {
     .developer-client-grid,
     .admin-inbox__metrics,
     .automation-studio-metrics,
-    .circle-admin-metrics,
-    .founder-home__grid
+    .circle-admin-metrics
   ) {
     grid-template-columns: minmax(0, 1fr) !important;
   }
 
-  body[data-pwc-surface='admin'].founders-view-standalone-mode .founder-home__topbar {
-    position: sticky;
-  }
-
-  body[data-pwc-surface='admin'].founders-view-standalone-mode .founder-home__intro {
-    grid-template-columns: minmax(0, 1fr) !important;
-  }
 }
 
 @media (max-width: 620px) {

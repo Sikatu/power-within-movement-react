@@ -343,27 +343,12 @@ export default function AdminFoundersView() {
             <p className="founder-home__focus">{dailyFocus}</p>
           </div>
 
-          <div className="founder-home__intro-side">
-            <div className="founder-home__timezone" aria-label="Schedule timezone">
-              <span aria-hidden="true" />
-              <div>
-                <small>Schedule shown in</small>
-                <strong>{FOUNDER_TIME_ZONE_LABEL}</strong>
-              </div>
+          <div className="founder-home__timezone" aria-label="Schedule timezone">
+            <span aria-hidden="true" />
+            <div>
+              <small>Schedule shown in</small>
+              <strong>{FOUNDER_TIME_ZONE_LABEL}</strong>
             </div>
-
-            <nav className="founder-home__primary-actions" aria-label="Founder controls">
-              <Link to="/admin/founders-calendar">Open calendar</Link>
-              <Link to="/admin/founders-availability">Availability</Link>
-              <Link to="/admin/dashboard">Open The Studio</Link>
-              <button
-                type="button"
-                onClick={handleLogout}
-                disabled={isSigningOut}
-              >
-                {isSigningOut ? 'Signing out…' : 'Sign out'}
-              </button>
-            </nav>
           </div>
         </section>
 
