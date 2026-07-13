@@ -3,6 +3,7 @@ import { BrowserRouter, Link, Route, Routes, useLocation } from 'react-router-do
 import SiteFooter from './components/SiteFooter.jsx'
 import SiteHeader from './components/SiteHeader.jsx'
 import { signatureExperiences } from './data/signatureExperiences.js'
+import About from './pages/About.jsx'
 import Experiences from './pages/Experiences.jsx'
 import Home from './pages/Home.jsx'
 import Podcast from './pages/Podcast.jsx'
@@ -82,6 +83,10 @@ const routeMetadata = {
     title: 'Teen Confidence Programs for Girls | Power Within Collective',
     description: 'Supportive teen confidence programs for girls and young women building identity, emotional awareness, self-expression, and grounded self-trust.',
   },
+  '/about': {
+    title: 'About Kim Mittelstadt | Power Within Collective',
+    description: 'Learn about Kim Mittelstadt, founder of Power Within Collective, and the whole-person foundation behind her confidence, style, beauty, and transformation work.',
+  },
 }
 
 function RouteMetadata() {
@@ -151,6 +156,7 @@ function AppShell() {
         <Route path="/podcast" element={<Podcast />} />
         <Route path="/teen-programs" element={<TeenPrograms />} />
         <Route path="/teens" element={<TeenPrograms />} />
+        <Route path="/about" element={<About />} />
         <Route path="*" element={<BuildNotice />} />
       </Routes>
       <SiteFooter />
