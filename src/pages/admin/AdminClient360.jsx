@@ -9,6 +9,7 @@ import {
   updateAdminClientCarePlan,
 } from '../../lib/nativeApi'
 import './Client360.css'
+import './AdminOperationsElevation.css'
 
 const emptyPlan = {
   journeyStage: 'onboarding',

@@ -9,6 +9,7 @@ import {
 
 import './Admin.css'
 import './TeamManagement.css'
+import './AdminOperationsElevation.css'
 
 const moduleLabels = {
   dashboard: ['Overview', 'Studio dashboard and operational summary'],

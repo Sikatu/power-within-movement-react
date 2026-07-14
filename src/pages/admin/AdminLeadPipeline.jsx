@@ -12,6 +12,7 @@ import {
 
 import './Admin.css'
 import './LeadPipeline.css'
+import './AdminOperationsElevation.css'
 
 const stageLabels = {
   new_inquiry: 'New inquiry',

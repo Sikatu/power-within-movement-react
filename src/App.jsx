@@ -1,5 +1,5 @@
 import { lazy, Suspense, useEffect } from 'react'
-import { BrowserRouter, Link, Navigate, Route, Routes, useLocation } from 'react-router-dom'
+import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import SiteFooter from './components/SiteFooter.jsx'
 import SiteHeader from './components/SiteHeader.jsx'
 import AdminDeveloperRouteGuard from './components/admin/AdminDeveloperRouteGuard.jsx'
@@ -20,6 +20,7 @@ import ClientPortalResources from './pages/ClientPortalResources.jsx'
 import ClientPortalSessions from './pages/ClientPortalSessions.jsx'
 import Experiences from './pages/Experiences.jsx'
 import Home from './pages/Home.jsx'
+import NotFound from './pages/NotFound.jsx'
 import Podcast from './pages/Podcast.jsx'
 import Professionals from './pages/Professionals.jsx'
 import RadianceReclaimed from './pages/RadianceReclaimed.jsx'
@@ -177,9 +178,81 @@ const routeMetadata = {
     title: 'The Studio | Power Within Collective',
     description: 'Private studio operations for client care, sessions, and communications.',
   },
+  '/admin/change-password': {
+    title: 'Secure Account Setup | Power Within Collective',
+    description: 'Create a permanent password for private Power Within Collective workspace access.',
+  },
+  '/admin/clients': {
+    title: 'Client Circle | The Studio',
+    description: 'Manage client profiles, care records, portal access, and private resources.',
+  },
+  '/admin/client-360': {
+    title: 'Client 360 | The Studio',
+    description: 'A complete operational view of a Power Within Collective client journey.',
+  },
+  '/admin/scheduler': {
+    title: 'Sessions & Calendar | The Studio',
+    description: 'Manage appointments, availability, and private client sessions.',
+  },
+  '/admin/session-changes': {
+    title: 'Session Changes | The Studio',
+    description: 'Review client cancellation and rescheduling requests.',
+  },
+  '/admin/inbox': {
+    title: 'Secure Inbox | The Studio',
+    description: 'Manage private Power Within Collective client conversations.',
+  },
+  '/admin/email-studio': {
+    title: 'Mail Studio | The Studio',
+    description: 'Prepare and deliver thoughtful client communications.',
+  },
+  '/admin/leads': {
+    title: 'Leads & Intake | The Studio',
+    description: 'Manage inquiries, follow-ups, consultations, and client intake.',
+  },
+  '/admin/automations': {
+    title: 'Automation Studio | The Studio',
+    description: 'Manage client communication and care workflow automations.',
+  },
+  '/admin/onboarding': {
+    title: 'Booking & Onboarding | The Studio',
+    description: 'Manage booking flows, intake forms, and client onboarding.',
+  },
+  '/admin/courses': {
+    title: 'Learning Library | The Studio',
+    description: 'Manage private courses, lessons, resources, and client learning access.',
+  },
+  '/admin/memberships': {
+    title: 'Membership Circle | The Studio',
+    description: 'Manage membership plans, enrollments, resources, and announcements.',
+  },
+  '/admin/circle': {
+    title: 'The Circle Community | The Studio',
+    description: 'Create and moderate the private Power Within Collective community.',
+  },
+  '/admin/encouragements': {
+    title: 'Encouragement Studio | The Studio',
+    description: 'Draft, schedule, and publish thoughtful client encouragements.',
+  },
+  '/admin/audit-log': {
+    title: 'Activity Journal | The Studio',
+    description: 'Review protected operational activity across The Studio.',
+  },
+  '/admin/team': {
+    title: 'Staff & Team Management | Power Within Collective',
+    description: 'Manage team roles, permissions, assignments, and operational access.',
+  },
   '/admin/founders-view': {
     title: 'Founder’s View | Power Within Collective',
     description: 'Private founder overview for priorities, schedule, and availability.',
+  },
+  '/admin/founders-calendar': {
+    title: 'Founder Calendar | Power Within Collective',
+    description: 'A simplified private calendar for founder sessions and protected time.',
+  },
+  '/admin/founders-availability': {
+    title: 'Protect Your Time | Power Within Collective',
+    description: 'Manage founder availability, weekly hours, and custom date protection.',
   },
   '/admin/developer': {
     title: 'Developer Control Center | Power Within Collective',
@@ -198,6 +271,8 @@ function RouteMetadata() {
     const metadata = routeMetadata[pathname]
       || (pathname.startsWith('/client-portal/invite/') ? routeMetadata['/client-portal/invite'] : null)
       || (pathname.startsWith('/client-portal/messages/') ? routeMetadata['/client-portal/messages'] : null)
+      || (pathname.startsWith('/admin/clients/') ? routeMetadata['/admin/clients'] : null)
+      || (pathname.startsWith('/admin/client-360/') ? routeMetadata['/admin/client-360'] : null)
       || {
       title: 'Power Within Collective',
       description: 'A thoughtful whole-person experience for confidence, style, personal presence, and self-recognition.',
@@ -229,16 +304,6 @@ function ScrollManager() {
   return null
 }
 
-function BuildNotice() {
-  return (
-    <main id="main-content" className="build-notice">
-      <p className="eyebrow">New experience in progress</p>
-      <h1>This page is the next part of the rebuild.</h1>
-      <p>This route is queued for an upcoming focused slice. The completed public experiences remain available through the main navigation.</p>
-      <Link className="button button-primary" to="/">Return Home</Link>
-    </main>
-  )
-}
 
 function ContactRoute() {
   const { search } = useLocation()
@@ -311,7 +376,7 @@ function AppShell() {
         <Route path="/admin/circle" element={<AdminRouteGuard><AdminCircleCommunity /></AdminRouteGuard>} />
         <Route path="/admin/encouragements" element={<AdminRouteGuard><AdminEncouragements /></AdminRouteGuard>} />
         <Route path="/admin/audit-log" element={<AdminRouteGuard><AdminAuditLog /></AdminRouteGuard>} />
-        <Route path="*" element={<BuildNotice />} />
+        <Route path="*" element={<NotFound />} />
         </Routes>
       </Suspense>
       {!isInternalRoute && <SiteFooter />}

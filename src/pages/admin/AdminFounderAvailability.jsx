@@ -10,6 +10,7 @@ import {
 
 import './Admin.css'
 import './FounderAvailability.css'
+import './AdminOperationsElevation.css'
 
 const FOUNDER_TIME_ZONE = 'America/New_York'
 const WEEKDAYS = [

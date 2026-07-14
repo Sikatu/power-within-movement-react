@@ -9,6 +9,7 @@ import {
 
 import './Admin.css'
 import './FounderCalendar.css'
+import './AdminOperationsElevation.css'
 
 const FOUNDER_TIME_ZONE = 'America/New_York'
 const FOUNDER_TIME_ZONE_LABEL = 'Eastern Time'
