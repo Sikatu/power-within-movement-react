@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import AdminFrame from '../../components/admin/AdminFrame'
 import {
@@ -62,6 +62,7 @@ export default function AdminInbox() {
   const [teamUsers, setTeamUsers] = useState([])
   const [metrics, setMetrics] = useState({})
   const [selectedId, setSelectedId] = useState(requestedConversationId)
+  const selectedIdRef = useRef(requestedConversationId)
   const [selectedConversation, setSelectedConversation] = useState(null)
   const [filters, setFilters] = useState({ status: 'all', priority: 'all', search: '' })
   const [showNew, setShowNew] = useState(false)
@@ -90,16 +91,18 @@ export default function AdminInbox() {
     setTeamUsers(result.teamUsers || [])
     setMetrics(result.metrics || {})
 
+    const currentSelectedId = selectedIdRef.current
     const nextId =
       preferredId && nextConversations.some((item) => item.id === preferredId)
         ? preferredId
-        : selectedId && nextConversations.some((item) => item.id === selectedId)
-          ? selectedId
+        : currentSelectedId && nextConversations.some((item) => item.id === currentSelectedId)
+          ? currentSelectedId
           : nextConversations[0]?.id || ''
 
+    selectedIdRef.current = nextId
     setSelectedId(nextId)
     await loadConversation(nextId)
-  }, [filters, loadConversation, selectedId])
+  }, [filters, loadConversation])
 
   useEffect(() => {
     let mounted = true
@@ -147,6 +150,7 @@ export default function AdminInbox() {
   }
 
   async function openConversation(conversationId) {
+    selectedIdRef.current = conversationId
     setSelectedId(conversationId)
     setError('')
     setNotice('')
@@ -176,9 +180,9 @@ export default function AdminInbox() {
     if (result?.conversation) {
       setNewConversation(emptyNewConversation)
       setShowNew(false)
+      selectedIdRef.current = result.conversation.id
       setSelectedId(result.conversation.id)
       setSelectedConversation(result.conversation)
-      await loadInbox(result.conversation.id)
     }
   }
 

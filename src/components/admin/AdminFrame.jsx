@@ -255,6 +255,7 @@ function AdminFrame({ children }) {
   const navigate = useNavigate()
   const searchInputRef = useRef(null)
   const workspaceRef = useRef(null)
+  const sidebarRef = useRef(null)
   const mobileTriggerRef = useRef(null)
   const mainContentRef = useRef(null)
   const previousPathRef = useRef(location.pathname)
@@ -266,6 +267,9 @@ function AdminFrame({ children }) {
   const [workspaceOpen, setWorkspaceOpen] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
   const [signingOut, setSigningOut] = useState(false)
+  const [isOnline, setIsOnline] = useState(() => (
+    typeof navigator === 'undefined' ? true : navigator.onLine
+  ))
 
   const role = roleVerified ? adminUser?.role : null
   const isDeveloper = role === 'developer'
@@ -385,6 +389,25 @@ function AdminFrame({ children }) {
 
   useEffect(() => {
     function handleKeyDown(event) {
+      if (mobileOpen && event.key === 'Tab' && sidebarRef.current) {
+        const focusable = Array.from(sidebarRef.current.querySelectorAll(
+          'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+        )).filter((element) => !element.closest('[hidden]') && element.getClientRects().length > 0)
+
+        if (focusable.length) {
+          const first = focusable[0]
+          const last = focusable.at(-1)
+
+          if (event.shiftKey && document.activeElement === first) {
+            event.preventDefault()
+            last.focus()
+          } else if (!event.shiftKey && document.activeElement === last) {
+            event.preventDefault()
+            first.focus()
+          }
+        }
+      }
+
       if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') {
         event.preventDefault()
         setMobileOpen(true)
@@ -423,6 +446,20 @@ function AdminFrame({ children }) {
   }, [mobileOpen, workspaceOpen])
 
   useEffect(() => {
+    function updateConnectionStatus() {
+      setIsOnline(navigator.onLine)
+    }
+
+    window.addEventListener('online', updateConnectionStatus)
+    window.addEventListener('offline', updateConnectionStatus)
+
+    return () => {
+      window.removeEventListener('online', updateConnectionStatus)
+      window.removeEventListener('offline', updateConnectionStatus)
+    }
+  }, [])
+
+  useEffect(() => {
     if (!mobileOpen) return undefined
 
     const previousOverflow = document.body.style.overflow
@@ -445,6 +482,7 @@ function AdminFrame({ children }) {
 
       if (previousPath !== location.pathname) {
         mainContentRef.current?.scrollTo({ top: 0, behavior: 'auto' })
+        mainContentRef.current?.focus({ preventScroll: true })
       }
     })
 
@@ -546,8 +584,11 @@ function AdminFrame({ children }) {
       )}
 
       <aside
+        ref={sidebarRef}
         className={`pwc-admin-sidebar pwc-studio-sidebar pwc-nav33-sidebar${mobileOpen ? ' is-open' : ''}`}
         aria-label="Studio sidebar"
+        role={mobileOpen ? 'dialog' : undefined}
+        aria-modal={mobileOpen || undefined}
       >
         <div className="pwc-nav33-header" role="banner">
           <div className="pwc-nav33-brand-row">
@@ -730,6 +771,16 @@ function AdminFrame({ children }) {
         </nav>
 
         <div className="pwc-nav33-footer" role="contentinfo">
+          <div
+            className={`pwc-nav33-connection${isOnline ? ' is-online' : ' is-offline'}`}
+            role="status"
+            aria-live="polite"
+          >
+            <span aria-hidden="true" />
+            <strong>{isOnline ? 'Studio connected' : 'Connection interrupted'}</strong>
+            <small>{isOnline ? 'Changes can be saved securely.' : 'Reconnect before saving new changes.'}</small>
+          </div>
+
           <NotificationCenter mode="admin" />
 
           <div className="pwc-nav33-account">

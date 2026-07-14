@@ -1,0 +1,3 @@
+src/components/admin/AdminFrame.jsx whitespace=cr-at-eol
+src/pages/admin/AdminInbox.jsx whitespace=cr-at-eol
+src/pages/admin/AdminSessionChangeRequests.jsx whitespace=cr-at-eol

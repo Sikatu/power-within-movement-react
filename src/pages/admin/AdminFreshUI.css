@@ -12376,3 +12376,290 @@ body.admin-app-mode .developer-initial-state p:last-child {
     animation-iteration-count: 1 !important;
   }
 }
+
+/* Fresh UI Phase 7 — route, accessibility, and production polish */
+body.admin-app-mode {
+  color-scheme: light;
+  accent-color: var(--admin-burgundy);
+}
+
+body.admin-app-mode ::selection {
+  background: rgba(200, 169, 106, 0.34);
+  color: var(--admin-ink);
+}
+
+body.admin-app-mode :where(button, a, [role='button']) {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body.admin-app-mode :where(h1, h2, h3) {
+  text-wrap: balance;
+}
+
+body.admin-app-mode :where(p, li, dd, td, code, pre, [title]) {
+  overflow-wrap: anywhere;
+}
+
+body.admin-app-mode :where(pre, code) {
+  font-variant-ligatures: none;
+}
+
+body.admin-app-mode pre {
+  max-width: 100%;
+  overflow: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+}
+
+body.admin-app-mode .pwc-nav33-main {
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+}
+
+body.admin-app-mode .pwc-nav33-nav,
+body.admin-app-mode :where([class*='table-wrap'], [class*='table-shell'], [class*='list-scroll']) {
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+  -webkit-overflow-scrolling: touch;
+}
+
+body.admin-app-mode :where([class*='table-wrap'], [class*='table-shell']) {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+body.admin-app-mode :where(table) {
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+body.admin-app-mode :where(input, select, textarea):user-invalid {
+  border-color: rgba(153, 84, 92, 0.52);
+  box-shadow: 0 0 0 4px rgba(153, 84, 92, 0.1);
+}
+
+body.admin-app-mode :where(input, textarea):-webkit-autofill,
+body.admin-app-mode :where(input, textarea):-webkit-autofill:hover,
+body.admin-app-mode :where(input, textarea):-webkit-autofill:focus {
+  -webkit-text-fill-color: var(--admin-ink);
+  box-shadow: 0 0 0 1000px #fffdfb inset;
+  transition: background-color 9999s ease-out;
+}
+
+body.admin-app-mode [aria-busy='true'] {
+  cursor: progress;
+}
+
+body.admin-app-mode [aria-busy='true'] :where(button, input, select, textarea) {
+  pointer-events: none;
+}
+
+body.admin-app-mode .pwc-nav33-connection {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: 8px minmax(0, 1fr);
+  column-gap: 8px;
+  row-gap: 1px;
+  align-items: center;
+  border: 1px solid rgba(228, 211, 202, 0.09);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.025);
+  padding: 8px 10px;
+}
+
+body.admin-app-mode .pwc-nav33-connection > span {
+  width: 7px;
+  height: 7px;
+  grid-row: 1 / span 2;
+  border-radius: 999px;
+  background: #78a487;
+  box-shadow: 0 0 0 4px rgba(120, 164, 135, 0.1);
+}
+
+body.admin-app-mode .pwc-nav33-connection strong,
+body.admin-app-mode .pwc-nav33-connection small {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+body.admin-app-mode .pwc-nav33-connection strong {
+  color: rgba(253, 246, 240, 0.78);
+  font-size: 8.5px;
+  font-weight: 750;
+}
+
+body.admin-app-mode .pwc-nav33-connection small {
+  color: rgba(228, 211, 202, 0.34);
+  font-size: 7.5px;
+}
+
+body.admin-app-mode .pwc-nav33-connection.is-offline {
+  border-color: rgba(208, 151, 88, 0.25);
+  background: rgba(168, 121, 57, 0.08);
+}
+
+body.admin-app-mode .pwc-nav33-connection.is-offline > span {
+  background: #d09a5d;
+  box-shadow: 0 0 0 4px rgba(208, 154, 93, 0.12);
+}
+
+body.admin-app-mode .pwc-nav33-connection.is-offline strong {
+  color: #f1d4af;
+}
+
+body.admin-app-mode .session-change-admin__tabpanel:focus-visible {
+  border-radius: var(--admin-radius);
+  outline: 3px solid rgba(181, 136, 77, 0.5);
+  outline-offset: 5px;
+}
+
+body.admin-app-mode :where(
+  .admin-inbox-modal,
+  .developer-preview-dialog,
+  .client-form-drawer-v2
+) {
+  max-height: min(88dvh, 900px);
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+}
+
+body.admin-app-mode :where(
+  .admin-inbox-modal,
+  .developer-preview-dialog
+) {
+  overflow-y: auto;
+}
+
+body.admin-app-mode :where(
+  .admin-inbox__notice,
+  .admin-notice,
+  .session-change-admin__notice,
+  [class$='-alert'],
+  [class$='__notice']
+)[role='alert'] {
+  box-shadow: 0 16px 34px -28px rgba(153, 84, 92, 0.8);
+}
+
+body.admin-app-mode :where(
+  .admin-inbox__notice,
+  .admin-notice,
+  .session-change-admin__notice,
+  [class$='-alert'],
+  [class$='__notice']
+)[role='status'] {
+  box-shadow: 0 16px 34px -30px rgba(85, 113, 93, 0.68);
+}
+
+@media (max-width: 820px) {
+  body.admin-app-mode .pwc-admin-shell,
+  body.admin-app-mode .pwc-studio-shell,
+  body.admin-app-mode .pwc-nav33-shell {
+    padding-top: calc(62px + env(safe-area-inset-top));
+  }
+
+  body.admin-app-mode .pwc-nav33-mobile-trigger {
+    min-height: calc(62px + env(safe-area-inset-top));
+    padding-top: env(safe-area-inset-top);
+    padding-inline: max(18px, env(safe-area-inset-left)) max(18px, env(safe-area-inset-right));
+  }
+
+  body.admin-app-mode .pwc-nav33-sidebar {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  body.admin-app-mode .pwc-nav33-main {
+    min-height: calc(100dvh - 62px - env(safe-area-inset-top));
+    padding-right: max(20px, env(safe-area-inset-right));
+    padding-bottom: max(56px, calc(32px + env(safe-area-inset-bottom)));
+    padding-left: max(20px, env(safe-area-inset-left));
+  }
+
+  body.admin-app-mode .pwc-nav33-search kbd {
+    display: none;
+  }
+}
+
+@media (max-width: 560px) {
+  body.admin-app-mode .pwc-nav33-main {
+    padding-right: max(16px, env(safe-area-inset-right));
+    padding-left: max(16px, env(safe-area-inset-left));
+  }
+
+  body.admin-app-mode :where(.btn, button, [role='button']) {
+    min-height: 46px;
+  }
+
+  body.admin-app-mode :where(input, select, textarea) {
+    font-size: 16px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.admin-app-mode *,
+  body.admin-app-mode *::before,
+  body.admin-app-mode *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+
+@media (forced-colors: active) {
+  body.admin-app-mode :where(button, .btn, input, select, textarea, article, section, dialog) {
+    border: 1px solid CanvasText;
+  }
+
+  body.admin-app-mode :where(.pwc-nav33-primary a.is-active, .pwc-nav33-group-links a.is-active) {
+    outline: 2px solid Highlight;
+    outline-offset: -2px;
+  }
+
+  body.admin-app-mode .pwc-nav33-connection > span {
+    background: LinkText;
+    box-shadow: none;
+  }
+}
+
+@media print {
+  body.admin-app-mode {
+    background: #fff;
+    color: #111;
+  }
+
+  body.admin-app-mode :where(
+    .pwc-nav33-sidebar,
+    .pwc-nav33-mobile-trigger,
+    .pwc-nav33-mobile-backdrop,
+    .pwc-studio-view-only-banner,
+    .pwc-nav33-connection,
+    [class*='header-actions'],
+    [class*='action-bar'],
+    [class*='save-bar']
+  ) {
+    display: none !important;
+  }
+
+  body.admin-app-mode .pwc-nav33-shell {
+    display: block;
+  }
+
+  body.admin-app-mode .pwc-nav33-main,
+  body.admin-app-mode .pwc-studio-main {
+    min-height: 0;
+    overflow: visible;
+    padding: 0;
+  }
+
+  body.admin-app-mode .pwc-studio-main > * {
+    width: 100%;
+    max-width: none;
+  }
+
+  body.admin-app-mode :where(article, section, table, tr) {
+    break-inside: avoid;
+  }
+}

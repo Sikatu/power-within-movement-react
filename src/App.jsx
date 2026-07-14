@@ -264,32 +264,61 @@ const routeMetadata = {
   },
 }
 
+function resolveRouteMetadata(pathname) {
+  return routeMetadata[pathname]
+    || (pathname.startsWith('/client-portal/invite/') ? routeMetadata['/client-portal/invite'] : null)
+    || (pathname.startsWith('/client-portal/messages/') ? routeMetadata['/client-portal/messages'] : null)
+    || (pathname.startsWith('/admin/clients/') ? routeMetadata['/admin/clients'] : null)
+    || (pathname.startsWith('/admin/client-360/') ? routeMetadata['/admin/client-360'] : null)
+    || {
+      title: 'Power Within Collective',
+      description: 'A thoughtful whole-person experience for confidence, style, personal presence, and self-recognition.',
+    }
+}
+
 function RouteMetadata() {
   const { pathname } = useLocation()
 
   useEffect(() => {
-    const metadata = routeMetadata[pathname]
-      || (pathname.startsWith('/client-portal/invite/') ? routeMetadata['/client-portal/invite'] : null)
-      || (pathname.startsWith('/client-portal/messages/') ? routeMetadata['/client-portal/messages'] : null)
-      || (pathname.startsWith('/admin/clients/') ? routeMetadata['/admin/clients'] : null)
-      || (pathname.startsWith('/admin/client-360/') ? routeMetadata['/admin/client-360'] : null)
-      || {
-      title: 'Power Within Collective',
-      description: 'A thoughtful whole-person experience for confidence, style, personal presence, and self-recognition.',
+    const metadata = resolveRouteMetadata(pathname)
+    const themeColor = pathname.startsWith('/admin') ? '#2f2024' : '#faf3ec'
+    let themeColorMeta = document.querySelector('meta[name="theme-color"]')
+
+    if (!themeColorMeta) {
+      themeColorMeta = document.createElement('meta')
+      themeColorMeta.setAttribute('name', 'theme-color')
+      document.head.append(themeColorMeta)
     }
 
     document.title = metadata.title
     document.querySelector('meta[name="description"]')?.setAttribute('content', metadata.description)
+    themeColorMeta.setAttribute('content', themeColor)
     document.body.dataset.pwcRoute = pathname
   }, [pathname])
 
   return null
 }
 
+function RouteAnnouncer() {
+  const { pathname } = useLocation()
+  const metadata = resolveRouteMetadata(pathname)
+
+  return (
+    <div className="sr-only route-announcer" role="status" aria-live="polite" aria-atomic="true">
+      {metadata.title}
+    </div>
+  )
+}
+
 function ScrollManager() {
   const { hash, pathname } = useLocation()
 
   useEffect(() => {
+    const framedAdminRoute = pathname.startsWith('/admin/')
+      && !['/admin/login', '/admin/change-password'].includes(pathname)
+
+    if (framedAdminRoute) return
+
     if (hash) {
       const target = document.getElementById(hash.slice(1))
       if (target) {
@@ -342,6 +371,7 @@ function AppShell() {
     <>
       <ScrollManager />
       <RouteMetadata />
+      <RouteAnnouncer />
       <a className="skip-link" href="#main-content">Skip to content</a>
       {!isInternalRoute && <SiteHeader />}
       <Suspense fallback={<RouteLoadingFallback internal={isInternalRoute} />}>
