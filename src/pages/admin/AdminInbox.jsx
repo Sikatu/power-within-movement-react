@@ -12,6 +12,7 @@ import {
 import './Admin.css'
 import './AdminInbox.css'
 import './AdminModuleElevation.css'
+import './AdminCommunicationPhase6.css'
 
 const emptyNewConversation = {
   clientProfileId: '',
@@ -293,6 +294,7 @@ export default function AdminInbox() {
                   type="button"
                   key={conversation.id}
                   className={`admin-inbox-list-item${selectedId === conversation.id ? ' is-active' : ''}`}
+                  aria-pressed={selectedId === conversation.id}
                   onClick={() => openConversation(conversation.id)}
                 >
                   <div className="admin-inbox-list-item__top">
@@ -391,6 +393,7 @@ export default function AdminInbox() {
                     <button
                       type="button"
                       className={!reply.isInternalNote ? 'is-active' : ''}
+                      aria-pressed={!reply.isInternalNote}
                       onClick={() => setReply((current) => ({ ...current, isInternalNote: false }))}
                     >
                       Reply to Client
@@ -398,6 +401,7 @@ export default function AdminInbox() {
                     <button
                       type="button"
                       className={reply.isInternalNote ? 'is-active' : ''}
+                      aria-pressed={reply.isInternalNote}
                       onClick={() => setReply((current) => ({ ...current, isInternalNote: true }))}
                     >
                       Internal Note

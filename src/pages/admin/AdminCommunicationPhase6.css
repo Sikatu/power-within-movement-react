@@ -1,0 +1,1080 @@
+/* =========================================================
+   Phase 6 — Secure Inbox + Mail Studio
+   Complete route-scoped communication workspace refinement.
+   ========================================================= */
+
+body:has(.admin-inbox),
+body:has(.mail-studio-page-v1) {
+  overflow: auto !important;
+}
+
+/* ---------------------------------------------------------
+   Shared page geometry
+   --------------------------------------------------------- */
+
+body.admin-app-mode .admin-inbox,
+body.admin-app-mode .mail-studio-page-v1 {
+  width: min(1280px, 100%) !important;
+  max-width: 1280px !important;
+  min-height: 100vh !important;
+  margin-inline: auto !important;
+  padding: clamp(24px, 3.2vw, 48px) clamp(20px, 3vw, 44px) 68px !important;
+  overflow: visible !important;
+}
+
+body.admin-app-mode .admin-inbox__header,
+body.admin-app-mode .mail-studio-page-v1 > .admin-page-heading {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) auto !important;
+  align-items: end !important;
+  gap: clamp(22px, 3vw, 40px) !important;
+  margin: 0 0 18px !important;
+  padding: clamp(25px, 3vw, 38px) !important;
+  border: 1px solid var(--studio-border) !important;
+  border-radius: 28px !important;
+  background:
+    radial-gradient(circle at 88% 8%, rgba(200, 169, 106, 0.16), transparent 35%),
+    linear-gradient(145deg, rgba(255, 252, 249, 0.94), rgba(248, 240, 233, 0.76)) !important;
+  box-shadow: var(--studio-shadow) !important;
+}
+
+body.admin-app-mode .mail-studio-page-v1 > .admin-page-heading {
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+
+body.admin-app-mode .admin-inbox__header > div:first-child,
+body.admin-app-mode .mail-studio-page-v1 > .admin-page-heading {
+  min-width: 0 !important;
+}
+
+body.admin-app-mode .admin-inbox__header h1,
+body.admin-app-mode .mail-studio-page-v1 > .admin-page-heading h1 {
+  margin: 0 0 11px !important;
+  font-size: clamp(43px, 5vw, 64px) !important;
+  letter-spacing: -0.035em !important;
+  line-height: 0.92 !important;
+}
+
+body.admin-app-mode .admin-inbox__header > div:first-child > p:last-child,
+body.admin-app-mode .mail-studio-page-v1 > .admin-page-heading > p:last-child {
+  max-width: 670px !important;
+  margin: 0 !important;
+  color: var(--studio-muted) !important;
+  font-size: 13px !important;
+  line-height: 1.68 !important;
+}
+
+body.admin-app-mode .admin-inbox__header-actions {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(138px, 1fr)) !important;
+  align-items: center !important;
+  gap: 10px !important;
+}
+
+body.admin-app-mode .admin-inbox__header-actions .btn {
+  min-width: 138px !important;
+  min-height: 43px !important;
+  justify-content: center !important;
+  padding-inline: 17px !important;
+  border-radius: 13px !important;
+  white-space: nowrap !important;
+}
+
+body.admin-app-mode .admin-inbox__metrics,
+body.admin-app-mode .mail-studio-metrics-v1 {
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  gap: 12px !important;
+  margin: 0 0 18px !important;
+}
+
+body.admin-app-mode .admin-inbox__metrics article,
+body.admin-app-mode .mail-studio-metrics-v1 article {
+  min-height: 104px !important;
+  padding: 16px 18px !important;
+  border-radius: 18px !important;
+}
+
+body.admin-app-mode .admin-inbox__notice,
+body.admin-app-mode .mail-studio-page-v1 > .admin-notice {
+  margin: 0 0 16px !important;
+  padding: 13px 16px !important;
+  border: 1px solid rgba(94, 125, 98, 0.18) !important;
+  border-radius: 14px !important;
+  background: rgba(239, 247, 240, 0.82) !important;
+  color: #46624b !important;
+  font-size: 12.5px !important;
+  font-weight: 650 !important;
+}
+
+body.admin-app-mode .admin-inbox__notice.is-error,
+body.admin-app-mode .mail-studio-page-v1 > .admin-notice.is-error {
+  border-color: rgba(158, 67, 77, 0.2) !important;
+  background: rgba(255, 241, 242, 0.9) !important;
+  color: #8f3948 !important;
+}
+
+/* ---------------------------------------------------------
+   Secure Inbox
+   --------------------------------------------------------- */
+
+body.admin-app-mode .admin-inbox__filters {
+  grid-template-columns: 170px 170px minmax(260px, 1fr) auto !important;
+  gap: 10px !important;
+  align-items: end !important;
+  padding: 15px 17px !important;
+  border: 1px solid var(--studio-border) !important;
+  border-radius: 18px !important;
+  background: rgba(255, 252, 249, 0.74) !important;
+  box-shadow: var(--studio-shadow) !important;
+}
+
+body.admin-app-mode .admin-inbox__filters input,
+body.admin-app-mode .admin-inbox__filters select {
+  min-height: 42px !important;
+  border-radius: 12px !important;
+  background: rgba(255, 255, 255, 0.82) !important;
+}
+
+body.admin-app-mode .admin-inbox__filters > button {
+  min-height: 42px !important;
+  padding-inline: 16px !important;
+  border-radius: 12px !important;
+  white-space: nowrap !important;
+}
+
+body.admin-app-mode .admin-inbox__count {
+  margin: 11px 4px 12px !important;
+  color: var(--studio-muted) !important;
+  font-size: 10.5px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.06em !important;
+  text-transform: uppercase !important;
+}
+
+body.admin-app-mode .admin-inbox__workspace {
+  display: grid !important;
+  grid-template-columns: minmax(300px, 350px) minmax(0, 1fr) !important;
+  width: 100% !important;
+  height: clamp(650px, calc(100vh - 365px), 790px) !important;
+  min-height: 650px !important;
+  max-height: 790px !important;
+  overflow: hidden !important;
+  border: 1px solid var(--studio-border) !important;
+  border-radius: 24px !important;
+  background: var(--studio-surface) !important;
+  box-shadow: var(--studio-shadow-raised) !important;
+}
+
+body.admin-app-mode .admin-inbox__list {
+  min-width: 0 !important;
+  max-height: none !important;
+  overflow: auto !important;
+  border-right: 1px solid rgba(124, 81, 75, 0.11) !important;
+  background: rgba(248, 240, 233, 0.46) !important;
+  scrollbar-width: thin !important;
+}
+
+body.admin-app-mode .admin-inbox-list-item {
+  min-height: 0 !important;
+  padding: 16px 17px !important;
+  border: 0 !important;
+  border-bottom: 1px solid rgba(124, 81, 75, 0.09) !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  color: var(--studio-ink) !important;
+  text-align: left !important;
+  transform: none !important;
+}
+
+body.admin-app-mode .admin-inbox-list-item:hover,
+body.admin-app-mode .admin-inbox-list-item.is-active {
+  border-color: rgba(124, 81, 75, 0.09) !important;
+  background: rgba(255, 252, 249, 0.92) !important;
+  box-shadow: inset 4px 0 var(--studio-gold-light) !important;
+  transform: none !important;
+}
+
+body.admin-app-mode .admin-inbox-list-item:focus-visible {
+  position: relative !important;
+  z-index: 2 !important;
+  outline: 3px solid rgba(200, 169, 106, 0.28) !important;
+  outline-offset: -4px !important;
+}
+
+body.admin-app-mode .admin-inbox-list-item h2 {
+  margin: 7px 0 5px !important;
+  overflow: hidden !important;
+  font-family: Manrope, sans-serif !important;
+  font-size: 12px !important;
+  font-weight: 750 !important;
+  line-height: 1.35 !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+body.admin-app-mode .admin-inbox-list-item p {
+  color: var(--studio-muted) !important;
+  font-size: 11px !important;
+  line-height: 1.5 !important;
+}
+
+body.admin-app-mode .admin-inbox-list-item em {
+  padding: 4px 7px !important;
+  font-size: 8.5px !important;
+  font-weight: 750 !important;
+  letter-spacing: 0.035em !important;
+}
+
+body.admin-app-mode .admin-inbox-list-item time {
+  color: var(--studio-muted) !important;
+  font-size: 9px !important;
+}
+
+body.admin-app-mode .admin-inbox__thread {
+  min-width: 0 !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+}
+
+body.admin-app-mode .admin-inbox-thread__header {
+  flex: 0 0 auto !important;
+  align-items: flex-end !important;
+  gap: 20px !important;
+  padding: 18px 20px !important;
+  border-bottom: 1px solid rgba(124, 81, 75, 0.1) !important;
+  background: rgba(255, 252, 249, 0.86) !important;
+}
+
+body.admin-app-mode .admin-inbox-thread__header > div:first-child {
+  min-width: 0 !important;
+  flex: 1 1 auto !important;
+}
+
+body.admin-app-mode .admin-inbox-thread__header h2 {
+  margin: 0 0 6px !important;
+  overflow: hidden !important;
+  font-size: clamp(22px, 2.2vw, 29px) !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+body.admin-app-mode .admin-inbox-thread__header a {
+  display: inline-flex !important;
+  min-height: 34px !important;
+  align-items: center !important;
+  padding: 0 12px !important;
+  border: 1px solid rgba(124, 81, 75, 0.14) !important;
+  border-radius: 10px !important;
+  background: rgba(255, 255, 255, 0.68) !important;
+  color: var(--studio-burgundy) !important;
+  font-size: 9.5px !important;
+  font-weight: 750 !important;
+  line-height: 1 !important;
+  text-decoration: none !important;
+}
+
+body.admin-app-mode .admin-inbox-thread__header a:hover {
+  border-color: rgba(181, 136, 77, 0.45) !important;
+  background: #fff !important;
+}
+
+body.admin-app-mode .admin-inbox-thread__controls {
+  flex: 0 1 auto !important;
+  align-items: end !important;
+  justify-content: flex-end !important;
+  gap: 8px !important;
+}
+
+body.admin-app-mode .admin-inbox-thread__controls label {
+  min-width: 132px !important;
+}
+
+body.admin-app-mode .admin-inbox-thread__controls select {
+  min-height: 38px !important;
+  padding: 8px 11px !important;
+  border-radius: 11px !important;
+  font-size: 11px !important;
+}
+
+body.admin-app-mode .admin-inbox-thread__controls > button {
+  min-height: 38px !important;
+  padding-inline: 13px !important;
+  border-radius: 11px !important;
+}
+
+body.admin-app-mode .admin-inbox-thread__messages {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  overflow: auto !important;
+  padding: 22px !important;
+  background:
+    linear-gradient(rgba(248, 240, 233, 0.68), rgba(248, 240, 233, 0.68)),
+    radial-gradient(circle at 20% 20%, rgba(200, 169, 106, 0.08), transparent 32%) !important;
+  scrollbar-width: thin !important;
+}
+
+body.admin-app-mode .admin-inbox-message {
+  max-width: min(76%, 680px) !important;
+  margin-bottom: 13px !important;
+  padding: 13px 15px !important;
+  border: 1px solid rgba(124, 81, 75, 0.11) !important;
+  border-radius: 17px 17px 17px 5px !important;
+  background: rgba(255, 252, 249, 0.96) !important;
+  box-shadow: 0 16px 34px -30px rgba(58, 37, 40, 0.56) !important;
+}
+
+body.admin-app-mode .admin-inbox-message:not(.is-client):not(.is-internal) {
+  border-radius: 17px 17px 5px 17px !important;
+  background: rgba(77, 40, 49, 0.94) !important;
+  color: #fffaf6 !important;
+}
+
+body.admin-app-mode .admin-inbox-message:not(.is-client):not(.is-internal) time {
+  color: rgba(255, 250, 246, 0.64) !important;
+}
+
+body.admin-app-mode .admin-inbox-message.is-internal {
+  max-width: min(88%, 760px) !important;
+  border-color: rgba(181, 136, 77, 0.5) !important;
+  background: rgba(255, 248, 223, 0.94) !important;
+}
+
+body.admin-app-mode .admin-inbox-message > div {
+  align-items: center !important;
+  margin-bottom: 6px !important;
+}
+
+body.admin-app-mode .admin-inbox-message strong {
+  font-size: 10.5px !important;
+}
+
+body.admin-app-mode .admin-inbox-message p {
+  font-size: 12px !important;
+  line-height: 1.62 !important;
+}
+
+body.admin-app-mode .admin-inbox-reply {
+  flex: 0 0 auto !important;
+  padding: 16px 20px 18px !important;
+  border-top: 1px solid rgba(124, 81, 75, 0.1) !important;
+  background: rgba(255, 252, 249, 0.94) !important;
+}
+
+body.admin-app-mode .admin-inbox-reply__mode {
+  margin: 0 0 11px !important;
+  padding: 3px !important;
+  border: 1px solid rgba(124, 81, 75, 0.09) !important;
+  background: rgba(248, 240, 233, 0.8) !important;
+}
+
+body.admin-app-mode .admin-inbox-reply__mode button {
+  min-height: 32px !important;
+  padding: 7px 12px !important;
+  border: 0 !important;
+  border-radius: 999px !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  color: var(--studio-muted) !important;
+  font-size: 9.5px !important;
+  transform: none !important;
+}
+
+body.admin-app-mode .admin-inbox-reply__mode button.is-active {
+  background: #fff !important;
+  box-shadow: 0 8px 18px -14px rgba(58, 37, 40, 0.55) !important;
+  color: var(--studio-burgundy) !important;
+}
+
+body.admin-app-mode .admin-inbox-reply textarea {
+  min-height: 92px !important;
+  max-height: 180px !important;
+}
+
+body.admin-app-mode .admin-inbox-reply__attachments {
+  gap: 10px !important;
+  margin: 10px 0 !important;
+}
+
+body.admin-app-mode .admin-inbox-reply > button[type='submit'] {
+  min-width: 130px !important;
+  min-height: 40px !important;
+  border-radius: 12px !important;
+}
+
+body.admin-app-mode .admin-inbox-modal {
+  padding: 24px !important;
+  backdrop-filter: blur(7px) !important;
+}
+
+body.admin-app-mode .admin-inbox-modal form {
+  width: min(680px, 100%) !important;
+  padding: 26px !important;
+  border: 1px solid rgba(200, 169, 106, 0.25) !important;
+  border-radius: 26px !important;
+  background: #fffcf9 !important;
+}
+
+body.admin-app-mode .admin-inbox-modal header {
+  align-items: flex-start !important;
+}
+
+body.admin-app-mode .admin-inbox-modal header > button {
+  width: 38px !important;
+  min-width: 38px !important;
+  height: 38px !important;
+  min-height: 38px !important;
+  padding: 0 !important;
+  border-radius: 12px !important;
+  line-height: 1 !important;
+}
+
+body.admin-app-mode .admin-inbox-modal footer button {
+  min-width: 112px !important;
+  min-height: 41px !important;
+  border-radius: 12px !important;
+}
+
+/* ---------------------------------------------------------
+   Mail Studio
+   --------------------------------------------------------- */
+
+body.admin-app-mode .mail-studio-composer-v1,
+body.admin-app-mode .mail-studio-panel-v1 {
+  border-radius: 24px !important;
+  background: var(--studio-surface) !important;
+}
+
+body.admin-app-mode .mail-studio-composer-v1 {
+  margin: 0 0 18px !important;
+}
+
+body.admin-app-mode .mail-studio-panel-header-v1 {
+  display: flex !important;
+  min-height: 78px !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 18px !important;
+  padding: 18px 21px !important;
+}
+
+body.admin-app-mode .mail-studio-panel-header-v1 > div {
+  min-width: 0 !important;
+}
+
+body.admin-app-mode .mail-studio-panel-header-v1 h2 {
+  margin: 0 !important;
+  font-size: clamp(23px, 2.2vw, 28px) !important;
+  line-height: 1 !important;
+}
+
+body.admin-app-mode .mail-studio-panel-header-v1 > span {
+  max-width: 220px !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+body.admin-app-mode .mail-studio-panel-header-v1 select {
+  width: auto !important;
+  min-width: 112px !important;
+  min-height: 38px !important;
+  padding: 8px 32px 8px 11px !important;
+  border-radius: 11px !important;
+}
+
+body.admin-app-mode .mail-studio-panel-header-v1 > button {
+  min-width: 78px !important;
+  min-height: 38px !important;
+  border-radius: 11px !important;
+}
+
+body.admin-app-mode .mail-studio-composer-grid-v1 {
+  display: grid !important;
+  grid-template-columns: minmax(0, 0.92fr) minmax(400px, 1.08fr) !important;
+  align-items: stretch !important;
+  gap: 0 !important;
+}
+
+body.admin-app-mode .mail-studio-composer-form-v1 {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  align-content: start !important;
+  gap: 13px !important;
+  padding: 21px !important;
+}
+
+body.admin-app-mode .mail-studio-composer-form-v1 > label,
+body.admin-app-mode .mail-studio-form-v1 > label {
+  display: block !important;
+  min-width: 0 !important;
+}
+
+body.admin-app-mode .mail-studio-composer-form-v1 > .is-wide,
+body.admin-app-mode .mail-studio-form-v1 > .is-wide,
+body.admin-app-mode .mail-studio-composer-actions-v1,
+body.admin-app-mode .mail-studio-form-actions-v1 {
+  grid-column: 1 / -1 !important;
+}
+
+body.admin-app-mode .mail-studio-composer-form-v1 textarea {
+  min-height: 96px !important;
+}
+
+body.admin-app-mode .mail-studio-composer-actions-v1 {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  flex-wrap: wrap !important;
+  gap: 9px !important;
+  margin-top: 2px !important;
+  padding-top: 14px !important;
+  border-top: 1px solid rgba(124, 81, 75, 0.09) !important;
+}
+
+body.admin-app-mode .mail-studio-composer-actions-v1 button {
+  min-width: 118px !important;
+  min-height: 40px !important;
+  border-radius: 12px !important;
+}
+
+body.admin-app-mode .mail-studio-composer-actions-v1 button:last-child {
+  min-width: 138px !important;
+}
+
+body.admin-app-mode .mail-studio-preview-v1 {
+  display: flex !important;
+  min-width: 0 !important;
+  min-height: 520px !important;
+  flex-direction: column !important;
+  margin: 20px !important;
+  overflow: hidden !important;
+}
+
+body.admin-app-mode .mail-studio-preview-header-v1 {
+  display: flex !important;
+  flex: 0 0 auto !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 14px !important;
+  padding: 16px 18px !important;
+}
+
+body.admin-app-mode .mail-studio-preview-header-v1 > div:first-child {
+  min-width: 0 !important;
+}
+
+body.admin-app-mode .mail-studio-preview-header-v1 span,
+body.admin-app-mode .mail-studio-preview-header-v1 strong {
+  display: block !important;
+}
+
+body.admin-app-mode .mail-studio-preview-header-v1 span {
+  margin-bottom: 4px !important;
+  color: rgba(255, 250, 246, 0.64) !important;
+  font-size: 8.5px !important;
+  font-weight: 750 !important;
+  letter-spacing: 0.15em !important;
+  text-transform: uppercase !important;
+}
+
+body.admin-app-mode .mail-studio-preview-header-v1 strong {
+  overflow: hidden !important;
+  color: #fffaf6 !important;
+  font-size: 12px !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+body.admin-app-mode .mail-studio-preview-header-v1 > div:last-child {
+  display: flex !important;
+  flex: 0 0 auto !important;
+  gap: 7px !important;
+}
+
+body.admin-app-mode .mail-studio-preview-header-v1 button {
+  min-height: 32px !important;
+  padding: 6px 10px !important;
+  border-color: rgba(255, 250, 246, 0.22) !important;
+  border-radius: 9px !important;
+  background: rgba(255, 250, 246, 0.08) !important;
+  color: #fffaf6 !important;
+  font-size: 9px !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+body.admin-app-mode .mail-studio-preview-header-v1 button:hover {
+  border-color: rgba(255, 250, 246, 0.42) !important;
+  background: rgba(255, 250, 246, 0.14) !important;
+}
+
+body.admin-app-mode .mail-studio-preview-body-v1 {
+  display: flex !important;
+  min-height: 0 !important;
+  flex: 1 1 auto !important;
+  flex-direction: column !important;
+  gap: 5px !important;
+  padding: 20px !important;
+}
+
+body.admin-app-mode .mail-studio-preview-body-v1 p {
+  margin: 0 !important;
+  color: var(--studio-muted) !important;
+  font-size: 10.5px !important;
+  line-height: 1.5 !important;
+}
+
+body.admin-app-mode .mail-studio-preview-body-v1 textarea {
+  min-height: 320px !important;
+  flex: 1 1 auto !important;
+  margin-top: 10px !important;
+  resize: none !important;
+  border-radius: 14px !important;
+  background: rgba(248, 240, 233, 0.4) !important;
+  font-family: Manrope, sans-serif !important;
+  line-height: 1.65 !important;
+}
+
+body.admin-app-mode .mail-studio-preview-v1 > .mail-studio-empty-v1 {
+  display: grid !important;
+  min-height: 360px !important;
+  flex: 1 1 auto !important;
+  place-items: center !important;
+  margin: 0 !important;
+  padding: 30px !important;
+  text-align: center !important;
+}
+
+body.admin-app-mode .mail-studio-grid-v1 {
+  display: grid !important;
+  grid-template-columns: minmax(300px, 0.78fr) minmax(0, 1.22fr) !important;
+  align-items: stretch !important;
+  gap: 16px !important;
+  margin: 0 0 18px !important;
+}
+
+body.admin-app-mode .mail-studio-grid-v1 > .mail-studio-panel-v1 {
+  min-width: 0 !important;
+}
+
+body.admin-app-mode .mail-studio-template-list-v1 {
+  display: grid !important;
+  align-content: start !important;
+  gap: 8px !important;
+  max-height: 612px !important;
+  overflow: auto !important;
+  padding: 14px !important;
+  scrollbar-width: thin !important;
+}
+
+body.admin-app-mode .mail-studio-template-list-v1 > button {
+  display: grid !important;
+  min-height: 0 !important;
+  grid-template-columns: 1fr auto !important;
+  gap: 4px 10px !important;
+  padding: 14px !important;
+  border: 1px solid rgba(124, 81, 75, 0.09) !important;
+  border-radius: 14px !important;
+  background: rgba(255, 255, 255, 0.5) !important;
+  box-shadow: none !important;
+  color: var(--studio-ink) !important;
+  text-align: left !important;
+  transform: none !important;
+}
+
+body.admin-app-mode .mail-studio-template-list-v1 > button:hover,
+body.admin-app-mode .mail-studio-template-list-v1 > button.is-selected {
+  border-color: rgba(200, 169, 106, 0.4) !important;
+  background: rgba(255, 252, 249, 0.96) !important;
+  box-shadow: 0 18px 34px -28px rgba(58, 37, 40, 0.56) !important;
+}
+
+body.admin-app-mode .mail-studio-template-list-v1 > button.is-selected {
+  box-shadow:
+    inset 4px 0 var(--studio-gold-light),
+    0 18px 34px -28px rgba(58, 37, 40, 0.56) !important;
+}
+
+body.admin-app-mode .mail-studio-template-list-v1 span,
+body.admin-app-mode .mail-studio-template-list-v1 small {
+  color: var(--studio-gold) !important;
+  font-size: 8.5px !important;
+  font-weight: 750 !important;
+  letter-spacing: 0.1em !important;
+  text-transform: uppercase !important;
+}
+
+body.admin-app-mode .mail-studio-template-list-v1 small {
+  grid-column: 2 !important;
+  grid-row: 1 !important;
+  color: var(--studio-muted) !important;
+}
+
+body.admin-app-mode .mail-studio-template-list-v1 strong,
+body.admin-app-mode .mail-studio-template-list-v1 p {
+  grid-column: 1 / -1 !important;
+}
+
+body.admin-app-mode .mail-studio-template-list-v1 strong {
+  margin-top: 2px !important;
+  font-size: 12px !important;
+}
+
+body.admin-app-mode .mail-studio-template-list-v1 p {
+  margin: 0 !important;
+  overflow: hidden !important;
+  color: var(--studio-muted) !important;
+  font-size: 10.5px !important;
+  line-height: 1.45 !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+body.admin-app-mode .mail-studio-form-v1 {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 13px !important;
+  padding: 20px 21px 22px !important;
+}
+
+body.admin-app-mode .mail-studio-form-v1 textarea {
+  min-height: 270px !important;
+}
+
+body.admin-app-mode .mail-studio-form-actions-v1 {
+  display: flex !important;
+  justify-content: flex-end !important;
+  padding-top: 2px !important;
+}
+
+body.admin-app-mode .mail-studio-form-actions-v1 button {
+  min-width: 138px !important;
+  min-height: 41px !important;
+  border-radius: 12px !important;
+}
+
+body.admin-app-mode .mail-studio-activity-v1 {
+  margin: 0 !important;
+}
+
+body.admin-app-mode .mail-studio-log-list-v1 {
+  display: grid !important;
+  gap: 8px !important;
+  padding: 14px !important;
+}
+
+body.admin-app-mode .mail-studio-log-list-v1 article {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 18px !important;
+  padding: 13px 15px !important;
+  border-radius: 14px !important;
+}
+
+body.admin-app-mode .mail-studio-log-list-v1 article > div {
+  min-width: 0 !important;
+}
+
+body.admin-app-mode .mail-studio-log-list-v1 article span {
+  display: inline-flex !important;
+  margin-bottom: 5px !important;
+  padding: 4px 7px !important;
+  border-radius: 999px !important;
+  background: rgba(94, 125, 98, 0.1) !important;
+  color: #526e57 !important;
+  font-size: 8px !important;
+  font-weight: 750 !important;
+  letter-spacing: 0.08em !important;
+  text-transform: uppercase !important;
+}
+
+body.admin-app-mode .mail-studio-log-list-v1 article.is-failed span {
+  background: rgba(158, 67, 77, 0.1) !important;
+  color: #8f3948 !important;
+}
+
+body.admin-app-mode .mail-studio-log-list-v1 article.is-draft span,
+body.admin-app-mode .mail-studio-log-list-v1 article.is-drafted span {
+  background: rgba(181, 136, 77, 0.12) !important;
+  color: #7c5d31 !important;
+}
+
+body.admin-app-mode .mail-studio-log-list-v1 strong,
+body.admin-app-mode .mail-studio-log-list-v1 p {
+  display: block !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+body.admin-app-mode .mail-studio-log-list-v1 strong {
+  color: var(--studio-ink) !important;
+  font-size: 11.5px !important;
+}
+
+body.admin-app-mode .mail-studio-log-list-v1 p {
+  margin: 4px 0 0 !important;
+  color: var(--studio-muted) !important;
+  font-size: 10px !important;
+}
+
+body.admin-app-mode .mail-studio-log-list-v1 time {
+  flex: 0 0 auto !important;
+  color: var(--studio-muted) !important;
+  font-size: 9.5px !important;
+  white-space: nowrap !important;
+}
+
+body.admin-app-mode .mail-studio-empty-v1 {
+  margin: 0 !important;
+  padding: 28px 20px !important;
+  color: var(--studio-muted) !important;
+  font-size: 11px !important;
+  line-height: 1.6 !important;
+}
+
+/* ---------------------------------------------------------
+   Responsive communication workspaces
+   --------------------------------------------------------- */
+
+@media (max-width: 1120px) {
+  body.admin-app-mode .admin-inbox__filters {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  body.admin-app-mode .admin-inbox__filters .admin-inbox__search {
+    grid-column: 1 / -1 !important;
+  }
+
+  body.admin-app-mode .admin-inbox__filters > button {
+    justify-self: start !important;
+  }
+
+  body.admin-app-mode .admin-inbox__workspace {
+    grid-template-columns: minmax(270px, 310px) minmax(0, 1fr) !important;
+  }
+
+  body.admin-app-mode .admin-inbox-thread__header {
+    align-items: flex-start !important;
+    flex-direction: column !important;
+  }
+
+  body.admin-app-mode .admin-inbox-thread__controls {
+    width: 100% !important;
+    justify-content: flex-start !important;
+  }
+
+  body.admin-app-mode .mail-studio-composer-grid-v1 {
+    grid-template-columns: 1fr !important;
+  }
+
+  body.admin-app-mode .mail-studio-composer-form-v1 {
+    border-right: 0 !important;
+    border-bottom: 1px solid rgba(124, 81, 75, 0.09) !important;
+  }
+
+  body.admin-app-mode .mail-studio-preview-v1 {
+    min-height: 460px !important;
+  }
+}
+
+@media (max-width: 860px) {
+  body.admin-app-mode .admin-inbox__header,
+  body.admin-app-mode .mail-studio-page-v1 > .admin-page-heading {
+    grid-template-columns: 1fr !important;
+    align-items: start !important;
+  }
+
+  body.admin-app-mode .admin-inbox__header-actions {
+    width: 100% !important;
+    max-width: 360px !important;
+  }
+
+  body.admin-app-mode .admin-inbox__metrics,
+  body.admin-app-mode .mail-studio-metrics-v1 {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  body.admin-app-mode .admin-inbox__workspace {
+    display: block !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+  }
+
+  body.admin-app-mode .admin-inbox__list {
+    max-height: 330px !important;
+    border-right: 0 !important;
+    border-bottom: 1px solid rgba(124, 81, 75, 0.11) !important;
+  }
+
+  body.admin-app-mode .admin-inbox__thread {
+    min-height: 620px !important;
+  }
+
+  body.admin-app-mode .admin-inbox-thread__messages {
+    min-height: 300px !important;
+    max-height: 420px !important;
+  }
+
+  body.admin-app-mode .mail-studio-grid-v1 {
+    grid-template-columns: 1fr !important;
+  }
+
+  body.admin-app-mode .mail-studio-template-list-v1 {
+    max-height: 420px !important;
+  }
+}
+
+@media (max-width: 620px) {
+  body.admin-app-mode .admin-inbox,
+  body.admin-app-mode .mail-studio-page-v1 {
+    padding: 22px 16px 46px !important;
+  }
+
+  body.admin-app-mode .admin-inbox__header,
+  body.admin-app-mode .mail-studio-page-v1 > .admin-page-heading {
+    padding: 23px 20px !important;
+    border-radius: 22px !important;
+  }
+
+  body.admin-app-mode .admin-inbox__header h1,
+  body.admin-app-mode .mail-studio-page-v1 > .admin-page-heading h1 {
+    font-size: clamp(39px, 12vw, 48px) !important;
+  }
+
+  body.admin-app-mode .admin-inbox__header-actions {
+    grid-template-columns: 1fr !important;
+    max-width: none !important;
+  }
+
+  body.admin-app-mode .admin-inbox__header-actions .btn {
+    width: 100% !important;
+  }
+
+  body.admin-app-mode .admin-inbox__metrics,
+  body.admin-app-mode .mail-studio-metrics-v1,
+  body.admin-app-mode .admin-inbox__filters,
+  body.admin-app-mode .mail-studio-composer-form-v1,
+  body.admin-app-mode .mail-studio-form-v1 {
+    grid-template-columns: 1fr !important;
+  }
+
+  body.admin-app-mode .admin-inbox__filters .admin-inbox__search,
+  body.admin-app-mode .mail-studio-composer-form-v1 > .is-wide,
+  body.admin-app-mode .mail-studio-form-v1 > .is-wide,
+  body.admin-app-mode .mail-studio-composer-actions-v1,
+  body.admin-app-mode .mail-studio-form-actions-v1 {
+    grid-column: auto !important;
+  }
+
+  body.admin-app-mode .admin-inbox__filters > button {
+    width: 100% !important;
+  }
+
+  body.admin-app-mode .admin-inbox__thread {
+    min-height: 0 !important;
+  }
+
+  body.admin-app-mode .admin-inbox-thread__header,
+  body.admin-app-mode .admin-inbox-reply,
+  body.admin-app-mode .admin-inbox-thread__messages {
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+  }
+
+  body.admin-app-mode .admin-inbox-thread__controls,
+  body.admin-app-mode .admin-inbox-thread__controls label,
+  body.admin-app-mode .admin-inbox-thread__controls > button,
+  body.admin-app-mode .admin-inbox-reply__attachments,
+  body.admin-app-mode .admin-inbox-modal__row {
+    width: 100% !important;
+  }
+
+  body.admin-app-mode .admin-inbox-thread__controls {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+  }
+
+  body.admin-app-mode .admin-inbox-message,
+  body.admin-app-mode .admin-inbox-message.is-internal {
+    max-width: 94% !important;
+  }
+
+  body.admin-app-mode .admin-inbox-reply__attachments,
+  body.admin-app-mode .admin-inbox-modal__row {
+    grid-template-columns: 1fr !important;
+  }
+
+  body.admin-app-mode .admin-inbox-reply__mode {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    width: 100% !important;
+  }
+
+  body.admin-app-mode .admin-inbox-reply > button[type='submit'] {
+    width: 100% !important;
+  }
+
+  body.admin-app-mode .admin-inbox-modal {
+    padding: 12px !important;
+  }
+
+  body.admin-app-mode .admin-inbox-modal form {
+    padding: 21px 18px !important;
+    border-radius: 21px !important;
+  }
+
+  body.admin-app-mode .admin-inbox-modal footer {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+  }
+
+  body.admin-app-mode .admin-inbox-modal footer button {
+    width: 100% !important;
+  }
+
+  body.admin-app-mode .mail-studio-panel-header-v1,
+  body.admin-app-mode .mail-studio-preview-header-v1 {
+    align-items: flex-start !important;
+    flex-direction: column !important;
+  }
+
+  body.admin-app-mode .mail-studio-panel-header-v1 select,
+  body.admin-app-mode .mail-studio-panel-header-v1 > button {
+    width: 100% !important;
+  }
+
+  body.admin-app-mode .mail-studio-composer-actions-v1,
+  body.admin-app-mode .mail-studio-form-actions-v1 {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+  }
+
+  body.admin-app-mode .mail-studio-composer-actions-v1 button,
+  body.admin-app-mode .mail-studio-form-actions-v1 button {
+    width: 100% !important;
+  }
+
+  body.admin-app-mode .mail-studio-preview-v1 {
+    min-height: 420px !important;
+    margin: 14px !important;
+  }
+
+  body.admin-app-mode .mail-studio-preview-header-v1 > div:last-child {
+    width: 100% !important;
+  }
+
+  body.admin-app-mode .mail-studio-preview-header-v1 button {
+    flex: 1 1 0 !important;
+  }
+
+  body.admin-app-mode .mail-studio-log-list-v1 article {
+    align-items: flex-start !important;
+    flex-direction: column !important;
+    gap: 8px !important;
+  }
+}
