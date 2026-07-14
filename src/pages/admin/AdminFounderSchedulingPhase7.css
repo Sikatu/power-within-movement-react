@@ -1,0 +1,988 @@
+/* Phase 7 — focused Founder scheduling refinement
+   This layer intentionally loads after the original Founder Calendar,
+   Founder Availability, and shared operations styles. */
+
+body.admin-app-mode.founder-calendar-mode,
+body.admin-app-mode.founder-availability-mode {
+  overflow-x: hidden;
+  background: #f3ede5;
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar,
+body.admin-app-mode.founder-availability-mode .founder-hours {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 92% 6%, rgba(157, 113, 69, 0.12), transparent 25rem),
+    radial-gradient(circle at 6% 30%, rgba(122, 141, 105, 0.08), transparent 24rem),
+    linear-gradient(180deg, #fbf8f4 0%, #f3ede5 100%);
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__header,
+body.admin-app-mode.founder-availability-mode .founder-hours__header {
+  min-height: 72px;
+  padding: 0.75rem clamp(1rem, 3.4vw, 3.5rem);
+  border-bottom-color: rgba(72, 53, 37, 0.1);
+  background: rgba(251, 248, 244, 0.94);
+  box-shadow: 0 10px 34px rgba(71, 50, 32, 0.05);
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__header-actions,
+body.admin-app-mode.founder-availability-mode .founder-hours__header-actions {
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.42rem;
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__header-actions a,
+body.admin-app-mode.founder-calendar-mode .founder-calendar__header-actions button,
+body.admin-app-mode.founder-availability-mode .founder-hours__header-actions a,
+body.admin-app-mode.founder-availability-mode .founder-hours__header-actions button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 38px;
+  padding: 0.58rem 0.82rem;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__header-actions a[aria-current='page'],
+body.admin-app-mode.founder-availability-mode .founder-hours__header-actions a[aria-current='page'] {
+  border-color: #5f4937;
+  background: #4f3c2e;
+  color: #fffaf4;
+  box-shadow: 0 8px 20px rgba(72, 50, 32, 0.14);
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__header-actions a:nth-child(2),
+body.admin-app-mode.founder-availability-mode .founder-hours__header-actions a:nth-child(2) {
+  border-color: rgba(82, 66, 50, 0.18);
+  background: rgba(255, 255, 255, 0.58);
+  color: #685744;
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__header-actions button,
+body.admin-app-mode.founder-availability-mode .founder-hours__header-actions button {
+  background: transparent;
+  color: #806c59;
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__shell,
+body.admin-app-mode.founder-availability-mode .founder-hours__shell {
+  width: min(1280px, calc(100% - 2.5rem));
+  margin-inline: auto;
+  padding: clamp(1.5rem, 3vw, 2.8rem) 0 4rem;
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__back-link,
+body.admin-app-mode.founder-availability-mode .founder-hours__back {
+  min-height: 40px;
+  margin-bottom: 1rem;
+  padding: 0.62rem 0.9rem;
+  background: rgba(255, 253, 249, 0.72);
+}
+
+/* Founder Calendar */
+body.admin-app-mode.founder-calendar-mode .founder-calendar__intro {
+  align-items: center;
+  margin-bottom: 1rem;
+  padding: clamp(1.25rem, 2.5vw, 2rem);
+  border: 1px solid rgba(86, 63, 43, 0.1);
+  border-radius: 26px;
+  background:
+    linear-gradient(130deg, rgba(255, 253, 249, 0.95), rgba(246, 237, 226, 0.86));
+  box-shadow: 0 18px 46px rgba(72, 50, 31, 0.06);
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__intro h1 {
+  max-width: 760px;
+  font-size: clamp(2.25rem, 4.8vw, 4.15rem);
+  line-height: 1;
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__intro span {
+  max-width: 670px;
+  line-height: 1.55;
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__today {
+  min-width: 104px;
+  min-height: 44px;
+  border-color: #5f4937;
+  background: #4f3c2e;
+  box-shadow: 0 10px 24px rgba(72, 50, 32, 0.16);
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__summary article {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.18rem 0.75rem;
+  align-items: center;
+  min-height: 92px;
+  padding: 1rem 1.1rem;
+  border: 1px solid rgba(86, 63, 43, 0.1);
+  border-radius: 18px;
+  background: rgba(255, 253, 249, 0.84);
+  box-shadow: 0 10px 28px rgba(72, 50, 31, 0.04);
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__summary span {
+  color: #826b56;
+  font-size: 0.69rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__summary strong {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  color: #4b3b2f;
+  font-family: var(--font-heading, Georgia, serif);
+  font-size: clamp(1.9rem, 3vw, 2.5rem);
+  font-weight: 500;
+  line-height: 1;
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__summary small {
+  color: #94806d;
+  font-size: 0.69rem;
+  line-height: 1.4;
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__feedback {
+  margin-bottom: 0.9rem;
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__workspace {
+  grid-template-columns: minmax(0, 1fr) minmax(310px, 350px);
+  gap: 1rem;
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__month-card,
+body.admin-app-mode.founder-calendar-mode .founder-calendar__day-panel {
+  border-color: rgba(86, 63, 43, 0.1);
+  border-radius: 24px;
+  background: rgba(255, 253, 249, 0.9);
+  box-shadow: 0 18px 48px rgba(72, 50, 31, 0.06);
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__month-card {
+  padding: clamp(1rem, 2vw, 1.5rem);
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__month-toolbar {
+  grid-template-columns: 42px minmax(0, 1fr) 42px;
+  margin-bottom: 0.85rem;
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__month-toolbar button {
+  width: 42px;
+  height: 42px;
+  transition: transform 150ms ease, background 150ms ease, border-color 150ms ease;
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__month-toolbar button:hover {
+  border-color: rgba(91, 69, 48, 0.32);
+  background: #efe3d4;
+  transform: translateY(-1px);
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__weekdays {
+  border-radius: 14px 14px 0 0;
+  background: #f5eee5;
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__grid {
+  border-radius: 0 0 14px 14px;
+  background: #fffdf9;
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__day {
+  min-height: 108px;
+  padding: 0.55rem;
+  border-right-color: rgba(91, 68, 46, 0.08);
+  border-bottom-color: rgba(91, 68, 46, 0.08);
+  background: #fffdf9;
+  transition: background 150ms ease, box-shadow 150ms ease, transform 150ms ease;
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__day:nth-child(7n + 1),
+body.admin-app-mode.founder-calendar-mode .founder-calendar__day:nth-child(7n) {
+  background: #fcf8f2;
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__day:not(.is-empty):hover {
+  z-index: 1;
+  background: #f8f0e5;
+  box-shadow: inset 0 0 0 1px rgba(109, 81, 55, 0.18);
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__day.is-selected {
+  z-index: 2;
+  background: #efe3d3;
+  box-shadow:
+    inset 0 0 0 2px #70543c,
+    0 8px 20px rgba(77, 55, 36, 0.08);
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__day.is-today .founder-calendar__day-number {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #4f3c2e;
+  color: #fffaf4;
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__day-number {
+  position: relative;
+  z-index: 1;
+  font-size: 0.82rem;
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__day-count {
+  position: absolute;
+  top: 0.52rem;
+  right: 0.52rem;
+  display: grid;
+  place-items: center;
+  min-width: 21px;
+  height: 21px;
+  padding: 0 0.3rem;
+  border-radius: 999px;
+  background: #e5d5c2;
+  color: #6d5139;
+  font-size: 0.61rem;
+  font-weight: 850;
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__day.is-selected .founder-calendar__day-count {
+  background: #6d5139;
+  color: #fffaf4;
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__day-events {
+  gap: 0.28rem;
+  margin-top: 0.45rem;
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__day-events em,
+body.admin-app-mode.founder-calendar-mode .founder-calendar__day-events small {
+  border-radius: 7px;
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__day-events small {
+  padding: 0.3rem 0.38rem;
+  background: rgba(101, 76, 51, 0.08);
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__day.is-protected .founder-calendar__day-events em {
+  background: #ead6c0;
+  color: #704d2e;
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__day.is-custom .founder-calendar__day-events em {
+  background: #dfe8d9;
+  color: #52674b;
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__day-panel {
+  top: 86px;
+  padding: 1.35rem;
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__day-status {
+  margin: 1rem 0;
+  padding: 0.78rem 0.85rem;
+  border-radius: 12px;
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__session-list {
+  max-height: 330px;
+  overflow-y: auto;
+  padding-right: 0.15rem;
+  scrollbar-width: thin;
+  scrollbar-color: #cdbba7 transparent;
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__session-list article {
+  padding: 0.72rem;
+  border-radius: 12px;
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__day-actions {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.55rem;
+  margin-top: 0.85rem;
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__customize,
+body.admin-app-mode.founder-calendar-mode .founder-calendar__protect,
+body.admin-app-mode.founder-calendar-mode .founder-calendar__reopen {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 44px;
+  margin: 0;
+  border-radius: 12px;
+  transition: transform 150ms ease, box-shadow 150ms ease, background 150ms ease;
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__customize {
+  border-color: #5f4937;
+  background: #4f3c2e;
+  box-shadow: 0 9px 20px rgba(72, 50, 32, 0.13);
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__protect {
+  border-color: rgba(114, 73, 39, 0.2);
+  background: #f3e6d7;
+  color: #734d2d;
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__reopen {
+  border-color: rgba(91, 115, 80, 0.24);
+  background: #eaf1e6;
+  color: #52674b;
+}
+
+body.admin-app-mode.founder-calendar-mode .founder-calendar__customize:hover,
+body.admin-app-mode.founder-calendar-mode .founder-calendar__protect:hover,
+body.admin-app-mode.founder-calendar-mode .founder-calendar__reopen:hover {
+  transform: translateY(-1px);
+}
+
+/* Founder Availability */
+body.admin-app-mode.founder-availability-mode .founder-hours__intro {
+  align-items: center;
+  margin-bottom: 0.85rem;
+  padding: clamp(1.25rem, 2.5vw, 2rem);
+  border: 1px solid rgba(86, 63, 43, 0.1);
+  border-radius: 26px;
+  background:
+    linear-gradient(130deg, rgba(255, 253, 249, 0.95), rgba(246, 237, 226, 0.86));
+  box-shadow: 0 18px 46px rgba(72, 50, 31, 0.06);
+}
+
+body.admin-app-mode.founder-availability-mode .founder-hours__intro h1 {
+  max-width: 800px;
+  font-size: clamp(2.15rem, 4.4vw, 3.9rem);
+  line-height: 1.02;
+}
+
+body.admin-app-mode.founder-availability-mode .founder-hours__intro > div:first-child > span {
+  max-width: 700px;
+  line-height: 1.6;
+}
+
+body.admin-app-mode.founder-availability-mode .founder-hours__timezone {
+  flex: 0 0 auto;
+  min-width: 170px;
+  padding: 0.85rem 1rem;
+  border: 1px solid rgba(86, 63, 43, 0.1);
+  border-radius: 15px;
+  background: rgba(255, 253, 249, 0.78);
+  text-align: left;
+}
+
+body.admin-app-mode.founder-availability-mode .founder-hours__guide {
+  gap: 0.7rem;
+  margin-bottom: 0.8rem;
+}
+
+body.admin-app-mode.founder-availability-mode .founder-hours__guide > div {
+  min-height: 74px;
+  padding: 0.8rem 0.9rem;
+  border-radius: 16px;
+  background: rgba(255, 253, 249, 0.74);
+}
+
+body.admin-app-mode.founder-availability-mode .founder-hours__summary {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.7rem;
+  margin-bottom: 0.85rem;
+}
+
+body.admin-app-mode.founder-availability-mode .founder-hours__summary article {
+  display: grid;
+  gap: 0.2rem;
+  min-height: 100px;
+  padding: 0.95rem 1rem;
+  border: 1px solid rgba(86, 63, 43, 0.1);
+  border-radius: 17px;
+  background: rgba(255, 253, 249, 0.84);
+  box-shadow: 0 10px 28px rgba(72, 50, 31, 0.04);
+}
+
+body.admin-app-mode.founder-availability-mode .founder-hours__summary span {
+  color: #826b56;
+  font-size: 0.66rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+body.admin-app-mode.founder-availability-mode .founder-hours__summary strong {
+  color: #4b3b2f;
+  font-family: var(--font-heading, Georgia, serif);
+  font-size: 1.85rem;
+  font-weight: 500;
+  line-height: 1.05;
+}
+
+body.admin-app-mode.founder-availability-mode .founder-hours__summary small {
+  color: #94806d;
+  font-size: 0.67rem;
+  line-height: 1.4;
+}
+
+body.admin-app-mode.founder-availability-mode .founder-hours__summary article.is-active {
+  border-color: rgba(105, 138, 93, 0.24);
+  background: #f2f7ee;
+}
+
+body.admin-app-mode.founder-availability-mode .founder-hours__summary article.is-active strong {
+  color: #52674b;
+}
+
+body.admin-app-mode.founder-availability-mode .founder-hours__summary article.is-draft {
+  border-color: rgba(152, 110, 68, 0.2);
+  background: #fbf2e7;
+}
+
+body.admin-app-mode.founder-availability-mode .founder-hours__feedback,
+body.admin-app-mode.founder-availability-mode .founder-hours__legacy-note,
+body.admin-app-mode.founder-availability-mode .founder-hours__active-note {
+  margin-bottom: 0.85rem;
+  border-radius: 14px;
+}
+
+body.admin-app-mode.founder-availability-mode .founder-hours__layout {
+  grid-template-columns: minmax(0, 1fr) minmax(350px, 410px);
+  gap: 1rem;
+  align-items: start;
+}
+
+body.admin-app-mode.founder-availability-mode .founder-hours__card {
+  padding: clamp(1rem, 2vw, 1.4rem);
+  border-color: rgba(86, 63, 43, 0.1);
+  border-radius: 22px;
+  background: rgba(255, 253, 249, 0.9);
+  box-shadow: 0 18px 48px rgba(72, 50, 31, 0.055);
+}
+
+body.admin-app-mode.founder-availability-mode .founder-hours__card-heading {
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+body.admin-app-mode.founder-availability-mode .founder-hours__card-heading h2 {
+  font-size: clamp(1.55rem, 2.4vw, 2.05rem);
+}
+
+body.admin-app-mode.founder-availability-mode .founder-hours__copy-action {
+  flex: 0 0 220px;
+  max-width: 220px;
+}
+
+body.admin-app-mode.founder-availability-mode .founder-hours__copy-action button {
+  width: 100%;
+  min-height: 40px;
+  border-radius: 11px;
+  background: #f3e9dd;
+}
+
+body.admin-app-mode.founder-availability-mode .founder-hours__days {
+  gap: 0.58rem;
+}
+
+body.admin-app-mode.founder-availability-mode .founder-hours__day,
+body.admin-app-mode.founder-availability-mode .founder-hours__day.is-open {
+  border-color: rgba(86, 63, 43, 0.1);
+  border-radius: 15px;
+  background: #faf6f0;
+}
+
+body.admin-app-mode.founder-availability-mode .founder-hours__day.is-open {
+  background: #fffdf9;
+}
+
+body.admin-app-mode.founder-availability-mode .founder-hours__day.is-copied {
+  border-color: rgba(105, 138, 93, 0.28);
+  box-shadow: inset 0 0 0 1px rgba(105, 138, 93, 0.12);
+}
+
+body.admin-app-mode.founder-availability-mode .founder-hours__day-summary {
+  min-height: 72px;
+  padding: 0.78rem 0.9rem;
+}
+
+body.admin-app-mode.founder-availability-mode .founder-hours__day-name {
+  min-width: 0;
+}
+
+body.admin-app-mode.founder-availability-mode .founder-hours__day-name small {
+  overflow: hidden;
+  max-width: 520px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+body.admin-app-mode.founder-availability-mode .founder-hours__day-actions {
+  flex: 0 0 auto;
+  min-width: 254px;
+}
+
+body.admin-app-mode.founder-availability-mode .founder-hours__day-actions button {
+  min-width: 122px;
+  min-height: 40px;
+  border-radius: 11px;
+}
+
+body.admin-app-mode.founder-availability-mode .founder-hours__day-toggle {
+  background: #eee3d7;
+}
+
+body.admin-app-mode.founder-availability-mode .founder-hours__day-toggle.is-on {
+  background: #e8f0e4;
+}
+
+body.admin-app-mode.founder-availability-mode .founder-hours__edit-day {
+  background: #fffaf4;
+}
+
+body.admin-app-mode.founder-availability-mode .founder-hours__day-editor {
+  padding: 0.95rem;
+  background: #f8efe3;
+}
+
+body.admin-app-mode.founder-availability-mode .founder-hours__presets {
+  gap: 0.4rem;
+}
+
+body.admin-app-mode.founder-availability-mode .founder-hours__presets button {
+  min-height: 62px;
+  border-radius: 11px;
+}
+
+body.admin-app-mode.founder-availability-mode .founder-hours__window {
+  grid-template-columns: 28px minmax(112px, 1fr) auto minmax(112px, 1fr) auto;
+  gap: 0.5rem;
+  padding: 0.62rem;
+  border-radius: 11px;
+}
+
+body.admin-app-mode.founder-availability-mode .founder-hours__window label {
+  min-width: 0;
+}
+
+body.admin-app-mode.founder-availability-mode .founder-hours__window input,
+body.admin-app-mode.founder-availability-mode .founder-hours__rules select,
+body.admin-app-mode.founder-availability-mode .founder-hours__date-picker input,
+body.admin-app-mode.founder-availability-mode .founder-hours__note textarea {
+  width: 100%;
+  min-height: 42px;
+  border-radius: 10px;
+}
+
+body.admin-app-mode.founder-availability-mode .founder-hours__remove-window {
+  min-width: 68px;
+}
+
+body.admin-app-mode.founder-availability-mode .founder-hours__add-window {
+  min-height: 40px;
+  border-radius: 11px;
+}
+
+body.admin-app-mode.founder-availability-mode .founder-hours__advanced {
+  margin-top: 0.9rem;
+  border-radius: 14px;
+}
+
+body.admin-app-mode.founder-availability-mode .founder-hours__advanced summary {
+  padding: 0.85rem 0.95rem;
+}
+
+body.admin-app-mode.founder-availability-mode .founder-hours__rules {
+  padding: 0 0.95rem 0.95rem;
+}
+
+body.admin-app-mode.founder-availability-mode .founder-hours__save-area {
+  align-items: center;
+  margin-top: 1rem;
+  padding: 0.9rem;
+  border-radius: 14px;
+  background: #f6efe6;
+}
+
+body.admin-app-mode.founder-availability-mode .founder-hours__save {
+  min-width: 180px;
+  min-height: 44px;
+  border-radius: 12px;
+  background: #4f3c2e;
+  box-shadow: 0 9px 20px rgba(72, 50, 32, 0.13);
+}
+
+body.admin-app-mode.founder-availability-mode .founder-hours__side {
+  gap: 1rem;
+}
+
+body.admin-app-mode.founder-availability-mode .founder-hours__override {
+  position: sticky;
+  top: 86px;
+}
+
+body.admin-app-mode.founder-availability-mode .founder-hours__date-picker {
+  padding: 0.85rem;
+  border-radius: 13px;
+  background: #f8f1e8;
+}
+
+body.admin-app-mode.founder-availability-mode .founder-hours__modes {
+  gap: 0.48rem;
+}
+
+body.admin-app-mode.founder-availability-mode .founder-hours__modes > label {
+  min-height: 68px;
+  padding: 0.72rem;
+  border-radius: 12px;
+}
+
+body.admin-app-mode.founder-availability-mode .founder-hours__modes > label.is-selected {
+  border-color: #70543c;
+  background: #f0e5d7;
+  box-shadow: inset 0 0 0 1px rgba(112, 84, 60, 0.12);
+}
+
+body.admin-app-mode.founder-availability-mode .founder-hours__day-result {
+  border-radius: 12px;
+}
+
+body.admin-app-mode.founder-availability-mode .founder-hours__save-date {
+  width: 100%;
+}
+
+body.admin-app-mode.founder-availability-mode .founder-hours__upcoming {
+  padding: 1.1rem;
+}
+
+body.admin-app-mode.founder-availability-mode .founder-hours__override-list {
+  max-height: 350px;
+  overflow-y: auto;
+  padding-right: 0.15rem;
+  scrollbar-width: thin;
+  scrollbar-color: #cdbba7 transparent;
+}
+
+body.admin-app-mode.founder-availability-mode .founder-hours__override-list button {
+  min-height: 62px;
+  border-radius: 11px;
+}
+
+@media (max-width: 1120px) {
+  body.admin-app-mode.founder-calendar-mode .founder-calendar__workspace,
+  body.admin-app-mode.founder-availability-mode .founder-hours__layout {
+    grid-template-columns: 1fr;
+  }
+
+  body.admin-app-mode.founder-calendar-mode .founder-calendar__day-panel,
+  body.admin-app-mode.founder-availability-mode .founder-hours__override {
+    position: static;
+  }
+
+  body.admin-app-mode.founder-calendar-mode .founder-calendar__day-panel {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(280px, 0.9fr);
+    gap: 0 1rem;
+  }
+
+  body.admin-app-mode.founder-calendar-mode .founder-calendar__day-panel > p,
+  body.admin-app-mode.founder-calendar-mode .founder-calendar__day-panel > h2,
+  body.admin-app-mode.founder-calendar-mode .founder-calendar__day-panel > .founder-calendar__day-status,
+  body.admin-app-mode.founder-calendar-mode .founder-calendar__day-panel > .founder-calendar__custom-hours-list {
+    grid-column: 1;
+  }
+
+  body.admin-app-mode.founder-calendar-mode .founder-calendar__session-list,
+  body.admin-app-mode.founder-calendar-mode .founder-calendar__day-actions {
+    grid-column: 2;
+  }
+
+  body.admin-app-mode.founder-calendar-mode .founder-calendar__session-list {
+    grid-row: 1 / span 4;
+    max-height: 260px;
+  }
+
+  body.admin-app-mode.founder-availability-mode .founder-hours__side {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 0.85fr);
+    align-items: start;
+  }
+}
+
+@media (max-width: 820px) {
+  body.admin-app-mode.founder-calendar-mode .founder-calendar__header,
+  body.admin-app-mode.founder-availability-mode .founder-hours__header {
+    position: static;
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.7rem;
+  }
+
+  body.admin-app-mode.founder-calendar-mode .founder-calendar__header-actions,
+  body.admin-app-mode.founder-availability-mode .founder-hours__header-actions {
+    justify-content: flex-start;
+    width: 100%;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    padding-bottom: 0.2rem;
+    scrollbar-width: thin;
+  }
+
+  body.admin-app-mode.founder-calendar-mode .founder-calendar__intro,
+  body.admin-app-mode.founder-availability-mode .founder-hours__intro {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  body.admin-app-mode.founder-calendar-mode .founder-calendar__today {
+    min-width: 130px;
+  }
+
+  body.admin-app-mode.founder-calendar-mode .founder-calendar__summary {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  body.admin-app-mode.founder-calendar-mode .founder-calendar__summary article {
+    grid-template-columns: 1fr;
+  }
+
+  body.admin-app-mode.founder-calendar-mode .founder-calendar__summary strong {
+    grid-column: 1;
+    grid-row: auto;
+  }
+
+  body.admin-app-mode.founder-calendar-mode .founder-calendar__day {
+    min-height: 86px;
+  }
+
+  body.admin-app-mode.founder-calendar-mode .founder-calendar__day-events small {
+    display: none;
+  }
+
+  body.admin-app-mode.founder-calendar-mode .founder-calendar__day-panel {
+    display: block;
+  }
+
+  body.admin-app-mode.founder-calendar-mode .founder-calendar__session-list {
+    max-height: none;
+  }
+
+  body.admin-app-mode.founder-availability-mode .founder-hours__summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  body.admin-app-mode.founder-availability-mode .founder-hours__card-heading {
+    flex-direction: column;
+  }
+
+  body.admin-app-mode.founder-availability-mode .founder-hours__copy-action {
+    flex-basis: auto;
+    width: 100%;
+    max-width: none;
+  }
+
+  body.admin-app-mode.founder-availability-mode .founder-hours__day-summary {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  body.admin-app-mode.founder-availability-mode .founder-hours__day-actions {
+    justify-content: flex-start;
+    width: 100%;
+    min-width: 0;
+  }
+
+  body.admin-app-mode.founder-availability-mode .founder-hours__side {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  body.admin-app-mode.founder-calendar-mode .founder-calendar__shell,
+  body.admin-app-mode.founder-availability-mode .founder-hours__shell {
+    width: min(100% - 1rem, 1280px);
+    padding-top: 1rem;
+  }
+
+  body.admin-app-mode.founder-calendar-mode .founder-calendar__intro,
+  body.admin-app-mode.founder-availability-mode .founder-hours__intro {
+    padding: 1.1rem;
+    border-radius: 19px;
+  }
+
+  body.admin-app-mode.founder-calendar-mode .founder-calendar__summary {
+    grid-template-columns: 1fr;
+  }
+
+  body.admin-app-mode.founder-calendar-mode .founder-calendar__summary article {
+    min-height: 76px;
+  }
+
+  body.admin-app-mode.founder-calendar-mode .founder-calendar__month-card,
+  body.admin-app-mode.founder-calendar-mode .founder-calendar__day-panel,
+  body.admin-app-mode.founder-availability-mode .founder-hours__card {
+    border-radius: 18px;
+  }
+
+  body.admin-app-mode.founder-calendar-mode .founder-calendar__month-toolbar {
+    grid-template-columns: 38px minmax(0, 1fr) 38px;
+  }
+
+  body.admin-app-mode.founder-calendar-mode .founder-calendar__month-toolbar button {
+    width: 38px;
+    height: 38px;
+  }
+
+  body.admin-app-mode.founder-calendar-mode .founder-calendar__weekdays span {
+    padding-inline: 0.1rem;
+    font-size: 0.55rem;
+    letter-spacing: 0.04em;
+  }
+
+  body.admin-app-mode.founder-calendar-mode .founder-calendar__day {
+    min-height: 62px;
+    padding: 0.35rem;
+  }
+
+  body.admin-app-mode.founder-calendar-mode .founder-calendar__day-number {
+    font-size: 0.72rem;
+  }
+
+  body.admin-app-mode.founder-calendar-mode .founder-calendar__day.is-today .founder-calendar__day-number {
+    width: 24px;
+    height: 24px;
+  }
+
+  body.admin-app-mode.founder-calendar-mode .founder-calendar__day-count {
+    top: 0.32rem;
+    right: 0.32rem;
+    min-width: 18px;
+    height: 18px;
+    font-size: 0.55rem;
+  }
+
+  body.admin-app-mode.founder-calendar-mode .founder-calendar__day-events {
+    align-items: center;
+    margin-top: 0.2rem;
+  }
+
+  body.admin-app-mode.founder-calendar-mode .founder-calendar__day-events em {
+    width: 8px;
+    height: 8px;
+    padding: 0;
+    border-radius: 50%;
+    overflow: hidden;
+    color: transparent;
+  }
+
+  body.admin-app-mode.founder-calendar-mode .founder-calendar__day-events em::after {
+    display: none;
+  }
+
+  body.admin-app-mode.founder-availability-mode .founder-hours__guide,
+  body.admin-app-mode.founder-availability-mode .founder-hours__summary {
+    grid-template-columns: 1fr;
+  }
+
+  body.admin-app-mode.founder-availability-mode .founder-hours__summary article {
+    min-height: 82px;
+  }
+
+  body.admin-app-mode.founder-availability-mode .founder-hours__timezone {
+    width: 100%;
+  }
+
+  body.admin-app-mode.founder-availability-mode .founder-hours__day-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  body.admin-app-mode.founder-availability-mode .founder-hours__day-actions button {
+    width: 100%;
+    min-width: 0;
+  }
+
+  body.admin-app-mode.founder-availability-mode .founder-hours__presets {
+    grid-template-columns: 1fr;
+  }
+
+  body.admin-app-mode.founder-availability-mode .founder-hours__window {
+    grid-template-columns: 26px minmax(0, 1fr) auto minmax(0, 1fr);
+  }
+
+  body.admin-app-mode.founder-availability-mode .founder-hours__remove-window {
+    grid-column: 2 / -1;
+    justify-self: start;
+  }
+
+  body.admin-app-mode.founder-availability-mode .founder-hours__rules {
+    grid-template-columns: 1fr;
+  }
+
+  body.admin-app-mode.founder-availability-mode .founder-hours__save-area {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  body.admin-app-mode.founder-availability-mode .founder-hours__save {
+    width: 100%;
+    min-width: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.admin-app-mode.founder-calendar-mode .founder-calendar *,
+  body.admin-app-mode.founder-availability-mode .founder-hours * {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Keep explicit active navigation stronger than legacy position-based styling. */
+body.admin-app-mode.founder-calendar-mode .founder-calendar__header-actions a[aria-current='page'],
+body.admin-app-mode.founder-availability-mode .founder-hours__header-actions a[aria-current='page'] {
+  border-color: #5f4937;
+  background: #4f3c2e;
+  color: #fffaf4;
+  box-shadow: 0 8px 20px rgba(72, 50, 32, 0.14);
+}
+
+body.admin-app-mode.founder-availability-mode .founder-hours__save-area strong {
+  color: #4b3b2f;
+}
+
+body.admin-app-mode.founder-availability-mode .founder-hours__save-area small {
+  color: #8f7a67;
+}
+
+body.admin-app-mode.founder-availability-mode .founder-hours__save-area .founder-hours__save {
+  background: #4f3c2e;
+  color: #fffaf4;
+}
+
+body.admin-app-mode.founder-availability-mode .founder-hours__override {
+  position: static;
+}

@@ -11,6 +11,7 @@ import {
 import './Admin.css'
 import './FounderAvailability.css'
 import './AdminOperationsElevation.css'
+import './AdminFounderSchedulingPhase7.css'
 
 const FOUNDER_TIME_ZONE = 'America/New_York'
 const WEEKDAYS = [
@@ -380,6 +381,13 @@ export default function AdminFounderAvailability() {
     () => weeklySchedule.filter((day) => day.isAvailable).length,
     [weeklySchedule],
   )
+  const weeklyWindowCount = useMemo(
+    () => weeklySchedule.reduce(
+      (total, day) => total + (day.isAvailable ? day.windows.length : 0),
+      0,
+    ),
+    [weeklySchedule],
+  )
 
   const loadAvailability = useCallback(async () => {
     setIsLoading(true)
@@ -614,6 +622,7 @@ export default function AdminFounderAvailability() {
         <nav className="founder-hours__header-actions" aria-label="Founder navigation">
           <Link to="/admin/founders-view">Founder’s View</Link>
           <Link to="/admin/founders-calendar">Calendar</Link>
+          <Link to="/admin/founders-availability" aria-current="page">Availability</Link>
           <Link to="/admin/dashboard">Open The Studio</Link>
           <button type="button" onClick={handleLogout} disabled={isSigningOut}>
             {isSigningOut ? 'Signing out...' : 'Sign out'}
@@ -656,6 +665,29 @@ export default function AdminFounderAvailability() {
               <small>Take a day off or open different hours without changing every week.</small>
             </div>
           </div>
+        </section>
+
+        <section className="founder-hours__summary" aria-label="Availability overview">
+          <article>
+            <span>Appointment days</span>
+            <strong>{availableDayCount}</strong>
+            <small>Days open in your usual week</small>
+          </article>
+          <article>
+            <span>Weekly time periods</span>
+            <strong>{weeklyWindowCount}</strong>
+            <small>Separate windows across open days</small>
+          </article>
+          <article>
+            <span>Special dates</span>
+            <strong>{upcomingOverrides.length}</strong>
+            <small>Upcoming one-day changes</small>
+          </article>
+          <article className={settings.scheduleEnabled ? 'is-active' : 'is-draft'}>
+            <span>Booking schedule</span>
+            <strong>{settings.scheduleEnabled ? 'Active' : 'Draft'}</strong>
+            <small>{settings.scheduleEnabled ? 'Visible to clients' : 'Save your week to publish'}</small>
+          </article>
         </section>
 
         {(notice || error) && (
@@ -755,6 +787,8 @@ export default function AdminFounderAvailability() {
                           <button
                             type="button"
                             className={day.isAvailable ? 'founder-hours__day-toggle is-on' : 'founder-hours__day-toggle'}
+                            aria-pressed={day.isAvailable}
+                            aria-label={`${dayLabel?.label}: ${day.isAvailable ? 'taking appointments' : 'day off'}`}
                             onClick={() => {
                               const nextIsAvailable = !day.isAvailable
                               updateDay(day.weekday, (current) => ({
