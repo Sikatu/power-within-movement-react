@@ -25,6 +25,7 @@ import {
 
 import './Admin.css'
 import './DeveloperPanel.css'
+import './AdminDeveloperOperationsPhase8.css'
 
 const tabs = [
   { id: 'overview', label: 'Overview' },
@@ -548,12 +549,14 @@ export default function AdminDeveloperPanel() {
           </div>
         </header>
 
-        <nav className="developer-tab-bar" aria-label="Developer Control Center sections">
+        <nav className="developer-tab-bar" aria-label="Developer Control Center sections" role="tablist">
           {tabs.map((tab) => (
             <button
               className={activeTab === tab.id ? 'is-active' : ''}
               key={tab.id}
               type="button"
+              role="tab"
+              aria-selected={activeTab === tab.id}
               onClick={() => setActiveTab(tab.id)}
             >
               {tab.label}

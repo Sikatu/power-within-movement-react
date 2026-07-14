@@ -11,6 +11,7 @@ import {
 
 import './Admin.css'
 import './DeveloperErrorCenter.css'
+import './AdminDeveloperOperationsPhase8.css'
 
 const statusOptions = ['open', 'investigating', 'resolved', 'ignored']
 const severityOptions = ['critical', 'high', 'medium', 'low']
@@ -125,7 +126,8 @@ export default function AdminDeveloperErrors() {
 
   return (
     <AdminFrame>
-      <header className="pwc-admin-page-header error-center-page-header">
+      <div className="developer-error-center-page">
+        <header className="pwc-admin-page-header error-center-page-header">
         <div className="error-center-title-block">
           <p className="eyebrow">Developer Operations</p>
           <h1>Developer Error Center</h1>
@@ -200,7 +202,7 @@ export default function AdminDeveloperErrors() {
       {(error || notice) && (
         <div
           className={`error-center-notice ${error ? 'is-error' : 'is-success'}`}
-          role="status"
+          role={error ? 'alert' : 'status'}
           aria-live="polite"
         >
           {error || notice}
@@ -314,6 +316,7 @@ export default function AdminDeveloperErrors() {
                   type="button"
                   key={item.id}
                   className={`error-center-row ${selectedId === item.id ? 'is-selected' : ''}`}
+                  aria-pressed={selectedId === item.id}
                   onClick={() => setSelectedId(item.id)}
                 >
                   <span className={`error-center-severity is-${item.severity}`}>
@@ -383,6 +386,7 @@ export default function AdminDeveloperErrors() {
                         type="button"
                         key={status}
                         disabled={isWorking || selected.status === status}
+                        aria-pressed={selected.status === status}
                         onClick={() => act(
                           () => updateDeveloperErrorStatus(selected.id, status),
                           `Error marked ${label(status).toLowerCase()}.`,
@@ -530,6 +534,7 @@ export default function AdminDeveloperErrors() {
           </div>
         </section>
       )}
+      </div>
     </AdminFrame>
   )
 }
