@@ -80,7 +80,7 @@ const adminCssFiles = [
 ].filter((file) => file.endsWith('.css'))
 
 for (const file of adminCssFiles) {
-  if (relative('.', file) !== baselineFile) {
+  if (relative('.', file).replaceAll('\\', '/') !== baselineFile) {
     failures.push(`${relative('.', file)}: unexpected admin UI stylesheet remains`)
   }
 }
