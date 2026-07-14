@@ -15,6 +15,11 @@ import NotificationCenter from '../NotificationCenter'
 import AdminCommandPalette from './AdminCommandPalette.jsx'
 import { rememberAdminDestination } from './adminRecentDestinations.js'
 import {
+  PINNED_STORAGE_KEY,
+  readPinnedDestinations,
+  togglePinnedDestination,
+} from './adminPinnedDestinations.js'
+import {
   checkAdminAccess,
   getMyTeamAccess,
   logoutAdmin,
@@ -273,6 +278,7 @@ function AdminFrame({ children }) {
   const [workspaceOpen, setWorkspaceOpen] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
   const [commandOpen, setCommandOpen] = useState(false)
+  const [pinnedPaths, setPinnedPaths] = useState(readPinnedDestinations)
   const [signingOut, setSigningOut] = useState(false)
   const [isOnline, setIsOnline] = useState(() => (
     typeof navigator === 'undefined' ? true : navigator.onLine
@@ -423,6 +429,17 @@ function AdminFrame({ children }) {
   const openGroup = openGroupOverride === undefined
     ? activeGroupId
     : openGroupOverride
+
+  useEffect(() => {
+    function syncPinnedDestinations(event) {
+      if (!event.key || event.key === PINNED_STORAGE_KEY) {
+        setPinnedPaths(readPinnedDestinations())
+      }
+    }
+
+    window.addEventListener('storage', syncPinnedDestinations)
+    return () => window.removeEventListener('storage', syncPinnedDestinations)
+  }, [])
 
   useEffect(() => {
     document.body.classList.add('admin-app-mode')
@@ -587,6 +604,14 @@ function AdminFrame({ children }) {
     }))),
   ], [accessibleGroups, accessiblePrimaryItems, accessibleWorkspaces])
 
+  const pinnedItems = useMemo(() => {
+    const uniqueItems = new Map(commandItems.map((item) => [item.to, item]))
+
+    return pinnedPaths
+      .map((path) => uniqueItems.get(path))
+      .filter(Boolean)
+  }, [commandItems, pinnedPaths])
+
   const currentNavigationItem = useMemo(
     () => searchableItems.find((item) => routeMatches(location.pathname, item)),
     [location.pathname, searchableItems],
@@ -595,6 +620,10 @@ function AdminFrame({ children }) {
   const currentTeamAccessLevel = isStaff && currentNavigationItem?.module
     ? teamAccess?.permissions?.[currentNavigationItem.module] || 'none'
     : null
+
+  function handleTogglePinned(pathname) {
+    setPinnedPaths(togglePinnedDestination(pathname))
+  }
 
   function closeMobileNavigation({ returnFocus = true } = {}) {
     setMobileOpen(false)
@@ -802,6 +831,39 @@ function AdminFrame({ children }) {
                 ))}
               </section>
 
+              {pinnedItems.length > 0 && (
+                <section className="pwc-nav33-pinned" aria-label="Pinned Studio destinations">
+                  <div className="pwc-nav33-pinned-heading">
+                    <span>✦</span>
+                    <strong>Pinned</strong>
+                    <small>{pinnedItems.length}</small>
+                  </div>
+                  <div className="pwc-nav33-pinned-links">
+                    {pinnedItems.map((item) => (
+                      <div className="pwc-nav33-pinned-row" key={`pinned-${item.to}`}>
+                        <NavLink
+                          className={routeMatches(location.pathname, item) ? 'is-active' : undefined}
+                          to={item.to}
+                          aria-current={routeMatches(location.pathname, item) ? 'page' : undefined}
+                          {...preloadInteractionProps(item.to)}
+                          onClick={prepareForNavigation}
+                        >
+                          <span>{item.label}</span>
+                        </NavLink>
+                        <button
+                          type="button"
+                          aria-label={`Unpin ${item.label}`}
+                          title={`Unpin ${item.label}`}
+                          onClick={() => handleTogglePinned(item.to)}
+                        >
+                          ×
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </section>
+              )}
+
               <div className="pwc-nav33-divider" />
 
               <section className="pwc-nav33-groups" aria-label="More Studio destinations">
@@ -925,6 +987,8 @@ function AdminFrame({ children }) {
             navigate(to)
           }}
           onWarmRoute={warmRoute}
+          pinnedPaths={pinnedPaths}
+          onTogglePinned={handleTogglePinned}
         />
       )}
     </div>

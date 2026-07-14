@@ -74,10 +74,13 @@ function AdminCommandPalette({
   onClose,
   onNavigate,
   onWarmRoute,
+  pinnedPaths,
+  onTogglePinned,
 }) {
   const dialogRef = useRef(null)
   const inputRef = useRef(null)
   const previousFocusRef = useRef(null)
+  const pendingPinSelectionRef = useRef(null)
   const [query, setQuery] = useState('')
   const [activeIndex, setActiveIndex] = useState(0)
   const [recentPaths] = useState(readRecentDestinations)
@@ -99,16 +102,23 @@ function AdminCommandPalette({
       return uniqueItems.filter((item) => matchesQuery(item, normalizedQuery))
     }
 
-    const recentItems = recentPaths
+    const pinnedItems = pinnedPaths
       .map((path) => uniqueItems.find((item) => item.to === path))
       .filter(Boolean)
 
-    const suggestedItems = uniqueItems.filter(
-      (item) => !recentItems.some((recentItem) => recentItem.to === item.to),
-    )
+    const recentItems = recentPaths
+      .map((path) => uniqueItems.find((item) => item.to === path))
+      .filter((item) => (
+        item && !pinnedItems.some((pinnedItem) => pinnedItem.to === item.to)
+      ))
 
-    return [...recentItems, ...suggestedItems].slice(0, 9)
-  }, [query, recentPaths, uniqueItems])
+    const suggestedItems = uniqueItems.filter((item) => (
+      !pinnedItems.some((pinnedItem) => pinnedItem.to === item.to)
+      && !recentItems.some((recentItem) => recentItem.to === item.to)
+    ))
+
+    return [...pinnedItems, ...recentItems, ...suggestedItems].slice(0, 9)
+  }, [pinnedPaths, query, recentPaths, uniqueItems])
 
   useEffect(() => {
     previousFocusRef.current = document.activeElement
@@ -126,9 +136,28 @@ function AdminCommandPalette({
   }, [])
 
   useEffect(() => {
+    const pendingPath = pendingPinSelectionRef.current
+    if (!pendingPath) return
+
+    const nextIndex = visibleItems.findIndex((item) => item.to === pendingPath)
+    pendingPinSelectionRef.current = null
+    setActiveIndex(nextIndex >= 0 ? nextIndex : 0)
+  }, [visibleItems])
+
+  useEffect(() => {
     const activeItem = visibleItems[activeIndex]
     if (activeItem) onWarmRoute(activeItem.to)
   }, [activeIndex, onWarmRoute, visibleItems])
+
+  const selectedItem = visibleItems[activeIndex] || null
+  const selectedPinned = selectedItem ? pinnedPaths.includes(selectedItem.to) : false
+
+  function togglePinnedItem(item) {
+    if (!item) return
+
+    pendingPinSelectionRef.current = item.to
+    onTogglePinned(item.to)
+  }
 
   function chooseItem(item) {
     rememberAdminDestination(item.to)
@@ -139,6 +168,12 @@ function AdminCommandPalette({
     if (event.key === 'Escape') {
       event.preventDefault()
       onClose()
+      return
+    }
+
+    if (event.altKey && event.key.toLowerCase() === 'p' && visibleItems[activeIndex]) {
+      event.preventDefault()
+      togglePinnedItem(visibleItems[activeIndex])
       return
     }
 
@@ -224,7 +259,7 @@ function AdminCommandPalette({
         </header>
 
         <p className="sr-only" id="pwc-command11-description">
-          Search accessible Studio destinations. Use the arrow keys to move and Enter to open a destination.
+          Search accessible Studio destinations. Use the arrow keys to move, Enter to open, and Alt P to pin a destination.
         </p>
 
         <label className="pwc-command11-search">
@@ -253,8 +288,18 @@ function AdminCommandPalette({
         </label>
 
         <div className="pwc-command11-summary" aria-live="polite">
-          <span>{query.trim() ? 'Search results' : recentPaths.length ? 'Recent and suggested' : 'Suggested destinations'}</span>
+          <span>{query.trim() ? 'Search results' : pinnedPaths.length ? 'Pinned, recent, and suggested' : recentPaths.length ? 'Recent and suggested' : 'Suggested destinations'}</span>
           <small>{visibleItems.length} available</small>
+          <button
+            className={`pwc-command12-toggle${selectedPinned ? ' is-pinned' : ''}`}
+            type="button"
+            disabled={!selectedItem}
+            aria-pressed={selectedPinned}
+            onClick={() => togglePinnedItem(selectedItem)}
+          >
+            <span aria-hidden="true">{selectedPinned ? '★' : '☆'}</span>
+            {selectedPinned ? 'Unpin selected' : 'Pin selected'}
+          </button>
         </div>
 
         <div
@@ -266,10 +311,11 @@ function AdminCommandPalette({
           {visibleItems.length ? visibleItems.map((item, index) => {
             const selected = index === activeIndex
             const current = item.to === currentPath
+            const pinned = pinnedPaths.includes(item.to)
 
             return (
               <button
-                className={`pwc-command11-option${selected ? ' is-selected' : ''}${current ? ' is-current' : ''}`}
+                className={`pwc-command11-option${selected ? ' is-selected' : ''}${current ? ' is-current' : ''}${pinned ? ' is-pinned' : ''}`}
                 id={`pwc-command11-option-${index}`}
                 key={item.to}
                 type="button"
@@ -293,7 +339,7 @@ function AdminCommandPalette({
                   <small>{item.description || item.groupLabel}</small>
                 </span>
                 <span className="pwc-command11-meta">
-                  {current ? <em>Current</em> : <small>{item.groupLabel}</small>}
+                  {current ? <em>Current</em> : pinned ? <em>Pinned</em> : <small>{item.groupLabel}</small>}
                   <span aria-hidden="true">↵</span>
                 </span>
               </button>
@@ -310,6 +356,7 @@ function AdminCommandPalette({
         <footer className="pwc-command11-footer">
           <span><kbd>↑</kbd><kbd>↓</kbd> Navigate</span>
           <span><kbd>Enter</kbd> Open</span>
+          <span><kbd>Alt P</kbd> Pin</span>
           <span><kbd>Esc</kbd> Close</span>
         </footer>
       </section>
