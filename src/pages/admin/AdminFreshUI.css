@@ -6838,6 +6838,1660 @@ body.admin-app-mode .session-change-admin__empty p {
 }
 
 
+/* Fresh UI Phase 4 — Programs, Community, Automation, and Onboarding */
+body.admin-app-mode :where(
+  .learning-library-admin,
+  .membership-circle-admin,
+  .circle-admin-page,
+  .automation-studio-page,
+  .onboarding-studio-page
+) {
+  width: min(100%, var(--admin-content));
+  margin: 0 auto;
+  padding: clamp(24px, 3.6vw, 46px) clamp(16px, 3vw, 34px) 72px;
+}
+
+body.admin-app-mode :where(
+  .learning-library-header,
+  .membership-circle-header,
+  .circle-admin-header,
+  .automation-studio-header,
+  .onboarding-studio-header
+) {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 28px;
+  align-items: end;
+  overflow: hidden;
+  margin-bottom: 22px;
+  border: 1px solid rgba(200, 169, 106, 0.28);
+  border-radius: 28px;
+  background:
+    radial-gradient(circle at 92% 8%, rgba(200, 169, 106, 0.2), transparent 31%),
+    linear-gradient(145deg, rgba(77, 40, 49, 0.985), rgba(47, 32, 36, 0.985));
+  padding: clamp(26px, 4.2vw, 48px);
+  color: rgba(255, 248, 241, 0.74);
+  box-shadow: 0 34px 70px -48px rgba(45, 24, 29, 0.94);
+}
+
+body.admin-app-mode :where(
+  .learning-library-header,
+  .membership-circle-header,
+  .circle-admin-header,
+  .automation-studio-header,
+  .onboarding-studio-header
+)::after {
+  position: absolute;
+  z-index: -1;
+  right: -74px;
+  bottom: -120px;
+  width: 290px;
+  height: 290px;
+  border: 1px solid rgba(255, 247, 239, 0.1);
+  border-radius: 50%;
+  content: '';
+}
+
+body.admin-app-mode :where(
+  .learning-library-header,
+  .membership-circle-header,
+  .circle-admin-header,
+  .automation-studio-header,
+  .onboarding-studio-header
+) :where(h1, h2) {
+  margin-bottom: 10px;
+  color: #fff9f3;
+}
+
+body.admin-app-mode :where(
+  .learning-library-header,
+  .membership-circle-header,
+  .circle-admin-header,
+  .automation-studio-header,
+  .onboarding-studio-header
+) p:not(.eyebrow):not(.admin-eyebrow) {
+  max-width: 720px;
+  margin-bottom: 0;
+  color: rgba(255, 248, 241, 0.69);
+}
+
+body.admin-app-mode :where(
+  .learning-library-header__status,
+  .membership-circle-header__status
+) {
+  display: grid;
+  min-width: 225px;
+  gap: 4px;
+  align-self: center;
+  border: 1px solid rgba(255, 247, 239, 0.15);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.075);
+  padding: 16px 18px;
+  backdrop-filter: blur(14px);
+}
+
+body.admin-app-mode :where(
+  .learning-library-header__status,
+  .membership-circle-header__status
+) span {
+  color: #fffaf5;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+body.admin-app-mode :where(
+  .learning-library-header__status,
+  .membership-circle-header__status
+) small {
+  color: rgba(255, 248, 241, 0.58);
+  font-size: 10px;
+}
+
+body.admin-app-mode :where(
+  .automation-studio-header-actions,
+  .circle-admin-header > div:last-child,
+  .onboarding-studio-header > div:last-child
+) {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+body.admin-app-mode :where(
+  .automation-studio-header-actions,
+  .circle-admin-header > div:last-child,
+  .onboarding-studio-header > div:last-child
+) button {
+  border-color: rgba(255, 248, 241, 0.17);
+  background: rgba(255, 255, 255, 0.08);
+  color: #fffaf5;
+}
+
+body.admin-app-mode :where(
+  .automation-studio-header-actions,
+  .circle-admin-header > div:last-child,
+  .onboarding-studio-header > div:last-child
+) button:hover:not(:disabled) {
+  border-color: rgba(255, 248, 241, 0.3);
+  background: rgba(255, 255, 255, 0.14);
+  color: #fff;
+}
+
+body.admin-app-mode :where(
+  .learning-library-alert,
+  .membership-alert,
+  .circle-alert,
+  .automation-studio-alert,
+  .onboarding-studio-alert
+) {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 16px;
+  border: 1px solid var(--admin-border);
+  border-radius: 16px;
+  background: rgba(255, 252, 249, 0.86);
+  padding: 13px 16px;
+  color: var(--admin-ink-soft);
+  box-shadow: var(--admin-shadow);
+}
+
+body.admin-app-mode :where(
+  .learning-library-alert,
+  .membership-alert,
+  .circle-alert,
+  .automation-studio-alert,
+  .onboarding-studio-alert
+)::before {
+  width: 8px;
+  height: 8px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: var(--admin-gold);
+  content: '';
+}
+
+body.admin-app-mode :where(
+  .learning-library-alert,
+  .membership-alert,
+  .circle-alert,
+  .automation-studio-alert,
+  .onboarding-studio-alert
+).is-success {
+  border-color: rgba(85, 113, 93, 0.22);
+  background: rgba(85, 113, 93, 0.08);
+}
+
+body.admin-app-mode :where(
+  .learning-library-alert,
+  .membership-alert,
+  .circle-alert,
+  .automation-studio-alert,
+  .onboarding-studio-alert
+).is-success::before {
+  background: var(--admin-success);
+}
+
+body.admin-app-mode :where(
+  .learning-library-alert,
+  .membership-alert,
+  .circle-alert,
+  .automation-studio-alert,
+  .onboarding-studio-alert
+).is-warning {
+  border-color: rgba(168, 121, 57, 0.22);
+  background: rgba(168, 121, 57, 0.08);
+}
+
+body.admin-app-mode :where(
+  .learning-library-alert,
+  .membership-alert,
+  .circle-alert,
+  .automation-studio-alert,
+  .onboarding-studio-alert
+).is-error {
+  border-color: rgba(153, 84, 92, 0.24);
+  background: rgba(153, 84, 92, 0.08);
+  color: #74404a;
+}
+
+body.admin-app-mode :where(
+  .learning-library-alert,
+  .membership-alert,
+  .circle-alert,
+  .automation-studio-alert,
+  .onboarding-studio-alert
+).is-error::before {
+  background: var(--admin-danger);
+}
+
+body.admin-app-mode :where(
+  .learning-library-metrics,
+  .membership-metrics,
+  .circle-admin-metrics,
+  .automation-studio-metrics,
+  .onboarding-studio-metrics
+) {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  margin: 0 0 22px;
+}
+
+body.admin-app-mode :where(
+  .learning-library-metrics,
+  .membership-metrics,
+  .circle-admin-metrics,
+  .automation-studio-metrics,
+  .onboarding-studio-metrics
+) > article {
+  position: relative;
+  overflow: hidden;
+  min-height: 116px;
+  border: 1px solid var(--admin-border);
+  border-radius: 20px;
+  background: rgba(255, 252, 249, 0.82);
+  padding: 20px;
+  box-shadow: var(--admin-shadow);
+}
+
+body.admin-app-mode :where(
+  .learning-library-metrics,
+  .membership-metrics,
+  .circle-admin-metrics,
+  .automation-studio-metrics,
+  .onboarding-studio-metrics
+) > article::after {
+  position: absolute;
+  right: -18px;
+  bottom: -28px;
+  width: 84px;
+  height: 84px;
+  border-radius: 50%;
+  background: rgba(200, 169, 106, 0.08);
+  content: '';
+}
+
+body.admin-app-mode :where(
+  .learning-library-metrics,
+  .membership-metrics,
+  .circle-admin-metrics,
+  .automation-studio-metrics,
+  .onboarding-studio-metrics
+) > article span {
+  display: block;
+  margin-bottom: 12px;
+  color: var(--admin-muted);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+body.admin-app-mode :where(
+  .learning-library-metrics,
+  .membership-metrics,
+  .circle-admin-metrics,
+  .automation-studio-metrics,
+  .onboarding-studio-metrics
+) > article strong {
+  display: block;
+  color: var(--admin-ink);
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: clamp(2rem, 3vw, 2.65rem);
+  font-weight: 600;
+  line-height: 1;
+}
+
+body.admin-app-mode .circle-admin-metrics > article.needs-attention {
+  border-color: rgba(153, 84, 92, 0.28);
+  background: linear-gradient(145deg, rgba(255, 252, 249, 0.92), rgba(153, 84, 92, 0.08));
+}
+
+body.admin-app-mode :where(
+  .learning-library-layout,
+  .membership-circle-layout,
+  .circle-admin-layout,
+  .automation-studio-layout,
+  .onboarding-studio-layout
+) {
+  display: grid;
+  grid-template-columns: minmax(260px, 310px) minmax(0, 1fr);
+  gap: 20px;
+  align-items: start;
+}
+
+body.admin-app-mode :where(
+  .learning-library-sidebar,
+  .membership-sidebar,
+  .circle-admin-sidebar,
+  .automation-workflow-list,
+  .onboarding-studio-list
+) {
+  position: sticky;
+  top: 24px;
+  overflow: hidden;
+  border: 1px solid var(--admin-border);
+  border-radius: 22px;
+  background: rgba(255, 252, 249, 0.82);
+  box-shadow: var(--admin-shadow);
+}
+
+body.admin-app-mode :where(
+  .learning-library-workspace,
+  .membership-workspace,
+  .circle-admin-workspace,
+  .automation-studio-workspace,
+  .onboarding-template-editor
+) {
+  min-width: 0;
+  border: 1px solid var(--admin-border);
+  border-radius: 24px;
+  background: rgba(255, 252, 249, 0.88);
+  box-shadow: var(--admin-shadow-raised);
+}
+
+/* Learning Library */
+body.admin-app-mode .learning-library-create,
+body.admin-app-mode .membership-create-plan {
+  display: grid;
+  gap: 12px;
+  border-bottom: 1px solid var(--admin-border);
+  background: linear-gradient(145deg, rgba(200, 169, 106, 0.11), rgba(255, 252, 249, 0.68));
+  padding: 18px;
+}
+
+body.admin-app-mode :where(.learning-library-create, .membership-create-plan) label {
+  display: grid;
+  gap: 7px;
+}
+
+body.admin-app-mode :where(.learning-library-create, .membership-create-plan) button {
+  border-color: transparent;
+  background: var(--admin-burgundy);
+  color: #fff9f3;
+}
+
+body.admin-app-mode :where(.learning-library-filters, .membership-filters, .circle-admin-filters) {
+  display: grid;
+  gap: 10px;
+  border-bottom: 1px solid var(--admin-border);
+  padding: 16px;
+}
+
+body.admin-app-mode :where(
+  .learning-library-course-list,
+  .membership-plan-list,
+  .circle-admin-post-list,
+  .automation-workflow-list-body
+) {
+  display: grid;
+  max-height: min(62vh, 690px);
+  overflow-y: auto;
+  padding: 10px;
+  scrollbar-gutter: stable;
+}
+
+body.admin-app-mode :where(
+  .learning-library-course-list,
+  .membership-plan-list,
+  .circle-admin-post-list,
+  .automation-workflow-list-body
+) > button,
+body.admin-app-mode .automation-workflow-card {
+  width: 100%;
+  min-height: 0;
+  display: grid;
+  justify-items: start;
+  gap: 5px;
+  border: 1px solid transparent;
+  border-radius: 15px;
+  background: transparent;
+  padding: 14px;
+  text-align: left;
+}
+
+body.admin-app-mode :where(
+  .learning-library-course-list,
+  .membership-plan-list,
+  .circle-admin-post-list,
+  .automation-workflow-list-body
+) > button:hover:not(:disabled),
+body.admin-app-mode .automation-workflow-card:hover:not(:disabled) {
+  border-color: var(--admin-border);
+  background: rgba(200, 169, 106, 0.08);
+  transform: none;
+}
+
+body.admin-app-mode :where(
+  .learning-library-course-list,
+  .membership-plan-list,
+  .circle-admin-post-list
+) > button.is-active,
+body.admin-app-mode .automation-workflow-card.is-selected {
+  border-color: rgba(200, 169, 106, 0.42);
+  background: linear-gradient(145deg, rgba(200, 169, 106, 0.14), rgba(255, 252, 249, 0.92));
+  box-shadow: inset 3px 0 0 var(--admin-gold);
+}
+
+body.admin-app-mode :where(
+  .learning-library-course-list,
+  .membership-plan-list,
+  .circle-admin-post-list,
+  .automation-workflow-list-body
+) strong {
+  color: var(--admin-ink);
+  font-size: 12px;
+}
+
+body.admin-app-mode :where(
+  .learning-library-course-list,
+  .membership-plan-list,
+  .circle-admin-post-list,
+  .automation-workflow-list-body
+) small {
+  color: var(--admin-muted);
+  font-size: 10px;
+  line-height: 1.45;
+}
+
+body.admin-app-mode .learning-library-course-list > button > span,
+body.admin-app-mode .membership-plan-list > button span,
+body.admin-app-mode .circle-admin-post-list em,
+body.admin-app-mode .automation-status,
+body.admin-app-mode .learning-status,
+body.admin-app-mode .membership-status,
+body.admin-app-mode .circle-status {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  min-height: 24px;
+  border-radius: 999px;
+  background: rgba(200, 169, 106, 0.13);
+  padding: 4px 9px;
+  color: #84633b;
+  font-size: 8.5px;
+  font-style: normal;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+body.admin-app-mode :where(
+  .learning-status.is-published,
+  .membership-status.is-active,
+  .circle-status.is-success,
+  .automation-status-active,
+  .automation-status-completed
+) {
+  background: rgba(85, 113, 93, 0.13);
+  color: #4c6654;
+}
+
+body.admin-app-mode :where(
+  .learning-status.is-archived,
+  .membership-status.is-archived,
+  .circle-status.is-muted,
+  .automation-status-paused,
+  .automation-status-cancelled
+) {
+  background: rgba(127, 111, 105, 0.12);
+  color: #71635e;
+}
+
+body.admin-app-mode :where(
+  .circle-status.is-danger,
+  .automation-status-failed
+) {
+  background: rgba(153, 84, 92, 0.13);
+  color: #894952;
+}
+
+body.admin-app-mode .learning-course-heading,
+body.admin-app-mode .membership-workspace-heading,
+body.admin-app-mode .circle-workspace-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  align-items: flex-start;
+  border-bottom: 1px solid var(--admin-border);
+  padding: clamp(22px, 3vw, 32px);
+}
+
+body.admin-app-mode :where(
+  .learning-course-heading,
+  .membership-workspace-heading,
+  .circle-workspace-heading
+) h2 {
+  margin: 8px 0 6px;
+}
+
+body.admin-app-mode :where(
+  .learning-course-heading,
+  .membership-workspace-heading,
+  .circle-workspace-heading
+) p {
+  margin-bottom: 0;
+  color: var(--admin-muted);
+}
+
+body.admin-app-mode :where(
+  .learning-course-heading,
+  .membership-workspace-heading,
+  .circle-workspace-heading
+) > div:last-child {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 9px;
+}
+
+body.admin-app-mode :where(
+  .learning-library-tabs,
+  .membership-tabs,
+  .circle-admin-tabs,
+  .onboarding-studio-tabs
+) {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  border-bottom: 1px solid var(--admin-border);
+  background: rgba(247, 242, 236, 0.56);
+  padding: 10px 14px;
+  scrollbar-width: none;
+}
+
+body.admin-app-mode :where(
+  .learning-library-tabs,
+  .membership-tabs,
+  .circle-admin-tabs,
+  .onboarding-studio-tabs
+)::-webkit-scrollbar {
+  display: none;
+}
+
+body.admin-app-mode :where(
+  .learning-library-tabs,
+  .membership-tabs,
+  .circle-admin-tabs,
+  .onboarding-studio-tabs
+) button {
+  min-height: 38px;
+  flex: 0 0 auto;
+  border-color: transparent;
+  background: transparent;
+  padding-inline: 14px;
+  color: var(--admin-muted);
+}
+
+body.admin-app-mode :where(
+  .learning-library-tabs,
+  .membership-tabs,
+  .circle-admin-tabs,
+  .onboarding-studio-tabs
+) button.is-active {
+  border-color: rgba(200, 169, 106, 0.32);
+  background: #fffdfb;
+  color: var(--admin-burgundy);
+  box-shadow: 0 9px 22px -18px rgba(58, 37, 40, 0.65);
+}
+
+body.admin-app-mode :where(
+  .learning-course-form,
+  .learning-curriculum,
+  .learning-access-panel,
+  .membership-plan-form,
+  .membership-members-panel,
+  .membership-content-grid,
+  .membership-updates-layout,
+  .circle-composer-card,
+  .circle-moderation-layout,
+  .automation-workflow-editor,
+  .automation-enrollment-panel
+) {
+  padding: clamp(20px, 3vw, 32px);
+}
+
+body.admin-app-mode :where(
+  .learning-course-form,
+  .learning-inline-form,
+  .learning-lesson-editor,
+  .membership-plan-form,
+  .membership-add-member,
+  .membership-resource-form,
+  .membership-update-composer,
+  .circle-composer-card,
+  .automation-workflow-editor,
+  .automation-enrollment-form,
+  .onboarding-template-editor
+) label {
+  display: grid;
+  gap: 7px;
+}
+
+body.admin-app-mode :where(
+  .learning-course-form,
+  .membership-plan-form,
+  .membership-add-member,
+  .membership-resource-form,
+  .membership-update-composer
+) {
+  display: grid;
+  gap: 17px;
+}
+
+body.admin-app-mode :where(
+  .learning-form-row,
+  .membership-form-grid,
+  .circle-form-grid,
+  .automation-form-grid,
+  .onboarding-form-grid
+) {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+body.admin-app-mode .membership-form-grid.is-three {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+body.admin-app-mode :where(
+  .learning-form-actions,
+  .membership-form-actions,
+  .membership-member-actions,
+  .membership-update-actions,
+  .circle-action-bar,
+  .circle-report-actions,
+  .automation-step-controls,
+  .automation-step-add-actions,
+  .automation-enrollment-actions,
+  .onboarding-field-actions
+) {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 9px;
+}
+
+body.admin-app-mode :where(
+  .learning-course-form,
+  .membership-plan-form,
+  .membership-add-member,
+  .membership-resource-form,
+  .membership-update-composer,
+  .onboarding-template-editor
+) > button[type='submit'],
+body.admin-app-mode :where(
+  .learning-form-actions,
+  .membership-form-actions,
+  .circle-action-bar,
+  .automation-studio-header-actions
+) > button:first-child {
+  border-color: transparent;
+  background: var(--admin-burgundy);
+  color: #fff9f3;
+}
+
+body.admin-app-mode button.is-danger {
+  border-color: rgba(153, 84, 92, 0.22);
+  background: rgba(153, 84, 92, 0.08);
+  color: #8a4852;
+}
+
+body.admin-app-mode button.is-secondary {
+  background: rgba(255, 255, 255, 0.62);
+}
+
+body.admin-app-mode :where(
+  .learning-library-empty,
+  .learning-library-empty.is-small,
+  .membership-empty-state,
+  .membership-empty-state.is-large,
+  .membership-empty-state.is-small,
+  .circle-empty-card,
+  .automation-studio-empty,
+  .onboarding-empty
+) {
+  display: grid;
+  min-height: 220px;
+  place-content: center;
+  gap: 8px;
+  padding: 42px 24px;
+  text-align: center;
+}
+
+body.admin-app-mode :where(
+  .learning-library-empty,
+  .membership-empty-state,
+  .circle-empty-card,
+  .automation-studio-empty,
+  .onboarding-empty
+) strong {
+  color: var(--admin-ink);
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 1.5rem;
+}
+
+body.admin-app-mode :where(
+  .learning-library-empty,
+  .membership-empty-state,
+  .circle-empty-card,
+  .automation-studio-empty,
+  .onboarding-empty
+) p {
+  max-width: 520px;
+  margin: 0 auto;
+  color: var(--admin-muted);
+}
+
+body.admin-app-mode .learning-add-module {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: end;
+  margin-bottom: 20px;
+  border: 1px solid var(--admin-border);
+  border-radius: 18px;
+  background: rgba(200, 169, 106, 0.07);
+  padding: 16px;
+}
+
+body.admin-app-mode .learning-module-list,
+body.admin-app-mode .learning-lesson-list,
+body.admin-app-mode .membership-member-list,
+body.admin-app-mode .membership-resource-list,
+body.admin-app-mode .membership-update-list,
+body.admin-app-mode .circle-moderation-list,
+body.admin-app-mode .automation-steps-list,
+body.admin-app-mode .automation-enrollment-list {
+  display: grid;
+  gap: 12px;
+}
+
+body.admin-app-mode .learning-module-card,
+body.admin-app-mode .membership-member-row,
+body.admin-app-mode .membership-resource-list > article,
+body.admin-app-mode .membership-update-list > article,
+body.admin-app-mode .circle-moderation-card,
+body.admin-app-mode .automation-step-card,
+body.admin-app-mode .automation-enrollment-card {
+  border: 1px solid var(--admin-border);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.56);
+  padding: 18px;
+}
+
+body.admin-app-mode .learning-module-card__heading,
+body.admin-app-mode .membership-card-heading,
+body.admin-app-mode .onboarding-field-builder > header,
+body.admin-app-mode .onboarding-response-review > header {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  align-items: flex-start;
+}
+
+body.admin-app-mode .learning-module-card__heading > div {
+  display: grid;
+  gap: 3px;
+}
+
+body.admin-app-mode .learning-module-card__heading span,
+body.admin-app-mode .learning-module-card__heading small {
+  color: var(--admin-muted);
+  font-size: 10px;
+}
+
+body.admin-app-mode .learning-module-card details {
+  margin: 15px 0;
+  border-top: 1px solid var(--admin-border);
+  border-bottom: 1px solid var(--admin-border);
+  padding: 12px 0;
+}
+
+body.admin-app-mode .learning-module-card summary {
+  color: var(--admin-burgundy);
+  font-size: 11px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+body.admin-app-mode .learning-inline-form {
+  display: grid;
+  gap: 14px;
+  padding-top: 14px;
+}
+
+body.admin-app-mode .learning-lesson-row {
+  width: 100%;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 30px minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  border-radius: 14px;
+  padding: 12px 14px;
+  text-align: left;
+}
+
+body.admin-app-mode .learning-lesson-row > span,
+body.admin-app-mode .automation-step-number,
+body.admin-app-mode .onboarding-field-number {
+  display: grid;
+  width: 30px;
+  height: 30px;
+  place-items: center;
+  border-radius: 50%;
+  background: rgba(200, 169, 106, 0.14);
+  color: #80613e;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+body.admin-app-mode .learning-lesson-row div {
+  display: grid;
+  gap: 2px;
+}
+
+body.admin-app-mode .learning-lesson-row small {
+  color: var(--admin-muted);
+  font-size: 10px;
+}
+
+body.admin-app-mode .learning-lesson-row em {
+  color: var(--admin-gold-deep);
+  font-size: 10px;
+  font-style: normal;
+  font-weight: 800;
+}
+
+body.admin-app-mode .learning-lesson-editor {
+  display: grid;
+  gap: 15px;
+  margin-top: 18px;
+  border: 1px solid rgba(200, 169, 106, 0.28);
+  border-radius: 18px;
+  background: linear-gradient(145deg, rgba(200, 169, 106, 0.08), rgba(255, 252, 249, 0.72));
+  padding: 20px;
+}
+
+body.admin-app-mode .learning-access-panel {
+  display: grid;
+  gap: 18px;
+}
+
+body.admin-app-mode .learning-access-choice {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+body.admin-app-mode .learning-access-choice > label {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 10px;
+  align-items: start;
+  border: 1px solid var(--admin-border);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.5);
+  padding: 16px;
+  cursor: pointer;
+}
+
+body.admin-app-mode .learning-access-choice > label.is-active {
+  border-color: rgba(200, 169, 106, 0.46);
+  background: rgba(200, 169, 106, 0.09);
+  box-shadow: inset 3px 0 0 var(--admin-gold);
+}
+
+body.admin-app-mode .learning-client-picker {
+  display: grid;
+  gap: 12px;
+  border: 1px solid var(--admin-border);
+  border-radius: 18px;
+  padding: 18px;
+}
+
+body.admin-app-mode .learning-client-picker__list,
+body.admin-app-mode .membership-course-options,
+body.admin-app-mode .circle-toggle-grid,
+body.admin-app-mode .onboarding-toggle-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+body.admin-app-mode :where(
+  .learning-client-picker__list,
+  .membership-course-options,
+  .circle-toggle-grid,
+  .onboarding-toggle-list
+) label {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 10px;
+  align-items: start;
+  border: 1px solid var(--admin-border);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.5);
+  padding: 13px;
+  cursor: pointer;
+}
+
+/* Memberships */
+body.admin-app-mode .membership-plan-list > button > div {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  align-items: center;
+}
+
+body.admin-app-mode .membership-workspace-heading > div:last-child {
+  min-width: 170px;
+  display: grid;
+  justify-items: end;
+  gap: 3px;
+}
+
+body.admin-app-mode .membership-workspace-heading > div:last-child strong {
+  color: var(--admin-burgundy);
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 1.45rem;
+}
+
+body.admin-app-mode .membership-workspace-heading > div:last-child span {
+  color: var(--admin-muted);
+  font-size: 10px;
+}
+
+body.admin-app-mode .membership-add-member,
+body.admin-app-mode .membership-content-card,
+body.admin-app-mode .membership-update-composer,
+body.admin-app-mode .membership-update-list {
+  border: 1px solid var(--admin-border);
+  border-radius: 19px;
+  background: rgba(255, 255, 255, 0.52);
+  padding: 20px;
+}
+
+body.admin-app-mode .membership-add-member > div:first-child p:last-child {
+  color: var(--admin-muted);
+}
+
+body.admin-app-mode .membership-member-row {
+  display: grid;
+  grid-template-columns: minmax(170px, 0.9fr) minmax(0, 1.4fr);
+  gap: 18px;
+}
+
+body.admin-app-mode .membership-member-identity {
+  display: grid;
+  align-content: start;
+  gap: 4px;
+}
+
+body.admin-app-mode .membership-member-identity strong {
+  color: var(--admin-ink);
+}
+
+body.admin-app-mode .membership-member-identity small,
+body.admin-app-mode .membership-member-notes {
+  color: var(--admin-muted);
+  font-size: 10px;
+}
+
+body.admin-app-mode .membership-content-grid,
+body.admin-app-mode .membership-updates-layout {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+body.admin-app-mode .membership-resource-list > article,
+body.admin-app-mode .membership-update-list > article {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+body.admin-app-mode .membership-resource-list > article.is-archived {
+  opacity: 0.62;
+}
+
+body.admin-app-mode .membership-resource-list > article > div:last-child,
+body.admin-app-mode .membership-update-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 7px;
+}
+
+body.admin-app-mode .membership-update-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  color: var(--admin-muted);
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+body.admin-app-mode .membership-update-meta span {
+  border-radius: 999px;
+  background: rgba(200, 169, 106, 0.12);
+  padding: 3px 8px;
+}
+
+body.admin-app-mode .membership-update-meta span.is-published {
+  background: rgba(85, 113, 93, 0.12);
+  color: var(--admin-success);
+}
+
+/* Circle */
+body.admin-app-mode .circle-admin-post-list > button {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 4px 10px;
+}
+
+body.admin-app-mode .circle-admin-post-list > button strong,
+body.admin-app-mode .circle-admin-post-list > button small {
+  grid-column: 1;
+}
+
+body.admin-app-mode .circle-admin-post-list > button em {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+}
+
+body.admin-app-mode .circle-composer-card {
+  display: grid;
+  gap: 18px;
+}
+
+body.admin-app-mode .circle-field {
+  display: grid;
+  gap: 7px;
+}
+
+body.admin-app-mode .circle-form-grid.two-columns {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+body.admin-app-mode .circle-moderation-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(300px, 0.85fr);
+  gap: 18px;
+}
+
+body.admin-app-mode .circle-moderation-layout > section {
+  border: 1px solid var(--admin-border);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.5);
+  padding: 18px;
+}
+
+body.admin-app-mode .circle-moderation-card.is-hidden,
+body.admin-app-mode .circle-moderation-card.is-resolved {
+  opacity: 0.62;
+}
+
+body.admin-app-mode .circle-moderation-card p {
+  white-space: pre-wrap;
+}
+
+/* Automation Studio */
+body.admin-app-mode .automation-workflow-list > header,
+body.admin-app-mode .onboarding-studio-list > header {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  border-bottom: 1px solid var(--admin-border);
+  background: rgba(200, 169, 106, 0.07);
+  padding: 16px;
+}
+
+body.admin-app-mode .automation-workflow-list > header h2,
+body.admin-app-mode .onboarding-studio-list > header h2 {
+  margin: 0;
+  font-size: 1.35rem;
+}
+
+body.admin-app-mode .automation-workflow-card {
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+body.admin-app-mode .automation-workflow-card > div {
+  display: grid;
+  gap: 3px;
+}
+
+body.admin-app-mode .automation-workflow-editor {
+  display: grid;
+  gap: 20px;
+}
+
+body.admin-app-mode .automation-workflow-editor > header,
+body.admin-app-mode .automation-steps-section > header,
+body.admin-app-mode .automation-enrollment-panel > header {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  align-items: flex-start;
+}
+
+body.admin-app-mode .automation-field {
+  display: grid;
+  gap: 7px;
+}
+
+body.admin-app-mode .automation-field-wide {
+  grid-column: 1 / -1;
+}
+
+body.admin-app-mode .automation-checkbox-field {
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  border: 1px solid var(--admin-border);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.45);
+  padding: 13px;
+}
+
+body.admin-app-mode .automation-steps-section,
+body.admin-app-mode .automation-enrollment-panel {
+  display: grid;
+  gap: 14px;
+  border-top: 1px solid var(--admin-border);
+  padding-top: 20px;
+}
+
+body.admin-app-mode .automation-step-card {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 14px;
+}
+
+body.admin-app-mode .automation-step-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+body.admin-app-mode .automation-delay-input {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(120px, 0.7fr);
+  gap: 10px;
+}
+
+body.admin-app-mode .automation-variable-note {
+  border-left: 3px solid rgba(200, 169, 106, 0.46);
+  background: rgba(200, 169, 106, 0.07);
+  padding: 11px 13px;
+  color: var(--admin-muted);
+  font-size: 10px;
+}
+
+body.admin-app-mode .automation-enrollment-form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: end;
+}
+
+body.admin-app-mode .automation-enrollment-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 16px;
+  align-items: center;
+}
+
+body.admin-app-mode .automation-enrollment-error {
+  color: var(--admin-danger);
+  font-size: 10px;
+}
+
+/* Booking and Onboarding */
+body.admin-app-mode .onboarding-studio-tabs {
+  margin-bottom: 20px;
+  border: 1px solid var(--admin-border);
+  border-radius: 18px;
+  background: rgba(255, 252, 249, 0.72);
+  box-shadow: var(--admin-shadow);
+}
+
+body.admin-app-mode .onboarding-studio-loading {
+  min-height: 360px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--admin-border);
+  border-radius: 22px;
+  background: rgba(255, 252, 249, 0.8);
+  color: var(--admin-muted);
+}
+
+body.admin-app-mode .onboarding-studio-list {
+  display: grid;
+  align-content: start;
+}
+
+body.admin-app-mode .onboarding-studio-list > button {
+  width: auto;
+  min-height: 0;
+  display: grid;
+  justify-items: start;
+  gap: 4px;
+  margin: 0 10px;
+  border: 1px solid transparent;
+  border-radius: 14px;
+  background: transparent;
+  padding: 13px;
+  text-align: left;
+}
+
+body.admin-app-mode .onboarding-studio-list > button:first-of-type {
+  margin-top: 10px;
+}
+
+body.admin-app-mode .onboarding-studio-list > button:last-of-type {
+  margin-bottom: 10px;
+}
+
+body.admin-app-mode .onboarding-studio-list > button.is-selected {
+  border-color: rgba(200, 169, 106, 0.42);
+  background: rgba(200, 169, 106, 0.1);
+  box-shadow: inset 3px 0 0 var(--admin-gold);
+}
+
+body.admin-app-mode .onboarding-studio-list > button span {
+  border-radius: 999px;
+  background: rgba(200, 169, 106, 0.12);
+  padding: 3px 8px;
+  color: #83613d;
+  font-size: 8px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+body.admin-app-mode .onboarding-studio-list > button strong {
+  color: var(--admin-ink);
+}
+
+body.admin-app-mode .onboarding-studio-list > button small {
+  color: var(--admin-muted);
+  font-size: 9.5px;
+}
+
+body.admin-app-mode .onboarding-template-editor {
+  display: grid;
+  gap: 20px;
+  padding: clamp(20px, 3vw, 30px);
+}
+
+body.admin-app-mode .onboarding-template-editor > header {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  align-items: flex-start;
+  border-bottom: 1px solid var(--admin-border);
+  padding-bottom: 18px;
+}
+
+body.admin-app-mode .onboarding-template-editor > header h2 {
+  margin-bottom: 0;
+}
+
+body.admin-app-mode .onboarding-form-grid .is-wide {
+  grid-column: 1 / -1;
+}
+
+body.admin-app-mode .onboarding-field-builder,
+body.admin-app-mode .onboarding-response-review {
+  display: grid;
+  gap: 14px;
+  border-top: 1px solid var(--admin-border);
+  padding-top: 20px;
+}
+
+body.admin-app-mode .onboarding-field-builder > article,
+body.admin-app-mode .onboarding-response-review > article,
+body.admin-app-mode .onboarding-appointment-grid > article {
+  border: 1px solid var(--admin-border);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.52);
+  padding: 18px;
+}
+
+body.admin-app-mode .onboarding-field-builder > article {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 14px;
+}
+
+body.admin-app-mode .onboarding-field-builder > article > .onboarding-field-actions {
+  grid-column: 2;
+  justify-content: space-between;
+}
+
+body.admin-app-mode .onboarding-field-actions label {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+body.admin-app-mode .onboarding-appointment-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+body.admin-app-mode .onboarding-appointment-grid > article {
+  display: grid;
+  gap: 15px;
+}
+
+body.admin-app-mode .onboarding-appointment-grid > article > header {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  align-items: flex-start;
+  border-bottom: 1px solid var(--admin-border);
+  padding-bottom: 14px;
+}
+
+body.admin-app-mode .onboarding-appointment-grid > article > header span {
+  color: var(--admin-gold-deep);
+  font-size: 9px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+body.admin-app-mode .onboarding-response-review > article strong {
+  display: block;
+  margin-bottom: 5px;
+  color: var(--admin-muted);
+  font-size: 9px;
+  text-transform: capitalize;
+}
+
+body.admin-app-mode .onboarding-response-review > article p {
+  margin-bottom: 0;
+  color: var(--admin-ink-soft);
+  white-space: pre-wrap;
+}
+
+@media (max-width: 1080px) {
+  body.admin-app-mode :where(
+    .learning-library-layout,
+    .membership-circle-layout,
+    .circle-admin-layout,
+    .automation-studio-layout,
+    .onboarding-studio-layout
+  ) {
+    grid-template-columns: minmax(235px, 285px) minmax(0, 1fr);
+  }
+
+  body.admin-app-mode :where(
+    .learning-library-metrics,
+    .membership-metrics,
+    .circle-admin-metrics,
+    .automation-studio-metrics,
+    .onboarding-studio-metrics
+  ) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  body.admin-app-mode .membership-content-grid,
+  body.admin-app-mode .membership-updates-layout,
+  body.admin-app-mode .circle-moderation-layout {
+    grid-template-columns: 1fr;
+  }
+
+  body.admin-app-mode .onboarding-appointment-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 820px) {
+  body.admin-app-mode :where(
+    .learning-library-header,
+    .membership-circle-header,
+    .circle-admin-header,
+    .automation-studio-header,
+    .onboarding-studio-header
+  ) {
+    grid-template-columns: 1fr;
+    align-items: start;
+  }
+
+  body.admin-app-mode :where(
+    .learning-library-header__status,
+    .membership-circle-header__status
+  ) {
+    min-width: 0;
+  }
+
+  body.admin-app-mode :where(
+    .automation-studio-header-actions,
+    .circle-admin-header > div:last-child,
+    .onboarding-studio-header > div:last-child
+  ) {
+    justify-content: flex-start;
+  }
+
+  body.admin-app-mode :where(
+    .learning-library-layout,
+    .membership-circle-layout,
+    .circle-admin-layout,
+    .automation-studio-layout,
+    .onboarding-studio-layout
+  ) {
+    grid-template-columns: 1fr;
+  }
+
+  body.admin-app-mode :where(
+    .learning-library-sidebar,
+    .membership-sidebar,
+    .circle-admin-sidebar,
+    .automation-workflow-list,
+    .onboarding-studio-list
+  ) {
+    position: static;
+  }
+
+  body.admin-app-mode :where(
+    .learning-library-course-list,
+    .membership-plan-list,
+    .circle-admin-post-list,
+    .automation-workflow-list-body
+  ) {
+    max-height: 330px;
+  }
+
+  body.admin-app-mode :where(
+    .learning-course-heading,
+    .membership-workspace-heading,
+    .circle-workspace-heading,
+    .automation-workflow-editor > header,
+    .onboarding-template-editor > header
+  ) {
+    flex-direction: column;
+  }
+
+  body.admin-app-mode :where(
+    .learning-course-heading,
+    .membership-workspace-heading,
+    .circle-workspace-heading
+  ) > div:last-child,
+  body.admin-app-mode .membership-workspace-heading > div:last-child {
+    justify-items: start;
+    justify-content: flex-start;
+  }
+
+  body.admin-app-mode .membership-member-row,
+  body.admin-app-mode .automation-enrollment-card {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 620px) {
+  body.admin-app-mode :where(
+    .learning-library-admin,
+    .membership-circle-admin,
+    .circle-admin-page,
+    .automation-studio-page,
+    .onboarding-studio-page
+  ) {
+    padding-inline: 12px;
+  }
+
+  body.admin-app-mode :where(
+    .learning-library-header,
+    .membership-circle-header,
+    .circle-admin-header,
+    .automation-studio-header,
+    .onboarding-studio-header
+  ) {
+    border-radius: 22px;
+    padding: 24px 20px;
+  }
+
+  body.admin-app-mode :where(
+    .learning-library-metrics,
+    .membership-metrics,
+    .circle-admin-metrics,
+    .automation-studio-metrics,
+    .onboarding-studio-metrics
+  ) {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  body.admin-app-mode :where(
+    .learning-library-metrics,
+    .membership-metrics,
+    .circle-admin-metrics,
+    .automation-studio-metrics,
+    .onboarding-studio-metrics
+  ) > article {
+    min-height: 100px;
+    border-radius: 17px;
+    padding: 16px;
+  }
+
+  body.admin-app-mode :where(
+    .learning-library-workspace,
+    .membership-workspace,
+    .circle-admin-workspace,
+    .automation-studio-workspace,
+    .onboarding-template-editor,
+    .learning-library-sidebar,
+    .membership-sidebar,
+    .circle-admin-sidebar,
+    .automation-workflow-list,
+    .onboarding-studio-list
+  ) {
+    border-radius: 18px;
+  }
+
+  body.admin-app-mode :where(
+    .learning-form-row,
+    .membership-form-grid,
+    .membership-form-grid.is-three,
+    .circle-form-grid,
+    .circle-form-grid.two-columns,
+    .automation-form-grid,
+    .automation-step-grid,
+    .onboarding-form-grid,
+    .learning-access-choice,
+    .learning-client-picker__list,
+    .membership-course-options,
+    .circle-toggle-grid,
+    .onboarding-toggle-list
+  ) {
+    grid-template-columns: 1fr;
+  }
+
+  body.admin-app-mode .learning-add-module,
+  body.admin-app-mode .automation-enrollment-form,
+  body.admin-app-mode .automation-delay-input {
+    grid-template-columns: 1fr;
+  }
+
+  body.admin-app-mode .learning-module-card__heading,
+  body.admin-app-mode .membership-card-heading,
+  body.admin-app-mode .onboarding-field-builder > header,
+  body.admin-app-mode .onboarding-response-review > header,
+  body.admin-app-mode .onboarding-appointment-grid > article > header {
+    flex-direction: column;
+  }
+
+  body.admin-app-mode .learning-lesson-row {
+    grid-template-columns: 30px minmax(0, 1fr);
+  }
+
+  body.admin-app-mode .learning-lesson-row em {
+    grid-column: 2;
+  }
+
+  body.admin-app-mode .membership-resource-list > article,
+  body.admin-app-mode .membership-update-list > article {
+    flex-direction: column;
+  }
+
+  body.admin-app-mode .membership-resource-list > article > div:last-child,
+  body.admin-app-mode .membership-update-actions {
+    justify-content: flex-start;
+  }
+
+  body.admin-app-mode .automation-step-card,
+  body.admin-app-mode .onboarding-field-builder > article {
+    grid-template-columns: 1fr;
+  }
+
+  body.admin-app-mode .onboarding-field-builder > article > .onboarding-field-actions {
+    grid-column: 1;
+  }
+
+  body.admin-app-mode :where(
+    .learning-form-actions,
+    .membership-form-actions,
+    .membership-member-actions,
+    .membership-update-actions,
+    .circle-action-bar,
+    .circle-report-actions,
+    .automation-step-controls,
+    .automation-step-add-actions,
+    .automation-enrollment-actions,
+    .onboarding-field-actions
+  ) {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  body.admin-app-mode :where(
+    .learning-form-actions,
+    .membership-form-actions,
+    .membership-member-actions,
+    .membership-update-actions,
+    .circle-action-bar,
+    .circle-report-actions,
+    .automation-step-controls,
+    .automation-step-add-actions,
+    .automation-enrollment-actions,
+    .onboarding-field-actions
+  ) button {
+    width: 100%;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   body.admin-app-mode *,
   body.admin-app-mode *::before,
