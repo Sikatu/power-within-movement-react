@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import AdminFrame from '../../components/admin/AdminFrame'
+import { useAdminConfirm } from '../../components/admin/AdminConfirmContext'
 import {
   getAdminSessionChangeRequests,
   reviewAdminSessionChangeRequest,
@@ -34,6 +35,7 @@ function clientName(request) {
 }
 
 export default function AdminSessionChangeRequests() {
+  const confirmAction = useAdminConfirm()
   const [requests, setRequests] = useState([])
   const [activeView, setActiveView] = useState('pending')
   const [notes, setNotes] = useState({})
@@ -91,9 +93,12 @@ export default function AdminSessionChangeRequests() {
 
   async function reviewRequest(request, decision) {
     const action = decision === 'approved' ? 'approve' : 'decline'
-    const confirmed = window.confirm(
-      `Are you sure you want to ${action} this ${request.request_type} request?`,
-    )
+    const confirmed = await confirmAction({
+      title: `${action === 'approve' ? 'Approve' : 'Decline'} this request?`,
+      message: `Are you sure you want to ${action} this ${request.request_type} request?`,
+      confirmLabel: action === 'approve' ? 'Approve request' : 'Decline request',
+      tone: action === 'approve' ? 'warning' : 'danger',
+    })
 
     if (!confirmed) return
 

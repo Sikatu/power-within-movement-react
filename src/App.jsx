@@ -3,6 +3,7 @@ import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-route
 import SiteFooter from './components/SiteFooter.jsx'
 import SiteHeader from './components/SiteHeader.jsx'
 import AdminDeveloperRouteGuard from './components/admin/AdminDeveloperRouteGuard.jsx'
+import AdminConfirmProvider from './components/admin/AdminConfirmProvider.jsx'
 import AdminOwnerRouteGuard from './components/admin/AdminOwnerRouteGuard.jsx'
 import AdminRouteGuard from './components/admin/AdminRouteGuard.jsx'
 import { signatureExperiences } from './data/signatureExperiences.js'
@@ -375,7 +376,8 @@ function AppShell() {
       <a className="skip-link" href="#main-content">Skip to content</a>
       {!isInternalRoute && <SiteHeader />}
       <Suspense fallback={<RouteLoadingFallback internal={isInternalRoute} />}>
-        <Routes>
+        <AdminConfirmProvider>
+          <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/experiences" element={<Experiences />} />
         <Route path="/color-analysis" element={<SignatureExperiencePage experience={signatureExperiences.color} activePath="/color-analysis" />} />
@@ -431,7 +433,8 @@ function AppShell() {
         <Route path="/admin/encouragements" element={<AdminRouteGuard><AdminEncouragements /></AdminRouteGuard>} />
         <Route path="/admin/audit-log" element={<AdminRouteGuard><AdminAuditLog /></AdminRouteGuard>} />
         <Route path="*" element={<NotFound />} />
-        </Routes>
+          </Routes>
+        </AdminConfirmProvider>
       </Suspense>
       {!isInternalRoute && <SiteFooter />}
     </>

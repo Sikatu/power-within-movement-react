@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import AdminFrame from '../../components/admin/AdminFrame'
+import { useAdminConfirm } from '../../components/admin/AdminConfirmContext'
 import {
   archiveAdminCirclePost,
   createAdminCirclePost,
@@ -70,6 +71,7 @@ function statusTone(status) {
 }
 
 export default function AdminCircleCommunity() {
+  const confirmAction = useAdminConfirm()
   const [posts, setPosts] = useState([])
   const [memberships, setMemberships] = useState([])
   const [metrics, setMetrics] = useState({})
@@ -251,12 +253,22 @@ export default function AdminCircleCommunity() {
   }
 
   async function handleArchive() {
-    if (!selectedPost || !window.confirm('Archive this post and remove it from member view?')) return
+    if (!selectedPost || !(await confirmAction({
+      title: 'Archive this Circle post?',
+      message: 'The post will be removed from member view.',
+      confirmLabel: 'Archive post',
+      tone: 'warning',
+    }))) return
     await perform(() => archiveAdminCirclePost(selectedPost.id), 'Post archived.', selectedPost.id)
   }
 
   async function handleDelete() {
-    if (!selectedPost || !window.confirm('Permanently delete this draft or archived post?')) return
+    if (!selectedPost || !(await confirmAction({
+      title: 'Delete this Circle post permanently?',
+      message: 'This draft or archived post cannot be restored after deletion.',
+      confirmLabel: 'Delete post',
+      tone: 'danger',
+    }))) return
     const result = await perform(() => deleteAdminCirclePost(selectedPost.id), 'Post deleted.', '')
     if (result) {
       setSelectedPostId('')

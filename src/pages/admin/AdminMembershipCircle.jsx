@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import AdminFrame from '../../components/admin/AdminFrame'
+import { useAdminConfirm } from '../../components/admin/AdminConfirmContext'
 import {
   activateAdminMembership,
   archiveAdminMembership,
@@ -224,6 +225,7 @@ function MemberRow({ enrollment, onSave, onRemove, isBusy }) {
 }
 
 export default function AdminMembershipCircle() {
+  const confirmAction = useAdminConfirm()
   const [memberships, setMemberships] = useState([])
   const [clients, setClients] = useState([])
   const [courses, setCourses] = useState([])
@@ -433,9 +435,13 @@ export default function AdminMembershipCircle() {
   async function handleDeletePlan() {
     if (!selectedMembership) return
 
-    const confirmed = window.confirm(
-      `Delete “${selectedMembership.name}”? Only plans without member history can be deleted.`,
-    )
+    const confirmed = await confirmAction({
+      title: 'Delete this membership plan?',
+      message: `Delete “${selectedMembership.name}”?`,
+      detail: 'Only plans without member history can be deleted.',
+      confirmLabel: 'Delete plan',
+      tone: 'danger',
+    })
 
     if (!confirmed) return
 
@@ -482,9 +488,13 @@ export default function AdminMembershipCircle() {
   }
 
   async function handleRemoveEnrollment(enrollmentId) {
-    const confirmed = window.confirm(
-      'Remove this client from the membership? Their historical client profile will remain.',
-    )
+    const confirmed = await confirmAction({
+      title: 'Remove this member?',
+      message: 'Remove this client from the membership?',
+      detail: 'Their historical client profile will remain.',
+      confirmLabel: 'Remove member',
+      tone: 'danger',
+    })
     if (!confirmed) return
 
     setBusyId(enrollmentId)
@@ -531,7 +541,12 @@ export default function AdminMembershipCircle() {
   }
 
   async function handleDeleteResource(resourceId) {
-    if (!window.confirm('Delete this member resource?')) return
+    if (!(await confirmAction({
+      title: 'Delete this member resource?',
+      message: 'This resource will be removed from the membership library.',
+      confirmLabel: 'Delete resource',
+      tone: 'danger',
+    }))) return
 
     await runAction(
       () => deleteAdminMembershipResource(resourceId),
@@ -576,7 +591,12 @@ export default function AdminMembershipCircle() {
   }
 
   async function handleDeleteAnnouncement(announcementId) {
-    if (!window.confirm('Delete this member update?')) return
+    if (!(await confirmAction({
+      title: 'Delete this member update?',
+      message: 'This update will be permanently removed.',
+      confirmLabel: 'Delete update',
+      tone: 'danger',
+    }))) return
 
     await runAction(
       () => deleteAdminMembershipAnnouncement(announcementId),

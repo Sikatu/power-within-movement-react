@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import AdminFrame from '../../components/admin/AdminFrame'
+import { useAdminConfirm } from '../../components/admin/AdminConfirmContext'
 import {
   archiveAdminLearningCourse,
   createAdminLearningCourse,
@@ -197,6 +198,7 @@ function ModuleEditor({ module, onSave, onDelete, onAddLesson, onEditLesson }) {
 }
 
 export default function AdminLearningLibrary() {
+  const confirmAction = useAdminConfirm()
   const [courses, setCourses] = useState([])
   const [clients, setClients] = useState([])
   const [featureEnabled, setFeatureEnabled] = useState(true)
@@ -379,7 +381,12 @@ export default function AdminLearningLibrary() {
   }
 
   async function handleArchive() {
-    if (!window.confirm('Archive this learning program and remove it from client view?')) return
+    if (!(await confirmAction({
+      title: 'Archive this learning program?',
+      message: 'The program will be removed from client view.',
+      confirmLabel: 'Archive program',
+      tone: 'warning',
+    }))) return
 
     await runAction(
       () => archiveAdminLearningCourse(selectedCourseId),
@@ -388,7 +395,12 @@ export default function AdminLearningLibrary() {
   }
 
   async function handleDeleteCourse() {
-    if (!window.confirm('Permanently delete this learning program and all of its lessons?')) return
+    if (!(await confirmAction({
+      title: 'Delete this learning program permanently?',
+      message: 'The program and every lesson inside it will be permanently deleted.',
+      confirmLabel: 'Delete program',
+      tone: 'danger',
+    }))) return
 
     const response = await runAction(
       () => deleteAdminLearningCourse(selectedCourseId),
@@ -423,7 +435,12 @@ export default function AdminLearningLibrary() {
   }
 
   async function handleDeleteModule(moduleId) {
-    if (!window.confirm('Delete this module and every lesson inside it?')) return
+    if (!(await confirmAction({
+      title: 'Delete this module?',
+      message: 'This module and every lesson inside it will be permanently deleted.',
+      confirmLabel: 'Delete module',
+      tone: 'danger',
+    }))) return
 
     await runAction(() => deleteAdminLearningModule(moduleId), 'Module deleted.')
   }
@@ -475,7 +492,12 @@ export default function AdminLearningLibrary() {
 
   async function handleDeleteLesson() {
     if (!lessonEditor?.lessonId) return
-    if (!window.confirm('Permanently delete this lesson?')) return
+    if (!(await confirmAction({
+      title: 'Delete this lesson permanently?',
+      message: 'This lesson cannot be restored after deletion.',
+      confirmLabel: 'Delete lesson',
+      tone: 'danger',
+    }))) return
 
     const response = await runAction(
       () => deleteAdminLearningLesson(lessonEditor.lessonId),

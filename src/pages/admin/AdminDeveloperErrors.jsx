@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import AdminFrame from '../../components/admin/AdminFrame'
+import { useAdminConfirm } from '../../components/admin/AdminConfirmContext'
 import {
   createDeveloperErrorTest,
   deleteDeveloperError,
@@ -60,6 +61,7 @@ const monitoringOptions = [
 ]
 
 export default function AdminDeveloperErrors() {
+  const confirmAction = useAdminConfirm()
   const [snapshot, setSnapshot] = useState(null)
   const [selectedId, setSelectedId] = useState('')
   const [filters, setFilters] = useState({ status: '', severity: '', source: '', search: '' })
@@ -398,8 +400,14 @@ export default function AdminDeveloperErrors() {
                     type="button"
                     className="error-center-delete"
                     disabled={isWorking}
-                    onClick={() => {
-                      if (!window.confirm('Delete this error record permanently?')) return
+                    onClick={async () => {
+                      const confirmed = await confirmAction({
+                        title: 'Delete this error record permanently?',
+                        message: 'The technical record will be removed from the Error Center.',
+                        confirmLabel: 'Delete record',
+                        tone: 'danger',
+                      })
+                      if (!confirmed) return
                       act(() => deleteDeveloperError(selected.id), 'Error record deleted.')
                     }}
                   >

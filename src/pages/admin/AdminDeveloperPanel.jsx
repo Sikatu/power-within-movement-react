@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import AdminFrame from '../../components/admin/AdminFrame'
+import { useAdminConfirm } from '../../components/admin/AdminConfirmContext'
 import {
   applyDeveloperAccountCleanup,
   createDeveloperManagedUser,
@@ -102,6 +103,7 @@ function HealthBadge({ state, children }) {
 }
 
 export default function AdminDeveloperPanel() {
+  const confirmAction = useAdminConfirm()
   const navigate = useNavigate()
   const [activeTab, setActiveTab] = useState('overview')
   const [overview, setOverview] = useState(null)
@@ -248,7 +250,12 @@ export default function AdminDeveloperPanel() {
   }
 
   const handleReconcileGovernance = async () => {
-    if (!window.confirm('Repair the canonical Developer and Owner roles and transfer Founder availability to the Owner account?')) return
+    if (!(await confirmAction({
+      title: 'Repair account governance?',
+      message: 'Repair the canonical Developer and Owner roles and transfer Founder availability to the Owner account?',
+      confirmLabel: 'Repair governance',
+      tone: 'warning',
+    }))) return
 
     setIsGovernanceBusy(true)
     setError('')
@@ -308,7 +315,13 @@ export default function AdminDeveloperPanel() {
       return
     }
 
-    if (!window.confirm('Archive every listed duplicate/test system account and revoke its sessions? Client and member accounts will remain untouched.')) return
+    if (!(await confirmAction({
+      title: 'Archive duplicate system accounts?',
+      message: 'Every listed duplicate or test system account will be archived and its sessions revoked.',
+      detail: 'Client and member accounts will remain untouched.',
+      confirmLabel: 'Archive accounts',
+      tone: 'danger',
+    }))) return
 
     setIsGovernanceBusy(true)
     setError('')
@@ -331,7 +344,13 @@ export default function AdminDeveloperPanel() {
   }
 
   const handleTemporaryPassword = async (user) => {
-    if (!window.confirm(`Create a new 48-hour temporary password for ${user.email}? Their current sessions will stop working.`)) return
+    if (!(await confirmAction({
+      title: 'Issue temporary access?',
+      message: `Create a new 48-hour temporary password for ${user.email}?`,
+      detail: 'Their current sessions will stop working.',
+      confirmLabel: 'Create temporary password',
+      tone: 'warning',
+    }))) return
 
     setBusyUserId(user.id)
     setError('')
@@ -355,7 +374,13 @@ export default function AdminDeveloperPanel() {
   }
 
   const handleStatus = async (user, nextStatus) => {
-    if (!window.confirm(`Change ${user.email} from ${user.status} to ${nextStatus}? Existing sessions will be revoked.`)) return
+    if (!(await confirmAction({
+      title: 'Change account status?',
+      message: `Change ${user.email} from ${user.status} to ${nextStatus}?`,
+      detail: 'Existing sessions will be revoked.',
+      confirmLabel: `Change to ${nextStatus}`,
+      tone: nextStatus === 'archived' ? 'danger' : 'warning',
+    }))) return
 
     setBusyUserId(user.id)
     setError('')
@@ -372,7 +397,13 @@ export default function AdminDeveloperPanel() {
 
   const handleRole = async (user, role) => {
     if (role === user.role) return
-    if (!window.confirm(`Change ${user.email} from ${readable(user.role)} to ${readable(role)}? Existing sessions will be revoked.`)) return
+    if (!(await confirmAction({
+      title: 'Change account role?',
+      message: `Change ${user.email} from ${readable(user.role)} to ${readable(role)}?`,
+      detail: 'Existing sessions will be revoked.',
+      confirmLabel: 'Change role',
+      tone: 'warning',
+    }))) return
 
     setBusyUserId(user.id)
     setError('')
@@ -388,7 +419,13 @@ export default function AdminDeveloperPanel() {
   }
 
   const handleRevokeSessions = async (user) => {
-    if (!window.confirm(`Sign ${user.email} out everywhere? They will need to log in again.`)) return
+    if (!(await confirmAction({
+      title: 'Revoke every active session?',
+      message: `Sign ${user.email} out everywhere?`,
+      detail: 'They will need to log in again.',
+      confirmLabel: 'Sign out everywhere',
+      tone: 'danger',
+    }))) return
 
     setBusyUserId(user.id)
     setError('')
