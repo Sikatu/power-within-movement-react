@@ -12,6 +12,8 @@ import {
   useNavigate,
 } from 'react-router-dom'
 import NotificationCenter from '../NotificationCenter'
+import AdminCommandPalette from './AdminCommandPalette.jsx'
+import { rememberAdminDestination } from './adminRecentDestinations.js'
 import {
   checkAdminAccess,
   getMyTeamAccess,
@@ -270,6 +272,7 @@ function AdminFrame({ children }) {
   const [openGroupOverride, setOpenGroupOverride] = useState(undefined)
   const [workspaceOpen, setWorkspaceOpen] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
+  const [commandOpen, setCommandOpen] = useState(false)
   const [signingOut, setSigningOut] = useState(false)
   const [isOnline, setIsOnline] = useState(() => (
     typeof navigator === 'undefined' ? true : navigator.onLine
@@ -284,6 +287,21 @@ function AdminFrame({ children }) {
       // A failed prefetch is retried by React.lazy during navigation.
     })
   }, [])
+
+  const openCommandPalette = useCallback(() => {
+    const restoreToMobileTrigger = mobileOpen
+
+    setWorkspaceOpen(false)
+    setMobileOpen(false)
+    setSearchQuery('')
+
+    window.requestAnimationFrame(() => {
+      if (restoreToMobileTrigger) {
+        mobileTriggerRef.current?.focus({ preventScroll: true })
+      }
+      setCommandOpen(true)
+    })
+  }, [mobileOpen])
 
   useEffect(() => {
     let active = true
@@ -437,8 +455,14 @@ function AdminFrame({ children }) {
 
       if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') {
         event.preventDefault()
-        setMobileOpen(true)
-        window.setTimeout(() => searchInputRef.current?.focus(), 0)
+        openCommandPalette()
+        return
+      }
+
+      if (event.key === 'Escape' && commandOpen) {
+        event.preventDefault()
+        setCommandOpen(false)
+        return
       }
 
       if (event.key === 'Escape') {
@@ -470,7 +494,7 @@ function AdminFrame({ children }) {
       document.removeEventListener('keydown', handleKeyDown)
       document.removeEventListener('pointerdown', handlePointerDown)
     }
-  }, [mobileOpen, workspaceOpen])
+  }, [commandOpen, mobileOpen, openCommandPalette, workspaceOpen])
 
   useEffect(() => {
     function updateConnectionStatus() {
@@ -500,10 +524,12 @@ function AdminFrame({ children }) {
   useEffect(() => {
     const previousPath = previousPathRef.current
     previousPathRef.current = location.pathname
+    rememberAdminDestination(location.pathname)
 
     const frame = window.requestAnimationFrame(() => {
       setWorkspaceOpen(false)
       setMobileOpen(false)
+      setCommandOpen(false)
       setSearchQuery('')
       setOpenGroupOverride(undefined)
 
@@ -538,6 +564,28 @@ function AdminFrame({ children }) {
       `${item.label} ${item.groupLabel}`.toLowerCase().includes(normalizedQuery)
     ))
   }, [searchQuery, searchableItems])
+
+  const commandItems = useMemo(() => [
+    ...accessibleWorkspaces.map((workspace) => ({
+      ...workspace,
+      groupLabel: 'Workspaces',
+      icon: 'workspace',
+      keywords: ['workspace', workspace.id],
+    })),
+    ...accessiblePrimaryItems.map((item) => ({
+      ...item,
+      groupLabel: 'Core Studio',
+      description: `Open the ${item.label} workspace.`,
+      keywords: ['primary', 'studio'],
+    })),
+    ...accessibleGroups.flatMap((group) => group.items.map((item) => ({
+      ...item,
+      groupLabel: group.label,
+      description: group.description,
+      icon: item.icon || 'overview',
+      keywords: [group.id, group.label],
+    }))),
+  ], [accessibleGroups, accessiblePrimaryItems, accessibleWorkspaces])
 
   const currentNavigationItem = useMemo(
     () => searchableItems.find((item) => routeMatches(location.pathname, item)),
@@ -575,6 +623,7 @@ function AdminFrame({ children }) {
   function prepareForNavigation() {
     setMobileOpen(false)
     setWorkspaceOpen(false)
+    setCommandOpen(false)
     setSearchQuery('')
     setOpenGroupOverride(undefined)
   }
@@ -835,6 +884,14 @@ function AdminFrame({ children }) {
           </div>
 
           <div className="pwc-nav33-utilities">
+            <button
+              className="pwc-nav33-quick-find"
+              type="button"
+              onClick={openCommandPalette}
+            >
+              <span>Quick Find</span>
+              <kbd>Ctrl K</kbd>
+            </button>
             <Link to="/" onClick={prepareForNavigation}>View public site</Link>
             <button type="button" disabled={signingOut} onClick={handleSignOut}>
               {signingOut ? 'Signing out…' : 'Sign out'}
@@ -857,6 +914,19 @@ function AdminFrame({ children }) {
         )}
         {children}
       </main>
+
+      {commandOpen && (
+        <AdminCommandPalette
+          currentPath={location.pathname}
+          items={commandItems}
+          onClose={() => setCommandOpen(false)}
+          onNavigate={(to) => {
+            prepareForNavigation()
+            navigate(to)
+          }}
+          onWarmRoute={warmRoute}
+        />
+      )}
     </div>
   )
 }
