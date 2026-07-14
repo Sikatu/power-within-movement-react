@@ -1,3 +1,5 @@
+/* Legacy admin presentation quarantined below the modern UI cascade. */
+@layer pwc-admin-legacy {
 body.admin-app-mode .session-change-admin { max-width: 1180px; margin: 0 auto; padding: 38px 34px 70px; color: #2f2a26; }
 body.admin-app-mode .session-change-admin__header { display: flex; justify-content: space-between; gap: 28px; align-items: flex-start; margin-bottom: 28px; }
 body.admin-app-mode .session-change-admin__header h1 { margin: 4px 0 10px; font-size: clamp(2rem, 4vw, 3.25rem); line-height: 1; }
@@ -49,4 +51,5 @@ body.admin-app-mode .session-change-card__reviewed p { margin: 7px 0 0; }
   body.admin-app-mode .session-change-admin__header, body.admin-app-mode .session-change-card__identity { flex-direction: column; }
   body.admin-app-mode .session-change-admin__summary, body.admin-app-mode .session-change-card__details { grid-template-columns: 1fr; }
   body.admin-app-mode .session-change-card__review { grid-template-columns: 1fr; }
+}
 }

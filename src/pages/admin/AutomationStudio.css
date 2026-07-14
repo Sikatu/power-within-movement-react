@@ -1,3 +1,5 @@
+/* Legacy admin presentation quarantined below the modern UI cascade. */
+@layer pwc-admin-legacy {
 .automation-studio-page {
   display: grid;
   gap: 1.4rem;
@@ -415,7 +417,7 @@
 .automation-enrollment-error {
   background: #fff3f5;
   border-radius: 0.7rem;
-  color: #8a2943 !important;
+  color: #8a2943;
   font-size: 0.75rem;
   grid-column: 1 / -1;
   padding: 0.65rem;
@@ -480,4 +482,5 @@
   .automation-enrollment-card dl {
     grid-template-columns: 1fr;
   }
+}
 }

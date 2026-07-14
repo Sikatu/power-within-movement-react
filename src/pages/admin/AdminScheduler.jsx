@@ -14,7 +14,6 @@ import {
   welcomeBookingIntoClientCircle,
 } from '../../lib/nativeApi'
 
-import './Admin.css'
 import './AdminScheduler.css'
 import './AdminModuleElevation.css'
 

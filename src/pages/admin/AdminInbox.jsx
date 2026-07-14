@@ -9,7 +9,6 @@ import {
   updateAdminInboxConversation,
 } from '../../lib/nativeApi'
 
-import './Admin.css'
 import './AdminInbox.css'
 import './AdminModuleElevation.css'
 import './AdminCommunicationPhase6.css'

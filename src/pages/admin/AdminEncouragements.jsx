@@ -10,7 +10,6 @@ import {
   updateAdminEncouragement,
 } from '../../lib/nativeApi'
 
-import './Admin.css'
 import './EncouragementStudio.css'
 import './AdminOperationsElevation.css'
 

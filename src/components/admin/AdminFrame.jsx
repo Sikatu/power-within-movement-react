@@ -18,7 +18,10 @@ import {
   logoutAdmin,
 } from '../../lib/nativeApi'
 
+import '../../pages/admin/Admin.css'
+import '../../pages/admin/AdminFoundationModern.css'
 import './AdminFrame.css'
+import './AdminFrameModern.css'
 import './AdminProductionPolishPhase9.css'
 
 const primaryItems = [

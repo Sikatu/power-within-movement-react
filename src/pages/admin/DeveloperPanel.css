@@ -1,3 +1,5 @@
+/* Legacy admin presentation quarantined below the modern UI cascade. */
+@layer pwc-admin-legacy {
 .developer-control-center {
   display: grid;
   gap: 24px;
@@ -278,8 +280,8 @@
 }
 
 .developer-danger-button {
-  border-color: rgba(155, 45, 45, 0.28) !important;
-  color: #862d2d !important;
+  border-color: rgba(155, 45, 45, 0.28);
+  color: #862d2d;
 }
 
 .developer-empty-state {
@@ -1551,3 +1553,4 @@ body.admin-app-mode .developer-preview-panel {
   }
 }
 /* === ELEVATED DEVELOPER CONTROL CENTER PHASE 2 END === */
+}

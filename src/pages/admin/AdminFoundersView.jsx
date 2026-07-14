@@ -9,6 +9,7 @@ import {
 } from '../../lib/nativeApi'
 
 import './Admin.css'
+import './AdminFoundationModern.css'
 import './FounderView.css'
 
 const FOUNDER_TIME_ZONE = 'America/New_York'

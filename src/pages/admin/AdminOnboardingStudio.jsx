@@ -10,7 +10,6 @@ import {
   updateAdminIntakeTemplate,
 } from '../../lib/nativeApi'
 
-import './Admin.css'
 import './OnboardingStudio.css'
 import './AdminModuleElevation.css'
 

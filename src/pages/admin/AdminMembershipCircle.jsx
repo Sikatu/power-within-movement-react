@@ -22,7 +22,6 @@ import {
   upsertAdminMembershipEnrollment,
 } from '../../lib/nativeApi'
 
-import './Admin.css'
 import './MembershipCircle.css'
 import './AdminModuleElevation.css'
 

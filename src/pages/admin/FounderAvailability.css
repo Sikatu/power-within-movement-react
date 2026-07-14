@@ -1,3 +1,5 @@
+/* Legacy admin presentation quarantined below the modern UI cascade. */
+@layer pwc-admin-legacy {
 body.admin-app-mode.founder-availability-mode {
   min-height: 100vh;
   background:
@@ -540,14 +542,14 @@ body.admin-app-mode.founder-availability-mode .founder-hours__note small {
 }
 
 body.admin-app-mode.founder-availability-mode .founder-hours__count {
-  display: grid !important;
+  display: grid;
   place-items: center;
   width: 34px;
   height: 34px;
-  margin: 0 !important;
+  margin: 0;
   border-radius: 50%;
   background: #f0e3d1;
-  color: #76583d !important;
+  color: #76583d;
   font-weight: 850;
 }
 
@@ -980,7 +982,7 @@ body.admin-app-mode.founder-availability-mode .founder-hours__window-number {
 }
 
 body.admin-app-mode.founder-availability-mode .founder-hours__to {
-  align-self: center !important;
+  align-self: center;
 }
 
 body.admin-app-mode.founder-availability-mode .founder-hours__window-help {
@@ -1146,11 +1148,11 @@ body.admin-app-mode.founder-availability-mode .founder-hours__modes > label.is-s
 }
 
 body.admin-app-mode.founder-availability-mode .founder-hours__mode-check {
-  display: grid !important;
+  display: grid;
   place-items: center;
-  width: 23px !important;
-  height: 23px !important;
-  border: 1px solid #c9b9a8 !important;
+  width: 23px;
+  height: 23px;
+  border: 1px solid #c9b9a8;
   border-radius: 50%;
   color: transparent;
   font-size: 0.69rem;
@@ -1158,7 +1160,7 @@ body.admin-app-mode.founder-availability-mode .founder-hours__mode-check {
 }
 
 body.admin-app-mode.founder-availability-mode .founder-hours__modes > label.is-selected .founder-hours__mode-check {
-  border-color: #758a69 !important;
+  border-color: #758a69;
   background: #758a69;
   color: #fff;
 }
@@ -1381,4 +1383,5 @@ body.admin-app-mode.founder-availability-mode .founder-hours__day-name em {
   body.admin-app-mode.founder-availability-mode .founder-hours__copy-status {
     text-align: left;
   }
+}
 }

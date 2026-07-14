@@ -1,3 +1,5 @@
+/* Legacy admin presentation quarantined below the modern UI cascade. */
+@layer pwc-admin-legacy {
 .onboarding-studio-page{display:grid;gap:1.25rem;padding:clamp(1rem,2vw,2rem)}
 .onboarding-studio-header{align-items:flex-start;display:flex;gap:1rem;justify-content:space-between}
 .onboarding-studio-header h1,.onboarding-template-editor h2,.onboarding-studio-list h2,.onboarding-field-builder h3,.onboarding-response-review h3{margin:.2rem 0 .45rem}
@@ -17,3 +19,4 @@
 .onboarding-response-review{border-top:1px solid rgba(112,78,64,.1)}.onboarding-response-review>article{border-bottom:1px solid rgba(112,78,64,.08);padding:.85rem 1.1rem}.onboarding-response-review>article strong{text-transform:capitalize}.onboarding-response-review>article p{margin:.35rem 0 0;white-space:pre-wrap}.onboarding-empty{color:rgba(46,28,32,.58);padding:1rem}
 @media(max-width:1050px){.onboarding-studio-metrics{grid-template-columns:repeat(3,minmax(0,1fr))}.onboarding-studio-layout{grid-template-columns:1fr}.onboarding-studio-list{max-height:none;position:static}.onboarding-appointment-grid{grid-template-columns:1fr}}
 @media(max-width:700px){.onboarding-studio-header{display:grid}.onboarding-studio-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.onboarding-studio-tabs{border-radius:1rem;display:grid;width:100%}.onboarding-form-grid{grid-template-columns:1fr}.onboarding-form-grid label.is-wide{grid-column:auto}.onboarding-field-builder>article{grid-template-columns:1fr}.onboarding-field-actions{display:flex;justify-content:space-between}}
+}

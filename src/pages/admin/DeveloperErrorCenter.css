@@ -1,3 +1,5 @@
+/* Legacy admin presentation quarantined below the modern UI cascade. */
+@layer pwc-admin-legacy {
 .error-center-page-header {
   width: 100%;
   max-width: none;
@@ -1309,3 +1311,4 @@ body.admin-app-mode .error-center-settings-panel {
   }
 }
 /* === ELEVATED DEVELOPER ERROR CENTER PHASE 2 END === */
+}

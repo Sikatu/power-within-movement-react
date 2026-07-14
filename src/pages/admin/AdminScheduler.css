@@ -1,3 +1,5 @@
+/* Legacy admin presentation quarantined below the modern UI cascade. */
+@layer pwc-admin-legacy {
 /* =========================================================
    Pass 32 — Sessions & Calendar Rework
    Calm scheduling command center
@@ -821,9 +823,9 @@
 }
 
 .pwc-scheduler-toggle {
-  display: flex !important;
-  grid-template-columns: none !important;
-  gap: 11px !important;
+  display: flex;
+  grid-template-columns: none;
+  gap: 11px;
   align-items: flex-start;
   min-height: 78px;
   padding: 14px;
@@ -834,12 +836,12 @@
 }
 
 .pwc-scheduler-toggle input {
-  width: 18px !important;
+  width: 18px;
   min-width: 18px;
   height: 18px;
-  min-height: 18px !important;
+  min-height: 18px;
   margin-top: 1px;
-  padding: 0 !important;
+  padding: 0;
   accent-color: var(--deep-mauve);
 }
 
@@ -1461,4 +1463,5 @@
     grid-template-columns: 1fr;
     padding: 18px;
   }
+}
 }

@@ -10,7 +10,6 @@ import {
   updateAdminLeadFollowUp,
 } from '../../lib/nativeApi'
 
-import './Admin.css'
 import './LeadPipeline.css'
 import './AdminOperationsElevation.css'
 

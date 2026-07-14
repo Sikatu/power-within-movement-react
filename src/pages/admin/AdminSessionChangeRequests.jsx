@@ -6,7 +6,6 @@ import {
   reviewAdminSessionChangeRequest,
 } from '../../lib/nativeApi'
 
-import './Admin.css'
 import './SessionChangeRequests.css'
 import './AdminOperationsElevation.css'
 

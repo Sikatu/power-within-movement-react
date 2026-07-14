@@ -1,3 +1,5 @@
+/* Legacy admin presentation quarantined below the modern UI cascade. */
+@layer pwc-admin-legacy {
 body.admin-app-mode .admin-inbox { max-width: 1420px; margin: 0 auto; padding: 38px 32px 72px; color: #302a26; }
 body.admin-app-mode .admin-inbox__header { display: flex; justify-content: space-between; align-items: flex-start; gap: 28px; margin-bottom: 26px; }
 body.admin-app-mode .admin-inbox__header h1 { margin: 4px 0 10px; font-size: clamp(2.2rem, 4vw, 3.5rem); line-height: 1; }
@@ -72,4 +74,5 @@ body.admin-app-mode .admin-inbox-modal footer { display: flex; justify-content: 
   body.admin-app-mode .admin-inbox__list { max-height: 360px; border-right: 0; border-bottom: 1px solid #eadfd7; }
   body.admin-app-mode .admin-inbox-thread__controls, body.admin-app-mode .admin-inbox-reply__attachments, body.admin-app-mode .admin-inbox-modal__row { display: grid; grid-template-columns: 1fr; }
   body.admin-app-mode .admin-inbox-message { max-width: 94%; }
+}
 }

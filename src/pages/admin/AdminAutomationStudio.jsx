@@ -9,7 +9,6 @@ import {
   updateAdminAutomationWorkflow,
 } from '../../lib/nativeApi'
 
-import './Admin.css'
 import './AutomationStudio.css'
 import './AdminModuleElevation.css'
 

@@ -1,3 +1,5 @@
+/* Legacy admin presentation quarantined below the modern UI cascade. */
+@layer pwc-admin-legacy {
 .client-360-page {
   width: min(1640px, 100%);
   margin: 0 auto;
@@ -419,4 +421,5 @@
   .client-360-action-form-row { grid-template-columns: 1fr; }
   .client-360-section-nav { overflow-x: auto; flex-wrap: nowrap; }
   .client-360-section-nav a { white-space: nowrap; }
+}
 }

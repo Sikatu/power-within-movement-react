@@ -12,7 +12,6 @@ import {
   updateAdminMailStudioTemplate,
 } from '../../lib/nativeApi'
 
-import './Admin.css'
 import './AdminModuleElevation.css'
 import './AdminCommunicationPhase6.css'
 

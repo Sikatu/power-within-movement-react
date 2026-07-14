@@ -1,3 +1,5 @@
+/* Legacy admin presentation quarantined below the modern UI cascade. */
+@layer pwc-admin-legacy {
 body.admin-app-mode.founders-view-standalone-mode {
   margin: 0;
   min-width: 320px;
@@ -1454,3 +1456,4 @@ body.admin-app-mode.founders-view-standalone-mode .founder-home__count {
   }
 }
 /* === ELEVATED FOUNDER VIEW PHASE 2 END === */
+}

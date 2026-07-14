@@ -9,7 +9,6 @@ import {
   getAdminOverview,
 } from '../../lib/nativeApi'
 
-import './Admin.css'
 function getList(response, keys) {
   if (Array.isArray(response)) return response
 

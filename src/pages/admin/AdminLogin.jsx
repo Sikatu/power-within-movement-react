@@ -4,6 +4,7 @@ import logoImage from '../../assets/images/logo.webp'
 import { loginAdmin } from '../../lib/nativeApi'
 
 import './Admin.css'
+import './AdminFoundationModern.css'
 function AdminLogin() {
   const navigate = useNavigate()
   const location = useLocation()

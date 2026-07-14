@@ -1,3 +1,5 @@
+/* Legacy admin presentation quarantined below the modern UI cascade. */
+@layer pwc-admin-legacy {
 body.admin-app-mode .learning-library-admin {
   display: grid;
   gap: 1.25rem;
@@ -491,7 +493,7 @@ body.admin-app-mode .learning-lesson-editor header {
 }
 
 body.admin-app-mode .learning-checkbox-label {
-  display: flex !important;
+  display: flex;
   align-items: center;
   gap: 0.55rem;
   align-self: end;
@@ -648,4 +650,5 @@ body.admin-app-mode .learning-client-picker__list small {
   body.admin-app-mode .learning-lesson-row em {
     grid-column: 2;
   }
+}
 }

@@ -7,7 +7,6 @@ import {
   updateDeveloperTeamMember,
 } from '../../lib/nativeApi'
 
-import './Admin.css'
 import './TeamManagement.css'
 import './AdminOperationsElevation.css'
 

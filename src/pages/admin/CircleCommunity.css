@@ -1,3 +1,5 @@
+/* Legacy admin presentation quarantined below the modern UI cascade. */
+@layer pwc-admin-legacy {
 body.admin-app-mode .circle-admin-page {
   display: grid;
   gap: 1.2rem;
@@ -171,4 +173,5 @@ body.admin-app-mode .circle-empty-card { border: 1px dashed rgba(91,47,58,0.18);
   body.admin-app-mode .circle-moderation-layout { grid-template-columns: 1fr; }
   body.admin-app-mode .circle-moderation-card + .circle-moderation-card { border-left: 0; border-top: 1px solid rgba(91,47,58,0.1); }
   body.admin-app-mode .circle-action-bar > div:last-child { justify-content: flex-start; }
+}
 }

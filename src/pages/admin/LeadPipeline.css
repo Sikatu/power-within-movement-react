@@ -1,3 +1,5 @@
+/* Legacy admin presentation quarantined below the modern UI cascade. */
+@layer pwc-admin-legacy {
 .lead-pipeline-page {
   display: grid;
   gap: 1.5rem;
@@ -366,4 +368,5 @@
   .lead-pipeline-span-2 {
     grid-column: auto;
   }
+}
 }

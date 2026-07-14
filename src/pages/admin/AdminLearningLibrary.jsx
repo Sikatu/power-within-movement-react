@@ -17,7 +17,6 @@ import {
   updateAdminLearningModule,
 } from '../../lib/nativeApi'
 
-import './Admin.css'
 import './LearningLibrary.css'
 import './AdminModuleElevation.css'
 
