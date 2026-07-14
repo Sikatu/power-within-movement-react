@@ -19,6 +19,7 @@ import {
 } from '../../lib/nativeApi'
 
 import './AdminFrame.css'
+import './AdminProductionPolishPhase9.css'
 
 const primaryItems = [
   {
@@ -255,6 +256,9 @@ function AdminFrame({ children }) {
   const navigate = useNavigate()
   const searchInputRef = useRef(null)
   const workspaceRef = useRef(null)
+  const mobileTriggerRef = useRef(null)
+  const mainContentRef = useRef(null)
+  const previousPathRef = useRef(location.pathname)
   const [adminUser, setAdminUser] = useState(readCachedUser)
   const [roleVerified, setRoleVerified] = useState(false)
   const [teamAccess, setTeamAccess] = useState(null)
@@ -389,9 +393,14 @@ function AdminFrame({ children }) {
       }
 
       if (event.key === 'Escape') {
+        const shouldReturnFocus = mobileOpen
         setWorkspaceOpen(false)
         setMobileOpen(false)
         setSearchQuery('')
+
+        if (shouldReturnFocus) {
+          window.setTimeout(() => mobileTriggerRef.current?.focus(), 0)
+        }
       }
     }
 
@@ -412,7 +421,7 @@ function AdminFrame({ children }) {
       document.removeEventListener('keydown', handleKeyDown)
       document.removeEventListener('pointerdown', handlePointerDown)
     }
-  }, [workspaceOpen])
+  }, [mobileOpen, workspaceOpen])
 
   useEffect(() => {
     if (!mobileOpen) return undefined
@@ -424,6 +433,24 @@ function AdminFrame({ children }) {
       document.body.style.overflow = previousOverflow
     }
   }, [mobileOpen])
+
+  useEffect(() => {
+    const previousPath = previousPathRef.current
+    previousPathRef.current = location.pathname
+
+    const frame = window.requestAnimationFrame(() => {
+      setWorkspaceOpen(false)
+      setMobileOpen(false)
+      setSearchQuery('')
+      setOpenGroupOverride(undefined)
+
+      if (previousPath !== location.pathname) {
+        mainContentRef.current?.scrollTo({ top: 0, behavior: 'auto' })
+      }
+    })
+
+    return () => window.cancelAnimationFrame(frame)
+  }, [location.pathname])
 
   const searchableItems = useMemo(
     () => [
@@ -457,6 +484,14 @@ function AdminFrame({ children }) {
     ? teamAccess?.permissions?.[currentNavigationItem.module] || 'none'
     : null
 
+  function closeMobileNavigation({ returnFocus = true } = {}) {
+    setMobileOpen(false)
+
+    if (returnFocus) {
+      window.setTimeout(() => mobileTriggerRef.current?.focus(), 0)
+    }
+  }
+
   async function handleSignOut() {
     if (signingOut) return
 
@@ -486,16 +521,20 @@ function AdminFrame({ children }) {
   }
 
   return (
-    <main className="pwc-admin-shell pwc-studio-shell pwc-nav33-shell">
+    <div className="pwc-admin-shell pwc-studio-shell pwc-nav33-shell">
       <button
+        ref={mobileTriggerRef}
         className="pwc-nav33-mobile-trigger"
         type="button"
         aria-label="Open Studio navigation"
         aria-expanded={mobileOpen}
-        onClick={() => setMobileOpen(true)}
+        onClick={() => {
+          setMobileOpen(true)
+          window.setTimeout(() => searchInputRef.current?.focus(), 0)
+        }}
       >
         <span aria-hidden="true">☰</span>
-        <strong>{activeWorkspace.label}</strong>
+        <strong>{currentNavigationItem?.label || activeWorkspace.label}</strong>
       </button>
 
       {mobileOpen && (
@@ -503,7 +542,7 @@ function AdminFrame({ children }) {
           className="pwc-nav33-mobile-backdrop"
           type="button"
           aria-label="Close Studio navigation"
-          onClick={() => setMobileOpen(false)}
+          onClick={() => closeMobileNavigation()}
         />
       )}
 
@@ -532,7 +571,7 @@ function AdminFrame({ children }) {
               className="pwc-nav33-mobile-close"
               type="button"
               aria-label="Close Studio navigation"
-              onClick={() => setMobileOpen(false)}
+              onClick={() => closeMobileNavigation()}
             >
               ×
             </button>
@@ -565,7 +604,8 @@ function AdminFrame({ children }) {
                     className={workspace.id === activeWorkspace.id ? 'is-active' : ''}
                     key={workspace.id}
                     type="button"
-                    role="menuitem"
+                    role="menuitemradio"
+                    aria-checked={workspace.id === activeWorkspace.id}
                     onClick={() => chooseWorkspace(workspace)}
                   >
                     <span>{workspace.label}</span>
@@ -601,7 +641,7 @@ function AdminFrame({ children }) {
               <span />
             </div>
           ) : searchQuery.trim() ? (
-            <section className="pwc-nav33-search-results" aria-label="Navigation search results">
+            <section className="pwc-nav33-search-results" aria-label="Navigation search results" aria-live="polite">
               <p>{filteredItems.length ? 'Matching destinations' : 'No matching destinations'}</p>
 
               {filteredItems.map((item) => (
@@ -609,6 +649,7 @@ function AdminFrame({ children }) {
                   className={routeMatches(location.pathname, item) ? 'is-active' : ''}
                   key={`${item.groupLabel}-${item.to}`}
                   to={item.to}
+                  aria-current={routeMatches(location.pathname, item) ? 'page' : undefined}
                   onClick={prepareForNavigation}
                 >
                   <span>{item.label}</span>
@@ -624,6 +665,7 @@ function AdminFrame({ children }) {
                     className={routeMatches(location.pathname, item) ? 'is-active' : undefined}
                     key={item.to}
                     to={item.to}
+                    aria-current={routeMatches(location.pathname, item) ? 'page' : undefined}
                     onClick={prepareForNavigation}
                   >
                     <NavIcon name={item.icon} />
@@ -673,6 +715,7 @@ function AdminFrame({ children }) {
                             className={routeMatches(location.pathname, item) ? 'is-active' : undefined}
                             key={item.to}
                             to={item.to}
+                            aria-current={routeMatches(location.pathname, item) ? 'page' : undefined}
                             onClick={prepareForNavigation}
                           >
                             {item.label}
@@ -710,7 +753,12 @@ function AdminFrame({ children }) {
         </div>
       </aside>
 
-      <section className="pwc-admin-main pwc-studio-main pwc-nav33-main">
+      <main
+        ref={mainContentRef}
+        id="main-content"
+        className="pwc-admin-main pwc-studio-main pwc-nav33-main"
+        tabIndex={-1}
+      >
         {currentTeamAccessLevel === 'view' && (
           <div className="pwc-studio-view-only-banner" role="status">
             <strong>View-only team access</strong>
@@ -718,8 +766,8 @@ function AdminFrame({ children }) {
           </div>
         )}
         {children}
-      </section>
-    </main>
+      </main>
+    </div>
   )
 }
 

@@ -334,7 +334,7 @@ export default function AdminOnboardingStudio() {
   }
 
   if (isLoading) {
-    return <AdminFrame><div className="onboarding-studio-loading">Opening Booking & Onboarding...</div></AdminFrame>
+    return <AdminFrame><div className="onboarding-studio-loading" aria-live="polite" aria-busy="true">Opening Booking & Onboarding...</div></AdminFrame>
   }
 
   return (
@@ -349,8 +349,8 @@ export default function AdminOnboardingStudio() {
           <button type="button" onClick={runDueMessages} disabled={isSaving}>Process Due Messages</button>
         </header>
 
-        {error && <div className="onboarding-studio-alert is-error">{error}</div>}
-        {notice && <div className="onboarding-studio-alert is-success">{notice}</div>}
+        {error && <div className="onboarding-studio-alert is-error" role="alert">{error}</div>}
+        {notice && <div className="onboarding-studio-alert is-success" role="status">{notice}</div>}
 
         <section className="onboarding-studio-metrics">
           <article><span>Active onboarding</span><strong>{studio?.stats?.active || 0}</strong></article>

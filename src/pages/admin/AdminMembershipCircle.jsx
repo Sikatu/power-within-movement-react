@@ -1202,10 +1202,10 @@ export default function AdminMembershipCircle() {
           </div>
         </header>
 
-        {error && <div className="membership-alert is-error">{error}</div>}
-        {notice && <div className="membership-alert is-success">{notice}</div>}
+        {error && <div className="membership-alert is-error" role="alert">{error}</div>}
+        {notice && <div className="membership-alert is-success" role="status">{notice}</div>}
         {!featureEnabled && (
-          <div className="membership-alert is-warning">
+          <div className="membership-alert is-warning" role="status">
             Memberships are hidden from client portals until the Developer feature flag is enabled.
           </div>
         )}

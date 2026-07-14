@@ -525,20 +525,20 @@ export default function AdminLearningLibrary() {
         </header>
 
         {!featureEnabled && (
-          <div className="learning-library-alert is-warning">
+          <div className="learning-library-alert is-warning" role="status">
             The Courses feature flag is off. You can continue building, but clients will not see the library until it is enabled.
           </div>
         )}
 
-        {error && <div className="learning-library-alert is-error">{error}</div>}
-        {notice && <div className="learning-library-alert is-success">{notice}</div>}
+        {error && <div className="learning-library-alert is-error" role="alert">{error}</div>}
+        {notice && <div className="learning-library-alert is-success" role="status">{notice}</div>}
 
-        <div className="learning-library-metrics">
+        <section className="learning-library-metrics" aria-label="Learning Library summary">
           <article><span>Live programs</span><strong>{metrics.live}</strong></article>
           <article><span>Drafts</span><strong>{metrics.draft}</strong></article>
           <article><span>Total lessons</span><strong>{metrics.lessons}</strong></article>
           <article><span>Client assignments</span><strong>{metrics.learners}</strong></article>
-        </div>
+        </section>
 
         <div className="learning-library-layout">
           <aside className="learning-library-sidebar">

@@ -310,6 +310,30 @@ function ContactRoute() {
   return <Contact key={search || 'general-contact'} />
 }
 
+
+function RouteLoadingFallback({ internal }) {
+  return (
+    <main
+      id="main-content"
+      className={`route-loading${internal ? ' is-admin' : ''}`}
+      tabIndex={-1}
+      aria-live="polite"
+      aria-busy="true"
+    >
+      <div className="route-loading__card">
+        <span className="route-loading__mark" aria-hidden="true">PW</span>
+        <p>{internal ? 'Power Within · The Studio' : 'Power Within Collective'}</p>
+        <h1>{internal ? 'Opening your private workspace…' : 'Opening this experience…'}</h1>
+        <div className="route-loading__lines" aria-hidden="true">
+          <span />
+          <span />
+          <span />
+        </div>
+      </div>
+    </main>
+  )
+}
+
 function AppShell() {
   const { pathname } = useLocation()
   const isInternalRoute = pathname.startsWith('/admin')
@@ -320,7 +344,7 @@ function AppShell() {
       <RouteMetadata />
       <a className="skip-link" href="#main-content">Skip to content</a>
       {!isInternalRoute && <SiteHeader />}
-      <Suspense fallback={<main className="route-loading">Opening your private workspace…</main>}>
+      <Suspense fallback={<RouteLoadingFallback internal={isInternalRoute} />}>
         <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/experiences" element={<Experiences />} />

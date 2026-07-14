@@ -305,15 +305,15 @@ export default function AdminCircleCommunity() {
         </header>
 
         {!featureEnabled && (
-          <div className="circle-alert is-warning">
+          <div className="circle-alert is-warning" role="status">
             The Circle feature is disabled in Developer Control Center. Admins can prepare drafts,
             but clients cannot open the community until it is enabled.
           </div>
         )}
-        {error && <div className="circle-alert is-error">{error}</div>}
-        {notice && <div className="circle-alert is-success">{notice}</div>}
+        {error && <div className="circle-alert is-error" role="alert">{error}</div>}
+        {notice && <div className="circle-alert is-success" role="status">{notice}</div>}
 
-        <section className="circle-admin-metrics">
+        <section className="circle-admin-metrics" aria-label="Circle summary">
           <article><span>Published</span><strong>{metrics.published || 0}</strong></article>
           <article><span>Drafts</span><strong>{metrics.drafts || 0}</strong></article>
           <article><span>Member comments</span><strong>{metrics.comments || 0}</strong></article>
