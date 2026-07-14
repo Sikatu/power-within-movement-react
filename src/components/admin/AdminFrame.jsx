@@ -18,7 +18,7 @@ import {
   logoutAdmin,
 } from '../../lib/nativeApi'
 
-import '../../pages/admin/AdminUIBlankSlate.css'
+import '../../pages/admin/AdminFreshUI.css'
 
 const primaryItems = [
   {

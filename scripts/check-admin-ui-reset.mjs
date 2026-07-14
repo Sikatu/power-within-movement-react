@@ -24,7 +24,7 @@ const retiredLegacyFiles = [
   'src/pages/admin/TeamManagement.css',
 ]
 
-const retiredNewUiFiles = [
+const retiredPhasedUiFiles = [
   'src/components/admin/AdminCleanSlateFrame.css',
   'src/components/admin/AdminProductionPolishPhase9.css',
   'src/components/admin/FounderDeveloperBanner.css',
@@ -36,10 +36,15 @@ const retiredNewUiFiles = [
   'src/pages/admin/AdminCommunicationPhase6.css',
   'src/pages/admin/AdminFounderSchedulingPhase7.css',
   'src/pages/admin/AdminDeveloperOperationsPhase8.css',
+  'src/pages/admin/AdminUIBlankSlate.css',
 ]
 
-const baselineFile = 'src/pages/admin/AdminUIBlankSlate.css'
-const retiredFiles = [...retiredLegacyFiles, ...retiredNewUiFiles]
+const authoritativeUiFile = 'src/pages/admin/AdminFreshUI.css'
+const retiredFiles = [...retiredLegacyFiles, ...retiredPhasedUiFiles]
+
+function normalize(path) {
+  return path.replaceAll('\\', '/')
+}
 
 function walk(directory) {
   if (!existsSync(directory)) return []
@@ -56,8 +61,8 @@ for (const file of retiredFiles) {
   if (existsSync(file)) failures.push(`${file}: retired UI stylesheet still exists`)
 }
 
-if (!existsSync(baselineFile)) {
-  failures.push(`${baselineFile}: neutral admin baseline is missing`)
+if (!existsSync(authoritativeUiFile)) {
+  failures.push(`${authoritativeUiFile}: fresh admin design system is missing`)
 }
 
 const sourceFiles = walk('src').filter((file) => /\.(css|jsx|js)$/.test(file))
@@ -65,7 +70,7 @@ const retiredBasenames = retiredFiles.map((file) => file.split('/').at(-1))
 
 for (const file of sourceFiles) {
   const content = readFileSync(file, 'utf8')
-  const displayPath = relative('.', file)
+  const displayPath = normalize(relative('.', file))
 
   for (const basename of retiredBasenames) {
     if (content.includes(basename)) {
@@ -80,17 +85,18 @@ const adminCssFiles = [
 ].filter((file) => file.endsWith('.css'))
 
 for (const file of adminCssFiles) {
-  if (relative('.', file).replaceAll('\\', '/') !== baselineFile) {
-    failures.push(`${relative('.', file)}: unexpected admin UI stylesheet remains`)
+  const normalizedFile = normalize(relative('.', file))
+  if (normalizedFile !== authoritativeUiFile) {
+    failures.push(`${normalizedFile}: unexpected admin UI stylesheet remains`)
   }
 }
 
 if (failures.length) {
-  console.error('\nAdmin UI reset check failed:\n')
+  console.error('\nAdmin fresh UI check failed:\n')
   for (const failure of failures) console.error(`- ${failure}`)
   process.exit(1)
 }
 
 console.log(
-  `Admin UI blank-slate check passed (${retiredLegacyFiles.length} legacy + ${retiredNewUiFiles.length} newer UI stylesheets deleted).`,
+  `Admin fresh UI check passed (one authoritative stylesheet; ${retiredFiles.length} retired stylesheets absent).`,
 )

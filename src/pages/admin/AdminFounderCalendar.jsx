@@ -7,7 +7,7 @@ import {
   updateAdminFounderDateAvailability,
 } from '../../lib/nativeApi'
 
-import './AdminUIBlankSlate.css'
+import './AdminFreshUI.css'
 
 const FOUNDER_TIME_ZONE = 'America/New_York'
 const FOUNDER_TIME_ZONE_LABEL = 'Eastern Time'
