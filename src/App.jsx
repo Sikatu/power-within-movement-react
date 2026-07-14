@@ -4,8 +4,34 @@ import SiteFooter from './components/SiteFooter.jsx'
 import SiteHeader from './components/SiteHeader.jsx'
 import AdminDeveloperRouteGuard from './components/admin/AdminDeveloperRouteGuard.jsx'
 import AdminConfirmProvider from './components/admin/AdminConfirmProvider.jsx'
+import AdminErrorBoundary from './components/admin/AdminErrorBoundary.jsx'
 import AdminOwnerRouteGuard from './components/admin/AdminOwnerRouteGuard.jsx'
 import AdminRouteGuard from './components/admin/AdminRouteGuard.jsx'
+import {
+  loadAdminAuditLog,
+  loadAdminAutomationStudio,
+  loadAdminChangePassword,
+  loadAdminCircleCommunity,
+  loadAdminClient360,
+  loadAdminClients,
+  loadAdminDashboard,
+  loadAdminDeveloperErrors,
+  loadAdminDeveloperPanel,
+  loadAdminEncouragements,
+  loadAdminFounderAvailability,
+  loadAdminFounderCalendar,
+  loadAdminFoundersView,
+  loadAdminInbox,
+  loadAdminLeadPipeline,
+  loadAdminLearningLibrary,
+  loadAdminLogin,
+  loadAdminMailStudio,
+  loadAdminMembershipCircle,
+  loadAdminOnboardingStudio,
+  loadAdminScheduler,
+  loadAdminSessionChangeRequests,
+  loadAdminTeamManagement,
+} from './components/admin/adminRoutePreloaders.js'
 import { signatureExperiences } from './data/signatureExperiences.js'
 import About from './pages/About.jsx'
 import Contact from './pages/Contact.jsx'
@@ -30,29 +56,29 @@ import Resources from './pages/Resources.jsx'
 import SignatureExperiencePage from './pages/SignatureExperiencePage.jsx'
 import TeenPrograms from './pages/TeenPrograms.jsx'
 
-const AdminAuditLog = lazy(() => import('./pages/admin/AdminAuditLog.jsx'))
-const AdminAutomationStudio = lazy(() => import('./pages/admin/AdminAutomationStudio.jsx'))
-const AdminChangePassword = lazy(() => import('./pages/admin/AdminChangePassword.jsx'))
-const AdminCircleCommunity = lazy(() => import('./pages/admin/AdminCircleCommunity.jsx'))
-const AdminClient360 = lazy(() => import('./pages/admin/AdminClient360.jsx'))
-const AdminClients = lazy(() => import('./pages/admin/AdminClients.jsx'))
-const AdminDashboard = lazy(() => import('./pages/admin/AdminDashboard.jsx'))
-const AdminDeveloperErrors = lazy(() => import('./pages/admin/AdminDeveloperErrors.jsx'))
-const AdminDeveloperPanel = lazy(() => import('./pages/admin/AdminDeveloperPanel.jsx'))
-const AdminEncouragements = lazy(() => import('./pages/admin/AdminEncouragements.jsx'))
-const AdminFounderAvailability = lazy(() => import('./pages/admin/AdminFounderAvailability.jsx'))
-const AdminFounderCalendar = lazy(() => import('./pages/admin/AdminFounderCalendar.jsx'))
-const AdminFoundersView = lazy(() => import('./pages/admin/AdminFoundersView.jsx'))
-const AdminInbox = lazy(() => import('./pages/admin/AdminInbox.jsx'))
-const AdminLeadPipeline = lazy(() => import('./pages/admin/AdminLeadPipeline.jsx'))
-const AdminLearningLibrary = lazy(() => import('./pages/admin/AdminLearningLibrary.jsx'))
-const AdminLogin = lazy(() => import('./pages/admin/AdminLogin.jsx'))
-const AdminMailStudio = lazy(() => import('./pages/admin/AdminMailStudio.jsx'))
-const AdminMembershipCircle = lazy(() => import('./pages/admin/AdminMembershipCircle.jsx'))
-const AdminOnboardingStudio = lazy(() => import('./pages/admin/AdminOnboardingStudio.jsx'))
-const AdminScheduler = lazy(() => import('./pages/admin/AdminScheduler.jsx'))
-const AdminSessionChangeRequests = lazy(() => import('./pages/admin/AdminSessionChangeRequests.jsx'))
-const AdminTeamManagement = lazy(() => import('./pages/admin/AdminTeamManagement.jsx'))
+const AdminAuditLog = lazy(loadAdminAuditLog)
+const AdminAutomationStudio = lazy(loadAdminAutomationStudio)
+const AdminChangePassword = lazy(loadAdminChangePassword)
+const AdminCircleCommunity = lazy(loadAdminCircleCommunity)
+const AdminClient360 = lazy(loadAdminClient360)
+const AdminClients = lazy(loadAdminClients)
+const AdminDashboard = lazy(loadAdminDashboard)
+const AdminDeveloperErrors = lazy(loadAdminDeveloperErrors)
+const AdminDeveloperPanel = lazy(loadAdminDeveloperPanel)
+const AdminEncouragements = lazy(loadAdminEncouragements)
+const AdminFounderAvailability = lazy(loadAdminFounderAvailability)
+const AdminFounderCalendar = lazy(loadAdminFounderCalendar)
+const AdminFoundersView = lazy(loadAdminFoundersView)
+const AdminInbox = lazy(loadAdminInbox)
+const AdminLeadPipeline = lazy(loadAdminLeadPipeline)
+const AdminLearningLibrary = lazy(loadAdminLearningLibrary)
+const AdminLogin = lazy(loadAdminLogin)
+const AdminMailStudio = lazy(loadAdminMailStudio)
+const AdminMembershipCircle = lazy(loadAdminMembershipCircle)
+const AdminOnboardingStudio = lazy(loadAdminOnboardingStudio)
+const AdminScheduler = lazy(loadAdminScheduler)
+const AdminSessionChangeRequests = lazy(loadAdminSessionChangeRequests)
+const AdminTeamManagement = lazy(loadAdminTeamManagement)
 
 const routeMetadata = {
   '/': {
@@ -375,8 +401,9 @@ function AppShell() {
       <RouteAnnouncer />
       <a className="skip-link" href="#main-content">Skip to content</a>
       {!isInternalRoute && <SiteHeader />}
-      <Suspense fallback={<RouteLoadingFallback internal={isInternalRoute} />}>
-        <AdminConfirmProvider>
+      <AdminErrorBoundary resetKey={pathname} internal={isInternalRoute}>
+        <Suspense fallback={<RouteLoadingFallback internal={isInternalRoute} />}>
+          <AdminConfirmProvider>
           <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/experiences" element={<Experiences />} />
@@ -434,8 +461,9 @@ function AppShell() {
         <Route path="/admin/audit-log" element={<AdminRouteGuard><AdminAuditLog /></AdminRouteGuard>} />
         <Route path="*" element={<NotFound />} />
           </Routes>
-        </AdminConfirmProvider>
-      </Suspense>
+          </AdminConfirmProvider>
+        </Suspense>
+      </AdminErrorBoundary>
       {!isInternalRoute && <SiteFooter />}
     </>
   )

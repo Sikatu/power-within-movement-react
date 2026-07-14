@@ -17,6 +17,10 @@ import {
   getMyTeamAccess,
   logoutAdmin,
 } from '../../lib/nativeApi'
+import {
+  preloadAdminRoute,
+  preloadAdminRoutes,
+} from './adminRoutePreloaders.js'
 
 import '../../pages/admin/AdminFreshUI.css'
 
@@ -275,6 +279,12 @@ function AdminFrame({ children }) {
   const isDeveloper = role === 'developer'
   const isStaff = role === 'staff'
 
+  const warmRoute = useCallback((to) => {
+    preloadAdminRoute(to)?.catch(() => {
+      // A failed prefetch is retried by React.lazy during navigation.
+    })
+  }, [])
+
   useEffect(() => {
     let active = true
 
@@ -341,6 +351,23 @@ function AdminFrame({ children }) {
     () => primaryItems.filter(canAccessItem),
     [canAccessItem],
   )
+
+  useEffect(() => {
+    if (!roleVerified || !accessiblePrimaryItems.length) return undefined
+
+    const paths = accessiblePrimaryItems.map((item) => item.to)
+    const preload = () => {
+      preloadAdminRoutes(paths)
+    }
+
+    if (typeof window.requestIdleCallback === 'function') {
+      const idleId = window.requestIdleCallback(preload, { timeout: 1800 })
+      return () => window.cancelIdleCallback(idleId)
+    }
+
+    const timeoutId = window.setTimeout(preload, 700)
+    return () => window.clearTimeout(timeoutId)
+  }, [accessiblePrimaryItems, roleVerified])
 
   const accessibleGroups = useMemo(
     () => groupedItems
@@ -557,6 +584,14 @@ function AdminFrame({ children }) {
     navigate(workspace.to)
   }
 
+  function preloadInteractionProps(to) {
+    return {
+      onFocus: () => warmRoute(to),
+      onMouseEnter: () => warmRoute(to),
+      onPointerDown: () => warmRoute(to),
+    }
+  }
+
   return (
     <div className="pwc-admin-shell pwc-studio-shell pwc-nav33-shell">
       <button
@@ -596,6 +631,7 @@ function AdminFrame({ children }) {
               className="pwc-nav33-brand-link"
               to="/admin/dashboard"
               aria-label="Power Within Collective — The Studio home"
+              {...preloadInteractionProps('/admin/dashboard')}
               onClick={prepareForNavigation}
             >
               <span className="pwc-nav33-logo-mark" aria-hidden="true">
@@ -646,6 +682,7 @@ function AdminFrame({ children }) {
                     type="button"
                     role="menuitemradio"
                     aria-checked={workspace.id === activeWorkspace.id}
+                    {...preloadInteractionProps(workspace.to)}
                     onClick={() => chooseWorkspace(workspace)}
                   >
                     <span>{workspace.label}</span>
@@ -690,6 +727,7 @@ function AdminFrame({ children }) {
                   key={`${item.groupLabel}-${item.to}`}
                   to={item.to}
                   aria-current={routeMatches(location.pathname, item) ? 'page' : undefined}
+                  {...preloadInteractionProps(item.to)}
                   onClick={prepareForNavigation}
                 >
                   <span>{item.label}</span>
@@ -706,6 +744,7 @@ function AdminFrame({ children }) {
                     key={item.to}
                     to={item.to}
                     aria-current={routeMatches(location.pathname, item) ? 'page' : undefined}
+                    {...preloadInteractionProps(item.to)}
                     onClick={prepareForNavigation}
                   >
                     <NavIcon name={item.icon} />
@@ -756,6 +795,7 @@ function AdminFrame({ children }) {
                             key={item.to}
                             to={item.to}
                             aria-current={routeMatches(location.pathname, item) ? 'page' : undefined}
+                            {...preloadInteractionProps(item.to)}
                             onClick={prepareForNavigation}
                           >
                             {item.label}
