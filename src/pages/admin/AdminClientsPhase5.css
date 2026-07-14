@@ -1,0 +1,1048 @@
+/* =========================================================
+   Phase 5 — Clients + Client 360
+   Route-scoped layout and interaction refinement.
+   ========================================================= */
+
+/* ---------------------------------------------------------
+   Client directory
+   --------------------------------------------------------- */
+
+body:has(.client-circle-page-v2.admin-clients-rework-v1) {
+  overflow: auto !important;
+}
+
+body.admin-app-mode .client-circle-page-v2.admin-clients-rework-v1 {
+  width: min(1280px, 100%) !important;
+  max-width: 1280px !important;
+  min-height: 100vh !important;
+  height: auto !important;
+  max-height: none !important;
+  margin: 0 auto !important;
+  padding: clamp(24px, 3.2vw, 48px) clamp(20px, 3vw, 44px) 64px !important;
+  overflow: visible !important;
+}
+
+body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1
+  .client-circle-hero-v2 {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) minmax(330px, 410px) !important;
+  align-items: end !important;
+  gap: clamp(24px, 3vw, 42px) !important;
+  margin: 0 0 18px !important;
+  padding: clamp(25px, 3vw, 38px) !important;
+  border: 1px solid var(--studio-border) !important;
+  border-radius: 28px !important;
+  background:
+    radial-gradient(circle at 88% 8%, rgba(200, 169, 106, 0.16), transparent 35%),
+    linear-gradient(145deg, rgba(255, 252, 249, 0.94), rgba(248, 240, 233, 0.76)) !important;
+  box-shadow: var(--studio-shadow) !important;
+}
+
+body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1
+  .client-circle-hero-v2
+  > div:first-child {
+  min-width: 0 !important;
+}
+
+body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1
+  .client-circle-hero-v2
+  h1 {
+  margin: 0 0 11px !important;
+  font-family: "Cormorant Garamond", Georgia, serif !important;
+  font-size: clamp(43px, 5vw, 64px) !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.035em !important;
+  line-height: 0.92 !important;
+}
+
+body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1
+  .client-circle-hero-v2
+  > div:first-child
+  > p:last-child {
+  max-width: 620px !important;
+  margin: 0 !important;
+  color: var(--studio-muted) !important;
+  font-size: 13px !important;
+  line-height: 1.68 !important;
+}
+
+body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1
+  .client-circle-metrics-v2 {
+  width: 100% !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 10px !important;
+  margin: 0 !important;
+}
+
+body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1
+  .client-circle-metric-v2 {
+  min-height: 98px !important;
+  padding: 15px 16px !important;
+  border: 1px solid rgba(124, 81, 75, 0.11) !important;
+  border-radius: 17px !important;
+  background: rgba(255, 252, 249, 0.72) !important;
+  box-shadow: none !important;
+}
+
+body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1
+  .client-circle-metric-v2
+  strong {
+  font-size: 31px !important;
+}
+
+body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1
+  .client-circle-message-v2 {
+  margin: 0 0 16px !important;
+}
+
+body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1
+  .client-circle-workspace-v2 {
+  display: block !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+  overflow: visible !important;
+}
+
+body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1
+  .client-records-card-v2 {
+  display: flex !important;
+  flex-direction: column !important;
+  width: 100% !important;
+  height: clamp(540px, calc(100vh - 330px), 720px) !important;
+  min-height: 540px !important;
+  max-height: 720px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  border: 1px solid var(--studio-border) !important;
+  border-radius: 24px !important;
+  background: var(--studio-surface) !important;
+  box-shadow: var(--studio-shadow-raised) !important;
+}
+
+body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1
+  .client-records-card-v2
+  > .client-card-header-v2 {
+  position: relative !important;
+  top: auto !important;
+  z-index: 4 !important;
+  flex: 0 0 auto !important;
+  padding: 19px 22px 17px !important;
+  background: rgba(255, 252, 249, 0.92) !important;
+}
+
+body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1
+  .client-record-header-actions-v2 {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  flex-wrap: wrap !important;
+  gap: 10px !important;
+}
+
+body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1
+  .client-record-header-actions-v2
+  > button,
+body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1
+  .client-form-actions-v2
+  button,
+body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1
+  .client-detail-header-actions-v2
+  button {
+  min-height: 40px !important;
+  padding: 0 15px !important;
+  border: 1px solid rgba(124, 81, 75, 0.15) !important;
+  border-radius: 12px !important;
+  font-size: 11px !important;
+  font-weight: 750 !important;
+  line-height: 1 !important;
+  white-space: nowrap !important;
+}
+
+body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1
+  .client-record-header-actions-v2
+  > button,
+body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1
+  .client-form-actions-v2
+  button[type='submit'],
+body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1
+  .client-detail-edit-shortcut-v2:first-child {
+  border-color: transparent !important;
+  background: var(--studio-burgundy) !important;
+  color: #fffaf6 !important;
+}
+
+body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1
+  .client-record-header-actions-v2
+  > button:not(:disabled):hover,
+body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1
+  .client-form-actions-v2
+  button[type='submit']:not(:disabled):hover,
+body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1
+  .client-detail-edit-shortcut-v2:first-child:not(:disabled):hover {
+  background: var(--studio-burgundy-dark) !important;
+  color: #fffaf6 !important;
+}
+
+body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1
+  .client-circle-filter-bar-v2 {
+  position: relative !important;
+  top: auto !important;
+  z-index: 3 !important;
+  flex: 0 0 auto !important;
+  grid-template-columns: minmax(240px, 1.5fr) repeat(3, minmax(145px, 0.75fr)) auto !important;
+  gap: 10px !important;
+  padding: 15px 22px !important;
+  background: rgba(248, 240, 233, 0.54) !important;
+}
+
+body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1
+  .client-circle-filter-bar-v2
+  input,
+body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1
+  .client-circle-filter-bar-v2
+  select {
+  min-height: 42px !important;
+  border-radius: 12px !important;
+  background: rgba(255, 252, 249, 0.86) !important;
+}
+
+body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1
+  .client-circle-filter-bar-v2
+  > button {
+  min-height: 42px !important;
+  padding: 0 14px !important;
+  border: 1px solid var(--studio-border) !important;
+  border-radius: 12px !important;
+  background: rgba(255, 252, 249, 0.76) !important;
+  color: var(--studio-body) !important;
+  font-size: 10.5px !important;
+  font-weight: 750 !important;
+}
+
+body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1
+  .client-quick-filter-strip-v2 {
+  position: relative !important;
+  top: auto !important;
+  z-index: 2 !important;
+  flex: 0 0 auto !important;
+  flex-wrap: nowrap !important;
+  gap: 8px !important;
+  padding: 12px 22px !important;
+  overflow-x: auto !important;
+  scrollbar-width: thin !important;
+  background: rgba(255, 252, 249, 0.58) !important;
+}
+
+body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1
+  .client-quick-filter-chip-v2 {
+  flex: 0 0 auto !important;
+  min-height: 34px !important;
+  padding: 6px 11px !important;
+  border-radius: 999px !important;
+}
+
+body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1
+  .client-circle-filter-note-v2 {
+  flex: 0 0 auto !important;
+  margin: 0 !important;
+  padding: 10px 22px !important;
+  border-bottom: 1px solid var(--studio-border) !important;
+  background: rgba(250, 241, 220, 0.56) !important;
+  color: #765b35 !important;
+  font-size: 11px !important;
+}
+
+body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1
+  .client-record-table-wrap-v2 {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  overflow: auto !important;
+  overscroll-behavior: contain !important;
+  scrollbar-gutter: stable !important;
+}
+
+body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1
+  .client-record-table-v2 {
+  min-width: 980px !important;
+  table-layout: fixed !important;
+}
+
+body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1
+  .client-record-table-v2
+  th,
+body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1
+  .client-record-table-v2
+  td {
+  padding: 13px 15px !important;
+  line-height: 1.4 !important;
+}
+
+body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1
+  .client-record-table-v2
+  thead
+  th {
+  top: 0 !important;
+  z-index: 2 !important;
+  background: rgba(255, 252, 249, 0.98) !important;
+  box-shadow: 0 1px 0 var(--studio-border) !important;
+}
+
+body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1
+  .client-record-table-v2
+  tbody
+  tr {
+  outline: none !important;
+  transition: background 160ms ease, box-shadow 160ms ease !important;
+}
+
+body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1
+  .client-record-table-v2
+  tbody
+  tr:focus-visible {
+  background: rgba(200, 169, 106, 0.11) !important;
+  box-shadow: inset 0 0 0 2px rgba(181, 136, 77, 0.5) !important;
+}
+
+body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1
+  .client-record-table-v2
+  tbody
+  tr:hover {
+  background: rgba(255, 252, 249, 0.9) !important;
+}
+
+body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1
+  .client-record-table-v2
+  tbody
+  tr.is-selected,
+body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1
+  .client-record-table-v2
+  tbody
+  tr[aria-selected='true'] {
+  background: linear-gradient(90deg, rgba(200, 169, 106, 0.14), rgba(255, 252, 249, 0.42)) !important;
+  box-shadow: inset 3px 0 0 var(--studio-gold-light) !important;
+}
+
+body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1
+  .client-record-table-v2
+  th:nth-child(1),
+body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1
+  .client-record-table-v2
+  td:nth-child(1) {
+  width: 17% !important;
+}
+
+body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1
+  .client-record-table-v2
+  th:nth-child(2),
+body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1
+  .client-record-table-v2
+  td:nth-child(2) {
+  width: 23% !important;
+}
+
+body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1
+  .client-record-table-v2
+  th:nth-child(3),
+body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1
+  .client-record-table-v2
+  td:nth-child(3) {
+  width: 22% !important;
+}
+
+body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1
+  .client-record-table-v2
+  th:nth-child(4),
+body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1
+  .client-record-table-v2
+  td:nth-child(4),
+body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1
+  .client-record-table-v2
+  th:nth-child(5),
+body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1
+  .client-record-table-v2
+  td:nth-child(5) {
+  width: 15% !important;
+}
+
+body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1
+  .client-record-table-v2
+  th:nth-child(6),
+body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1
+  .client-record-table-v2
+  td:nth-child(6) {
+  width: 8% !important;
+}
+
+body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1
+  .client-action-menu-button-v1 {
+  width: 36px !important;
+  height: 36px !important;
+  min-height: 36px !important;
+  border-radius: 11px !important;
+}
+
+body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1
+  .client-action-menu-panel-v1 {
+  width: 170px !important;
+  min-width: 170px !important;
+  max-width: 170px !important;
+  padding: 6px !important;
+  border: 1px solid var(--studio-border-strong) !important;
+  border-radius: 15px !important;
+  background: #fffcf9 !important;
+  box-shadow: 0 22px 54px rgba(58, 37, 40, 0.2) !important;
+}
+
+body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1
+  .client-action-menu-panel-v1
+  button {
+  min-height: 36px !important;
+  padding: 0 11px !important;
+  border-radius: 10px !important;
+  font-size: 11px !important;
+  text-align: left !important;
+}
+
+/* Directory drawers */
+body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1.is-client-detail-open-v2:not(.is-client-form-open-v2)::after,
+body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1.is-client-form-open-v2::after {
+  content: '' !important;
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 64 !important;
+  display: block !important;
+  pointer-events: none !important;
+  background: rgba(45, 27, 36, 0.18) !important;
+  backdrop-filter: blur(2px) !important;
+}
+
+body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1.is-client-detail-open-v2:not(.is-client-form-open-v2)
+  .client-circle-detail-v2 {
+  top: 20px !important;
+  right: 20px !important;
+  bottom: 20px !important;
+  width: min(640px, calc(100vw - 40px)) !important;
+  max-height: calc(100vh - 40px) !important;
+  z-index: 70 !important;
+}
+
+body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1.is-client-form-open-v2
+  .client-form-drawer-v2 {
+  top: 20px !important;
+  right: 20px !important;
+  bottom: 20px !important;
+  width: min(560px, calc(100vw - 40px)) !important;
+  max-height: calc(100vh - 40px) !important;
+  z-index: 90 !important;
+  padding: 0 !important;
+  border: 1px solid var(--studio-border-strong) !important;
+  border-radius: 26px !important;
+  background: #fffcf9 !important;
+  box-shadow: 0 32px 90px rgba(44, 25, 35, 0.25) !important;
+}
+
+body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1
+  .client-detail-card-v2 {
+  border: 1px solid var(--studio-border-strong) !important;
+  border-radius: 26px !important;
+  background: #fffcf9 !important;
+  box-shadow: 0 32px 90px rgba(44, 25, 35, 0.25) !important;
+}
+
+body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1
+  .client-form-drawer-header-v2,
+body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1
+  .client-detail-card-v2
+  > .client-card-header-v2 {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 9 !important;
+  padding: 18px 20px !important;
+  background: rgba(255, 252, 249, 0.97) !important;
+}
+
+body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1
+  .client-circle-form-v2 {
+  padding: 20px !important;
+}
+
+body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1
+  .client-form-actions-v2 {
+  position: sticky !important;
+  bottom: 0 !important;
+  z-index: 4 !important;
+  margin: 8px -20px -20px !important;
+  padding: 15px 20px !important;
+  border-top: 1px solid var(--studio-border) !important;
+  background: rgba(255, 252, 249, 0.97) !important;
+  backdrop-filter: blur(14px) !important;
+}
+
+body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1
+  .client-detail-jump-nav-v2 {
+  top: 76px !important;
+  padding: 11px 20px !important;
+  overflow-x: auto !important;
+  flex-wrap: nowrap !important;
+}
+
+body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1
+  .client-detail-jump-nav-v2
+  button {
+  flex: 0 0 auto !important;
+}
+
+body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1
+  .client-detail-card-v2
+  :is(
+    .client-detail-grid-v2,
+    .client-care-highlights-v2,
+    .client-care-summary-v2,
+    .client-notes-grid-v2
+  ) {
+  gap: 10px !important;
+  padding: 16px 20px 0 !important;
+}
+
+body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1
+  .client-detail-card-v2
+  :is(
+    .client-portal-invite-v2,
+    .client-portal-invite-history-v2,
+    .client-portal-resources-v2,
+    .client-service-records-v2,
+    .client-timeline-v2,
+    .client-timeline-list-v2,
+    .client-portal-email-draft-v2,
+    .client-portal-email-logs-v2,
+    .client-communication-card-v3
+  ) {
+  margin: 14px 20px 0 !important;
+}
+
+/* ---------------------------------------------------------
+   Client 360
+   --------------------------------------------------------- */
+
+body.admin-app-mode .client-360-page {
+  width: min(1280px, 100%) !important;
+  max-width: 1280px !important;
+  margin: 0 auto !important;
+  padding: clamp(24px, 3.2vw, 48px) clamp(20px, 3vw, 44px) 70px !important;
+}
+
+body.admin-app-mode .client-360-hero {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) auto !important;
+  align-items: end !important;
+  gap: 28px !important;
+  margin: 0 0 16px !important;
+  padding: clamp(25px, 3vw, 38px) !important;
+  border: 1px solid var(--operations-border) !important;
+  border-radius: 28px !important;
+  background:
+    radial-gradient(circle at 88% 8%, rgba(200, 169, 106, 0.16), transparent 35%),
+    linear-gradient(145deg, rgba(255, 252, 249, 0.95), rgba(248, 240, 233, 0.78)) !important;
+  box-shadow: var(--operations-shadow) !important;
+}
+
+body.admin-app-mode .client-360-hero h1 {
+  margin: 0 0 10px !important;
+  font-size: clamp(43px, 5vw, 64px) !important;
+  letter-spacing: -0.035em !important;
+  line-height: 0.92 !important;
+}
+
+body.admin-app-mode .client-360-hero > div:first-child > p:last-child {
+  max-width: 680px !important;
+  font-size: 13px !important;
+  line-height: 1.68 !important;
+}
+
+body.admin-app-mode .client-360-hero-actions {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(145px, auto)) !important;
+  align-items: center !important;
+  justify-content: end !important;
+  gap: 9px !important;
+  max-width: none !important;
+}
+
+body.admin-app-mode .client-360-hero-actions .client-360-status {
+  grid-column: 1 / -1 !important;
+  justify-self: end !important;
+}
+
+body.admin-app-mode .client-360-hero-actions .btn,
+body.admin-app-mode .client-360-hero-actions button {
+  justify-content: center !important;
+  min-width: 145px !important;
+  min-height: 42px !important;
+  margin: 0 !important;
+  padding: 0 15px !important;
+  border-radius: 12px !important;
+  white-space: nowrap !important;
+}
+
+body.admin-app-mode .client-360-alert {
+  margin: 0 0 14px !important;
+}
+
+body.admin-app-mode .client-360-pulse {
+  gap: 10px !important;
+  margin: 0 0 14px !important;
+}
+
+body.admin-app-mode .client-360-pulse article {
+  min-height: 116px !important;
+  align-content: start !important;
+  padding: 18px !important;
+  border-radius: 20px !important;
+  background: rgba(255, 252, 249, 0.82) !important;
+  box-shadow: none !important;
+}
+
+body.admin-app-mode .client-360-pulse strong {
+  margin: 3px 0 1px !important;
+  font-size: 35px !important;
+}
+
+body.admin-app-mode .client-360-section-nav {
+  position: sticky !important;
+  top: 12px !important;
+  z-index: 20 !important;
+  margin: 0 0 14px !important;
+  padding: 7px !important;
+  border-radius: 18px !important;
+  background: rgba(255, 252, 249, 0.92) !important;
+  box-shadow: 0 18px 42px -34px rgba(58, 37, 40, 0.5) !important;
+  backdrop-filter: blur(16px) !important;
+}
+
+body.admin-app-mode .client-360-section-nav a {
+  min-height: 36px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0 13px !important;
+  border-radius: 12px !important;
+}
+
+body.admin-app-mode .client-360-layout {
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 320px) !important;
+  gap: 14px !important;
+}
+
+body.admin-app-mode .client-360-primary,
+body.admin-app-mode .client-360-sidebar {
+  gap: 14px !important;
+}
+
+body.admin-app-mode .client-360-sidebar {
+  top: 72px !important;
+}
+
+body.admin-app-mode .client-360-card {
+  padding: clamp(19px, 2vw, 25px) !important;
+  border-radius: 22px !important;
+}
+
+body.admin-app-mode .client-360-card[id] {
+  scroll-margin-top: 86px !important;
+}
+
+body.admin-app-mode .client-360-card-heading,
+body.admin-app-mode .client-360-side-heading {
+  margin-bottom: 18px !important;
+}
+
+body.admin-app-mode .client-360-card-heading h2,
+body.admin-app-mode .client-360-side-heading h2,
+body.admin-app-mode .client-360-profile-card h2 {
+  font-size: clamp(25px, 2.3vw, 32px) !important;
+  line-height: 1 !important;
+}
+
+body.admin-app-mode .client-360-plan-form {
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 12px !important;
+}
+
+body.admin-app-mode .client-360-plan-form input,
+body.admin-app-mode .client-360-plan-form select,
+body.admin-app-mode .client-360-plan-form textarea,
+body.admin-app-mode .client-360-action-form input,
+body.admin-app-mode .client-360-action-form select,
+body.admin-app-mode .client-360-action-form textarea {
+  min-height: 44px !important;
+  border-radius: 12px !important;
+}
+
+body.admin-app-mode .client-360-plan-form textarea,
+body.admin-app-mode .client-360-action-form textarea {
+  min-height: 108px !important;
+}
+
+body.admin-app-mode .client-360-form-actions {
+  grid-column: 1 / -1 !important;
+  padding-top: 4px !important;
+}
+
+body.admin-app-mode .client-360-form-actions .btn,
+body.admin-app-mode .client-360-action-form .btn,
+body.admin-app-mode .client-360-action-buttons button {
+  min-height: 40px !important;
+  padding: 0 14px !important;
+  border-radius: 11px !important;
+  font-size: 11px !important;
+  font-weight: 750 !important;
+}
+
+body.admin-app-mode .client-360-actions-grid {
+  grid-template-columns: minmax(0, 1.15fr) minmax(300px, 0.85fr) !important;
+  gap: 12px !important;
+}
+
+body.admin-app-mode .client-360-action-form {
+  position: sticky !important;
+  top: 76px !important;
+  padding: 16px !important;
+  border-radius: 18px !important;
+}
+
+body.admin-app-mode .client-360-action {
+  padding: 15px !important;
+  border-radius: 16px !important;
+}
+
+body.admin-app-mode .client-360-action dl {
+  gap: 8px !important;
+}
+
+body.admin-app-mode .client-360-program-grid {
+  gap: 12px !important;
+}
+
+body.admin-app-mode .client-360-program-grid article,
+body.admin-app-mode .client-360-team-list article {
+  border-radius: 14px !important;
+}
+
+body.admin-app-mode .client-360-quick-links > a {
+  min-height: 40px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding: 0 12px !important;
+  border: 1px solid transparent !important;
+  border-radius: 11px !important;
+}
+
+body.admin-app-mode .client-360-quick-links > a::after {
+  content: '→';
+  color: var(--operations-gold);
+}
+
+body.admin-app-mode .client-360-quick-links > a:hover {
+  border-color: var(--operations-border-strong) !important;
+  background: rgba(200, 169, 106, 0.1) !important;
+}
+
+body.admin-app-mode .client-360-text-link {
+  min-height: 34px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  margin-top: 10px !important;
+  padding: 0 11px !important;
+  border: 1px solid var(--operations-border) !important;
+  border-radius: 10px !important;
+  background: rgba(255, 252, 249, 0.72) !important;
+  text-decoration: none !important;
+}
+
+body.admin-app-mode .client-360-text-link:hover {
+  border-color: var(--operations-border-strong) !important;
+  background: rgba(200, 169, 106, 0.1) !important;
+}
+
+/* ---------------------------------------------------------
+   Responsive behavior
+   --------------------------------------------------------- */
+
+@media (max-width: 1100px) {
+  body.admin-app-mode
+    .client-circle-page-v2.admin-clients-rework-v1
+    .client-circle-hero-v2,
+  body.admin-app-mode .client-360-hero {
+    grid-template-columns: 1fr !important;
+    align-items: start !important;
+  }
+
+  body.admin-app-mode
+    .client-circle-page-v2.admin-clients-rework-v1
+    .client-circle-metrics-v2 {
+    max-width: 560px !important;
+  }
+
+  body.admin-app-mode
+    .client-circle-page-v2.admin-clients-rework-v1
+    .client-records-card-v2 {
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+  }
+
+  body.admin-app-mode
+    .client-circle-page-v2.admin-clients-rework-v1
+    .client-record-table-wrap-v2 {
+    max-height: 620px !important;
+  }
+
+  body.admin-app-mode .client-360-hero-actions {
+    justify-content: start !important;
+  }
+
+  body.admin-app-mode .client-360-hero-actions .client-360-status {
+    justify-self: start !important;
+  }
+
+  body.admin-app-mode .client-360-layout {
+    grid-template-columns: 1fr !important;
+  }
+
+  body.admin-app-mode .client-360-sidebar {
+    position: static !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  body.admin-app-mode .client-360-quick-links {
+    grid-column: 1 / -1 !important;
+  }
+}
+
+@media (max-width: 860px) {
+  body.admin-app-mode
+    .client-circle-page-v2.admin-clients-rework-v1
+    .client-circle-filter-bar-v2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  body.admin-app-mode
+    .client-circle-page-v2.admin-clients-rework-v1
+    .client-circle-filter-bar-v2
+    > :first-child {
+    grid-column: 1 / -1 !important;
+  }
+
+  body.admin-app-mode .client-360-pulse {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  body.admin-app-mode .client-360-actions-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  body.admin-app-mode .client-360-action-form {
+    position: static !important;
+  }
+}
+
+@media (max-width: 620px) {
+  body.admin-app-mode .client-circle-page-v2.admin-clients-rework-v1,
+  body.admin-app-mode .client-360-page {
+    padding: 18px 14px 46px !important;
+  }
+
+  body.admin-app-mode
+    .client-circle-page-v2.admin-clients-rework-v1
+    .client-circle-hero-v2,
+  body.admin-app-mode .client-360-hero {
+    padding: 22px 18px !important;
+    border-radius: 22px !important;
+  }
+
+  body.admin-app-mode
+    .client-circle-page-v2.admin-clients-rework-v1
+    .client-circle-metrics-v2,
+  body.admin-app-mode .client-360-pulse {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  body.admin-app-mode
+    .client-circle-page-v2.admin-clients-rework-v1
+    .client-circle-metric-v2:last-child {
+    grid-column: 1 / -1 !important;
+  }
+
+  body.admin-app-mode
+    .client-circle-page-v2.admin-clients-rework-v1
+    .client-records-card-v2 {
+    border-radius: 20px !important;
+  }
+
+  body.admin-app-mode
+    .client-circle-page-v2.admin-clients-rework-v1
+    .client-records-card-v2
+    > .client-card-header-v2,
+  body.admin-app-mode
+    .client-circle-page-v2.admin-clients-rework-v1
+    .client-circle-filter-bar-v2,
+  body.admin-app-mode
+    .client-circle-page-v2.admin-clients-rework-v1
+    .client-quick-filter-strip-v2 {
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+  }
+
+  body.admin-app-mode
+    .client-circle-page-v2.admin-clients-rework-v1
+    .client-card-header-v2.is-horizontal,
+  body.admin-app-mode
+    .client-circle-page-v2.admin-clients-rework-v1
+    .client-record-header-actions-v2 {
+    align-items: stretch !important;
+    flex-direction: column !important;
+  }
+
+  body.admin-app-mode
+    .client-circle-page-v2.admin-clients-rework-v1
+    .client-record-header-actions-v2
+    > button {
+    width: 100% !important;
+  }
+
+  body.admin-app-mode
+    .client-circle-page-v2.admin-clients-rework-v1
+    .client-circle-filter-bar-v2 {
+    grid-template-columns: 1fr !important;
+  }
+
+  body.admin-app-mode
+    .client-circle-page-v2.admin-clients-rework-v1.is-client-detail-open-v2:not(.is-client-form-open-v2)
+    .client-circle-detail-v2,
+  body.admin-app-mode
+    .client-circle-page-v2.admin-clients-rework-v1.is-client-form-open-v2
+    .client-form-drawer-v2 {
+    top: 8px !important;
+    right: 8px !important;
+    bottom: 8px !important;
+    left: 8px !important;
+    width: auto !important;
+    max-height: calc(100vh - 16px) !important;
+  }
+
+  body.admin-app-mode
+    .client-circle-page-v2.admin-clients-rework-v1
+    .client-form-grid-v2,
+  body.admin-app-mode
+    .client-circle-page-v2.admin-clients-rework-v1
+    .client-detail-card-v2
+    :is(
+      .client-detail-grid-v2,
+      .client-care-highlights-v2,
+      .client-care-summary-v2,
+      .client-notes-grid-v2
+    ),
+  body.admin-app-mode .client-360-plan-form,
+  body.admin-app-mode .client-360-program-grid,
+  body.admin-app-mode .client-360-sidebar,
+  body.admin-app-mode .client-360-action-form-row {
+    grid-template-columns: 1fr !important;
+  }
+
+  body.admin-app-mode .client-360-hero-actions {
+    width: 100% !important;
+    grid-template-columns: 1fr !important;
+  }
+
+  body.admin-app-mode .client-360-hero-actions .client-360-status {
+    grid-column: auto !important;
+  }
+
+  body.admin-app-mode .client-360-hero-actions .btn,
+  body.admin-app-mode .client-360-hero-actions button {
+    width: 100% !important;
+  }
+
+  body.admin-app-mode .client-360-section-nav {
+    top: 8px !important;
+    border-radius: 15px !important;
+  }
+
+  body.admin-app-mode .client-360-card-heading,
+  body.admin-app-mode .client-360-form-actions {
+    align-items: stretch !important;
+    flex-direction: column !important;
+  }
+
+  body.admin-app-mode .client-360-form-actions .btn {
+    width: 100% !important;
+  }
+}

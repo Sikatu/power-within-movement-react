@@ -10,6 +10,7 @@ import {
 } from '../../lib/nativeApi'
 import './Client360.css'
 import './AdminOperationsElevation.css'
+import './AdminClientsPhase5.css'
 
 const emptyPlan = {
   journeyStage: 'onboarding',
