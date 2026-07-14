@@ -347,7 +347,7 @@ export default function AdminMailStudio() {
           </div>
         )}
 
-        <div className="mail-studio-metrics-v1">
+        <div className="mail-studio-metrics-v1" aria-label="Mail Studio summary">
           <article>
             <span>Templates</span>
             <strong>{metrics.total_templates || 0}</strong>
@@ -375,7 +375,7 @@ export default function AdminMailStudio() {
           </article>
         </div>
 
-        <section className="mail-studio-composer-v1">
+        <section className="mail-studio-composer-v1" aria-label="Client email composer">
           <div className="mail-studio-panel-header-v1">
             <div>
               <p className="admin-eyebrow">Composer</p>

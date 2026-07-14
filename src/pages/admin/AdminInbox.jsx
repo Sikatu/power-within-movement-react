@@ -234,7 +234,10 @@ export default function AdminInbox() {
         </section>
 
         {(error || notice) && (
-          <div className={`admin-inbox__notice${error ? ' is-error' : ''}`} role="status">
+          <div
+            className={`admin-inbox__notice${error ? ' is-error' : ''}`}
+            role={error ? 'alert' : 'status'}
+          >
             {error || notice}
           </div>
         )}
@@ -275,7 +278,7 @@ export default function AdminInbox() {
 
         <p className="admin-inbox__count">{filteredCountLabel}</p>
 
-        <div className="admin-inbox__workspace">
+        <div className="admin-inbox__workspace" aria-busy={loading}>
           <aside className="admin-inbox__list" aria-label="Client conversations">
             {loading ? (
               <div className="admin-inbox__empty">Loading private conversations…</div>

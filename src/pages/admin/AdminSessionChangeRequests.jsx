@@ -158,6 +158,8 @@ export default function AdminSessionChangeRequests() {
           <button
             type="button"
             className={activeView === 'pending' ? 'is-active' : ''}
+            role="tab"
+            aria-selected={activeView === 'pending'}
             onClick={() => setActiveView('pending')}
           >
             Needs Review <span>{pendingRequests.length}</span>
@@ -165,6 +167,8 @@ export default function AdminSessionChangeRequests() {
           <button
             type="button"
             className={activeView === 'history' ? 'is-active' : ''}
+            role="tab"
+            aria-selected={activeView === 'history'}
             onClick={() => setActiveView('history')}
           >
             History <span>{historyRequests.length}</span>

@@ -77,6 +77,7 @@ function LeadCard({ lead, isSelected, onSelect }) {
   return (
     <button
       className={`lead-pipeline-card${isSelected ? ' is-selected' : ''}`}
+      aria-pressed={isSelected}
       onClick={() => onSelect(lead.id)}
       type="button"
     >

@@ -4711,6 +4711,2133 @@ body.admin-app-mode .pwc-scheduler-filter-row button.is-active {
 }
 
 
+/* ================================================================
+   FRESH UI PHASE 3 — COMMUNICATION, INTAKE & SESSION REVIEW
+   One design system; no page-local or legacy stylesheets.
+   ================================================================ */
+
+body.admin-app-mode :where(
+  .admin-inbox,
+  .mail-studio-page-v1,
+  .lead-pipeline-page,
+  .session-change-admin
+) {
+  width: min(100%, var(--admin-content));
+  max-width: var(--admin-content);
+  min-width: 0;
+  margin-inline: auto;
+  padding: 0 0 72px;
+}
+
+body.admin-app-mode :where(
+  .admin-inbox__header,
+  .lead-pipeline-header,
+  .session-change-admin__header
+) {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 30px;
+  overflow: hidden;
+  margin-bottom: 18px;
+  border: 1px solid rgba(200, 169, 106, 0.22);
+  border-radius: 26px;
+  background:
+    radial-gradient(circle at 84% 10%, rgba(200, 169, 106, 0.17), transparent 34%),
+    linear-gradient(155deg, #4d2831 0%, #3b222b 56%, #2f1c23 100%);
+  padding: clamp(28px, 4vw, 44px);
+  color: rgba(243, 229, 218, 0.76);
+  box-shadow: 0 40px 80px -54px rgba(58, 37, 40, 0.9);
+}
+
+body.admin-app-mode :where(
+  .admin-inbox__header,
+  .lead-pipeline-header,
+  .session-change-admin__header
+)::after {
+  position: absolute;
+  z-index: -1;
+  width: 250px;
+  height: 250px;
+  right: -92px;
+  bottom: -156px;
+  content: '';
+  border: 1px solid rgba(200, 169, 106, 0.17);
+  border-radius: 50%;
+}
+
+body.admin-app-mode :where(
+  .admin-inbox__header,
+  .lead-pipeline-header,
+  .session-change-admin__header
+) > div:first-child {
+  max-width: 710px;
+}
+
+body.admin-app-mode :where(
+  .admin-inbox__header,
+  .lead-pipeline-header,
+  .session-change-admin__header
+) .eyebrow {
+  color: var(--admin-gold);
+}
+
+body.admin-app-mode :where(
+  .admin-inbox__header,
+  .lead-pipeline-header,
+  .session-change-admin__header
+) h1 {
+  margin-bottom: 12px;
+  color: #fff9f4;
+  font-size: clamp(2.7rem, 5vw, 4.35rem);
+  letter-spacing: -0.034em;
+  line-height: 0.96;
+}
+
+body.admin-app-mode :where(
+  .admin-inbox__header,
+  .lead-pipeline-header,
+  .session-change-admin__header
+) p:not(.eyebrow) {
+  max-width: 650px;
+  margin-bottom: 0;
+  color: rgba(242, 226, 216, 0.72);
+  font-size: 13.5px;
+  line-height: 1.75;
+}
+
+body.admin-app-mode :where(
+  .admin-inbox__header-actions,
+  .lead-pipeline-header-actions,
+  .session-change-admin__header-actions
+) {
+  display: flex;
+  flex: 0 0 auto;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+body.admin-app-mode :where(
+  .admin-inbox__header-actions,
+  .lead-pipeline-header-actions,
+  .session-change-admin__header-actions
+) :where(button, a) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 46px;
+  border-color: rgba(255, 246, 240, 0.2);
+  background: rgba(255, 250, 246, 0.08);
+  color: #fff8f2;
+  backdrop-filter: blur(10px);
+}
+
+body.admin-app-mode :where(
+  .admin-inbox__header-actions,
+  .lead-pipeline-header-actions,
+  .session-change-admin__header-actions
+) :where(button, a):hover {
+  border-color: rgba(200, 169, 106, 0.5);
+  background: rgba(255, 250, 246, 0.14);
+  color: #fff;
+}
+
+body.admin-app-mode .admin-inbox__header-actions .primary {
+  border-color: transparent;
+  background: linear-gradient(160deg, #e0c188, #c8a96a);
+  color: #33222a;
+  box-shadow: 0 18px 34px -20px rgba(0, 0, 0, 0.78);
+}
+
+body.admin-app-mode :where(
+  .admin-inbox__metrics,
+  .mail-studio-metrics-v1,
+  .lead-pipeline-metrics,
+  .session-change-admin__summary
+) {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin: 0 0 18px;
+}
+
+body.admin-app-mode .lead-pipeline-metrics {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+body.admin-app-mode .session-change-admin__summary {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+body.admin-app-mode :where(
+  .admin-inbox__metrics,
+  .mail-studio-metrics-v1,
+  .lead-pipeline-metrics,
+  .session-change-admin__summary
+) article {
+  position: relative;
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid var(--admin-border);
+  border-radius: 18px;
+  background: rgba(255, 252, 249, 0.8);
+  padding: 17px 18px;
+  box-shadow: 0 24px 52px -46px rgba(58, 37, 40, 0.54);
+}
+
+body.admin-app-mode :where(
+  .admin-inbox__metrics,
+  .mail-studio-metrics-v1,
+  .lead-pipeline-metrics,
+  .session-change-admin__summary
+) article::before {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 3px;
+  content: '';
+  background: linear-gradient(180deg, var(--admin-gold), rgba(200, 169, 106, 0.16));
+}
+
+body.admin-app-mode :where(
+  .admin-inbox__metrics,
+  .mail-studio-metrics-v1,
+  .lead-pipeline-metrics,
+  .session-change-admin__summary
+) article > span {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--admin-gold-deep);
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.17em;
+  text-transform: uppercase;
+}
+
+body.admin-app-mode :where(
+  .admin-inbox__metrics,
+  .mail-studio-metrics-v1,
+  .lead-pipeline-metrics,
+  .session-change-admin__summary
+) article > strong {
+  display: block;
+  color: var(--admin-ink);
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: clamp(1.8rem, 3vw, 2.35rem);
+  font-weight: 600;
+  line-height: 0.95;
+}
+
+body.admin-app-mode .mail-studio-metrics-v1 article > p {
+  margin: 8px 0 0;
+  color: var(--admin-muted);
+  font-size: 10.5px;
+}
+
+body.admin-app-mode .admin-inbox__metrics article.is-urgent {
+  border-color: rgba(153, 84, 92, 0.25);
+  background: linear-gradient(145deg, rgba(255, 252, 249, 0.9), rgba(153, 84, 92, 0.07));
+}
+
+body.admin-app-mode .admin-inbox__metrics article.is-urgent::before {
+  background: var(--admin-danger);
+}
+
+body.admin-app-mode :where(
+  .admin-inbox__notice,
+  .lead-pipeline-alert,
+  .session-change-admin__notice
+) {
+  margin: 0 0 16px;
+  border: 1px solid rgba(85, 113, 93, 0.24);
+  border-radius: 14px;
+  background: rgba(85, 113, 93, 0.08);
+  padding: 12px 15px;
+  color: #47614f;
+  box-shadow: 0 18px 42px -38px rgba(58, 37, 40, 0.48);
+}
+
+body.admin-app-mode :where(
+  .admin-inbox__notice,
+  .lead-pipeline-alert,
+  .session-change-admin__notice
+).is-error {
+  border-color: rgba(153, 84, 92, 0.26);
+  background: rgba(153, 84, 92, 0.08);
+  color: #7d3e47;
+}
+
+/* Secure Inbox */
+body.admin-app-mode .admin-inbox__filters {
+  display: grid;
+  grid-template-columns: 0.8fr 0.8fr minmax(220px, 1.55fr) auto;
+  align-items: end;
+  gap: 12px;
+  margin-bottom: 8px;
+  border: 1px solid var(--admin-border);
+  border-radius: 18px;
+  background: rgba(255, 252, 249, 0.72);
+  padding: 14px;
+  box-shadow: var(--admin-shadow);
+}
+
+body.admin-app-mode .admin-inbox__filters label,
+body.admin-app-mode .admin-inbox-thread__controls label,
+body.admin-app-mode .admin-inbox-reply label,
+body.admin-app-mode .admin-inbox-modal label {
+  display: grid;
+  gap: 6px;
+}
+
+body.admin-app-mode .admin-inbox__filters label > span,
+body.admin-app-mode .admin-inbox-thread__controls label > span,
+body.admin-app-mode .admin-inbox-reply label > span,
+body.admin-app-mode .admin-inbox-modal label > span {
+  color: var(--admin-gold-deep);
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+body.admin-app-mode .admin-inbox__filters > button {
+  min-width: 122px;
+  min-height: 48px;
+}
+
+body.admin-app-mode .admin-inbox__count {
+  margin: 0 0 9px;
+  padding-inline: 4px;
+  color: var(--admin-muted);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-align: right;
+  text-transform: uppercase;
+}
+
+body.admin-app-mode .admin-inbox__workspace {
+  display: grid;
+  grid-template-columns: minmax(280px, 340px) minmax(0, 1fr);
+  min-height: 650px;
+  height: min(760px, calc(100vh - 128px));
+  overflow: hidden;
+  border: 1px solid var(--admin-border);
+  border-radius: 24px;
+  background: rgba(255, 252, 249, 0.82);
+  box-shadow: var(--admin-shadow-raised);
+}
+
+body.admin-app-mode .admin-inbox__list {
+  min-width: 0;
+  overflow-y: auto;
+  border-right: 1px solid var(--admin-border);
+  background: linear-gradient(180deg, rgba(249, 241, 234, 0.62), rgba(255, 252, 249, 0.54));
+  padding: 10px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(124, 81, 75, 0.22) transparent;
+}
+
+body.admin-app-mode .admin-inbox-list-item {
+  display: grid;
+  width: 100%;
+  min-height: 0;
+  margin: 0 0 7px;
+  border: 1px solid transparent;
+  border-radius: 16px;
+  background: transparent;
+  padding: 14px;
+  text-align: left;
+  box-shadow: none;
+}
+
+body.admin-app-mode .admin-inbox-list-item:hover {
+  border-color: var(--admin-border);
+  background: rgba(255, 252, 249, 0.82);
+  transform: none;
+}
+
+body.admin-app-mode .admin-inbox-list-item.is-active {
+  border-color: rgba(200, 169, 106, 0.38);
+  background: linear-gradient(145deg, rgba(255, 252, 249, 0.98), rgba(200, 169, 106, 0.09));
+  box-shadow: 0 18px 36px -34px rgba(58, 37, 40, 0.7);
+}
+
+body.admin-app-mode .admin-inbox-list-item__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+body.admin-app-mode .admin-inbox-list-item__top strong {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--admin-ink);
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+body.admin-app-mode .admin-inbox-list-item__top span {
+  display: inline-grid;
+  flex: 0 0 auto;
+  min-width: 21px;
+  height: 21px;
+  place-items: center;
+  border-radius: 999px;
+  background: var(--admin-burgundy);
+  color: #fff9f4;
+  font-size: 9px;
+  font-weight: 800;
+}
+
+body.admin-app-mode .admin-inbox-list-item h2 {
+  overflow: hidden;
+  margin: 7px 0 4px;
+  font-family: "Manrope", system-ui, sans-serif;
+  font-size: 11.5px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+body.admin-app-mode .admin-inbox-list-item > p {
+  display: -webkit-box;
+  overflow: hidden;
+  margin: 0 0 10px;
+  color: var(--admin-muted);
+  font-size: 10.5px;
+  line-height: 1.5;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+body.admin-app-mode .admin-inbox-list-item > div:last-child {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+body.admin-app-mode .admin-inbox-list-item em {
+  border: 1px solid var(--admin-border);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.58);
+  padding: 3px 7px;
+  color: var(--admin-muted);
+  font-size: 7.5px;
+  font-style: normal;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+body.admin-app-mode .admin-inbox-list-item em.is-urgent {
+  border-color: rgba(153, 84, 92, 0.3);
+  background: rgba(153, 84, 92, 0.08);
+  color: #8a414b;
+}
+
+body.admin-app-mode .admin-inbox-list-item em.is-high {
+  border-color: rgba(168, 121, 57, 0.3);
+  background: rgba(168, 121, 57, 0.08);
+  color: #8b652f;
+}
+
+body.admin-app-mode .admin-inbox-list-item time {
+  margin-left: auto;
+  color: var(--admin-faint);
+  font-size: 8px;
+}
+
+body.admin-app-mode .admin-inbox__thread {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  min-width: 0;
+  min-height: 0;
+  background: rgba(255, 252, 249, 0.9);
+}
+
+body.admin-app-mode .admin-inbox-thread__header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 20px;
+  border-bottom: 1px solid var(--admin-border);
+  background: rgba(255, 252, 249, 0.94);
+  padding: 19px 20px;
+}
+
+body.admin-app-mode .admin-inbox-thread__header > div:first-child > p {
+  margin: 0 0 3px;
+  color: var(--admin-gold-deep);
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+body.admin-app-mode .admin-inbox-thread__header h2 {
+  margin: 0 0 6px;
+  font-size: clamp(1.45rem, 2.2vw, 1.9rem);
+}
+
+body.admin-app-mode .admin-inbox-thread__header > div:first-child > a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  margin-top: 3px;
+  border-bottom: 1px solid rgba(181, 136, 77, 0.35);
+  color: #7c514b;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+body.admin-app-mode .admin-inbox-thread__controls {
+  display: grid;
+  grid-template-columns: minmax(104px, 0.75fr) minmax(140px, 1fr) auto;
+  align-items: end;
+  gap: 8px;
+}
+
+body.admin-app-mode .admin-inbox-thread__controls :where(select, button) {
+  min-height: 40px;
+  padding-block: 0.5rem;
+  font-size: 10px;
+}
+
+body.admin-app-mode .admin-inbox-thread__messages {
+  display: flex;
+  min-height: 0;
+  overflow-y: auto;
+  flex-direction: column;
+  gap: 11px;
+  padding: 22px clamp(16px, 3vw, 28px);
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(124, 81, 75, 0.2) transparent;
+}
+
+body.admin-app-mode .admin-inbox-message {
+  width: min(76%, 620px);
+  align-self: flex-start;
+  border: 1px solid var(--admin-border);
+  border-radius: 17px 17px 17px 5px;
+  background: rgba(247, 240, 234, 0.86);
+  padding: 13px 15px;
+  box-shadow: 0 18px 38px -36px rgba(58, 37, 40, 0.52);
+}
+
+body.admin-app-mode .admin-inbox-message.is-team,
+body.admin-app-mode .admin-inbox-message.is-admin,
+body.admin-app-mode .admin-inbox-message.is-founder,
+body.admin-app-mode .admin-inbox-message.is-developer,
+body.admin-app-mode .admin-inbox-message.is-staff {
+  align-self: flex-end;
+  border-color: rgba(200, 169, 106, 0.28);
+  border-radius: 17px 17px 5px 17px;
+  background: linear-gradient(145deg, rgba(255, 252, 249, 0.98), rgba(200, 169, 106, 0.1));
+}
+
+body.admin-app-mode .admin-inbox-message.is-internal {
+  width: min(88%, 700px);
+  align-self: center;
+  border-style: dashed;
+  border-color: rgba(181, 136, 77, 0.38);
+  border-radius: 15px;
+  background: rgba(200, 169, 106, 0.08);
+}
+
+body.admin-app-mode .admin-inbox-message > div:first-child {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 7px;
+}
+
+body.admin-app-mode .admin-inbox-message strong {
+  color: var(--admin-ink);
+  font-size: 10.5px;
+}
+
+body.admin-app-mode .admin-inbox-message time {
+  color: var(--admin-faint);
+  font-size: 8.5px;
+}
+
+body.admin-app-mode .admin-inbox-message p {
+  margin: 0;
+  color: var(--admin-ink-soft);
+  font-size: 12px;
+  line-height: 1.7;
+  white-space: pre-wrap;
+}
+
+body.admin-app-mode .admin-inbox-message > a {
+  display: inline-flex;
+  margin-top: 9px;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+body.admin-app-mode .admin-inbox-reply {
+  display: grid;
+  gap: 10px;
+  border-top: 1px solid var(--admin-border);
+  background: rgba(249, 242, 236, 0.72);
+  padding: 14px 18px 17px;
+}
+
+body.admin-app-mode .admin-inbox-reply__mode {
+  display: inline-flex;
+  width: fit-content;
+  border: 1px solid var(--admin-border);
+  border-radius: 999px;
+  background: rgba(255, 252, 249, 0.7);
+  padding: 3px;
+}
+
+body.admin-app-mode .admin-inbox-reply__mode button {
+  min-height: 33px;
+  border: 0;
+  background: transparent;
+  padding: 0.4rem 0.8rem;
+  color: var(--admin-muted);
+  font-size: 9px;
+  box-shadow: none;
+}
+
+body.admin-app-mode .admin-inbox-reply__mode button.is-active {
+  background: var(--admin-burgundy);
+  color: #fff9f4;
+  box-shadow: 0 12px 22px -18px rgba(58, 37, 40, 0.8);
+}
+
+body.admin-app-mode .admin-inbox-reply textarea {
+  min-height: 92px;
+}
+
+body.admin-app-mode .admin-inbox-reply__attachments {
+  display: grid;
+  grid-template-columns: 1.35fr 0.65fr;
+  gap: 10px;
+}
+
+body.admin-app-mode .admin-inbox-reply > button[type='submit'] {
+  justify-self: end;
+  min-width: 160px;
+}
+
+body.admin-app-mode .admin-inbox__empty {
+  display: grid;
+  min-height: 160px;
+  place-content: center;
+  padding: 24px;
+  color: var(--admin-muted);
+  text-align: center;
+}
+
+body.admin-app-mode .admin-inbox__empty.is-large {
+  min-height: 100%;
+}
+
+body.admin-app-mode .admin-inbox__empty strong {
+  color: var(--admin-ink);
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 1.45rem;
+}
+
+body.admin-app-mode .admin-inbox__empty p {
+  max-width: 330px;
+  margin: 5px auto 0;
+  font-size: 11px;
+}
+
+body.admin-app-mode .admin-inbox-modal {
+  position: fixed;
+  z-index: 1400;
+  inset: 0;
+  display: grid;
+  overflow-y: auto;
+  place-items: center;
+  background: rgba(35, 22, 27, 0.52);
+  padding: 28px;
+  backdrop-filter: blur(8px);
+}
+
+body.admin-app-mode .admin-inbox-modal > form {
+  width: min(100%, 680px);
+  max-height: calc(100vh - 56px);
+  overflow-y: auto;
+  border: 1px solid var(--admin-gold-border);
+  border-radius: 24px;
+  background: #fffaf6;
+  padding: clamp(22px, 4vw, 34px);
+  box-shadow: 0 46px 90px -48px rgba(26, 14, 19, 0.9);
+}
+
+body.admin-app-mode .admin-inbox-modal form > header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+body.admin-app-mode .admin-inbox-modal form > header h2 {
+  margin: 0;
+}
+
+body.admin-app-mode .admin-inbox-modal form > header > button {
+  width: 38px;
+  min-height: 38px;
+  padding: 0;
+  font-size: 19px;
+}
+
+body.admin-app-mode .admin-inbox-modal form > label,
+body.admin-app-mode .admin-inbox-modal__row {
+  margin-bottom: 12px;
+}
+
+body.admin-app-mode .admin-inbox-modal__row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 11px;
+}
+
+body.admin-app-mode .admin-inbox-modal footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 9px;
+  margin-top: 20px;
+  padding-top: 17px;
+  border-top: 1px solid var(--admin-border);
+}
+
+/* Mail Studio */
+body.admin-app-mode .mail-studio-page-v1 {
+  display: grid;
+  gap: 18px;
+}
+
+body.admin-app-mode .mail-studio-page-v1 .admin-page-heading {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--admin-gold-border);
+  border-radius: 26px;
+  background:
+    radial-gradient(circle at 89% -5%, rgba(200, 169, 106, 0.17), transparent 34%),
+    rgba(255, 252, 249, 0.8);
+  padding: clamp(28px, 5vw, 46px);
+  box-shadow: var(--admin-shadow-raised);
+}
+
+body.admin-app-mode .mail-studio-page-v1 .admin-page-heading::after {
+  position: absolute;
+  width: 190px;
+  height: 190px;
+  right: -92px;
+  bottom: -108px;
+  content: '';
+  border: 1px solid rgba(200, 169, 106, 0.28);
+  border-radius: 50%;
+}
+
+body.admin-app-mode .mail-studio-page-v1 .admin-page-heading h1 {
+  max-width: 780px;
+  margin-bottom: 11px;
+  font-size: clamp(2.75rem, 5vw, 4.35rem);
+  letter-spacing: -0.034em;
+  line-height: 0.96;
+}
+
+body.admin-app-mode .mail-studio-page-v1 .admin-page-heading > p:last-child {
+  max-width: 680px;
+  margin: 0;
+  color: var(--admin-muted);
+  line-height: 1.75;
+}
+
+body.admin-app-mode .mail-studio-page-v1 .admin-notice {
+  margin: 0;
+}
+
+body.admin-app-mode .mail-studio-composer-v1,
+body.admin-app-mode .mail-studio-panel-v1 {
+  min-width: 0;
+  border: 1px solid var(--admin-border);
+  border-radius: 22px;
+  background: rgba(255, 252, 249, 0.82);
+  padding: clamp(18px, 3vw, 26px);
+  box-shadow: var(--admin-shadow);
+}
+
+body.admin-app-mode .mail-studio-composer-v1 {
+  border-color: rgba(200, 169, 106, 0.28);
+  box-shadow: var(--admin-shadow-raised);
+}
+
+body.admin-app-mode .mail-studio-panel-header-v1 {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 17px;
+}
+
+body.admin-app-mode .mail-studio-panel-header-v1 h2 {
+  margin: 0;
+  font-size: clamp(1.55rem, 2.5vw, 2rem);
+}
+
+body.admin-app-mode .mail-studio-panel-header-v1 > span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 34px;
+  border: 1px solid var(--admin-gold-border);
+  border-radius: 999px;
+  background: var(--admin-surface-gold);
+  padding: 0.35rem 0.75rem;
+  color: var(--admin-gold-deep);
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+body.admin-app-mode .mail-studio-panel-header-v1 > select {
+  width: auto;
+  min-width: 112px;
+  min-height: 40px;
+}
+
+body.admin-app-mode .mail-studio-composer-grid-v1 {
+  display: grid;
+  grid-template-columns: minmax(0, 1.08fr) minmax(330px, 0.92fr);
+  gap: 16px;
+  align-items: stretch;
+}
+
+body.admin-app-mode .mail-studio-composer-form-v1,
+body.admin-app-mode .mail-studio-form-v1 {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-content: start;
+  gap: 12px;
+}
+
+body.admin-app-mode :where(.mail-studio-composer-form-v1, .mail-studio-form-v1) label {
+  display: grid;
+  gap: 6px;
+}
+
+body.admin-app-mode :where(.mail-studio-composer-form-v1, .mail-studio-form-v1) label > span {
+  color: var(--admin-gold-deep);
+  font-size: 9px;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+body.admin-app-mode :where(.mail-studio-composer-form-v1, .mail-studio-form-v1) .is-wide {
+  grid-column: 1 / -1;
+}
+
+body.admin-app-mode .mail-studio-composer-actions-v1,
+body.admin-app-mode .mail-studio-form-actions-v1 {
+  display: flex;
+  grid-column: 1 / -1;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 3px;
+}
+
+body.admin-app-mode .mail-studio-composer-actions-v1 button:last-child,
+body.admin-app-mode .mail-studio-form-actions-v1 button[type='submit'] {
+  border-color: transparent;
+  background: linear-gradient(160deg, var(--admin-burgundy), var(--admin-burgundy-deep));
+  color: #fff9f4;
+  box-shadow: 0 18px 34px -20px rgba(58, 37, 40, 0.9);
+}
+
+body.admin-app-mode .mail-studio-preview-v1 {
+  display: grid;
+  min-width: 0;
+  min-height: 420px;
+  grid-template-rows: auto minmax(0, 1fr);
+  overflow: hidden;
+  border: 1px solid rgba(200, 169, 106, 0.25);
+  border-radius: 19px;
+  background:
+    radial-gradient(circle at 90% 8%, rgba(200, 169, 106, 0.14), transparent 34%),
+    linear-gradient(155deg, var(--admin-burgundy), var(--admin-burgundy-deep));
+  color: rgba(242, 226, 216, 0.78);
+  box-shadow: 0 32px 64px -48px rgba(58, 37, 40, 0.95);
+}
+
+body.admin-app-mode .mail-studio-preview-header-v1 {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 1px solid rgba(255, 246, 240, 0.12);
+  padding: 15px 17px;
+}
+
+body.admin-app-mode .mail-studio-preview-header-v1 > div:first-child {
+  min-width: 0;
+}
+
+body.admin-app-mode .mail-studio-preview-header-v1 span {
+  display: block;
+  margin-bottom: 3px;
+  color: var(--admin-gold);
+  font-size: 8.5px;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+body.admin-app-mode .mail-studio-preview-header-v1 strong {
+  display: block;
+  overflow: hidden;
+  color: #fff9f4;
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 1.25rem;
+  line-height: 1.15;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+body.admin-app-mode .mail-studio-preview-header-v1 > div:last-child {
+  display: flex;
+  flex: 0 0 auto;
+  gap: 6px;
+}
+
+body.admin-app-mode .mail-studio-preview-header-v1 button {
+  min-height: 32px;
+  border-color: rgba(255, 246, 240, 0.18);
+  background: rgba(255, 255, 255, 0.07);
+  padding: 0.38rem 0.66rem;
+  color: #fff9f4;
+  font-size: 8.5px;
+}
+
+body.admin-app-mode .mail-studio-preview-body-v1 {
+  min-height: 0;
+  overflow: auto;
+  padding: 17px;
+}
+
+body.admin-app-mode .mail-studio-preview-body-v1 p {
+  margin: 0 0 7px;
+  color: rgba(242, 226, 216, 0.72);
+  font-size: 10px;
+}
+
+body.admin-app-mode .mail-studio-preview-body-v1 p strong {
+  color: var(--admin-gold);
+}
+
+body.admin-app-mode .mail-studio-preview-body-v1 textarea {
+  min-height: 260px;
+  border-color: rgba(255, 246, 240, 0.13);
+  background: rgba(255, 255, 255, 0.055);
+  color: rgba(255, 249, 244, 0.9);
+  font-family: "Manrope", system-ui, sans-serif;
+  font-size: 11px;
+  line-height: 1.7;
+  resize: none;
+}
+
+body.admin-app-mode .mail-studio-preview-body-v1 textarea:focus {
+  border-color: rgba(200, 169, 106, 0.5);
+  background: rgba(255, 255, 255, 0.065);
+}
+
+body.admin-app-mode .mail-studio-preview-v1 > .mail-studio-empty-v1 {
+  align-self: center;
+  max-width: 290px;
+  margin: auto;
+  padding: 28px;
+  color: rgba(242, 226, 216, 0.62);
+  text-align: center;
+}
+
+body.admin-app-mode .mail-studio-grid-v1 {
+  display: grid;
+  grid-template-columns: minmax(280px, 0.78fr) minmax(0, 1.22fr);
+  gap: 16px;
+  align-items: start;
+}
+
+body.admin-app-mode .mail-studio-template-list-v1 {
+  display: grid;
+  max-height: 620px;
+  overflow-y: auto;
+  gap: 8px;
+  padding-right: 3px;
+  scrollbar-width: thin;
+}
+
+body.admin-app-mode .mail-studio-template-list-v1 button {
+  display: grid;
+  width: 100%;
+  min-height: 0;
+  justify-items: start;
+  border-radius: 15px;
+  background: rgba(249, 242, 236, 0.62);
+  padding: 13px 14px;
+  text-align: left;
+  box-shadow: none;
+}
+
+body.admin-app-mode .mail-studio-template-list-v1 button.is-selected {
+  border-color: rgba(200, 169, 106, 0.46);
+  background: linear-gradient(145deg, #fffdfa, rgba(200, 169, 106, 0.1));
+  box-shadow: 0 18px 36px -34px rgba(58, 37, 40, 0.62);
+}
+
+body.admin-app-mode .mail-studio-template-list-v1 button > span,
+body.admin-app-mode .mail-studio-template-list-v1 button > small {
+  color: var(--admin-gold-deep);
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+body.admin-app-mode .mail-studio-template-list-v1 button > strong {
+  margin: 5px 0 2px;
+  color: var(--admin-ink);
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 1.2rem;
+  line-height: 1.1;
+}
+
+body.admin-app-mode .mail-studio-template-list-v1 button > p {
+  overflow: hidden;
+  width: 100%;
+  margin: 0 0 7px;
+  color: var(--admin-muted);
+  font-size: 10px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+body.admin-app-mode .mail-studio-empty-v1 {
+  margin: 0;
+  border: 1px dashed var(--admin-border-strong);
+  border-radius: 15px;
+  background: rgba(249, 242, 236, 0.44);
+  padding: 22px;
+  color: var(--admin-muted);
+  font-size: 11px;
+  line-height: 1.65;
+  text-align: center;
+}
+
+body.admin-app-mode .mail-studio-activity-v1 {
+  overflow: hidden;
+}
+
+body.admin-app-mode .mail-studio-log-list-v1 {
+  display: grid;
+  gap: 7px;
+}
+
+body.admin-app-mode .mail-studio-log-list-v1 article {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  overflow: hidden;
+  border: 1px solid var(--admin-border);
+  border-radius: 14px;
+  background: rgba(249, 242, 236, 0.54);
+  padding: 12px 14px 12px 17px;
+}
+
+body.admin-app-mode .mail-studio-log-list-v1 article::before {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 3px;
+  content: '';
+  background: var(--admin-gold);
+}
+
+body.admin-app-mode .mail-studio-log-list-v1 article.is-failed::before {
+  background: var(--admin-danger);
+}
+
+body.admin-app-mode .mail-studio-log-list-v1 article.is-sent::before,
+body.admin-app-mode .mail-studio-log-list-v1 article.is-sent-manual::before {
+  background: var(--admin-success);
+}
+
+body.admin-app-mode .mail-studio-log-list-v1 article > div {
+  min-width: 0;
+}
+
+body.admin-app-mode .mail-studio-log-list-v1 article span {
+  display: block;
+  color: var(--admin-gold-deep);
+  font-size: 7.5px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+body.admin-app-mode .mail-studio-log-list-v1 article strong {
+  display: block;
+  overflow: hidden;
+  margin: 2px 0;
+  color: var(--admin-ink);
+  font-size: 11px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+body.admin-app-mode .mail-studio-log-list-v1 article p {
+  overflow: hidden;
+  margin: 0;
+  color: var(--admin-muted);
+  font-size: 9.5px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+body.admin-app-mode .mail-studio-log-list-v1 article time {
+  flex: 0 0 auto;
+  color: var(--admin-faint);
+  font-size: 9px;
+}
+
+/* Leads & Intake Pipeline */
+body.admin-app-mode .lead-pipeline-toolbar {
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) minmax(150px, 0.28fr);
+  gap: 12px;
+  margin-bottom: 14px;
+  border: 1px solid var(--admin-border);
+  border-radius: 18px;
+  background: rgba(255, 252, 249, 0.76);
+  padding: 14px;
+  box-shadow: var(--admin-shadow);
+}
+
+body.admin-app-mode .lead-pipeline-toolbar label,
+body.admin-app-mode .lead-pipeline-panel label {
+  display: grid;
+  gap: 6px;
+}
+
+body.admin-app-mode .lead-pipeline-toolbar label > span,
+body.admin-app-mode .lead-pipeline-panel label > span {
+  color: var(--admin-gold-deep);
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+body.admin-app-mode .lead-pipeline-board {
+  display: grid;
+  grid-auto-columns: minmax(236px, 0.8fr);
+  grid-auto-flow: column;
+  gap: 11px;
+  overflow-x: auto;
+  margin-bottom: 18px;
+  padding: 2px 2px 12px;
+  scroll-snap-type: x proximity;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(124, 81, 75, 0.23) transparent;
+}
+
+body.admin-app-mode .lead-pipeline-column {
+  min-width: 0;
+  overflow: hidden;
+  scroll-snap-align: start;
+  border: 1px solid var(--admin-border);
+  border-radius: 18px;
+  background: rgba(255, 252, 249, 0.64);
+  box-shadow: 0 24px 52px -48px rgba(58, 37, 40, 0.56);
+}
+
+body.admin-app-mode .lead-pipeline-column > header {
+  border-bottom: 1px solid var(--admin-border);
+  background: rgba(249, 242, 236, 0.76);
+  padding: 12px 13px;
+}
+
+body.admin-app-mode .lead-pipeline-column > header > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+body.admin-app-mode .lead-pipeline-column > header span {
+  color: var(--admin-ink-soft);
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+body.admin-app-mode .lead-pipeline-column > header strong {
+  display: inline-grid;
+  min-width: 24px;
+  height: 24px;
+  place-items: center;
+  border: 1px solid var(--admin-gold-border);
+  border-radius: 999px;
+  background: var(--admin-surface-gold);
+  color: var(--admin-gold-deep);
+  font-size: 9px;
+}
+
+body.admin-app-mode .lead-pipeline-column-body {
+  display: grid;
+  max-height: 430px;
+  overflow-y: auto;
+  align-content: start;
+  gap: 7px;
+  padding: 8px;
+  scrollbar-width: thin;
+}
+
+body.admin-app-mode .lead-pipeline-card {
+  display: grid;
+  width: 100%;
+  min-height: 0;
+  justify-items: stretch;
+  border-color: transparent;
+  border-radius: 14px;
+  background: rgba(255, 252, 249, 0.76);
+  padding: 12px;
+  text-align: left;
+  box-shadow: none;
+}
+
+body.admin-app-mode .lead-pipeline-card:hover {
+  border-color: var(--admin-border);
+  background: #fffdfa;
+  transform: none;
+}
+
+body.admin-app-mode .lead-pipeline-card.is-selected {
+  border-color: rgba(200, 169, 106, 0.48);
+  background: linear-gradient(145deg, #fffdfa, rgba(200, 169, 106, 0.12));
+  box-shadow: 0 16px 32px -30px rgba(58, 37, 40, 0.7);
+}
+
+body.admin-app-mode .lead-pipeline-card-topline,
+body.admin-app-mode .lead-follow-up-topline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 7px;
+}
+
+body.admin-app-mode .lead-priority,
+body.admin-app-mode .lead-overdue-badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 21px;
+  border: 1px solid var(--admin-border);
+  border-radius: 999px;
+  background: rgba(249, 242, 236, 0.7);
+  padding: 0.2rem 0.5rem;
+  color: var(--admin-muted);
+  font-size: 7px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+body.admin-app-mode .lead-priority-high,
+body.admin-app-mode .lead-priority-urgent {
+  border-color: rgba(153, 84, 92, 0.24);
+  background: rgba(153, 84, 92, 0.08);
+  color: #84404a;
+}
+
+body.admin-app-mode .lead-priority-low {
+  border-color: rgba(85, 113, 93, 0.24);
+  background: rgba(85, 113, 93, 0.08);
+  color: #47614f;
+}
+
+body.admin-app-mode .lead-overdue-badge {
+  border-color: rgba(153, 84, 92, 0.3);
+  color: #8a414b;
+}
+
+body.admin-app-mode .lead-pipeline-card > strong {
+  margin: 9px 0 2px;
+  color: var(--admin-ink);
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 1.2rem;
+  line-height: 1.1;
+}
+
+body.admin-app-mode .lead-pipeline-card > p {
+  display: -webkit-box;
+  overflow: hidden;
+  margin: 0 0 9px;
+  color: var(--admin-muted);
+  font-size: 9.5px;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+body.admin-app-mode .lead-pipeline-card-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 7px;
+  color: var(--admin-faint);
+  font-size: 8px;
+}
+
+body.admin-app-mode .lead-pipeline-empty {
+  margin: 0;
+  border: 1px dashed var(--admin-border);
+  border-radius: 13px;
+  padding: 16px;
+  color: var(--admin-muted);
+  font-size: 10px;
+  text-align: center;
+}
+
+body.admin-app-mode .lead-pipeline-workspace {
+  overflow: hidden;
+  border: 1px solid var(--admin-gold-border);
+  border-radius: 24px;
+  background: rgba(255, 252, 249, 0.82);
+  box-shadow: var(--admin-shadow-raised);
+}
+
+body.admin-app-mode .lead-pipeline-placeholder {
+  display: grid;
+  min-height: 300px;
+  place-content: center;
+  padding: 30px;
+  text-align: center;
+}
+
+body.admin-app-mode .lead-pipeline-placeholder h2 {
+  margin-bottom: 5px;
+}
+
+body.admin-app-mode .lead-pipeline-placeholder p {
+  margin: 0;
+  color: var(--admin-muted);
+}
+
+body.admin-app-mode .lead-pipeline-detail-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+  border-bottom: 1px solid var(--admin-border);
+  background: linear-gradient(145deg, rgba(249, 242, 236, 0.9), rgba(255, 252, 249, 0.78));
+  padding: clamp(20px, 3vw, 28px);
+}
+
+body.admin-app-mode .lead-pipeline-detail-heading h2 {
+  margin: 0 0 4px;
+  font-size: clamp(1.85rem, 3vw, 2.5rem);
+}
+
+body.admin-app-mode .lead-pipeline-detail-heading > div:first-child > p:last-child {
+  margin: 0;
+  color: var(--admin-muted);
+  font-size: 11px;
+}
+
+body.admin-app-mode .lead-pipeline-detail-heading > div:last-child {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+body.admin-app-mode .lead-pipeline-detail-heading a.button,
+body.admin-app-mode .lead-pipeline-header a.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  border: 1px solid var(--admin-border-strong);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.58);
+  padding: 0.68rem 1.15rem;
+  color: var(--admin-burgundy);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+body.admin-app-mode .lead-pipeline-header a.button {
+  border-color: rgba(255, 246, 240, 0.2);
+  background: rgba(255, 250, 246, 0.08);
+  color: #fff8f2;
+}
+
+body.admin-app-mode .lead-pipeline-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  padding: 18px;
+}
+
+body.admin-app-mode .lead-pipeline-lower-grid {
+  padding-top: 0;
+}
+
+body.admin-app-mode .lead-pipeline-panel {
+  display: grid;
+  align-content: start;
+  gap: 12px;
+  min-width: 0;
+  border: 1px solid var(--admin-border);
+  border-radius: 18px;
+  background: rgba(255, 252, 249, 0.74);
+  padding: 18px;
+}
+
+body.admin-app-mode .lead-pipeline-panel > header {
+  margin-bottom: 2px;
+}
+
+body.admin-app-mode .lead-pipeline-panel > header h3 {
+  margin: 0 0 4px;
+}
+
+body.admin-app-mode .lead-pipeline-panel > header p {
+  margin: 0;
+  color: var(--admin-muted);
+  font-size: 10.5px;
+}
+
+body.admin-app-mode .lead-pipeline-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+body.admin-app-mode .lead-pipeline-span-2 {
+  grid-column: 1 / -1;
+}
+
+body.admin-app-mode .lead-pipeline-panel > button.button[type='submit'] {
+  justify-self: end;
+  border-color: transparent;
+  background: linear-gradient(160deg, var(--admin-burgundy), var(--admin-burgundy-deep));
+  color: #fff9f4;
+  box-shadow: 0 18px 34px -20px rgba(58, 37, 40, 0.9);
+}
+
+body.admin-app-mode .lead-follow-up-list,
+body.admin-app-mode .lead-activity-list {
+  display: grid;
+  max-height: 430px;
+  overflow-y: auto;
+  gap: 8px;
+  scrollbar-width: thin;
+}
+
+body.admin-app-mode .lead-follow-up-item,
+body.admin-app-mode .lead-activity-list article {
+  border: 1px solid var(--admin-border);
+  border-radius: 14px;
+  background: rgba(249, 242, 236, 0.54);
+  padding: 13px;
+}
+
+body.admin-app-mode .lead-follow-up-item {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+body.admin-app-mode .lead-follow-up-item > div:first-child {
+  min-width: 0;
+}
+
+body.admin-app-mode .lead-follow-up-item strong,
+body.admin-app-mode .lead-activity-list article strong {
+  display: block;
+  margin: 6px 0 2px;
+  color: var(--admin-ink);
+  font-size: 11px;
+}
+
+body.admin-app-mode .lead-follow-up-item p,
+body.admin-app-mode .lead-activity-list article p {
+  margin: 0 0 5px;
+  color: var(--admin-muted);
+  font-size: 9.5px;
+  line-height: 1.55;
+}
+
+body.admin-app-mode .lead-follow-up-item small,
+body.admin-app-mode .lead-activity-list article :where(span, small) {
+  color: var(--admin-faint);
+  font-size: 8px;
+}
+
+body.admin-app-mode .lead-follow-up-actions {
+  display: flex;
+  flex: 0 0 auto;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 5px;
+}
+
+body.admin-app-mode .lead-follow-up-actions button {
+  min-height: 32px;
+  padding: 0.38rem 0.65rem;
+  font-size: 8px;
+}
+
+body.admin-app-mode .lead-note-form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 8px;
+}
+
+body.admin-app-mode .lead-note-form textarea {
+  min-height: 84px;
+}
+
+/* Session change requests */
+body.admin-app-mode .session-change-admin__tabs {
+  display: inline-flex;
+  gap: 4px;
+  margin-bottom: 14px;
+  border: 1px solid var(--admin-border);
+  border-radius: 999px;
+  background: rgba(255, 252, 249, 0.72);
+  padding: 4px;
+  box-shadow: 0 20px 44px -40px rgba(58, 37, 40, 0.52);
+}
+
+body.admin-app-mode .session-change-admin__tabs button {
+  display: inline-flex;
+  align-items: center;
+  min-height: 37px;
+  gap: 7px;
+  border: 0;
+  background: transparent;
+  padding: 0.5rem 0.9rem;
+  color: var(--admin-muted);
+  box-shadow: none;
+}
+
+body.admin-app-mode .session-change-admin__tabs button span {
+  display: inline-grid;
+  min-width: 20px;
+  height: 20px;
+  place-items: center;
+  border-radius: 999px;
+  background: rgba(124, 81, 75, 0.09);
+  color: inherit;
+  font-size: 8px;
+}
+
+body.admin-app-mode .session-change-admin__tabs button.is-active {
+  background: var(--admin-burgundy);
+  color: #fff9f4;
+  box-shadow: 0 13px 24px -19px rgba(58, 37, 40, 0.9);
+}
+
+body.admin-app-mode .session-change-admin__tabs button.is-active span {
+  background: rgba(255, 255, 255, 0.13);
+}
+
+body.admin-app-mode .session-change-admin__list {
+  display: grid;
+  gap: 13px;
+}
+
+body.admin-app-mode .session-change-card {
+  overflow: hidden;
+  border: 1px solid var(--admin-border);
+  border-radius: 22px;
+  background: rgba(255, 252, 249, 0.82);
+  box-shadow: var(--admin-shadow);
+}
+
+body.admin-app-mode .session-change-card__topline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  border-bottom: 1px solid var(--admin-border);
+  background: rgba(249, 242, 236, 0.72);
+  padding: 11px 17px;
+}
+
+body.admin-app-mode .session-change-card__topline > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+body.admin-app-mode :where(.session-change-card__type, .session-change-card__status) {
+  display: inline-flex;
+  align-items: center;
+  min-height: 23px;
+  border: 1px solid var(--admin-border);
+  border-radius: 999px;
+  background: rgba(255, 252, 249, 0.7);
+  padding: 0.2rem 0.55rem;
+  color: var(--admin-muted);
+  font-size: 7.5px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+body.admin-app-mode .session-change-card__type.is-reschedule,
+body.admin-app-mode .session-change-card__status.is-approved {
+  border-color: rgba(85, 113, 93, 0.25);
+  background: rgba(85, 113, 93, 0.08);
+  color: #47614f;
+}
+
+body.admin-app-mode .session-change-card__type.is-cancel,
+body.admin-app-mode .session-change-card__status.is-declined {
+  border-color: rgba(153, 84, 92, 0.25);
+  background: rgba(153, 84, 92, 0.08);
+  color: #7d3e47;
+}
+
+body.admin-app-mode .session-change-card__status.is-pending {
+  border-color: rgba(168, 121, 57, 0.25);
+  background: rgba(168, 121, 57, 0.08);
+  color: #8a642f;
+}
+
+body.admin-app-mode .session-change-card__topline time {
+  color: var(--admin-faint);
+  font-size: 9px;
+}
+
+body.admin-app-mode .session-change-card__identity {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 18px 20px 12px;
+}
+
+body.admin-app-mode .session-change-card__identity p {
+  margin: 0 0 2px;
+  color: var(--admin-gold-deep);
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+body.admin-app-mode .session-change-card__identity h2 {
+  margin: 0 0 2px;
+  font-size: clamp(1.55rem, 2.4vw, 2rem);
+}
+
+body.admin-app-mode .session-change-card__identity span {
+  color: var(--admin-muted);
+  font-size: 10px;
+}
+
+body.admin-app-mode .session-change-card__identity > a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  border: 1px solid var(--admin-border-strong);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.58);
+  padding: 0.55rem 0.9rem;
+  color: var(--admin-burgundy);
+  font-size: 10px;
+  font-weight: 800;
+}
+
+body.admin-app-mode .session-change-card__details {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 9px;
+  padding: 0 20px 14px;
+}
+
+body.admin-app-mode .session-change-card__details > div {
+  border: 1px solid var(--admin-border);
+  border-radius: 14px;
+  background: rgba(249, 242, 236, 0.58);
+  padding: 11px 12px;
+}
+
+body.admin-app-mode .session-change-card__details > div.is-requested-time {
+  border-color: rgba(200, 169, 106, 0.34);
+  background: var(--admin-surface-gold);
+}
+
+body.admin-app-mode .session-change-card__details span,
+body.admin-app-mode .session-change-card__reason > span {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--admin-gold-deep);
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+
+body.admin-app-mode .session-change-card__details strong {
+  color: var(--admin-ink);
+  font-size: 10.5px;
+  line-height: 1.45;
+}
+
+body.admin-app-mode .session-change-card__reason {
+  margin: 0 20px 14px;
+  border-left: 3px solid rgba(200, 169, 106, 0.55);
+  border-radius: 0 13px 13px 0;
+  background: rgba(249, 242, 236, 0.58);
+  padding: 11px 13px;
+}
+
+body.admin-app-mode .session-change-card__reason p {
+  margin: 0;
+  color: var(--admin-ink-soft);
+  font-size: 11px;
+  line-height: 1.65;
+}
+
+body.admin-app-mode .session-change-card__review {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 14px;
+  border-top: 1px solid var(--admin-border);
+  background: rgba(249, 242, 236, 0.48);
+  padding: 15px 20px 18px;
+}
+
+body.admin-app-mode .session-change-card__review label {
+  display: grid;
+  gap: 6px;
+}
+
+body.admin-app-mode .session-change-card__review label > span {
+  color: var(--admin-gold-deep);
+  font-size: 8.5px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+body.admin-app-mode .session-change-card__review textarea {
+  min-height: 84px;
+}
+
+body.admin-app-mode .session-change-card__review > div {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+body.admin-app-mode .session-change-card__reviewed {
+  border-top: 1px solid var(--admin-border);
+  background: rgba(85, 113, 93, 0.06);
+  padding: 13px 20px 16px;
+}
+
+body.admin-app-mode .session-change-card__reviewed span {
+  color: #47614f;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+}
+
+body.admin-app-mode .session-change-card__reviewed p {
+  margin: 6px 0 0;
+  color: var(--admin-muted);
+  font-size: 10.5px;
+}
+
+body.admin-app-mode .session-change-admin__empty {
+  display: grid;
+  min-height: 260px;
+  place-content: center;
+  border: 1px dashed var(--admin-border-strong);
+  border-radius: 22px;
+  background: rgba(255, 252, 249, 0.6);
+  padding: 30px;
+  text-align: center;
+}
+
+body.admin-app-mode .session-change-admin__empty strong {
+  color: var(--admin-ink);
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 1.55rem;
+}
+
+body.admin-app-mode .session-change-admin__empty p {
+  max-width: 420px;
+  margin: 6px auto 0;
+  color: var(--admin-muted);
+  font-size: 11px;
+}
+
+@media (max-width: 1100px) {
+  body.admin-app-mode .lead-pipeline-metrics {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  body.admin-app-mode .admin-inbox__workspace {
+    grid-template-columns: minmax(250px, 300px) minmax(0, 1fr);
+  }
+
+  body.admin-app-mode .admin-inbox-thread__header {
+    grid-template-columns: 1fr;
+  }
+
+  body.admin-app-mode .admin-inbox-thread__controls {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) auto;
+  }
+
+  body.admin-app-mode .mail-studio-composer-grid-v1 {
+    grid-template-columns: 1fr;
+  }
+
+  body.admin-app-mode .mail-studio-preview-v1 {
+    min-height: 390px;
+  }
+}
+
+@media (max-width: 900px) {
+  body.admin-app-mode :where(
+    .admin-inbox__header,
+    .lead-pipeline-header,
+    .session-change-admin__header
+  ) {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  body.admin-app-mode :where(
+    .admin-inbox__header-actions,
+    .lead-pipeline-header-actions,
+    .session-change-admin__header-actions
+  ) {
+    justify-content: flex-start;
+  }
+
+  body.admin-app-mode :where(.admin-inbox__metrics, .mail-studio-metrics-v1) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  body.admin-app-mode .admin-inbox__filters {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  body.admin-app-mode .admin-inbox__search {
+    grid-column: 1 / -1;
+  }
+
+  body.admin-app-mode .admin-inbox__workspace {
+    height: auto;
+    min-height: 0;
+    grid-template-columns: 1fr;
+  }
+
+  body.admin-app-mode .admin-inbox__list {
+    display: grid;
+    max-height: 330px;
+    grid-auto-columns: minmax(245px, 0.8fr);
+    grid-auto-flow: column;
+    overflow-x: auto;
+    overflow-y: hidden;
+    border-right: 0;
+    border-bottom: 1px solid var(--admin-border);
+  }
+
+  body.admin-app-mode .admin-inbox-list-item {
+    margin: 0;
+  }
+
+  body.admin-app-mode .admin-inbox__thread {
+    min-height: 650px;
+  }
+
+  body.admin-app-mode .mail-studio-grid-v1,
+  body.admin-app-mode .lead-pipeline-detail-grid {
+    grid-template-columns: 1fr;
+  }
+
+  body.admin-app-mode .session-change-card__review {
+    grid-template-columns: 1fr;
+  }
+
+  body.admin-app-mode .session-change-card__review > div {
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 700px) {
+  body.admin-app-mode :where(
+    .admin-inbox,
+    .mail-studio-page-v1,
+    .lead-pipeline-page,
+    .session-change-admin
+  ) {
+    padding-bottom: 48px;
+  }
+
+  body.admin-app-mode :where(
+    .admin-inbox__metrics,
+    .mail-studio-metrics-v1,
+    .lead-pipeline-metrics,
+    .session-change-admin__summary
+  ) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  body.admin-app-mode .session-change-admin__summary article:last-child,
+  body.admin-app-mode .lead-pipeline-metrics article:last-child {
+    grid-column: 1 / -1;
+  }
+
+  body.admin-app-mode .admin-inbox__filters,
+  body.admin-app-mode .lead-pipeline-toolbar,
+  body.admin-app-mode .mail-studio-composer-form-v1,
+  body.admin-app-mode .mail-studio-form-v1,
+  body.admin-app-mode .lead-pipeline-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  body.admin-app-mode .admin-inbox__search,
+  body.admin-app-mode .mail-studio-composer-form-v1 .is-wide,
+  body.admin-app-mode .mail-studio-form-v1 .is-wide,
+  body.admin-app-mode .lead-pipeline-span-2 {
+    grid-column: auto;
+  }
+
+  body.admin-app-mode .admin-inbox__filters > button {
+    width: 100%;
+  }
+
+  body.admin-app-mode .admin-inbox-thread__controls {
+    grid-template-columns: 1fr;
+  }
+
+  body.admin-app-mode .admin-inbox-thread__header,
+  body.admin-app-mode .admin-inbox-reply {
+    padding-inline: 14px;
+  }
+
+  body.admin-app-mode .admin-inbox-message {
+    width: 90%;
+  }
+
+  body.admin-app-mode .admin-inbox-message.is-internal {
+    width: 96%;
+  }
+
+  body.admin-app-mode .admin-inbox-reply__attachments,
+  body.admin-app-mode .admin-inbox-modal__row {
+    grid-template-columns: 1fr;
+  }
+
+  body.admin-app-mode .admin-inbox-reply > button[type='submit'] {
+    width: 100%;
+    justify-self: stretch;
+  }
+
+  body.admin-app-mode .mail-studio-composer-actions-v1,
+  body.admin-app-mode .mail-studio-form-actions-v1 {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  body.admin-app-mode :where(.mail-studio-composer-actions-v1, .mail-studio-form-actions-v1) button {
+    width: 100%;
+  }
+
+  body.admin-app-mode .mail-studio-preview-header-v1 {
+    flex-direction: column;
+  }
+
+  body.admin-app-mode .mail-studio-preview-header-v1 > div:last-child {
+    width: 100%;
+  }
+
+  body.admin-app-mode .mail-studio-preview-header-v1 > div:last-child button {
+    flex: 1;
+  }
+
+  body.admin-app-mode .mail-studio-log-list-v1 article,
+  body.admin-app-mode .lead-pipeline-detail-heading,
+  body.admin-app-mode .lead-follow-up-item,
+  body.admin-app-mode .session-change-card__identity,
+  body.admin-app-mode .session-change-card__topline {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  body.admin-app-mode .mail-studio-log-list-v1 article time {
+    margin-top: 2px;
+  }
+
+  body.admin-app-mode .lead-pipeline-detail-heading > div:last-child,
+  body.admin-app-mode .lead-pipeline-detail-heading > div:last-child a {
+    width: 100%;
+  }
+
+  body.admin-app-mode .lead-follow-up-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  body.admin-app-mode .lead-note-form {
+    grid-template-columns: 1fr;
+  }
+
+  body.admin-app-mode .lead-note-form button {
+    width: 100%;
+  }
+
+  body.admin-app-mode .session-change-card__identity > a {
+    width: 100%;
+  }
+
+  body.admin-app-mode .session-change-card__details {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  body.admin-app-mode :where(
+    .admin-inbox__header,
+    .lead-pipeline-header,
+    .session-change-admin__header,
+    .mail-studio-page-v1 .admin-page-heading
+  ) {
+    border-radius: 21px;
+    padding: 24px 20px;
+  }
+
+  body.admin-app-mode :where(
+    .admin-inbox__header-actions,
+    .lead-pipeline-header-actions,
+    .session-change-admin__header-actions
+  ) {
+    width: 100%;
+  }
+
+  body.admin-app-mode :where(
+    .admin-inbox__header-actions,
+    .lead-pipeline-header-actions,
+    .session-change-admin__header-actions
+  ) :where(button, a) {
+    width: 100%;
+  }
+
+  body.admin-app-mode .admin-inbox__workspace,
+  body.admin-app-mode .mail-studio-composer-v1,
+  body.admin-app-mode .mail-studio-panel-v1,
+  body.admin-app-mode .lead-pipeline-workspace,
+  body.admin-app-mode .session-change-card {
+    border-radius: 18px;
+  }
+
+  body.admin-app-mode .admin-inbox__thread {
+    min-height: 600px;
+  }
+
+  body.admin-app-mode .admin-inbox-reply__mode {
+    width: 100%;
+  }
+
+  body.admin-app-mode .admin-inbox-reply__mode button {
+    flex: 1;
+  }
+
+  body.admin-app-mode .admin-inbox-modal {
+    padding: 12px;
+  }
+
+  body.admin-app-mode .admin-inbox-modal > form {
+    max-height: calc(100vh - 24px);
+    border-radius: 19px;
+    padding: 20px 16px;
+  }
+
+  body.admin-app-mode .admin-inbox-modal footer {
+    flex-direction: column-reverse;
+  }
+
+  body.admin-app-mode .admin-inbox-modal footer button {
+    width: 100%;
+  }
+
+  body.admin-app-mode .mail-studio-composer-v1,
+  body.admin-app-mode .mail-studio-panel-v1 {
+    padding: 17px 14px;
+  }
+
+  body.admin-app-mode .mail-studio-panel-header-v1 {
+    flex-direction: column;
+  }
+
+  body.admin-app-mode .mail-studio-panel-header-v1 > :where(select, button) {
+    width: 100%;
+  }
+
+  body.admin-app-mode .session-change-admin__tabs {
+    display: grid;
+    width: 100%;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  body.admin-app-mode .session-change-admin__tabs button {
+    justify-content: center;
+  }
+
+  body.admin-app-mode .session-change-card__identity,
+  body.admin-app-mode .session-change-card__details,
+  body.admin-app-mode .session-change-card__review {
+    padding-inline: 14px;
+  }
+
+  body.admin-app-mode .session-change-card__reason {
+    margin-inline: 14px;
+  }
+
+  body.admin-app-mode .session-change-card__review > div {
+    flex-direction: column;
+  }
+
+  body.admin-app-mode .session-change-card__review > div button {
+    width: 100%;
+  }
+}
+
+
 @media (prefers-reduced-motion: reduce) {
   body.admin-app-mode *,
   body.admin-app-mode *::before,
