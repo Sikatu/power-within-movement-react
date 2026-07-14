@@ -5,8 +5,8 @@ import {
   getPasswordChangeStatus,
 } from '../../lib/nativeApi'
 
-import './Admin.css'
-import './AdminFoundationModern.css'
+import './AdminCleanSlate.css'
+import './AdminCleanSlateFoundation.css'
 import './AdminOperationsElevation.css'
 
 const initialForm = {

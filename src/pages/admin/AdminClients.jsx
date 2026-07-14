@@ -23,7 +23,6 @@ import {
   updateAdminClient,
   updateAdminServiceRecord,
 } from '../../lib/nativeApi'
-import './AdminClients.rework.css'
 
 import './AdminModuleElevation.css'
 import './AdminClientsPhase5.css'

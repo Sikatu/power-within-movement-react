@@ -7,10 +7,9 @@ import {
   logoutAdmin,
   updateAdminFounderAvailabilityException,
 } from '../../lib/nativeApi'
+import './AdminCleanSlate.css'
+import './AdminCleanSlateFoundation.css'
 
-import './Admin.css'
-import './AdminFoundationModern.css'
-import './FounderView.css'
 
 const FOUNDER_TIME_ZONE = 'America/New_York'
 const FOUNDER_TIME_ZONE_LABEL = 'Eastern Time'

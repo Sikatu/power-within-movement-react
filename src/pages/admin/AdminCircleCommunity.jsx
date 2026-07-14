@@ -12,7 +12,6 @@ import {
   updateAdminCirclePost,
 } from '../../lib/nativeApi'
 
-import './CircleCommunity.css'
 import './AdminOperationsElevation.css'
 
 const emptyComposer = {

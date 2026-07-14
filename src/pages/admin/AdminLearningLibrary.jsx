@@ -17,7 +17,6 @@ import {
   updateAdminLearningModule,
 } from '../../lib/nativeApi'
 
-import './LearningLibrary.css'
 import './AdminModuleElevation.css'
 
 const emptyCourseForm = {

@@ -22,7 +22,6 @@ import {
   upsertAdminMembershipEnrollment,
 } from '../../lib/nativeApi'
 
-import './MembershipCircle.css'
 import './AdminModuleElevation.css'
 
 const emptyPlanForm = {

@@ -1,6 +1,4 @@
-/* Current admin foundation. Intentionally unlayered so it overrides quarantined legacy rules. */
-@layer pwc-admin-legacy;
-
+/* Clean-slate admin foundation. No retired admin stylesheet is loaded. */
 /* =========================================================
    Elevated handoff alignment — clean-slate internal UI
    ========================================================= */

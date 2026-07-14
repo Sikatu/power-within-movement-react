@@ -10,7 +10,6 @@ import {
   updateAdminIntakeTemplate,
 } from '../../lib/nativeApi'
 
-import './OnboardingStudio.css'
 import './AdminModuleElevation.css'
 
 const emptyField = (position = 1) => ({

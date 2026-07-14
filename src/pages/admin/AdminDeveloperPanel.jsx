@@ -23,7 +23,6 @@ import {
   updateDeveloperUserStatus,
 } from '../../lib/nativeApi'
 
-import './DeveloperPanel.css'
 import './AdminDeveloperOperationsPhase8.css'
 
 const tabs = [

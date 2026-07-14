@@ -8,9 +8,8 @@ import {
   updateAdminFounderWeeklyAvailability,
 } from '../../lib/nativeApi'
 
-import './Admin.css'
-import './AdminFoundationModern.css'
-import './FounderAvailability.css'
+import './AdminCleanSlate.css'
+import './AdminCleanSlateFoundation.css'
 import './AdminOperationsElevation.css'
 import './AdminFounderSchedulingPhase7.css'
 

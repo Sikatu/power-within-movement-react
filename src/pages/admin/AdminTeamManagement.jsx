@@ -7,7 +7,6 @@ import {
   updateDeveloperTeamMember,
 } from '../../lib/nativeApi'
 
-import './TeamManagement.css'
 import './AdminOperationsElevation.css'
 
 const moduleLabels = {

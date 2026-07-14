@@ -9,7 +9,6 @@ import {
   updateAdminAutomationWorkflow,
 } from '../../lib/nativeApi'
 
-import './AutomationStudio.css'
 import './AdminModuleElevation.css'
 
 const triggerLabels = {
