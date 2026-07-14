@@ -875,3 +875,437 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* === ELEVATED DEVELOPER ERROR CENTER PHASE 2 START === */
+body.admin-app-mode .error-center-page-header,
+body.admin-app-mode .error-center-metrics,
+body.admin-app-mode .error-center-notice,
+body.admin-app-mode .error-center-toolbar,
+body.admin-app-mode .error-center-state-card,
+body.admin-app-mode .error-center-layout,
+body.admin-app-mode .error-center-settings {
+  width: min(1220px, calc(100% - 80px));
+  margin-right: auto;
+  margin-left: 40px;
+}
+
+body.admin-app-mode .error-center-page-header {
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 24px;
+  padding-top: 44px;
+  margin-bottom: 28px;
+}
+
+body.admin-app-mode .error-center-title-block {
+  max-width: 720px;
+}
+
+body.admin-app-mode .error-center-page-header h1 {
+  max-width: none;
+  margin: 0 0 10px;
+  color: #33222a;
+  font-size: clamp(34px, 4vw, 46px);
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  line-height: 1.02;
+}
+
+body.admin-app-mode .error-center-page-header p:not(.eyebrow) {
+  max-width: 580px;
+  margin: 0 0 14px;
+  color: #8a7a72;
+  font-size: 13.5px;
+  line-height: 1.7;
+}
+
+body.admin-app-mode .error-center-health-strip {
+  gap: 8px;
+  margin-top: 0;
+}
+
+body.admin-app-mode .error-center-health-strip span,
+body.admin-app-mode .error-center-monitoring-badge {
+  min-height: 30px;
+  padding: 6px 13px;
+  border-color: rgba(200, 169, 106, 0.35);
+  background: rgba(255, 252, 249, 0.6);
+  color: #b5884d;
+  font-size: 10.5px;
+  font-weight: 700;
+}
+
+body.admin-app-mode .error-center-health-strip span:first-child {
+  border-color: rgba(107, 168, 131, 0.35);
+  background: rgba(107, 168, 131, 0.14);
+  color: #2e6b46;
+}
+
+body.admin-app-mode .error-center-health-strip i {
+  width: 6px;
+  height: 6px;
+  box-shadow: none;
+}
+
+body.admin-app-mode .error-center-header-actions {
+  gap: 10px;
+  max-width: none;
+  padding: 0;
+}
+
+body.admin-app-mode .error-center-header-actions .btn,
+body.admin-app-mode .error-center-refresh-button,
+body.admin-app-mode .error-center-state-actions .btn {
+  min-height: 42px;
+  padding: 0 18px;
+  border-radius: 999px;
+  font-size: 11.5px;
+  font-weight: 700;
+}
+
+body.admin-app-mode .error-center-header-actions .btn.primary,
+body.admin-app-mode .error-center-state-actions .btn.primary {
+  border: 0;
+  background: linear-gradient(160deg, #4d2831, #38202a);
+  box-shadow: 0 18px 34px -18px rgba(58, 37, 40, 0.9);
+  color: #f7ede7;
+}
+
+body.admin-app-mode .error-center-header-actions .btn.secondary,
+body.admin-app-mode .error-center-state-actions .btn.secondary {
+  border: 1px solid rgba(124, 81, 75, 0.25);
+  background: rgba(255, 255, 255, 0.5);
+  color: #4d2831;
+}
+
+body.admin-app-mode .error-center-refresh-button {
+  min-height: auto;
+  padding: 6px 2px;
+  color: #9a8a82;
+}
+
+body.admin-app-mode .error-center-metrics {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+body.admin-app-mode .error-center-metrics article {
+  min-height: 0;
+  padding: 20px 22px;
+  border: 1px solid rgba(124, 81, 75, 0.13);
+  border-radius: 18px;
+  background: rgba(255, 252, 249, 0.8);
+  box-shadow: 0 30px 60px -48px rgba(58, 37, 40, 0.4);
+}
+
+body.admin-app-mode .error-center-metrics article::after {
+  display: none;
+}
+
+body.admin-app-mode .error-center-metrics article > span {
+  color: #b5884d;
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+body.admin-app-mode .error-center-metrics article strong {
+  margin-top: 7px;
+  color: #33222a;
+  font-family: "Cormorant Garamond", serif;
+  font-size: 38px;
+  font-weight: 500;
+  line-height: 1;
+}
+
+body.admin-app-mode .error-center-metrics article small {
+  margin-top: 6px;
+  color: #9a8a82;
+  font-size: 11px;
+}
+
+body.admin-app-mode .error-center-notice {
+  margin-bottom: 16px;
+  border-radius: 14px;
+}
+
+body.admin-app-mode .error-center-toolbar {
+  grid-template-columns: minmax(260px, 1.6fr) repeat(3, minmax(140px, 0.7fr));
+  gap: 10px;
+  margin-bottom: 16px;
+  padding: 10px;
+  border-color: rgba(124, 81, 75, 0.12);
+  border-radius: 16px;
+  background: rgba(255, 252, 249, 0.68);
+  box-shadow: none;
+}
+
+body.admin-app-mode .error-center-toolbar.has-clear {
+  grid-template-columns: minmax(230px, 1.45fr) repeat(3, minmax(130px, 0.65fr)) auto;
+}
+
+body.admin-app-mode .error-center-toolbar input,
+body.admin-app-mode .error-center-toolbar select,
+body.admin-app-mode .error-center-settings input {
+  min-height: 44px;
+  padding: 0 14px;
+  border-color: rgba(124, 81, 75, 0.18);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.74);
+  color: #3a2528;
+  font-size: 12px;
+}
+
+body.admin-app-mode .error-center-toolbar input:focus,
+body.admin-app-mode .error-center-toolbar select:focus,
+body.admin-app-mode .error-center-settings input:focus {
+  border-color: rgba(181, 136, 77, 0.6);
+  outline: 0;
+  box-shadow: 0 0 0 3px rgba(200, 169, 106, 0.1);
+}
+
+body.admin-app-mode .error-center-clear-filters {
+  min-height: 44px;
+  border-radius: 999px;
+  background: rgba(124, 81, 75, 0.08);
+  color: #4d2831;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+body.admin-app-mode .error-center-state-card,
+body.admin-app-mode .error-center-list,
+body.admin-app-mode .error-center-detail,
+body.admin-app-mode .error-center-settings {
+  border: 1px solid rgba(124, 81, 75, 0.13);
+  border-radius: 22px;
+  background: rgba(255, 252, 249, 0.84);
+  box-shadow: 0 30px 60px -48px rgba(58, 37, 40, 0.4);
+}
+
+body.admin-app-mode .error-center-state-card {
+  min-height: 300px;
+  margin-bottom: 16px;
+}
+
+body.admin-app-mode .error-center-state-card.is-clear {
+  background:
+    radial-gradient(circle at 50% 0%, rgba(200, 169, 106, 0.12), transparent 36%),
+    rgba(255, 252, 249, 0.84);
+}
+
+body.admin-app-mode .error-center-state-card h2 {
+  color: #33222a;
+  font-size: clamp(32px, 4vw, 44px);
+  font-weight: 600;
+  letter-spacing: -0.015em;
+}
+
+body.admin-app-mode .error-center-state-card > p:not(.eyebrow) {
+  color: #8a7a72;
+  font-size: 13px;
+}
+
+body.admin-app-mode .error-center-layout {
+  grid-template-columns: minmax(340px, 0.86fr) minmax(0, 1.44fr);
+  gap: 16px;
+  align-items: start;
+  margin-bottom: 16px;
+}
+
+body.admin-app-mode .error-center-section-heading,
+body.admin-app-mode .error-center-detail-heading {
+  padding: 20px 22px;
+  border-color: rgba(124, 81, 75, 0.1);
+}
+
+body.admin-app-mode .error-center-section-heading h2,
+body.admin-app-mode .error-center-detail-heading h2 {
+  color: #33222a;
+  font-size: 26px;
+  font-weight: 600;
+  letter-spacing: 0;
+  line-height: 1.1;
+}
+
+body.admin-app-mode .error-center-list-count {
+  border-color: rgba(200, 169, 106, 0.35);
+  background: rgba(200, 169, 106, 0.14);
+  color: #a8863f;
+}
+
+body.admin-app-mode .error-center-row {
+  padding: 15px 18px;
+  border-color: rgba(124, 81, 75, 0.08);
+}
+
+body.admin-app-mode .error-center-row:hover,
+body.admin-app-mode .error-center-row.is-selected {
+  background: rgba(200, 169, 106, 0.08);
+}
+
+body.admin-app-mode .error-center-row.is-selected {
+  box-shadow: inset 3px 0 0 #c8a96a;
+}
+
+body.admin-app-mode .error-center-row-copy strong {
+  color: #3a2528;
+  font-size: 12.5px;
+}
+
+body.admin-app-mode .error-center-row-copy small {
+  color: #9a8a82;
+  font-size: 10.5px;
+}
+
+body.admin-app-mode .error-center-detail {
+  top: 16px;
+}
+
+body.admin-app-mode .error-center-message {
+  color: #8a7a72;
+  font-size: 12.5px;
+}
+
+body.admin-app-mode .error-center-facts {
+  gap: 10px;
+}
+
+body.admin-app-mode .error-center-facts div {
+  border-color: rgba(124, 81, 75, 0.08);
+  border-radius: 12px;
+  background: rgba(247, 242, 236, 0.7);
+}
+
+body.admin-app-mode .error-center-facts dt {
+  color: #b5884d;
+  font-size: 9px;
+  letter-spacing: 0.12em;
+}
+
+body.admin-app-mode .error-center-facts dd {
+  color: #3a2528;
+  font-size: 11.5px;
+}
+
+body.admin-app-mode .error-center-detail-footer {
+  border-color: rgba(124, 81, 75, 0.09);
+}
+
+body.admin-app-mode .error-center-status-actions button,
+body.admin-app-mode .error-center-delete {
+  min-height: 36px;
+  border-color: rgba(124, 81, 75, 0.2);
+  color: #4d2831;
+  font-size: 10.5px;
+}
+
+body.admin-app-mode .error-center-settings {
+  margin-top: 0;
+  margin-bottom: 72px;
+  overflow: hidden;
+}
+
+body.admin-app-mode .error-center-settings-layout {
+  gap: 16px;
+  padding: 20px 22px;
+}
+
+body.admin-app-mode .error-center-settings-panel {
+  border-color: rgba(124, 81, 75, 0.1);
+  border-radius: 16px;
+  background: rgba(247, 242, 236, 0.62);
+}
+
+@media (max-width: 1180px) {
+  body.admin-app-mode .error-center-page-header,
+  body.admin-app-mode .error-center-metrics,
+  body.admin-app-mode .error-center-notice,
+  body.admin-app-mode .error-center-toolbar,
+  body.admin-app-mode .error-center-state-card,
+  body.admin-app-mode .error-center-layout,
+  body.admin-app-mode .error-center-settings {
+    width: calc(100% - 40px);
+    margin-right: 20px;
+    margin-left: 20px;
+  }
+
+  body.admin-app-mode .error-center-metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  body.admin-app-mode .error-center-toolbar,
+  body.admin-app-mode .error-center-toolbar.has-clear {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 900px) {
+  body.admin-app-mode .error-center-page-header {
+    grid-template-columns: 1fr;
+    align-items: start;
+    padding-top: 28px;
+  }
+
+  body.admin-app-mode .error-center-header-actions {
+    justify-content: flex-start;
+  }
+
+  body.admin-app-mode .error-center-layout,
+  body.admin-app-mode .error-center-settings-layout {
+    grid-template-columns: 1fr;
+  }
+
+  body.admin-app-mode .error-center-detail {
+    position: static;
+  }
+}
+
+@media (max-width: 620px) {
+  body.admin-app-mode .error-center-page-header,
+  body.admin-app-mode .error-center-metrics,
+  body.admin-app-mode .error-center-notice,
+  body.admin-app-mode .error-center-toolbar,
+  body.admin-app-mode .error-center-state-card,
+  body.admin-app-mode .error-center-layout,
+  body.admin-app-mode .error-center-settings {
+    width: calc(100% - 28px);
+    margin-right: 14px;
+    margin-left: 14px;
+  }
+
+  body.admin-app-mode .error-center-page-header {
+    padding-top: 22px;
+  }
+
+  body.admin-app-mode .error-center-header-actions,
+  body.admin-app-mode .error-center-metrics,
+  body.admin-app-mode .error-center-toolbar,
+  body.admin-app-mode .error-center-toolbar.has-clear,
+  body.admin-app-mode .error-center-facts {
+    grid-template-columns: 1fr;
+  }
+
+  body.admin-app-mode .error-center-header-actions {
+    display: grid;
+    width: 100%;
+  }
+
+  body.admin-app-mode .error-center-header-actions .btn,
+  body.admin-app-mode .error-center-refresh-button {
+    width: 100%;
+    justify-content: center;
+  }
+
+  body.admin-app-mode .error-center-detail-footer {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  body.admin-app-mode .error-center-delete {
+    width: 100%;
+  }
+}
+/* === ELEVATED DEVELOPER ERROR CENTER PHASE 2 END === */

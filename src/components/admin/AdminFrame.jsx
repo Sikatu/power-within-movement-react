@@ -520,7 +520,7 @@ function AdminFrame({ children }) {
               onClick={prepareForNavigation}
             >
               <span className="pwc-nav33-logo-mark" aria-hidden="true">
-                <img src="/favicon.svg" alt="" />
+                <img src="/favicon.webp" alt="" />
               </span>
               <span className="pwc-nav33-brand-copy">
                 <small>Power Within Collective</small>
