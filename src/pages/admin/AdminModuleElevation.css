@@ -1634,3 +1634,169 @@ body.admin-app-mode .onboarding-studio-loading {
     grid-template-columns: 1fr;
   }
 }
+
+/* =========================================================
+   Sessions workspace alignment + action controls
+   Centers the scheduler in the available Studio canvas and restores
+   consistent geometry for links, form actions, and workflow buttons.
+   ========================================================= */
+
+body.admin-app-mode .pwc-scheduler-page {
+  width: min(1280px, 100%);
+  margin-inline: auto;
+}
+
+body.admin-app-mode .pwc-scheduler-page > * {
+  width: 100%;
+  min-width: 0;
+}
+
+body.admin-app-mode .pwc-scheduler-page .btn {
+  box-sizing: border-box;
+  display: inline-flex;
+  min-width: 0;
+  min-height: 42px;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 18px;
+  border: 1px solid var(--studio-border);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.64);
+  color: var(--studio-burgundy);
+  font-family: Manrope, sans-serif;
+  font-size: 11.5px;
+  font-weight: 700;
+  line-height: 1.2;
+  text-align: center;
+  text-decoration: none;
+  white-space: nowrap;
+  transition:
+    background 180ms ease,
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    color 180ms ease,
+    transform 180ms ease;
+}
+
+body.admin-app-mode .pwc-scheduler-page .btn.secondary {
+  border-color: rgba(124, 81, 75, 0.18);
+  background: rgba(255, 252, 249, 0.8);
+  color: var(--studio-burgundy);
+}
+
+body.admin-app-mode .pwc-scheduler-page .btn.primary {
+  border-color: transparent;
+  background: linear-gradient(160deg, var(--studio-burgundy), var(--studio-burgundy-dark));
+  color: #fdf6f0;
+  box-shadow: 0 18px 34px -20px rgba(58, 37, 40, 0.9);
+}
+
+body.admin-app-mode .pwc-scheduler-page .btn:not(:disabled):hover {
+  border-color: rgba(181, 136, 77, 0.44);
+  background: rgba(255, 252, 249, 0.98);
+  color: var(--studio-burgundy-dark);
+  box-shadow: 0 16px 32px -24px rgba(58, 37, 40, 0.5);
+  transform: translateY(-1px);
+}
+
+body.admin-app-mode .pwc-scheduler-page .btn.primary:not(:disabled):hover {
+  border-color: transparent;
+  background: linear-gradient(160deg, #56303a, #3e222d);
+  color: #fffaf6;
+}
+
+body.admin-app-mode .pwc-scheduler-page .btn:focus-visible {
+  outline: 3px solid rgba(200, 169, 106, 0.3);
+  outline-offset: 3px;
+}
+
+body.admin-app-mode .pwc-scheduler-hero-actions {
+  width: 214px;
+  max-width: 214px;
+  flex: 0 0 214px;
+  display: grid;
+  grid-template-columns: 1fr;
+  align-content: end;
+  gap: 10px;
+}
+
+body.admin-app-mode .pwc-scheduler-hero-actions .btn {
+  width: 100%;
+  min-height: 44px;
+}
+
+body.admin-app-mode .pwc-scheduler-filter-row button,
+body.admin-app-mode .pwc-scheduler-text-button,
+body.admin-app-mode .pwc-scheduler-care-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+body.admin-app-mode .pwc-scheduler-filter-row button,
+body.admin-app-mode .pwc-scheduler-text-button {
+  min-height: 34px;
+  padding: 8px 12px;
+  white-space: nowrap;
+}
+
+body.admin-app-mode .pwc-scheduler-care-actions {
+  align-items: stretch;
+}
+
+body.admin-app-mode .pwc-scheduler-care-button {
+  width: 100%;
+  min-height: 46px;
+  padding: 10px 14px;
+  border-radius: 14px;
+  line-height: 1.25;
+  white-space: normal;
+}
+
+body.admin-app-mode .pwc-scheduler-request-card {
+  padding: 15px 18px;
+  border-radius: 15px;
+}
+
+body.admin-app-mode .pwc-scheduler-directory-card {
+  padding: 16px 18px;
+  border-radius: 15px;
+}
+
+body.admin-app-mode .pwc-scheduler-notes-form > .btn {
+  width: 100%;
+}
+
+body.admin-app-mode .pwc-scheduler-form-actions .btn {
+  min-width: 220px;
+}
+
+@media (max-width: 1180px) {
+  body.admin-app-mode .pwc-scheduler-page {
+    width: 100%;
+  }
+}
+
+@media (max-width: 980px) {
+  body.admin-app-mode .pwc-scheduler-hero-actions {
+    width: 100%;
+    max-width: none;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 620px) {
+  body.admin-app-mode .pwc-scheduler-hero-actions {
+    grid-template-columns: 1fr;
+  }
+
+  body.admin-app-mode .pwc-scheduler-form-actions,
+  body.admin-app-mode .pwc-scheduler-form-actions .btn {
+    width: 100%;
+  }
+
+  body.admin-app-mode .pwc-scheduler-form-actions .btn {
+    min-width: 0;
+  }
+}
