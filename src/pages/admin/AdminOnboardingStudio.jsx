@@ -12,6 +12,7 @@ import {
 
 import './Admin.css'
 import './OnboardingStudio.css'
+import './AdminModuleElevation.css'
 
 const emptyField = (position = 1) => ({
   fieldKey: `field_${position}`,
@@ -341,7 +342,7 @@ export default function AdminOnboardingStudio() {
       <div className="onboarding-studio-page">
         <header className="onboarding-studio-header">
           <div>
-            <p className="eyebrow">Pass 30</p>
+            <p className="eyebrow">Client Journey</p>
             <h1>Booking, Intake & Onboarding</h1>
             <p>Connect appointment requests, private intake forms, client preparation, portal onboarding, and reminder communication in one guided flow.</p>
           </div>

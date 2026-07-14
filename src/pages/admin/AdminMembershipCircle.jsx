@@ -24,6 +24,7 @@ import {
 
 import './Admin.css'
 import './MembershipCircle.css'
+import './AdminModuleElevation.css'
 
 const emptyPlanForm = {
   name: '',

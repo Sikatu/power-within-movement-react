@@ -11,6 +11,7 @@ import {
 
 import './Admin.css'
 import './AutomationStudio.css'
+import './AdminModuleElevation.css'
 
 const triggerLabels = {
   manual: 'Manual enrollment',

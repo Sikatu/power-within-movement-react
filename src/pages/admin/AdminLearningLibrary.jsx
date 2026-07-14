@@ -19,6 +19,7 @@ import {
 
 import './Admin.css'
 import './LearningLibrary.css'
+import './AdminModuleElevation.css'
 
 const emptyCourseForm = {
   title: '',

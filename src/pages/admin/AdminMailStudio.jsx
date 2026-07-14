@@ -13,6 +13,8 @@ import {
 } from '../../lib/nativeApi'
 
 import './Admin.css'
+import './AdminModuleElevation.css'
+
 const emptyTemplateForm = {
   name: '',
   category: 'general',

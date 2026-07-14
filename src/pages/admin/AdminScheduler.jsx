@@ -16,6 +16,7 @@ import {
 
 import './Admin.css'
 import './AdminScheduler.css'
+import './AdminModuleElevation.css'
 
 const defaultTypeForm = {
   name: '',

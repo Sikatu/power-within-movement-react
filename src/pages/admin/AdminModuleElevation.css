@@ -1,0 +1,1636 @@
+/* =========================================================
+   Elevated Studio Modules — Phase 3
+   Presentation-only refinement for the operational workspaces.
+   ========================================================= */
+
+body.admin-app-mode {
+  --studio-page-bg: #f8f0e9;
+  --studio-surface: rgba(255, 252, 249, 0.86);
+  --studio-surface-solid: #fffcf9;
+  --studio-surface-soft: rgba(255, 249, 244, 0.64);
+  --studio-ink: #33222a;
+  --studio-body: #8a7a72;
+  --studio-muted: #9a8a82;
+  --studio-burgundy: #4d2831;
+  --studio-burgundy-dark: #38202a;
+  --studio-gold: #b5884d;
+  --studio-gold-light: #c8a96a;
+  --studio-border: rgba(124, 81, 75, 0.12);
+  --studio-border-strong: rgba(200, 169, 106, 0.34);
+  --studio-shadow: 0 30px 60px -48px rgba(58, 37, 40, 0.42);
+  --studio-shadow-raised: 0 38px 76px -50px rgba(58, 37, 40, 0.62);
+}
+
+body.admin-app-mode .client-circle-page-v2.admin-clients-rework-v1,
+body.admin-app-mode .pwc-scheduler-page,
+body.admin-app-mode .admin-inbox,
+body.admin-app-mode .mail-studio-page-v1,
+body.admin-app-mode .learning-library-admin,
+body.admin-app-mode .membership-circle-admin,
+body.admin-app-mode .automation-studio-page,
+body.admin-app-mode .onboarding-studio-page {
+  width: min(1180px, 100%);
+  max-width: none;
+  margin: 0;
+  padding: 40px clamp(24px, 3.5vw, 52px) 68px;
+  color: var(--studio-ink);
+}
+
+body.admin-app-mode .client-circle-page-v2.admin-clients-rework-v1 h1,
+body.admin-app-mode .pwc-scheduler-page h1,
+body.admin-app-mode .admin-inbox h1,
+body.admin-app-mode .mail-studio-page-v1 h1,
+body.admin-app-mode .learning-library-admin h1,
+body.admin-app-mode .membership-circle-admin h1,
+body.admin-app-mode .automation-studio-page h1,
+body.admin-app-mode .onboarding-studio-page h1 {
+  margin: 0 0 10px;
+  color: var(--studio-ink);
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: clamp(38px, 4.2vw, 52px);
+  font-weight: 600;
+  letter-spacing: -0.018em;
+  line-height: 0.98;
+}
+
+body.admin-app-mode .client-circle-page-v2.admin-clients-rework-v1 h2,
+body.admin-app-mode .pwc-scheduler-page h2,
+body.admin-app-mode .admin-inbox h2,
+body.admin-app-mode .mail-studio-page-v1 h2,
+body.admin-app-mode .learning-library-admin h2,
+body.admin-app-mode .membership-circle-admin h2,
+body.admin-app-mode .automation-studio-page h2,
+body.admin-app-mode .onboarding-studio-page h2,
+body.admin-app-mode .onboarding-studio-page h3 {
+  color: var(--studio-ink);
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+body.admin-app-mode .client-circle-hero-v2 > div:first-child > p:not(.admin-eyebrow),
+body.admin-app-mode .pwc-scheduler-hero-copy > p:not(.eyebrow),
+body.admin-app-mode .admin-inbox__header > div:first-child > p:not(.eyebrow),
+body.admin-app-mode .admin-page-heading > p:not(.admin-eyebrow),
+body.admin-app-mode .learning-library-header > div:first-child > p:not(.eyebrow),
+body.admin-app-mode .membership-circle-header > div:first-child > p:not(.eyebrow),
+body.admin-app-mode .automation-studio-header > div:first-child > p:not(.eyebrow),
+body.admin-app-mode .onboarding-studio-header > div:first-child > p:not(.eyebrow) {
+  max-width: 690px;
+  margin: 0;
+  color: var(--studio-muted);
+  font-size: 13.5px;
+  line-height: 1.7;
+}
+
+body.admin-app-mode .client-circle-page-v2 .admin-eyebrow,
+body.admin-app-mode .pwc-scheduler-page .eyebrow,
+body.admin-app-mode .admin-inbox .eyebrow,
+body.admin-app-mode .mail-studio-page-v1 .admin-eyebrow,
+body.admin-app-mode .learning-library-admin .eyebrow,
+body.admin-app-mode .membership-circle-admin .eyebrow,
+body.admin-app-mode .automation-studio-page .eyebrow,
+body.admin-app-mode .onboarding-studio-page .eyebrow {
+  margin: 0 0 9px;
+  color: var(--studio-gold);
+  font-family: Manrope, sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.24em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+/* Shared operational headers */
+body.admin-app-mode .client-circle-hero-v2,
+body.admin-app-mode .pwc-scheduler-hero,
+body.admin-app-mode .admin-inbox__header,
+body.admin-app-mode .admin-page-heading,
+body.admin-app-mode .learning-library-header,
+body.admin-app-mode .membership-circle-header,
+body.admin-app-mode .automation-studio-header,
+body.admin-app-mode .onboarding-studio-header {
+  margin: 0 0 30px;
+}
+
+body.admin-app-mode .client-circle-hero-v2,
+body.admin-app-mode .pwc-scheduler-hero,
+body.admin-app-mode .admin-inbox__header,
+body.admin-app-mode .learning-library-header,
+body.admin-app-mode .membership-circle-header,
+body.admin-app-mode .automation-studio-header,
+body.admin-app-mode .onboarding-studio-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 28px;
+}
+
+body.admin-app-mode .admin-page-heading {
+  display: block;
+}
+
+/* Shared buttons */
+body.admin-app-mode .client-circle-page-v2 button,
+body.admin-app-mode .pwc-scheduler-page button,
+body.admin-app-mode .admin-inbox button,
+body.admin-app-mode .mail-studio-page-v1 button,
+body.admin-app-mode .learning-library-admin button,
+body.admin-app-mode .membership-circle-admin button,
+body.admin-app-mode .automation-studio-page button,
+body.admin-app-mode .onboarding-studio-page button {
+  min-height: 40px;
+  padding: 9px 16px;
+  border: 1px solid var(--studio-border);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.62);
+  color: var(--studio-burgundy);
+  font-family: Manrope, sans-serif;
+  font-size: 11.5px;
+  font-weight: 700;
+  line-height: 1.2;
+  transition:
+    background 180ms ease,
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    color 180ms ease,
+    opacity 180ms ease,
+    transform 180ms ease;
+}
+
+body.admin-app-mode .client-circle-page-v2 button:not(:disabled):hover,
+body.admin-app-mode .pwc-scheduler-page button:not(:disabled):hover,
+body.admin-app-mode .admin-inbox button:not(:disabled):hover,
+body.admin-app-mode .mail-studio-page-v1 button:not(:disabled):hover,
+body.admin-app-mode .learning-library-admin button:not(:disabled):hover,
+body.admin-app-mode .membership-circle-admin button:not(:disabled):hover,
+body.admin-app-mode .automation-studio-page button:not(:disabled):hover,
+body.admin-app-mode .onboarding-studio-page button:not(:disabled):hover {
+  border-color: rgba(181, 136, 77, 0.44);
+  background: rgba(255, 252, 249, 0.96);
+  box-shadow: 0 16px 32px -24px rgba(58, 37, 40, 0.5);
+  transform: translateY(-1px);
+}
+
+body.admin-app-mode .client-circle-page-v2 button:disabled,
+body.admin-app-mode .pwc-scheduler-page button:disabled,
+body.admin-app-mode .admin-inbox button:disabled,
+body.admin-app-mode .mail-studio-page-v1 button:disabled,
+body.admin-app-mode .learning-library-admin button:disabled,
+body.admin-app-mode .membership-circle-admin button:disabled,
+body.admin-app-mode .automation-studio-page button:disabled,
+body.admin-app-mode .onboarding-studio-page button:disabled {
+  cursor: not-allowed;
+  opacity: 0.52;
+}
+
+body.admin-app-mode .client-form-actions-v2 button[type="submit"],
+body.admin-app-mode .client-record-header-actions-v2 > button,
+body.admin-app-mode .pwc-scheduler-page .btn.primary,
+body.admin-app-mode .admin-inbox .btn.primary,
+body.admin-app-mode .mail-studio-composer-actions-v1 button:last-child,
+body.admin-app-mode .mail-studio-form-actions-v1 button[type="submit"],
+body.admin-app-mode .learning-library-create button,
+body.admin-app-mode .learning-form-actions button[type="submit"],
+body.admin-app-mode .learning-course-heading > div:last-child button:first-child,
+body.admin-app-mode .membership-create-plan button,
+body.admin-app-mode .membership-form-actions button[type="submit"],
+body.admin-app-mode .membership-update-actions button[type="submit"],
+body.admin-app-mode .automation-studio-page .pwc-admin-primary-button,
+body.admin-app-mode .automation-workflow-editor > header > button,
+body.admin-app-mode .onboarding-studio-header > button,
+body.admin-app-mode .onboarding-template-editor > header > button,
+body.admin-app-mode .onboarding-studio-list > header button,
+body.admin-app-mode .onboarding-field-builder > header > button {
+  border-color: transparent;
+  background: linear-gradient(160deg, var(--studio-burgundy), var(--studio-burgundy-dark));
+  color: #fdf6f0;
+  box-shadow: 0 18px 34px -20px rgba(58, 37, 40, 0.9);
+}
+
+body.admin-app-mode .client-form-actions-v2 button[type="submit"]:not(:disabled):hover,
+body.admin-app-mode .client-record-header-actions-v2 > button:not(:disabled):hover,
+body.admin-app-mode .pwc-scheduler-page .btn.primary:not(:disabled):hover,
+body.admin-app-mode .admin-inbox .btn.primary:not(:disabled):hover,
+body.admin-app-mode .mail-studio-composer-actions-v1 button:last-child:not(:disabled):hover,
+body.admin-app-mode .learning-library-create button:not(:disabled):hover,
+body.admin-app-mode .membership-create-plan button:not(:disabled):hover,
+body.admin-app-mode .automation-studio-page .pwc-admin-primary-button:not(:disabled):hover,
+body.admin-app-mode .onboarding-studio-header > button:not(:disabled):hover {
+  border-color: transparent;
+  background: linear-gradient(160deg, #56303a, #3e222d);
+  color: #fffaf6;
+  opacity: 0.96;
+}
+
+body.admin-app-mode .client-circle-page-v2 button.is-danger,
+body.admin-app-mode .pwc-scheduler-page button.is-danger,
+body.admin-app-mode .admin-inbox button.is-danger,
+body.admin-app-mode .mail-studio-page-v1 button.is-danger,
+body.admin-app-mode .learning-library-admin button.is-danger,
+body.admin-app-mode .membership-circle-admin button.is-danger,
+body.admin-app-mode .automation-studio-page button.is-danger,
+body.admin-app-mode .onboarding-studio-page button.is-danger {
+  border-color: rgba(158, 67, 77, 0.2);
+  background: rgba(158, 67, 77, 0.07);
+  color: #8f3948;
+  box-shadow: none;
+}
+
+body.admin-app-mode .client-circle-page-v2 button:focus-visible,
+body.admin-app-mode .pwc-scheduler-page button:focus-visible,
+body.admin-app-mode .admin-inbox button:focus-visible,
+body.admin-app-mode .mail-studio-page-v1 button:focus-visible,
+body.admin-app-mode .learning-library-admin button:focus-visible,
+body.admin-app-mode .membership-circle-admin button:focus-visible,
+body.admin-app-mode .automation-studio-page button:focus-visible,
+body.admin-app-mode .onboarding-studio-page button:focus-visible {
+  outline: 3px solid rgba(200, 169, 106, 0.28);
+  outline-offset: 2px;
+}
+
+/* Shared controls */
+body.admin-app-mode .client-circle-page-v2 input,
+body.admin-app-mode .client-circle-page-v2 select,
+body.admin-app-mode .client-circle-page-v2 textarea,
+body.admin-app-mode .pwc-scheduler-page input,
+body.admin-app-mode .pwc-scheduler-page select,
+body.admin-app-mode .pwc-scheduler-page textarea,
+body.admin-app-mode .admin-inbox input,
+body.admin-app-mode .admin-inbox select,
+body.admin-app-mode .admin-inbox textarea,
+body.admin-app-mode .mail-studio-page-v1 input,
+body.admin-app-mode .mail-studio-page-v1 select,
+body.admin-app-mode .mail-studio-page-v1 textarea,
+body.admin-app-mode .learning-library-admin input,
+body.admin-app-mode .learning-library-admin select,
+body.admin-app-mode .learning-library-admin textarea,
+body.admin-app-mode .membership-circle-admin input,
+body.admin-app-mode .membership-circle-admin select,
+body.admin-app-mode .membership-circle-admin textarea,
+body.admin-app-mode .automation-studio-page input,
+body.admin-app-mode .automation-studio-page select,
+body.admin-app-mode .automation-studio-page textarea,
+body.admin-app-mode .onboarding-studio-page input,
+body.admin-app-mode .onboarding-studio-page select,
+body.admin-app-mode .onboarding-studio-page textarea {
+  width: 100%;
+  min-height: 46px;
+  padding: 11px 13px;
+  border: 1px solid rgba(124, 81, 75, 0.18);
+  border-radius: 13px;
+  background: rgba(255, 255, 255, 0.76);
+  color: var(--studio-ink);
+  font: inherit;
+  font-size: 12.5px;
+  line-height: 1.4;
+  transition: border-color 180ms ease, box-shadow 180ms ease, background 180ms ease;
+}
+
+body.admin-app-mode .client-circle-page-v2 textarea,
+body.admin-app-mode .pwc-scheduler-page textarea,
+body.admin-app-mode .admin-inbox textarea,
+body.admin-app-mode .mail-studio-page-v1 textarea,
+body.admin-app-mode .learning-library-admin textarea,
+body.admin-app-mode .membership-circle-admin textarea,
+body.admin-app-mode .automation-studio-page textarea,
+body.admin-app-mode .onboarding-studio-page textarea {
+  min-height: 110px;
+  resize: vertical;
+}
+
+body.admin-app-mode .client-circle-page-v2 input[type="checkbox"],
+body.admin-app-mode .client-circle-page-v2 input[type="radio"],
+body.admin-app-mode .pwc-scheduler-page input[type="checkbox"],
+body.admin-app-mode .pwc-scheduler-page input[type="radio"],
+body.admin-app-mode .admin-inbox input[type="checkbox"],
+body.admin-app-mode .admin-inbox input[type="radio"],
+body.admin-app-mode .mail-studio-page-v1 input[type="checkbox"],
+body.admin-app-mode .mail-studio-page-v1 input[type="radio"],
+body.admin-app-mode .learning-library-admin input[type="checkbox"],
+body.admin-app-mode .learning-library-admin input[type="radio"],
+body.admin-app-mode .membership-circle-admin input[type="checkbox"],
+body.admin-app-mode .membership-circle-admin input[type="radio"],
+body.admin-app-mode .automation-studio-page input[type="checkbox"],
+body.admin-app-mode .automation-studio-page input[type="radio"],
+body.admin-app-mode .onboarding-studio-page input[type="checkbox"],
+body.admin-app-mode .onboarding-studio-page input[type="radio"] {
+  width: 16px;
+  min-width: 16px;
+  height: 16px;
+  min-height: 16px;
+  flex: 0 0 16px;
+  padding: 0;
+  border-radius: 4px;
+  box-shadow: none;
+  accent-color: var(--studio-burgundy);
+}
+
+body.admin-app-mode .client-circle-page-v2 input:focus,
+body.admin-app-mode .client-circle-page-v2 select:focus,
+body.admin-app-mode .client-circle-page-v2 textarea:focus,
+body.admin-app-mode .pwc-scheduler-page input:focus,
+body.admin-app-mode .pwc-scheduler-page select:focus,
+body.admin-app-mode .pwc-scheduler-page textarea:focus,
+body.admin-app-mode .admin-inbox input:focus,
+body.admin-app-mode .admin-inbox select:focus,
+body.admin-app-mode .admin-inbox textarea:focus,
+body.admin-app-mode .mail-studio-page-v1 input:focus,
+body.admin-app-mode .mail-studio-page-v1 select:focus,
+body.admin-app-mode .mail-studio-page-v1 textarea:focus,
+body.admin-app-mode .learning-library-admin input:focus,
+body.admin-app-mode .learning-library-admin select:focus,
+body.admin-app-mode .learning-library-admin textarea:focus,
+body.admin-app-mode .membership-circle-admin input:focus,
+body.admin-app-mode .membership-circle-admin select:focus,
+body.admin-app-mode .membership-circle-admin textarea:focus,
+body.admin-app-mode .automation-studio-page input:focus,
+body.admin-app-mode .automation-studio-page select:focus,
+body.admin-app-mode .automation-studio-page textarea:focus,
+body.admin-app-mode .onboarding-studio-page input:focus,
+body.admin-app-mode .onboarding-studio-page select:focus,
+body.admin-app-mode .onboarding-studio-page textarea:focus {
+  border-color: rgba(181, 136, 77, 0.62);
+  background: #fff;
+  box-shadow: 0 0 0 4px rgba(200, 169, 106, 0.1);
+  outline: none;
+}
+
+body.admin-app-mode .client-circle-page-v2 label > span,
+body.admin-app-mode .pwc-scheduler-page label > span,
+body.admin-app-mode .admin-inbox label > span,
+body.admin-app-mode .mail-studio-page-v1 label > span,
+body.admin-app-mode .learning-library-admin label > span,
+body.admin-app-mode .membership-circle-admin label > span,
+body.admin-app-mode .automation-studio-page label > span,
+body.admin-app-mode .onboarding-studio-page label > span {
+  margin-bottom: 7px;
+  color: #6f5d59;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.035em;
+}
+
+/* Shared notices */
+body.admin-app-mode .client-circle-message-v2,
+body.admin-app-mode .pwc-scheduler-feedback,
+body.admin-app-mode .admin-inbox__notice,
+body.admin-app-mode .admin-notice,
+body.admin-app-mode .learning-library-alert,
+body.admin-app-mode .membership-alert,
+body.admin-app-mode .automation-studio-alert,
+body.admin-app-mode .onboarding-studio-alert {
+  margin: 0 0 20px;
+  padding: 13px 16px;
+  border: 1px solid rgba(94, 125, 98, 0.18);
+  border-radius: 14px;
+  background: rgba(239, 247, 240, 0.82);
+  color: #46624b;
+  font-size: 12.5px;
+  font-weight: 650;
+  line-height: 1.55;
+}
+
+body.admin-app-mode .client-circle-message-v2.is-error,
+body.admin-app-mode .pwc-scheduler-feedback.is-error,
+body.admin-app-mode .admin-inbox__notice.is-error,
+body.admin-app-mode .admin-notice.is-error,
+body.admin-app-mode .learning-library-alert.is-error,
+body.admin-app-mode .membership-alert.is-error,
+body.admin-app-mode .automation-studio-alert.is-error,
+body.admin-app-mode .onboarding-studio-alert.is-error {
+  border-color: rgba(158, 67, 77, 0.18);
+  background: rgba(255, 241, 242, 0.84);
+  color: #8f3948;
+}
+
+body.admin-app-mode .learning-library-alert.is-warning,
+body.admin-app-mode .membership-alert.is-warning {
+  border-color: rgba(181, 136, 77, 0.26);
+  background: rgba(250, 241, 220, 0.72);
+  color: #7c5d31;
+}
+
+/* Shared metric cards */
+body.admin-app-mode .client-circle-metrics-v2,
+body.admin-app-mode .pwc-scheduler-metrics,
+body.admin-app-mode .admin-inbox__metrics,
+body.admin-app-mode .mail-studio-metrics-v1,
+body.admin-app-mode .learning-library-metrics,
+body.admin-app-mode .membership-metrics,
+body.admin-app-mode .automation-studio-metrics,
+body.admin-app-mode .onboarding-studio-metrics {
+  display: grid;
+  gap: 12px;
+  margin: 0 0 28px;
+}
+
+body.admin-app-mode .client-circle-metrics-v2 {
+  width: min(430px, 44%);
+  flex: 0 0 auto;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-bottom: 0;
+}
+
+body.admin-app-mode .pwc-scheduler-metrics,
+body.admin-app-mode .admin-inbox__metrics,
+body.admin-app-mode .mail-studio-metrics-v1,
+body.admin-app-mode .learning-library-metrics,
+body.admin-app-mode .membership-metrics {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+body.admin-app-mode .automation-studio-metrics,
+body.admin-app-mode .onboarding-studio-metrics {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+body.admin-app-mode .client-circle-metric-v2,
+body.admin-app-mode .pwc-scheduler-metrics article,
+body.admin-app-mode .admin-inbox__metrics article,
+body.admin-app-mode .mail-studio-metrics-v1 article,
+body.admin-app-mode .learning-library-metrics article,
+body.admin-app-mode .membership-metrics article,
+body.admin-app-mode .automation-studio-metrics article,
+body.admin-app-mode .onboarding-studio-metrics article {
+  min-width: 0;
+  min-height: 112px;
+  padding: 17px 18px;
+  border: 1px solid var(--studio-border);
+  border-radius: 18px;
+  background: var(--studio-surface);
+  box-shadow: var(--studio-shadow);
+}
+
+body.admin-app-mode .client-circle-metric-v2 span,
+body.admin-app-mode .pwc-scheduler-metrics article > span,
+body.admin-app-mode .admin-inbox__metrics article > span,
+body.admin-app-mode .mail-studio-metrics-v1 article > span,
+body.admin-app-mode .learning-library-metrics article > span,
+body.admin-app-mode .membership-metrics article > span,
+body.admin-app-mode .automation-studio-metrics article > span,
+body.admin-app-mode .onboarding-studio-metrics article > span {
+  display: block;
+  margin: 0 0 9px;
+  color: var(--studio-gold);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.17em;
+  line-height: 1.35;
+  text-transform: uppercase;
+}
+
+body.admin-app-mode .client-circle-metric-v2 strong,
+body.admin-app-mode .pwc-scheduler-metrics article > strong,
+body.admin-app-mode .admin-inbox__metrics article > strong,
+body.admin-app-mode .mail-studio-metrics-v1 article > strong,
+body.admin-app-mode .learning-library-metrics article > strong,
+body.admin-app-mode .membership-metrics article > strong,
+body.admin-app-mode .automation-studio-metrics article > strong,
+body.admin-app-mode .onboarding-studio-metrics article > strong {
+  display: block;
+  margin: 0;
+  color: var(--studio-ink);
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 34px;
+  font-weight: 500;
+  letter-spacing: -0.025em;
+  line-height: 0.95;
+}
+
+body.admin-app-mode .mail-studio-metrics-v1 article > p,
+body.admin-app-mode .automation-studio-metrics article > small {
+  display: block;
+  margin: 7px 0 0;
+  color: var(--studio-muted);
+  font-size: 10.5px;
+  line-height: 1.45;
+}
+
+body.admin-app-mode .admin-inbox__metrics article.is-urgent,
+body.admin-app-mode .pwc-scheduler-metrics article.is-attention {
+  border-color: rgba(176, 106, 90, 0.3);
+  background:
+    linear-gradient(180deg, rgba(176, 106, 90, 0.075), transparent 62%),
+    var(--studio-surface);
+}
+
+/* Client Circle */
+body.admin-app-mode .client-circle-page-v2.admin-clients-rework-v1 .client-circle-workspace-v2 {
+  display: grid;
+  gap: 16px;
+}
+
+body.admin-app-mode .client-circle-page-v2 .client-circle-card-v2,
+body.admin-app-mode .client-circle-page-v2 .client-records-card-v2,
+body.admin-app-mode .client-circle-page-v2 .client-detail-card-v2,
+body.admin-app-mode .client-circle-page-v2 .client-form-card-v2 {
+  border: 1px solid var(--studio-border);
+  border-radius: 22px;
+  background: var(--studio-surface);
+  box-shadow: var(--studio-shadow);
+}
+
+body.admin-app-mode .client-circle-page-v2 .client-records-card-v2 {
+  padding: 0;
+  overflow: visible;
+}
+
+body.admin-app-mode .client-circle-page-v2 .client-card-header-v2 {
+  padding: 22px 24px 18px;
+  border-bottom: 1px solid rgba(124, 81, 75, 0.09);
+}
+
+body.admin-app-mode .client-circle-page-v2 .client-card-header-v2 h2 {
+  margin: 0;
+  font-size: 25px;
+  line-height: 1.08;
+}
+
+body.admin-app-mode .client-circle-page-v2 .client-record-header-actions-v2 > span {
+  color: var(--studio-muted);
+  font-size: 10.5px;
+  font-weight: 650;
+}
+
+body.admin-app-mode .client-circle-page-v2 .client-circle-filter-bar-v2 {
+  grid-template-columns: minmax(230px, 1.55fr) repeat(3, minmax(145px, 0.72fr)) auto;
+  gap: 10px;
+  align-items: end;
+  padding: 18px 24px;
+  border: 0;
+  border-bottom: 1px solid rgba(124, 81, 75, 0.08);
+  border-radius: 0;
+  background: rgba(248, 240, 233, 0.48);
+}
+
+body.admin-app-mode .client-circle-page-v2 .client-circle-filter-bar-v2 > button {
+  min-height: 46px;
+}
+
+body.admin-app-mode .client-circle-page-v2 .client-quick-filter-strip-v2 {
+  gap: 8px;
+  padding: 14px 24px;
+  border-bottom: 1px solid rgba(124, 81, 75, 0.08);
+  background: rgba(255, 252, 249, 0.42);
+}
+
+body.admin-app-mode .client-circle-page-v2 .client-quick-filter-chip-v2 {
+  min-height: 36px;
+  padding: 7px 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.64);
+}
+
+body.admin-app-mode .client-circle-page-v2 .client-quick-filter-chip-v2.is-active {
+  border-color: var(--studio-border-strong);
+  background: rgba(200, 169, 106, 0.12);
+  color: var(--studio-burgundy);
+  box-shadow: none;
+}
+
+body.admin-app-mode .client-circle-page-v2 .client-quick-filter-chip-v2 span {
+  color: inherit;
+  font-size: 10.5px;
+}
+
+body.admin-app-mode .client-circle-page-v2 .client-quick-filter-chip-v2 strong {
+  color: var(--studio-gold);
+  font-size: 12px;
+}
+
+body.admin-app-mode .client-circle-page-v2 .client-record-table-wrap-v2 {
+  border-radius: 0 0 22px 22px;
+}
+
+body.admin-app-mode .client-circle-page-v2 .client-record-table-v2 th {
+  padding: 12px 16px;
+  background: rgba(77, 40, 49, 0.035);
+  color: #7c625c;
+  font-size: 9px;
+  letter-spacing: 0.12em;
+}
+
+body.admin-app-mode .client-circle-page-v2 .client-record-table-v2 td {
+  padding: 16px;
+  color: #715f5a;
+  font-size: 11.5px;
+}
+
+body.admin-app-mode .client-circle-page-v2 .client-record-table-v2 td strong {
+  color: var(--studio-ink);
+  font-size: 12.5px;
+}
+
+body.admin-app-mode .client-circle-page-v2 .client-record-table-v2 tbody tr:hover,
+body.admin-app-mode .client-circle-page-v2 .client-record-table-v2 tbody tr.is-selected {
+  background: rgba(200, 169, 106, 0.075);
+}
+
+body.admin-app-mode .client-circle-page-v2 .client-form-drawer-v2 {
+  border-color: var(--studio-border-strong);
+  background: #fffaf6;
+  box-shadow: var(--studio-shadow-raised);
+}
+
+body.admin-app-mode .client-circle-page-v2 .client-detail-card-v2 {
+  overflow: hidden;
+}
+
+body.admin-app-mode .client-circle-page-v2 .client-detail-grid-v2 > div,
+body.admin-app-mode .client-circle-page-v2 .client-care-highlights-v2 > article,
+body.admin-app-mode .client-circle-page-v2 .client-care-summary-v2 > article,
+body.admin-app-mode .client-circle-page-v2 .client-notes-grid-v2 > section,
+body.admin-app-mode .client-circle-page-v2 .client-portal-invite-v2,
+body.admin-app-mode .client-circle-page-v2 .client-portal-invite-history-v2,
+body.admin-app-mode .client-circle-page-v2 .client-portal-resources-v2,
+body.admin-app-mode .client-circle-page-v2 .client-service-records-v2,
+body.admin-app-mode .client-circle-page-v2 .client-timeline-v2,
+body.admin-app-mode .client-circle-page-v2 .client-portal-email-draft-v2 {
+  border: 1px solid rgba(124, 81, 75, 0.1);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.52);
+}
+
+/* Sessions & Calendar */
+body.admin-app-mode .pwc-scheduler-page {
+  gap: 0;
+}
+
+body.admin-app-mode .pwc-scheduler-hero-actions,
+body.admin-app-mode .admin-inbox__header-actions,
+body.admin-app-mode .automation-studio-header-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 9px;
+}
+
+body.admin-app-mode .pwc-scheduler-toolbar {
+  gap: 10px;
+  margin-bottom: 18px;
+  padding: 14px;
+  border: 1px solid var(--studio-border);
+  border-radius: 18px;
+  background: rgba(255, 252, 249, 0.68);
+  box-shadow: var(--studio-shadow);
+}
+
+body.admin-app-mode .pwc-scheduler-filter-row {
+  gap: 7px;
+}
+
+body.admin-app-mode .pwc-scheduler-filter-row button.is-active {
+  border-color: var(--studio-border-strong);
+  background: rgba(200, 169, 106, 0.13);
+  color: var(--studio-burgundy);
+}
+
+body.admin-app-mode .pwc-scheduler-section {
+  margin-top: 20px;
+}
+
+body.admin-app-mode .pwc-scheduler-section-heading {
+  margin-bottom: 13px;
+}
+
+body.admin-app-mode .pwc-scheduler-section-heading h2 {
+  margin: 0;
+  font-size: 27px;
+}
+
+body.admin-app-mode .pwc-scheduler-panel,
+body.admin-app-mode .pwc-scheduler-request-panel,
+body.admin-app-mode .pwc-scheduler-review-panel,
+body.admin-app-mode .pwc-scheduler-directory,
+body.admin-app-mode .pwc-scheduler-editor {
+  border: 1px solid var(--studio-border);
+  border-radius: 22px;
+  background: var(--studio-surface);
+  box-shadow: var(--studio-shadow);
+}
+
+body.admin-app-mode .pwc-scheduler-panel-header {
+  padding: 20px 22px;
+  border-bottom-color: rgba(124, 81, 75, 0.09);
+}
+
+body.admin-app-mode .pwc-scheduler-request-card,
+body.admin-app-mode .pwc-scheduler-directory-card {
+  border: 1px solid rgba(124, 81, 75, 0.1);
+  border-radius: 15px;
+  background: rgba(255, 255, 255, 0.54);
+}
+
+body.admin-app-mode .pwc-scheduler-request-card:hover,
+body.admin-app-mode .pwc-scheduler-request-card.is-selected,
+body.admin-app-mode .pwc-scheduler-directory-card:hover,
+body.admin-app-mode .pwc-scheduler-directory-card.is-selected {
+  border-color: rgba(200, 169, 106, 0.46);
+  background: rgba(255, 252, 249, 0.98);
+  box-shadow: 0 22px 42px -32px rgba(58, 37, 40, 0.52);
+}
+
+body.admin-app-mode .pwc-session-status-badge {
+  border: 1px solid rgba(124, 81, 75, 0.1);
+  border-radius: 999px;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+body.admin-app-mode .pwc-scheduler-care-button {
+  min-height: 38px;
+}
+
+/* Secure Inbox */
+body.admin-app-mode .admin-inbox__filters {
+  grid-template-columns: 170px 170px minmax(230px, 1fr) auto;
+  gap: 10px;
+  align-items: end;
+  margin-bottom: 12px;
+  padding: 14px;
+  border: 1px solid var(--studio-border);
+  border-radius: 18px;
+  background: rgba(255, 252, 249, 0.7);
+  box-shadow: var(--studio-shadow);
+}
+
+body.admin-app-mode .admin-inbox__count {
+  margin: 12px 3px;
+  color: var(--studio-muted);
+  font-size: 11px;
+  font-weight: 650;
+}
+
+body.admin-app-mode .admin-inbox__workspace {
+  grid-template-columns: minmax(285px, 350px) minmax(0, 1fr);
+  min-height: 650px;
+  border: 1px solid var(--studio-border);
+  border-radius: 22px;
+  background: var(--studio-surface-solid);
+  box-shadow: var(--studio-shadow-raised);
+}
+
+body.admin-app-mode .admin-inbox__list {
+  border-right-color: rgba(124, 81, 75, 0.1);
+  background: rgba(248, 240, 233, 0.58);
+}
+
+body.admin-app-mode .admin-inbox-list-item {
+  padding: 17px 18px;
+  border-bottom-color: rgba(124, 81, 75, 0.09);
+}
+
+body.admin-app-mode .admin-inbox-list-item:hover,
+body.admin-app-mode .admin-inbox-list-item.is-active {
+  background: rgba(255, 252, 249, 0.98);
+}
+
+body.admin-app-mode .admin-inbox-list-item.is-active {
+  box-shadow: inset 3px 0 var(--studio-gold-light);
+}
+
+body.admin-app-mode .admin-inbox-list-item h2 {
+  margin: 8px 0 5px;
+  font-family: Manrope, sans-serif;
+  font-size: 12.5px;
+  font-weight: 750;
+}
+
+body.admin-app-mode .admin-inbox-list-item p {
+  color: var(--studio-body);
+  font-size: 11px;
+  line-height: 1.55;
+}
+
+body.admin-app-mode .admin-inbox-list-item em {
+  padding: 4px 7px;
+  border-radius: 999px;
+  background: rgba(124, 81, 75, 0.08);
+  color: #765e59;
+  font-size: 8.5px;
+  font-weight: 750;
+  letter-spacing: 0.045em;
+  text-transform: uppercase;
+}
+
+body.admin-app-mode .admin-inbox-thread__header {
+  padding: 20px 22px;
+  border-bottom-color: rgba(124, 81, 75, 0.09);
+}
+
+body.admin-app-mode .admin-inbox-thread__header h2 {
+  margin: 0 0 6px;
+  font-size: 25px;
+  line-height: 1.05;
+}
+
+body.admin-app-mode .admin-inbox-thread__messages {
+  padding: 22px;
+  background:
+    radial-gradient(circle at top right, rgba(200, 169, 106, 0.1), transparent 36%),
+    rgba(248, 240, 233, 0.58);
+}
+
+body.admin-app-mode .admin-inbox-message {
+  max-width: 76%;
+  padding: 14px 16px;
+  border-color: rgba(124, 81, 75, 0.1);
+  border-radius: 18px 18px 18px 5px;
+  background: rgba(255, 252, 249, 0.96);
+  box-shadow: 0 18px 36px -30px rgba(58, 37, 40, 0.44);
+}
+
+body.admin-app-mode .admin-inbox-message:not(.is-client):not(.is-internal) {
+  border-radius: 18px 18px 5px 18px;
+  background: rgba(77, 40, 49, 0.92);
+  color: #fdf6f0;
+}
+
+body.admin-app-mode .admin-inbox-message:not(.is-client):not(.is-internal) time {
+  color: rgba(253, 246, 240, 0.62);
+}
+
+body.admin-app-mode .admin-inbox-message.is-internal {
+  border: 1px dashed rgba(181, 136, 77, 0.55);
+  background: rgba(250, 241, 220, 0.82);
+}
+
+body.admin-app-mode .admin-inbox-reply {
+  padding: 18px 20px;
+  border-top-color: rgba(124, 81, 75, 0.09);
+  background: rgba(255, 252, 249, 0.98);
+}
+
+body.admin-app-mode .admin-inbox-reply__mode {
+  padding: 3px;
+  border: 1px solid rgba(124, 81, 75, 0.08);
+  background: rgba(124, 81, 75, 0.06);
+}
+
+body.admin-app-mode .admin-inbox-reply__mode button {
+  min-height: 32px;
+  padding: 6px 11px;
+  border: 0;
+}
+
+body.admin-app-mode .admin-inbox-reply__mode button.is-active {
+  background: #fff;
+  box-shadow: 0 8px 20px -15px rgba(58, 37, 40, 0.45);
+}
+
+body.admin-app-mode .admin-inbox-modal {
+  background: rgba(47, 32, 36, 0.64);
+  backdrop-filter: blur(8px);
+}
+
+body.admin-app-mode .admin-inbox-modal form {
+  border: 1px solid rgba(200, 169, 106, 0.3);
+  border-radius: 24px;
+  background: #fffaf6;
+  box-shadow: 0 38px 90px rgba(34, 18, 26, 0.34);
+}
+
+body.admin-app-mode .admin-inbox-modal header > button {
+  width: 40px;
+  min-width: 40px;
+  min-height: 40px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  color: var(--studio-burgundy);
+  font-size: 24px;
+}
+
+body.admin-app-mode .admin-inbox-modal header > button:hover {
+  border: 0;
+  background: rgba(124, 81, 75, 0.07);
+  box-shadow: none;
+  transform: none;
+}
+
+/* Mail Studio */
+body.admin-app-mode .mail-studio-composer-v1,
+body.admin-app-mode .mail-studio-panel-v1 {
+  overflow: hidden;
+  border: 1px solid var(--studio-border);
+  border-radius: 22px;
+  background: var(--studio-surface);
+  box-shadow: var(--studio-shadow);
+}
+
+body.admin-app-mode .mail-studio-composer-v1 {
+  margin-bottom: 16px;
+  border-color: var(--studio-border-strong);
+  box-shadow: var(--studio-shadow-raised);
+}
+
+body.admin-app-mode .mail-studio-panel-header-v1 {
+  min-height: 76px;
+  padding: 19px 22px;
+  border-bottom: 1px solid rgba(124, 81, 75, 0.09);
+  background: rgba(255, 252, 249, 0.55);
+}
+
+body.admin-app-mode .mail-studio-panel-header-v1 h2 {
+  margin: 0;
+  font-size: 25px;
+}
+
+body.admin-app-mode .mail-studio-panel-header-v1 > span {
+  padding: 6px 10px;
+  border: 1px solid rgba(200, 169, 106, 0.3);
+  border-radius: 999px;
+  background: rgba(200, 169, 106, 0.09);
+  color: #7c5d31;
+  font-size: 9.5px;
+  font-weight: 750;
+}
+
+body.admin-app-mode .mail-studio-composer-grid-v1 {
+  gap: 0;
+  background: rgba(255, 252, 249, 0.36);
+}
+
+body.admin-app-mode .mail-studio-composer-form-v1 {
+  gap: 13px;
+  padding: 22px;
+  border-right: 1px solid rgba(124, 81, 75, 0.09);
+}
+
+body.admin-app-mode .mail-studio-preview-v1 {
+  margin: 22px;
+  border: 1px solid rgba(124, 81, 75, 0.12);
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0 30px 58px -44px rgba(58, 37, 40, 0.55);
+}
+
+body.admin-app-mode .mail-studio-preview-header-v1 {
+  padding: 17px 18px;
+  border-radius: 17px 17px 0 0;
+  background: linear-gradient(160deg, var(--studio-burgundy), var(--studio-burgundy-dark));
+  color: #fdf6f0;
+}
+
+body.admin-app-mode .mail-studio-preview-body-v1 {
+  padding: 22px;
+  color: #6f5d59;
+  font-size: 12.5px;
+  line-height: 1.7;
+}
+
+body.admin-app-mode .mail-studio-grid-v1 {
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+body.admin-app-mode .mail-studio-template-list-v1,
+body.admin-app-mode .mail-studio-log-list-v1 {
+  gap: 9px;
+  padding: 18px 20px 22px;
+}
+
+body.admin-app-mode .mail-studio-template-list-v1 article,
+body.admin-app-mode .mail-studio-log-list-v1 article {
+  padding: 13px 14px;
+  border: 1px solid rgba(124, 81, 75, 0.09);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.52);
+}
+
+/* Learning Library and Membership Circle */
+body.admin-app-mode .learning-library-header__status,
+body.admin-app-mode .membership-circle-header__status {
+  min-width: 230px;
+  padding: 14px 16px;
+  border: 1px solid var(--studio-border-strong);
+  border-radius: 16px;
+  background: rgba(255, 252, 249, 0.75);
+  box-shadow: var(--studio-shadow);
+}
+
+body.admin-app-mode .learning-library-header__status span,
+body.admin-app-mode .membership-circle-header__status span {
+  display: block;
+  color: var(--studio-burgundy);
+  font-size: 11px;
+  font-weight: 750;
+}
+
+body.admin-app-mode .learning-library-header__status small,
+body.admin-app-mode .membership-circle-header__status small {
+  display: block;
+  margin-top: 5px;
+  color: var(--studio-muted);
+  font-size: 9.5px;
+  line-height: 1.45;
+}
+
+body.admin-app-mode .learning-library-layout,
+body.admin-app-mode .membership-circle-layout {
+  align-items: start;
+  grid-template-columns: minmax(250px, 300px) minmax(0, 1fr);
+  gap: 16px;
+}
+
+body.admin-app-mode .learning-library-sidebar,
+body.admin-app-mode .membership-sidebar,
+body.admin-app-mode .learning-library-workspace,
+body.admin-app-mode .membership-workspace {
+  border: 1px solid var(--studio-border);
+  border-radius: 22px;
+  background: var(--studio-surface);
+  box-shadow: var(--studio-shadow);
+}
+
+body.admin-app-mode .learning-library-sidebar,
+body.admin-app-mode .membership-sidebar {
+  overflow: hidden;
+}
+
+body.admin-app-mode .learning-library-create,
+body.admin-app-mode .membership-create-plan {
+  padding: 18px;
+  border-bottom: 1px solid rgba(124, 81, 75, 0.09);
+  background: rgba(200, 169, 106, 0.055);
+}
+
+body.admin-app-mode .learning-library-filters,
+body.admin-app-mode .membership-filters {
+  gap: 8px;
+  padding: 13px 15px;
+  border-bottom: 1px solid rgba(124, 81, 75, 0.09);
+}
+
+body.admin-app-mode .learning-library-course-list,
+body.admin-app-mode .membership-plan-list {
+  gap: 7px;
+  padding: 10px;
+}
+
+body.admin-app-mode .learning-library-course-list > button,
+body.admin-app-mode .membership-plan-list > button {
+  min-height: 0;
+  padding: 13px;
+  border: 1px solid transparent;
+  border-radius: 14px;
+  background: transparent;
+  text-align: left;
+}
+
+body.admin-app-mode .learning-library-course-list > button:hover,
+body.admin-app-mode .learning-library-course-list > button.is-active,
+body.admin-app-mode .membership-plan-list > button:hover,
+body.admin-app-mode .membership-plan-list > button.is-active {
+  border-color: rgba(200, 169, 106, 0.34);
+  background: rgba(255, 252, 249, 0.98);
+  box-shadow: 0 16px 32px -28px rgba(58, 37, 40, 0.5);
+}
+
+body.admin-app-mode .learning-library-workspace,
+body.admin-app-mode .membership-workspace {
+  min-height: 590px;
+  overflow: hidden;
+}
+
+body.admin-app-mode .learning-course-heading,
+body.admin-app-mode .membership-workspace-heading {
+  padding: 22px 24px;
+  border-bottom: 1px solid rgba(124, 81, 75, 0.09);
+  background:
+    radial-gradient(circle at top right, rgba(200, 169, 106, 0.11), transparent 34%),
+    rgba(255, 252, 249, 0.52);
+}
+
+body.admin-app-mode .learning-course-heading h2,
+body.admin-app-mode .membership-workspace-heading h2 {
+  margin: 8px 0 6px;
+  font-size: 29px;
+  line-height: 1.04;
+}
+
+body.admin-app-mode .learning-library-tabs,
+body.admin-app-mode .membership-tabs,
+body.admin-app-mode .onboarding-studio-tabs {
+  display: flex;
+  width: max-content;
+  max-width: 100%;
+  gap: 4px;
+  padding: 4px;
+  border: 1px solid rgba(124, 81, 75, 0.1);
+  border-radius: 999px;
+  background: rgba(124, 81, 75, 0.055);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+body.admin-app-mode .learning-library-tabs,
+body.admin-app-mode .membership-tabs {
+  margin: 18px 22px 0;
+}
+
+body.admin-app-mode .learning-library-tabs::-webkit-scrollbar,
+body.admin-app-mode .membership-tabs::-webkit-scrollbar,
+body.admin-app-mode .onboarding-studio-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+body.admin-app-mode .learning-library-tabs button,
+body.admin-app-mode .membership-tabs button,
+body.admin-app-mode .onboarding-studio-tabs button {
+  min-height: 34px;
+  padding: 7px 12px;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  white-space: nowrap;
+}
+
+body.admin-app-mode .learning-library-tabs button.is-active,
+body.admin-app-mode .membership-tabs button.is-active,
+body.admin-app-mode .onboarding-studio-tabs button.is-active {
+  background: #fff;
+  color: var(--studio-burgundy);
+  box-shadow: 0 9px 22px -18px rgba(58, 37, 40, 0.7);
+}
+
+body.admin-app-mode .learning-course-form,
+body.admin-app-mode .learning-curriculum,
+body.admin-app-mode .learning-access-panel,
+body.admin-app-mode .membership-plan-form,
+body.admin-app-mode .membership-members-panel,
+body.admin-app-mode .membership-content-grid,
+body.admin-app-mode .membership-updates-layout {
+  padding: 22px;
+}
+
+body.admin-app-mode .learning-module-card,
+body.admin-app-mode .learning-lesson-row,
+body.admin-app-mode .learning-access-choice,
+body.admin-app-mode .membership-content-card,
+body.admin-app-mode .membership-member-row,
+body.admin-app-mode .membership-update-composer,
+body.admin-app-mode .membership-update-list {
+  border: 1px solid rgba(124, 81, 75, 0.1);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.54);
+}
+
+body.admin-app-mode .learning-module-card,
+body.admin-app-mode .membership-content-card,
+body.admin-app-mode .membership-update-composer,
+body.admin-app-mode .membership-update-list {
+  box-shadow: 0 22px 42px -38px rgba(58, 37, 40, 0.5);
+}
+
+body.admin-app-mode .learning-status,
+body.admin-app-mode .membership-status,
+body.admin-app-mode .automation-status {
+  border: 1px solid rgba(124, 81, 75, 0.1);
+  border-radius: 999px;
+  font-size: 8.5px;
+  font-weight: 800;
+  letter-spacing: 0.075em;
+  text-transform: uppercase;
+}
+
+/* Automation Studio */
+body.admin-app-mode .automation-studio-layout {
+  grid-template-columns: minmax(250px, 300px) minmax(0, 1fr);
+  gap: 16px;
+}
+
+body.admin-app-mode .automation-workflow-list,
+body.admin-app-mode .automation-workflow-editor,
+body.admin-app-mode .automation-enrollment-panel,
+body.admin-app-mode .automation-studio-empty {
+  border: 1px solid var(--studio-border);
+  border-radius: 22px;
+  background: var(--studio-surface);
+  box-shadow: var(--studio-shadow);
+}
+
+body.admin-app-mode .automation-workflow-list,
+body.admin-app-mode .automation-workflow-editor {
+  overflow: hidden;
+}
+
+body.admin-app-mode .automation-workflow-list > header,
+body.admin-app-mode .automation-workflow-editor > header,
+body.admin-app-mode .automation-enrollment-panel > header {
+  min-height: 76px;
+  padding: 19px 21px;
+  border-bottom: 1px solid rgba(124, 81, 75, 0.09);
+  background: rgba(255, 252, 249, 0.54);
+}
+
+body.admin-app-mode .automation-workflow-list-body {
+  gap: 7px;
+  padding: 10px;
+}
+
+body.admin-app-mode .automation-workflow-card {
+  min-height: 0;
+  padding: 14px;
+  border: 1px solid transparent;
+  border-radius: 14px;
+  background: transparent;
+  text-align: left;
+}
+
+body.admin-app-mode .automation-workflow-card:hover,
+body.admin-app-mode .automation-workflow-card.is-selected {
+  border-color: rgba(200, 169, 106, 0.36);
+  background: rgba(255, 252, 249, 0.98);
+  box-shadow: 0 18px 36px -30px rgba(58, 37, 40, 0.54);
+}
+
+body.admin-app-mode .automation-form-grid,
+body.admin-app-mode .automation-steps-section,
+body.admin-app-mode .automation-enrollment-panel {
+  padding: 20px 22px;
+}
+
+body.admin-app-mode .automation-step-card,
+body.admin-app-mode .automation-enrollment-card {
+  border: 1px solid rgba(124, 81, 75, 0.1);
+  border-radius: 17px;
+  background: rgba(255, 255, 255, 0.56);
+  box-shadow: 0 20px 40px -36px rgba(58, 37, 40, 0.5);
+}
+
+body.admin-app-mode .automation-step-number {
+  background: linear-gradient(160deg, #e0c188, #c8a96a);
+  color: var(--studio-ink);
+  box-shadow: 0 10px 22px -14px rgba(90, 62, 31, 0.7);
+}
+
+body.admin-app-mode .automation-variable-note {
+  border-color: rgba(200, 169, 106, 0.24);
+  border-radius: 14px;
+  background: rgba(250, 241, 220, 0.62);
+  color: #755c3b;
+}
+
+/* Booking and Onboarding */
+body.admin-app-mode .onboarding-studio-tabs {
+  margin: 0 0 20px;
+}
+
+body.admin-app-mode .onboarding-studio-layout {
+  grid-template-columns: minmax(250px, 300px) minmax(0, 1fr);
+  gap: 16px;
+}
+
+body.admin-app-mode .onboarding-studio-list,
+body.admin-app-mode .onboarding-template-editor,
+body.admin-app-mode .onboarding-appointment-grid > article {
+  border: 1px solid var(--studio-border);
+  border-radius: 22px;
+  background: var(--studio-surface);
+  box-shadow: var(--studio-shadow);
+}
+
+body.admin-app-mode .onboarding-studio-list {
+  gap: 7px;
+  padding: 10px;
+}
+
+body.admin-app-mode .onboarding-studio-list > header {
+  align-items: flex-start;
+  padding: 9px 9px 13px;
+  border-bottom: 1px solid rgba(124, 81, 75, 0.09);
+}
+
+body.admin-app-mode .onboarding-studio-list > header h2 {
+  margin: 0;
+  font-size: 23px;
+}
+
+body.admin-app-mode .onboarding-studio-list > header div {
+  justify-content: flex-end;
+}
+
+body.admin-app-mode .onboarding-studio-list > header button {
+  min-height: 31px;
+  padding: 6px 9px;
+  font-size: 9px;
+}
+
+body.admin-app-mode .onboarding-studio-list > button {
+  min-height: 0;
+  padding: 13px;
+  border: 1px solid transparent;
+  border-radius: 14px;
+  background: transparent;
+}
+
+body.admin-app-mode .onboarding-studio-list > button:hover,
+body.admin-app-mode .onboarding-studio-list > button.is-selected {
+  border-color: rgba(200, 169, 106, 0.36);
+  background: rgba(255, 252, 249, 0.98);
+  box-shadow: 0 18px 34px -30px rgba(58, 37, 40, 0.5);
+}
+
+body.admin-app-mode .onboarding-template-editor {
+  overflow: hidden;
+}
+
+body.admin-app-mode .onboarding-template-editor > header,
+body.admin-app-mode .onboarding-field-builder > header,
+body.admin-app-mode .onboarding-response-review > header {
+  padding: 19px 21px;
+  border-bottom-color: rgba(124, 81, 75, 0.09);
+  background: rgba(255, 252, 249, 0.5);
+}
+
+body.admin-app-mode .onboarding-form-grid {
+  gap: 13px;
+  padding: 20px 21px;
+}
+
+body.admin-app-mode .onboarding-field-builder > article,
+body.admin-app-mode .onboarding-response-review > article {
+  border-bottom-color: rgba(124, 81, 75, 0.08);
+}
+
+body.admin-app-mode .onboarding-field-number {
+  background: rgba(200, 169, 106, 0.16);
+  color: #75552e;
+}
+
+body.admin-app-mode .onboarding-appointment-grid {
+  gap: 16px;
+}
+
+body.admin-app-mode .onboarding-appointment-grid > article {
+  padding: 20px;
+}
+
+body.admin-app-mode .onboarding-toggle-list label {
+  border-color: rgba(124, 81, 75, 0.09);
+  border-radius: 13px;
+  background: rgba(255, 255, 255, 0.55);
+}
+
+/* Empty states */
+body.admin-app-mode .client-empty-v2,
+body.admin-app-mode .pwc-scheduler-empty-state,
+body.admin-app-mode .admin-inbox__empty,
+body.admin-app-mode .mail-studio-empty-v1,
+body.admin-app-mode .learning-library-empty,
+body.admin-app-mode .membership-empty-state,
+body.admin-app-mode .automation-studio-empty,
+body.admin-app-mode .onboarding-empty,
+body.admin-app-mode .onboarding-studio-loading {
+  padding: 26px;
+  border: 1px dashed rgba(200, 169, 106, 0.34);
+  border-radius: 17px;
+  background: rgba(255, 252, 249, 0.56);
+  color: var(--studio-muted);
+  font-size: 12.5px;
+  line-height: 1.65;
+  text-align: center;
+}
+
+@media (max-width: 1180px) {
+  body.admin-app-mode .client-circle-hero-v2,
+  body.admin-app-mode .pwc-scheduler-hero,
+  body.admin-app-mode .admin-inbox__header,
+  body.admin-app-mode .learning-library-header,
+  body.admin-app-mode .membership-circle-header,
+  body.admin-app-mode .automation-studio-header,
+  body.admin-app-mode .onboarding-studio-header {
+    align-items: flex-start;
+  }
+
+  body.admin-app-mode .client-circle-metrics-v2 {
+    width: 390px;
+  }
+
+  body.admin-app-mode .automation-studio-metrics,
+  body.admin-app-mode .onboarding-studio-metrics {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  body.admin-app-mode .client-circle-page-v2 .client-circle-filter-bar-v2 {
+    grid-template-columns: minmax(220px, 1.4fr) repeat(2, minmax(145px, 1fr));
+  }
+
+}
+
+@media (max-width: 980px) {
+  body.admin-app-mode .client-circle-hero-v2,
+  body.admin-app-mode .pwc-scheduler-hero,
+  body.admin-app-mode .admin-inbox__header,
+  body.admin-app-mode .learning-library-header,
+  body.admin-app-mode .membership-circle-header,
+  body.admin-app-mode .automation-studio-header,
+  body.admin-app-mode .onboarding-studio-header {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  body.admin-app-mode .client-circle-metrics-v2 {
+    width: 100%;
+  }
+
+  body.admin-app-mode .pwc-scheduler-metrics,
+  body.admin-app-mode .admin-inbox__metrics,
+  body.admin-app-mode .mail-studio-metrics-v1,
+  body.admin-app-mode .learning-library-metrics,
+  body.admin-app-mode .membership-metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  body.admin-app-mode .learning-library-layout,
+  body.admin-app-mode .membership-circle-layout,
+  body.admin-app-mode .automation-studio-layout,
+  body.admin-app-mode .onboarding-studio-layout {
+    grid-template-columns: 1fr;
+  }
+
+  body.admin-app-mode .learning-library-sidebar,
+  body.admin-app-mode .membership-sidebar,
+  body.admin-app-mode .automation-workflow-list,
+  body.admin-app-mode .onboarding-studio-list {
+    position: static;
+    max-height: none;
+  }
+
+  body.admin-app-mode .admin-inbox__workspace {
+    grid-template-columns: 310px minmax(0, 1fr);
+  }
+
+  body.admin-app-mode .mail-studio-composer-grid-v1 {
+    grid-template-columns: 1fr;
+  }
+
+  body.admin-app-mode .mail-studio-composer-form-v1 {
+    border-right: 0;
+    border-bottom: 1px solid rgba(124, 81, 75, 0.09);
+  }
+}
+
+@media (max-width: 820px) {
+  body.admin-app-mode .client-circle-page-v2.admin-clients-rework-v1,
+  body.admin-app-mode .pwc-scheduler-page,
+  body.admin-app-mode .admin-inbox,
+  body.admin-app-mode .mail-studio-page-v1,
+  body.admin-app-mode .learning-library-admin,
+  body.admin-app-mode .membership-circle-admin,
+  body.admin-app-mode .automation-studio-page,
+  body.admin-app-mode .onboarding-studio-page {
+    width: 100%;
+    padding: 28px 20px 50px;
+  }
+
+  body.admin-app-mode .pwc-scheduler-hero-actions,
+  body.admin-app-mode .admin-inbox__header-actions,
+  body.admin-app-mode .automation-studio-header-actions {
+    justify-content: flex-start;
+  }
+
+  body.admin-app-mode .admin-inbox__filters {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  body.admin-app-mode .admin-inbox__workspace {
+    display: block;
+    min-height: 0;
+  }
+
+  body.admin-app-mode .admin-inbox__list {
+    max-height: 340px;
+    border-right: 0;
+    border-bottom: 1px solid rgba(124, 81, 75, 0.1);
+  }
+
+  body.admin-app-mode .client-circle-page-v2 .client-circle-filter-bar-v2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  body.admin-app-mode .client-circle-page-v2 .client-circle-filter-bar-v2 > :first-child {
+    grid-column: 1 / -1;
+  }
+
+}
+
+@media (max-width: 620px) {
+  body.admin-app-mode .client-circle-page-v2.admin-clients-rework-v1,
+  body.admin-app-mode .pwc-scheduler-page,
+  body.admin-app-mode .admin-inbox,
+  body.admin-app-mode .mail-studio-page-v1,
+  body.admin-app-mode .learning-library-admin,
+  body.admin-app-mode .membership-circle-admin,
+  body.admin-app-mode .automation-studio-page,
+  body.admin-app-mode .onboarding-studio-page {
+    padding: 22px 16px 42px;
+  }
+
+  body.admin-app-mode .client-circle-page-v2.admin-clients-rework-v1 h1,
+  body.admin-app-mode .pwc-scheduler-page h1,
+  body.admin-app-mode .admin-inbox h1,
+  body.admin-app-mode .mail-studio-page-v1 h1,
+  body.admin-app-mode .learning-library-admin h1,
+  body.admin-app-mode .membership-circle-admin h1,
+  body.admin-app-mode .automation-studio-page h1,
+  body.admin-app-mode .onboarding-studio-page h1 {
+    font-size: clamp(38px, 11vw, 46px);
+  }
+
+  body.admin-app-mode .client-circle-metrics-v2,
+  body.admin-app-mode .pwc-scheduler-metrics,
+  body.admin-app-mode .admin-inbox__metrics,
+  body.admin-app-mode .mail-studio-metrics-v1,
+  body.admin-app-mode .learning-library-metrics,
+  body.admin-app-mode .membership-metrics,
+  body.admin-app-mode .automation-studio-metrics,
+  body.admin-app-mode .onboarding-studio-metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  body.admin-app-mode .client-circle-metric-v2,
+  body.admin-app-mode .pwc-scheduler-metrics article,
+  body.admin-app-mode .admin-inbox__metrics article,
+  body.admin-app-mode .mail-studio-metrics-v1 article,
+  body.admin-app-mode .learning-library-metrics article,
+  body.admin-app-mode .membership-metrics article,
+  body.admin-app-mode .automation-studio-metrics article,
+  body.admin-app-mode .onboarding-studio-metrics article {
+    min-height: 102px;
+    padding: 15px;
+  }
+
+  body.admin-app-mode .client-circle-page-v2 .client-circle-filter-bar-v2,
+  body.admin-app-mode .admin-inbox__filters {
+    grid-template-columns: 1fr;
+  }
+
+  body.admin-app-mode .client-circle-page-v2 .client-circle-filter-bar-v2 > *,
+  body.admin-app-mode .client-circle-page-v2 .client-circle-filter-bar-v2 > :first-child,
+
+  body.admin-app-mode .client-circle-page-v2 .client-card-header-v2,
+  body.admin-app-mode .client-circle-page-v2 .client-circle-filter-bar-v2,
+  body.admin-app-mode .client-circle-page-v2 .client-quick-filter-strip-v2,
+  body.admin-app-mode .mail-studio-panel-header-v1,
+  body.admin-app-mode .mail-studio-composer-form-v1,
+  body.admin-app-mode .learning-course-heading,
+  body.admin-app-mode .membership-workspace-heading,
+  body.admin-app-mode .automation-workflow-list > header,
+  body.admin-app-mode .automation-workflow-editor > header,
+  body.admin-app-mode .automation-enrollment-panel > header,
+  body.admin-app-mode .onboarding-template-editor > header,
+  body.admin-app-mode .onboarding-field-builder > header,
+  body.admin-app-mode .onboarding-response-review > header {
+    padding-left: 17px;
+    padding-right: 17px;
+  }
+
+  body.admin-app-mode .client-circle-page-v2 .client-card-header-v2,
+  body.admin-app-mode .mail-studio-panel-header-v1,
+  body.admin-app-mode .learning-course-heading,
+  body.admin-app-mode .membership-workspace-heading,
+  body.admin-app-mode .automation-workflow-editor > header,
+  body.admin-app-mode .onboarding-template-editor > header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  body.admin-app-mode .learning-library-header__status,
+  body.admin-app-mode .membership-circle-header__status {
+    width: 100%;
+    min-width: 0;
+  }
+
+  body.admin-app-mode .learning-library-tabs,
+  body.admin-app-mode .membership-tabs,
+  body.admin-app-mode .onboarding-studio-tabs {
+    width: 100%;
+  }
+
+  body.admin-app-mode .admin-inbox-message {
+    max-width: 92%;
+  }
+
+  body.admin-app-mode .admin-inbox-thread__header,
+  body.admin-app-mode .admin-inbox-reply__attachments,
+  body.admin-app-mode .admin-inbox-modal__row {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  body.admin-app-mode .mail-studio-grid-v1,
+  body.admin-app-mode .learning-form-row,
+  body.admin-app-mode .membership-form-grid,
+  body.admin-app-mode .automation-form-grid,
+  body.admin-app-mode .automation-step-grid,
+  body.admin-app-mode .onboarding-form-grid,
+  body.admin-app-mode .onboarding-appointment-grid {
+    grid-template-columns: 1fr;
+  }
+}
