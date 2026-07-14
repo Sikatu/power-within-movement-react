@@ -12,8 +12,6 @@ import {
   updateAdminMailStudioTemplate,
 } from '../../lib/nativeApi'
 
-import './AdminModuleElevation.css'
-import './AdminCommunicationPhase6.css'
 
 const emptyTemplateForm = {
   name: '',

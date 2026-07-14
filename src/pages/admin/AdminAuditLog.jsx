@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom'
 import AdminFrame from '../../components/admin/AdminFrame'
 import { checkAdminAccess, getAdminAuditLogs } from '../../lib/nativeApi'
 
-import './AdminOperationsElevation.css'
 
 function readableAction(value) {
   if (!value) return 'Unknown Action'

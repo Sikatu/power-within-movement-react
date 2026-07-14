@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import logoImage from '../../assets/images/logo.webp'
 import { loginAdmin } from '../../lib/nativeApi'
-import './AdminCleanSlate.css'
-import './AdminCleanSlateFoundation.css'
+
+import './AdminUIBlankSlate.css'
 
 function AdminLogin() {
   const navigate = useNavigate()

@@ -6,7 +6,6 @@ import {
   reviewAdminSessionChangeRequest,
 } from '../../lib/nativeApi'
 
-import './AdminOperationsElevation.css'
 
 const businessTimeZone = 'America/New_York'
 

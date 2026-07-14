@@ -24,8 +24,6 @@ import {
   updateAdminServiceRecord,
 } from '../../lib/nativeApi'
 
-import './AdminModuleElevation.css'
-import './AdminClientsPhase5.css'
 
 const emptyClientForm = {
   firstName: '',

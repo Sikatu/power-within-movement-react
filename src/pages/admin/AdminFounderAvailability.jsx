@@ -8,10 +8,7 @@ import {
   updateAdminFounderWeeklyAvailability,
 } from '../../lib/nativeApi'
 
-import './AdminCleanSlate.css'
-import './AdminCleanSlateFoundation.css'
-import './AdminOperationsElevation.css'
-import './AdminFounderSchedulingPhase7.css'
+import './AdminUIBlankSlate.css'
 
 const FOUNDER_TIME_ZONE = 'America/New_York'
 const WEEKDAYS = [

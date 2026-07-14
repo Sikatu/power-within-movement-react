@@ -9,7 +9,6 @@ import {
   updateDeveloperErrorStatus,
 } from '../../lib/nativeApi'
 
-import './AdminDeveloperOperationsPhase8.css'
 
 const statusOptions = ['open', 'investigating', 'resolved', 'ignored']
 const severityOptions = ['critical', 'high', 'medium', 'low']

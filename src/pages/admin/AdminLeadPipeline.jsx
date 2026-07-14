@@ -10,7 +10,6 @@ import {
   updateAdminLeadFollowUp,
 } from '../../lib/nativeApi'
 
-import './AdminOperationsElevation.css'
 
 const stageLabels = {
   new_inquiry: 'New inquiry',

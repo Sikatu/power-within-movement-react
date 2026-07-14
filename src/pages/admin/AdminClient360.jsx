@@ -8,8 +8,6 @@ import {
   updateAdminClientCareAction,
   updateAdminClientCarePlan,
 } from '../../lib/nativeApi'
-import './AdminOperationsElevation.css'
-import './AdminClientsPhase5.css'
 
 const emptyPlan = {
   journeyStage: 'onboarding',

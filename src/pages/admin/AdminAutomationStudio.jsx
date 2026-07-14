@@ -9,7 +9,6 @@ import {
   updateAdminAutomationWorkflow,
 } from '../../lib/nativeApi'
 
-import './AdminModuleElevation.css'
 
 const triggerLabels = {
   manual: 'Manual enrollment',

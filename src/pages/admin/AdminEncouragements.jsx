@@ -10,7 +10,6 @@ import {
   updateAdminEncouragement,
 } from '../../lib/nativeApi'
 
-import './AdminOperationsElevation.css'
 
 const BUSINESS_TIME_ZONE = 'America/New_York'
 

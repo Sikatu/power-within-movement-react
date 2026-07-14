@@ -14,7 +14,6 @@ import {
   welcomeBookingIntoClientCircle,
 } from '../../lib/nativeApi'
 
-import './AdminModuleElevation.css'
 
 const defaultTypeForm = {
   name: '',

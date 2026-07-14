@@ -10,7 +10,6 @@ import {
   updateAdminIntakeTemplate,
 } from '../../lib/nativeApi'
 
-import './AdminModuleElevation.css'
 
 const emptyField = (position = 1) => ({
   fieldKey: `field_${position}`,

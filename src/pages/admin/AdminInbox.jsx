@@ -9,8 +9,6 @@ import {
   updateAdminInboxConversation,
 } from '../../lib/nativeApi'
 
-import './AdminModuleElevation.css'
-import './AdminCommunicationPhase6.css'
 
 const emptyNewConversation = {
   clientProfileId: '',

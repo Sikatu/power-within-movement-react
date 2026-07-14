@@ -23,7 +23,6 @@ import {
   updateDeveloperUserStatus,
 } from '../../lib/nativeApi'
 
-import './AdminDeveloperOperationsPhase8.css'
 
 const tabs = [
   { id: 'overview', label: 'Overview' },

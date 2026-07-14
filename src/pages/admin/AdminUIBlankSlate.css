@@ -1,0 +1,585 @@
+/*
+ * ADMIN UI BLANK SLATE
+ * --------------------
+ * Structural and accessibility defaults only. This is intentionally not a
+ * branded or elevated design system. Future admin UI work should start here
+ * rather than stacking on any previous phase stylesheet.
+ */
+
+body.admin-app-mode {
+  margin: 0;
+  min-width: 320px;
+  background: #f3f3f3;
+  color: #202020;
+  font-family: Arial, Helvetica, sans-serif;
+  line-height: 1.5;
+}
+
+body.admin-app-mode *,
+body.admin-app-mode *::before,
+body.admin-app-mode *::after {
+  box-sizing: border-box;
+}
+
+body.admin-app-mode img,
+body.admin-app-mode svg {
+  max-width: 100%;
+}
+
+body.admin-app-mode a {
+  color: #174a7e;
+  text-underline-offset: 0.18em;
+}
+
+body.admin-app-mode button,
+body.admin-app-mode input,
+body.admin-app-mode select,
+body.admin-app-mode textarea {
+  font: inherit;
+}
+
+body.admin-app-mode button,
+body.admin-app-mode .btn,
+body.admin-app-mode [role='button'] {
+  min-height: 40px;
+  border: 1px solid #777;
+  border-radius: 4px;
+  background: #fff;
+  color: #202020;
+  padding: 0.55rem 0.85rem;
+  cursor: pointer;
+}
+
+body.admin-app-mode button:hover:not(:disabled),
+body.admin-app-mode .btn:hover:not(:disabled) {
+  background: #e9e9e9;
+}
+
+body.admin-app-mode button:disabled,
+body.admin-app-mode .btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+body.admin-app-mode .btn.primary,
+body.admin-app-mode button.primary {
+  border-color: #222;
+  background: #222;
+  color: #fff;
+}
+
+body.admin-app-mode input,
+body.admin-app-mode select,
+body.admin-app-mode textarea {
+  width: 100%;
+  min-height: 40px;
+  border: 1px solid #999;
+  border-radius: 4px;
+  background: #fff;
+  color: #202020;
+  padding: 0.55rem 0.7rem;
+}
+
+body.admin-app-mode textarea {
+  min-height: 110px;
+  resize: vertical;
+}
+
+body.admin-app-mode input[type='checkbox'],
+body.admin-app-mode input[type='radio'] {
+  width: auto;
+  min-height: auto;
+  padding: 0;
+}
+
+body.admin-app-mode :where(button, a, input, select, textarea, [tabindex]):focus-visible {
+  outline: 3px solid #1f70b7;
+  outline-offset: 2px;
+}
+
+body.admin-app-mode :where(h1, h2, h3, h4, p) {
+  margin-top: 0;
+}
+
+body.admin-app-mode h1 {
+  font-size: clamp(1.65rem, 3vw, 2.35rem);
+  line-height: 1.15;
+}
+
+body.admin-app-mode h2 {
+  font-size: clamp(1.25rem, 2vw, 1.65rem);
+  line-height: 1.2;
+}
+
+body.admin-app-mode h3 {
+  font-size: 1.05rem;
+}
+
+body.admin-app-mode .eyebrow {
+  margin-bottom: 0.4rem;
+  color: #555;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+body.admin-app-mode .sr-only {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+/* Authentication routes */
+body.admin-app-mode .pwc-admin-auth-page {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+
+body.admin-app-mode .pwc-admin-auth-card {
+  width: min(100%, 460px);
+  border: 1px solid #bbb;
+  border-radius: 6px;
+  background: #fff;
+  padding: 28px;
+}
+
+body.admin-app-mode .pwc-admin-auth-logo {
+  display: block;
+  width: 88px;
+  height: auto;
+  margin-bottom: 20px;
+}
+
+body.admin-app-mode .pwc-admin-login-form {
+  display: grid;
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+}
+
+body.admin-app-mode .pwc-admin-auth-actions,
+body.admin-app-mode .pwc-admin-auth-footer,
+body.admin-app-mode .pwc-admin-account-email {
+  margin-top: 1rem;
+}
+
+body.admin-app-mode .pwc-admin-auth-footer,
+body.admin-app-mode .pwc-admin-account-email {
+  color: #555;
+  font-size: 0.875rem;
+}
+
+body.admin-app-mode .pwc-admin-password-requirements {
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 0.8rem;
+}
+
+body.admin-app-mode .pwc-admin-password-requirements ul {
+  margin: 0.5rem 0 0;
+  padding-left: 1.25rem;
+}
+
+body.admin-app-mode .pwc-admin-password-requirements .is-met {
+  color: #176b37;
+}
+
+/* Neutral, functional admin shell */
+body.admin-app-mode .pwc-admin-shell {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: minmax(230px, 280px) minmax(0, 1fr);
+}
+
+body.admin-app-mode .pwc-admin-sidebar {
+  min-width: 0;
+  max-height: 100vh;
+  position: sticky;
+  top: 0;
+  overflow: hidden;
+  border-right: 1px solid #c8c8c8;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+}
+
+body.admin-app-mode .pwc-nav33-header,
+body.admin-app-mode .pwc-nav33-footer {
+  padding: 16px;
+}
+
+body.admin-app-mode .pwc-nav33-header {
+  border-bottom: 1px solid #ddd;
+}
+
+body.admin-app-mode .pwc-nav33-footer {
+  margin-top: auto;
+  border-top: 1px solid #ddd;
+}
+
+body.admin-app-mode .pwc-nav33-brand-row,
+body.admin-app-mode .pwc-nav33-brand-link,
+body.admin-app-mode .pwc-nav33-account,
+body.admin-app-mode .pwc-nav33-utilities,
+body.admin-app-mode .pwc-nav33-workspace-trigger,
+body.admin-app-mode .pwc-nav33-group-trigger {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+}
+
+body.admin-app-mode .pwc-nav33-brand-link {
+  color: inherit;
+  text-decoration: none;
+}
+
+body.admin-app-mode .pwc-nav33-logo-mark {
+  width: 38px;
+  height: 38px;
+  flex: 0 0 38px;
+}
+
+body.admin-app-mode .pwc-nav33-brand-copy,
+body.admin-app-mode .pwc-nav33-account > span:last-child,
+body.admin-app-mode .pwc-nav33-workspace-trigger > span,
+body.admin-app-mode .pwc-nav33-group-trigger > span {
+  min-width: 0;
+  display: grid;
+}
+
+body.admin-app-mode .pwc-nav33-brand-copy small,
+body.admin-app-mode .pwc-nav33-account small,
+body.admin-app-mode .pwc-nav33-account em,
+body.admin-app-mode .pwc-nav33-workspace-trigger small,
+body.admin-app-mode .pwc-nav33-group-trigger small {
+  color: #666;
+  font-size: 0.75rem;
+  font-style: normal;
+}
+
+body.admin-app-mode .pwc-nav33-workspace,
+body.admin-app-mode .pwc-nav33-search {
+  margin-top: 12px;
+}
+
+body.admin-app-mode .pwc-nav33-workspace-trigger,
+body.admin-app-mode .pwc-nav33-search {
+  width: 100%;
+}
+
+body.admin-app-mode .pwc-nav33-workspace-trigger {
+  justify-content: space-between;
+}
+
+body.admin-app-mode .pwc-nav33-workspace-menu {
+  margin-top: 6px;
+  border: 1px solid #bbb;
+  border-radius: 4px;
+  background: #fff;
+  padding: 6px;
+  display: grid;
+  gap: 4px;
+}
+
+body.admin-app-mode .pwc-nav33-workspace-menu button {
+  text-align: left;
+}
+
+body.admin-app-mode .pwc-nav33-search {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+body.admin-app-mode .pwc-nav33-search input {
+  min-width: 0;
+}
+
+body.admin-app-mode .pwc-nav33-search svg,
+body.admin-app-mode .pwc-admin-nav svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+}
+
+body.admin-app-mode .pwc-nav33-search kbd {
+  color: #666;
+  font-size: 0.7rem;
+}
+
+body.admin-app-mode .pwc-admin-nav {
+  padding: 12px;
+  overflow: auto;
+}
+
+body.admin-app-mode .pwc-nav33-primary,
+body.admin-app-mode .pwc-nav33-groups,
+body.admin-app-mode .pwc-nav33-search-results,
+body.admin-app-mode .pwc-nav33-group-links {
+  display: grid;
+  gap: 4px;
+}
+
+body.admin-app-mode .pwc-admin-nav a,
+body.admin-app-mode .pwc-nav33-group-trigger {
+  width: 100%;
+  min-height: 40px;
+  border-radius: 4px;
+  color: #222;
+  text-decoration: none;
+  padding: 0.55rem 0.65rem;
+}
+
+body.admin-app-mode .pwc-admin-nav a {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+body.admin-app-mode .pwc-admin-nav a:hover,
+body.admin-app-mode .pwc-admin-nav a.is-active,
+body.admin-app-mode .pwc-nav33-group.is-active > .pwc-nav33-group-trigger {
+  background: #e9e9e9;
+}
+
+body.admin-app-mode .pwc-nav33-group-trigger {
+  border-color: transparent;
+  justify-content: space-between;
+  text-align: left;
+}
+
+body.admin-app-mode .pwc-nav33-group-links {
+  padding: 4px 0 8px 16px;
+}
+
+body.admin-app-mode .pwc-nav33-divider {
+  height: 1px;
+  background: #ddd;
+  margin: 12px 0;
+}
+
+body.admin-app-mode .pwc-nav33-avatar {
+  width: 34px;
+  height: 34px;
+  flex: 0 0 34px;
+  border-radius: 50%;
+  background: #ddd;
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+}
+
+body.admin-app-mode .pwc-nav33-utilities {
+  justify-content: space-between;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+
+body.admin-app-mode .pwc-admin-main {
+  min-width: 0;
+  padding: 24px;
+}
+
+body.admin-app-mode .pwc-admin-main > * {
+  width: min(100%, 1280px);
+  margin-left: auto;
+  margin-right: auto;
+}
+
+body.admin-app-mode .pwc-studio-view-only-banner {
+  border: 1px solid #c7a600;
+  background: #fff9cf;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+body.admin-app-mode .pwc-nav33-mobile-trigger,
+body.admin-app-mode .pwc-nav33-mobile-close,
+body.admin-app-mode .pwc-nav33-mobile-backdrop {
+  display: none;
+}
+
+/* Readable content defaults. No route-specific layout or branding. */
+body.admin-app-mode .pwc-admin-main :where(form, section, article) {
+  min-width: 0;
+}
+
+body.admin-app-mode .pwc-admin-main :where(form) {
+  display: grid;
+  gap: 0.85rem;
+}
+
+body.admin-app-mode .pwc-admin-main :where(label) {
+  font-weight: 600;
+}
+
+body.admin-app-mode .pwc-admin-main :where(table) {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+}
+
+body.admin-app-mode .pwc-admin-main :where(th, td) {
+  border: 1px solid #d3d3d3;
+  padding: 0.65rem;
+  text-align: left;
+  vertical-align: top;
+}
+
+body.admin-app-mode .pwc-admin-main :where(th) {
+  background: #eee;
+}
+
+body.admin-app-mode .pwc-admin-main :where([class*='table-wrap'], [class*='table-shell']) {
+  overflow-x: auto;
+}
+
+body.admin-app-mode .pwc-admin-main :where(
+  [class$='-card'],
+  [class*='-card '],
+  [class$='-panel'],
+  [class*='-panel ']
+) {
+  border: 1px solid #d0d0d0;
+  border-radius: 5px;
+  background: #fff;
+  padding: 1rem;
+}
+
+body.admin-app-mode :where([role='alert'], .pwc-admin-form-error) {
+  border: 1px solid #b54848;
+  background: #fff0f0;
+  color: #7a1d1d;
+  padding: 0.7rem 0.85rem;
+  border-radius: 4px;
+}
+
+body.admin-app-mode :where(.pwc-admin-form-success) {
+  border: 1px solid #568a64;
+  background: #effaf2;
+  color: #245a31;
+  padding: 0.7rem 0.85rem;
+  border-radius: 4px;
+}
+
+body.admin-app-mode [role='dialog'] {
+  position: fixed;
+  inset: 50% auto auto 50%;
+  z-index: 1000;
+  width: min(calc(100vw - 32px), 760px);
+  max-height: calc(100vh - 32px);
+  overflow: auto;
+  transform: translate(-50%, -50%);
+  border: 1px solid #999;
+  border-radius: 6px;
+  background: #fff;
+  padding: 1.25rem;
+  box-shadow: 0 12px 40px rgb(0 0 0 / 20%);
+}
+
+body.admin-app-mode .admin-inbox-modal-backdrop,
+body.admin-app-mode [class*='drawer-backdrop'],
+body.admin-app-mode [class*='modal-backdrop'] {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  background: rgb(0 0 0 / 35%);
+}
+
+body.admin-app-mode [hidden] {
+  display: none !important;
+}
+
+@media (max-width: 900px) {
+  body.admin-app-mode .pwc-admin-shell {
+    display: block;
+  }
+
+  body.admin-app-mode .pwc-nav33-mobile-trigger {
+    display: flex;
+    position: sticky;
+    top: 0;
+    z-index: 900;
+    width: 100%;
+    border-radius: 0;
+    justify-content: space-between;
+    background: #fff;
+  }
+
+  body.admin-app-mode .pwc-admin-sidebar {
+    position: fixed;
+    inset: 0 auto 0 0;
+    z-index: 1000;
+    width: min(86vw, 320px);
+    max-height: none;
+    transform: translateX(-105%);
+    transition: transform 160ms ease;
+    box-shadow: 10px 0 30px rgb(0 0 0 / 16%);
+  }
+
+  body.admin-app-mode .pwc-admin-sidebar.is-open {
+    transform: translateX(0);
+  }
+
+  body.admin-app-mode .pwc-nav33-mobile-close {
+    display: inline-grid;
+    place-items: center;
+    margin-left: auto;
+  }
+
+  body.admin-app-mode .pwc-nav33-mobile-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 950;
+    border: 0;
+    border-radius: 0;
+    background: rgb(0 0 0 / 38%);
+  }
+
+  body.admin-app-mode .pwc-admin-main {
+    padding: 18px;
+  }
+}
+
+@media (max-width: 560px) {
+  body.admin-app-mode .pwc-admin-auth-page,
+  body.admin-app-mode .pwc-admin-main {
+    padding: 12px;
+  }
+
+  body.admin-app-mode .pwc-admin-auth-card {
+    padding: 20px;
+  }
+
+  body.admin-app-mode [role='dialog'] {
+    width: calc(100vw - 16px);
+    max-height: calc(100vh - 16px);
+    padding: 1rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.admin-app-mode *,
+  body.admin-app-mode *::before,
+  body.admin-app-mode *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}

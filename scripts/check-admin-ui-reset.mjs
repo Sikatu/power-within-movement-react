@@ -1,7 +1,7 @@
 import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs'
 import { join, relative } from 'node:path'
 
-const retiredFiles = [
+const retiredLegacyFiles = [
   'src/components/admin/AdminFrame.css',
   'src/pages/admin/Admin.css',
   'src/pages/admin/AdminClients.rework.css',
@@ -24,13 +24,26 @@ const retiredFiles = [
   'src/pages/admin/TeamManagement.css',
 ]
 
-const requiredFiles = [
+const retiredNewUiFiles = [
+  'src/components/admin/AdminCleanSlateFrame.css',
+  'src/components/admin/AdminProductionPolishPhase9.css',
+  'src/components/admin/FounderDeveloperBanner.css',
   'src/pages/admin/AdminCleanSlate.css',
   'src/pages/admin/AdminCleanSlateFoundation.css',
-  'src/components/admin/AdminCleanSlateFrame.css',
+  'src/pages/admin/AdminModuleElevation.css',
+  'src/pages/admin/AdminOperationsElevation.css',
+  'src/pages/admin/AdminClientsPhase5.css',
+  'src/pages/admin/AdminCommunicationPhase6.css',
+  'src/pages/admin/AdminFounderSchedulingPhase7.css',
+  'src/pages/admin/AdminDeveloperOperationsPhase8.css',
 ]
 
+const baselineFile = 'src/pages/admin/AdminUIBlankSlate.css'
+const retiredFiles = [...retiredLegacyFiles, ...retiredNewUiFiles]
+
 function walk(directory) {
+  if (!existsSync(directory)) return []
+
   return readdirSync(directory).flatMap((entry) => {
     const path = join(directory, entry)
     return statSync(path).isDirectory() ? walk(path) : [path]
@@ -40,15 +53,15 @@ function walk(directory) {
 const failures = []
 
 for (const file of retiredFiles) {
-  if (existsSync(file)) failures.push(`${file}: retired stylesheet still exists`)
+  if (existsSync(file)) failures.push(`${file}: retired UI stylesheet still exists`)
 }
 
-for (const file of requiredFiles) {
-  if (!existsSync(file)) failures.push(`${file}: clean-slate stylesheet is missing`)
+if (!existsSync(baselineFile)) {
+  failures.push(`${baselineFile}: neutral admin baseline is missing`)
 }
 
-const retiredBasenames = retiredFiles.map((file) => file.split('/').at(-1))
 const sourceFiles = walk('src').filter((file) => /\.(css|jsx|js)$/.test(file))
+const retiredBasenames = retiredFiles.map((file) => file.split('/').at(-1))
 
 for (const file of sourceFiles) {
   const content = readFileSync(file, 'utf8')
@@ -56,19 +69,28 @@ for (const file of sourceFiles) {
 
   for (const basename of retiredBasenames) {
     if (content.includes(basename)) {
-      failures.push(`${displayPath}: still references retired stylesheet ${basename}`)
+      failures.push(`${displayPath}: still references retired UI stylesheet ${basename}`)
     }
   }
+}
 
-  if (content.includes('@layer pwc-admin-legacy')) {
-    failures.push(`${displayPath}: legacy admin cascade layer is still present`)
+const adminCssFiles = [
+  ...walk('src/components/admin'),
+  ...walk('src/pages/admin'),
+].filter((file) => file.endsWith('.css'))
+
+for (const file of adminCssFiles) {
+  if (relative('.', file) !== baselineFile) {
+    failures.push(`${relative('.', file)}: unexpected admin UI stylesheet remains`)
   }
 }
 
 if (failures.length) {
-  console.error('\nAdmin true clean-slate check failed:\n')
+  console.error('\nAdmin UI reset check failed:\n')
   for (const failure of failures) console.error(`- ${failure}`)
   process.exit(1)
 }
 
-console.log(`Admin true clean-slate check passed (${retiredFiles.length} retired stylesheets deleted).`)
+console.log(
+  `Admin UI blank-slate check passed (${retiredLegacyFiles.length} legacy + ${retiredNewUiFiles.length} newer UI stylesheets deleted).`,
+)
