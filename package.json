@@ -6,10 +6,11 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "lint": "eslint src server/src server/scripts server/tests && node scripts/check-admin-ui-reset.mjs && node scripts/check-admin-routes.mjs && node scripts/check-admin-dialogs.mjs && node scripts/check-admin-resilience.mjs",
+    "lint": "eslint src server/src server/scripts server/tests && node scripts/check-admin-ui-reset.mjs && node scripts/check-admin-routes.mjs && node scripts/check-admin-dialogs.mjs && node scripts/check-admin-resilience.mjs && node scripts/check-admin-visual-coverage.mjs",
     "test": "npm --prefix server test",
     "preview": "vite preview",
-    "launch:check": "npm run build && npm run lint && npm --prefix server run smoke && npm --prefix server run db:check && npm --prefix server run launch:check"
+    "launch:check": "npm run build && npm run lint && npm --prefix server run smoke && npm --prefix server run db:check && npm --prefix server run launch:check",
+    "admin:qa": "npm run lint && npm run build"
   },
   "dependencies": {
     "@fontsource/cormorant-garamond": "^5.2.11",
