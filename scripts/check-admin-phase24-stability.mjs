@@ -69,8 +69,23 @@ const visualSafeguards = [
   '.pwc-momentum18-list-heading',
   '.pwc-momentum18-detail .pwc-capacity17-detail-list',
 ]
+
+const sidebarSafeguards = [
+  'grid-template-rows: auto minmax(0, 1fr) auto;',
+  '@media (min-width: 821px)',
+  'position: fixed;',
+  'height: 100dvh;',
+  'margin-left: 260px;',
+  'margin-left: 238px;',
+  'max-height: min(42dvh, 360px);',
+  'overscroll-behavior: contain;',
+]
 for (const token of visualSafeguards) {
   if (!stylesheet.includes(token)) failures.push(`Phase 24 stylesheet is missing: ${token}`)
+}
+
+for (const token of sidebarSafeguards) {
+  if (!stylesheet.includes(token)) failures.push(`sidebar continuity is missing: ${token}`)
 }
 
 for (const viewport of ['1440 × 900', '1280 × 800', '768 × 1024', '390 × 844']) {
@@ -88,5 +103,5 @@ if (failures.length) {
 }
 
 console.log(
-  `Admin Phase 24 stability audit passed (${lockSafeguards.length} scroll safeguards, ${circleSafeguards.length} Circle safeguards, 3 Momentum safeguards, ${visualSafeguards.length} visual safeguards).`,
+  `Admin Phase 24 stability audit passed (${lockSafeguards.length} scroll safeguards, ${sidebarSafeguards.length} sidebar safeguards, ${circleSafeguards.length} Circle safeguards, 3 Momentum safeguards, ${visualSafeguards.length} visual safeguards).`,
 )
