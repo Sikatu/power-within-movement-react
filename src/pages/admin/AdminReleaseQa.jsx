@@ -246,7 +246,7 @@ export default function AdminReleaseQa({ embedded = false }) {
           <article className={summary.failed ? 'is-danger' : ''}>
             <span>Release blockers</span>
             <strong>{summary.failed}</strong>
-            <p>Resolve before Phase 24 deployment</p>
+            <p>Resolve before production deployment</p>
           </article>
         </section>
 
