@@ -66,7 +66,7 @@ function emptyResult(check) {
   }
 }
 
-export default function AdminReleaseQa() {
+export default function AdminReleaseQa({ embedded = false }) {
   const navigate = useNavigate()
   const [results, setResults] = useState(() => RELEASE_QA_CHECKS.map(emptyResult))
   const [selectedId, setSelectedId] = useState(RELEASE_QA_CHECKS[0]?.id || '')
@@ -182,8 +182,7 @@ export default function AdminReleaseQa() {
     setStatus('all')
   }
 
-  return (
-    <AdminFrame>
+  const content = (
       <div className="pwc-week16-page pwc-capacity17-page">
         <header className="pwc-week16-hero pwc-capacity17-hero">
           <div>
@@ -403,6 +402,7 @@ export default function AdminReleaseQa() {
           </aside>
         </div>
       </div>
-    </AdminFrame>
   )
+
+  return embedded ? content : <AdminFrame>{content}</AdminFrame>
 }

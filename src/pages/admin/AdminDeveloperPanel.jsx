@@ -103,10 +103,14 @@ function HealthBadge({ state, children }) {
   )
 }
 
-export default function AdminDeveloperPanel() {
+export default function AdminDeveloperPanel({ embedded = false, mode = 'all' }) {
   const confirmAction = useAdminConfirm()
   const navigate = useNavigate()
-  const [activeTab, setActiveTab] = useState('overview')
+  const [activeTab, setActiveTab] = useState(() => {
+    if (mode === 'access') return 'accounts'
+    if (mode === 'configuration') return 'controls'
+    return 'overview'
+  })
   const [overview, setOverview] = useState(null)
   const [users, setUsers] = useState([])
   const [clients, setClients] = useState([])
@@ -135,6 +139,13 @@ export default function AdminDeveloperPanel() {
     role: 'admin',
     expirationHours: 48,
   })
+
+  const availableTabs = useMemo(() => {
+    if (mode === 'access') return tabs.filter((tab) => ['accounts', 'clients', 'security'].includes(tab.id))
+    if (mode === 'configuration') return tabs.filter((tab) => tab.id === 'controls')
+    if (mode === 'overview' || mode === 'health') return tabs.filter((tab) => tab.id === 'overview')
+    return tabs
+  }, [mode])
 
   const loadPanel = useCallback(async () => {
     setIsLoading(true)
@@ -565,9 +576,8 @@ export default function AdminDeveloperPanel() {
     if (event.target === event.currentTarget) close()
   }
 
-  return (
-    <AdminFrame>
-      <div className="developer-control-center">
+  const content = (
+      <div className={`developer-control-center developer-mode-${mode}${embedded ? ' is-embedded' : ''}`}>
         <header className="developer-control-hero">
           <div>
             <p className="admin-eyebrow">Developer Operations</p>
@@ -583,8 +593,9 @@ export default function AdminDeveloperPanel() {
           </div>
         </header>
 
+        {availableTabs.length > 1 && (
         <nav className="developer-tab-bar" aria-label="Developer Control Center sections" role="tablist">
-          {tabs.map((tab) => (
+          {availableTabs.map((tab) => (
             <button
               className={activeTab === tab.id ? 'is-active' : ''}
               key={tab.id}
@@ -598,6 +609,7 @@ export default function AdminDeveloperPanel() {
             </button>
           ))}
         </nav>
+        )}
 
         {error && <div className="developer-alert is-error" role="alert">{error}</div>}
         {notice && <div className="developer-alert is-success" role="status">{notice}</div>}
@@ -1150,6 +1162,7 @@ export default function AdminDeveloperPanel() {
           </div>
         )}
       </div>
-    </AdminFrame>
   )
+
+  return embedded ? content : <AdminFrame>{content}</AdminFrame>
 }

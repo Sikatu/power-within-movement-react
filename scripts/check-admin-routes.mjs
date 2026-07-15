@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs'
 
 const appSource = readFileSync('src/App.jsx', 'utf8')
 const frameSource = readFileSync('src/components/admin/AdminFrame.jsx', 'utf8')
+const developerOperationsSource = readFileSync('src/pages/admin/AdminDeveloperOperations.jsx', 'utf8')
 
 const expectedRoutes = [
   '/admin',
@@ -127,7 +128,7 @@ for (const route of expectedMetadata) {
 }
 
 for (const route of expectedNavigation) {
-  if (!frameSource.includes(route)) failures.push(`missing Studio navigation destination: ${route}`)
+  if (!(frameSource + developerOperationsSource).includes(route)) failures.push(`missing Studio navigation destination: ${route}`)
 }
 
 const duplicateRoutes = routePaths.filter((route, index) => routePaths.indexOf(route) !== index)

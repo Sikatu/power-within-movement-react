@@ -60,7 +60,7 @@ const monitoringOptions = [
   },
 ]
 
-export default function AdminDeveloperErrors() {
+export default function AdminDeveloperErrors({ embedded = false }) {
   const confirmAction = useAdminConfirm()
   const [snapshot, setSnapshot] = useState(null)
   const [selectedId, setSelectedId] = useState('')
@@ -123,8 +123,7 @@ export default function AdminDeveloperErrors() {
     }
   }
 
-  return (
-    <AdminFrame>
+  const content = (
       <div className="developer-error-center-page">
         <header className="pwc-admin-page-header error-center-page-header">
         <div className="error-center-title-block">
@@ -540,6 +539,7 @@ export default function AdminDeveloperErrors() {
         </section>
       )}
       </div>
-    </AdminFrame>
   )
+
+  return embedded ? content : <AdminFrame>{content}</AdminFrame>
 }

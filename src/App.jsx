@@ -24,10 +24,7 @@ import {
   loadAdminClient360,
   loadAdminClients,
   loadAdminDashboard,
-  loadAdminDeveloperErrors,
-  loadAdminDeveloperPanel,
-  loadAdminSecurityIntegrity,
-  loadAdminReleaseQa,
+  loadAdminDeveloperOperations,
   loadAdminEncouragements,
   loadAdminFounderAvailability,
   loadAdminFounderCalendar,
@@ -83,10 +80,7 @@ const AdminCircleCommunity = lazy(loadAdminCircleCommunity)
 const AdminClient360 = lazy(loadAdminClient360)
 const AdminClients = lazy(loadAdminClients)
 const AdminDashboard = lazy(loadAdminDashboard)
-const AdminDeveloperErrors = lazy(loadAdminDeveloperErrors)
-const AdminDeveloperPanel = lazy(loadAdminDeveloperPanel)
-const AdminSecurityIntegrity = lazy(loadAdminSecurityIntegrity)
-const AdminReleaseQa = lazy(loadAdminReleaseQa)
+const AdminDeveloperOperations = lazy(loadAdminDeveloperOperations)
 const AdminEncouragements = lazy(loadAdminEncouragements)
 const AdminFounderAvailability = lazy(loadAdminFounderAvailability)
 const AdminFounderCalendar = lazy(loadAdminFounderCalendar)
@@ -340,8 +334,8 @@ const routeMetadata = {
     description: 'Manage founder availability, weekly hours, and custom date protection.',
   },
   '/admin/developer': {
-    title: 'Developer Control Center | Power Within Collective',
-    description: 'Private platform operations, access governance, and release visibility.',
+    title: 'Developer Operations | Power Within Collective',
+    description: 'Unified platform health, errors, security, release, access, and configuration operations.',
   },
   '/admin/developer/errors': {
     title: 'Developer Error Center | Power Within Collective',
@@ -503,10 +497,10 @@ function AppShell() {
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/admin/change-password" element={<AdminChangePassword />} />
         <Route path="/admin/dashboard" element={<AdminRouteGuard><AdminDashboard /></AdminRouteGuard>} />
-        <Route path="/admin/developer" element={<AdminDeveloperRouteGuard><AdminDeveloperPanel /></AdminDeveloperRouteGuard>} />
-        <Route path="/admin/developer/errors" element={<AdminDeveloperRouteGuard><AdminDeveloperErrors /></AdminDeveloperRouteGuard>} />
-        <Route path="/admin/developer/integrity" element={<AdminDeveloperRouteGuard><AdminSecurityIntegrity /></AdminDeveloperRouteGuard>} />
-        <Route path="/admin/developer/qa" element={<AdminDeveloperRouteGuard><AdminReleaseQa /></AdminDeveloperRouteGuard>} />
+        <Route path="/admin/developer" element={<AdminDeveloperRouteGuard><AdminDeveloperOperations /></AdminDeveloperRouteGuard>} />
+        <Route path="/admin/developer/errors" element={<AdminDeveloperRouteGuard><AdminDeveloperOperations /></AdminDeveloperRouteGuard>} />
+        <Route path="/admin/developer/integrity" element={<AdminDeveloperRouteGuard><AdminDeveloperOperations /></AdminDeveloperRouteGuard>} />
+        <Route path="/admin/developer/qa" element={<AdminDeveloperRouteGuard><AdminDeveloperOperations /></AdminDeveloperRouteGuard>} />
         <Route path="/admin/team" element={<AdminDeveloperRouteGuard><AdminTeamManagement /></AdminDeveloperRouteGuard>} />
         <Route path="/admin/founders-view" element={<AdminOwnerRouteGuard><AdminFoundersView /></AdminOwnerRouteGuard>} />
         <Route path="/admin/founders-calendar" element={<AdminOwnerRouteGuard><AdminFounderCalendar /></AdminOwnerRouteGuard>} />

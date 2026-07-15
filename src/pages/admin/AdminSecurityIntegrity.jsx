@@ -52,7 +52,7 @@ function formatDateTime(value) {
   }
 }
 
-export default function AdminSecurityIntegrity() {
+export default function AdminSecurityIntegrity({ embedded = false }) {
   const navigate = useNavigate()
   const [snapshot, setSnapshot] = useState({
     summary: {},
@@ -131,8 +131,7 @@ export default function AdminSecurityIntegrity() {
     setStatus('all')
   }
 
-  return (
-    <AdminFrame>
+  const content = (
       <div className="pwc-week16-page pwc-capacity17-page">
         <header className="pwc-week16-hero pwc-capacity17-hero">
           <div>
@@ -317,6 +316,7 @@ export default function AdminSecurityIntegrity() {
           </div>
         )}
       </div>
-    </AdminFrame>
   )
+
+  return embedded ? content : <AdminFrame>{content}</AdminFrame>
 }

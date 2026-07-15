@@ -29,6 +29,7 @@ export const loadAdminCircleCommunity = cached(() => import('../../pages/admin/A
 export const loadAdminClient360 = cached(() => import('../../pages/admin/AdminClient360.jsx'))
 export const loadAdminClients = cached(() => import('../../pages/admin/AdminClients.jsx'))
 export const loadAdminDashboard = cached(() => import('../../pages/admin/AdminDashboard.jsx'))
+export const loadAdminDeveloperOperations = cached(() => import('../../pages/admin/AdminDeveloperOperations.jsx'))
 export const loadAdminDeveloperErrors = cached(() => import('../../pages/admin/AdminDeveloperErrors.jsx'))
 export const loadAdminDeveloperPanel = cached(() => import('../../pages/admin/AdminDeveloperPanel.jsx'))
 export const loadAdminSecurityIntegrity = cached(() => import('../../pages/admin/AdminSecurityIntegrity.jsx'))
@@ -52,10 +53,10 @@ const routePreloaders = [
   { match: (path) => path === '/admin/login', load: loadAdminLogin },
   { match: (path) => path === '/admin/change-password', load: loadAdminChangePassword },
   { match: (path) => path === '/admin/dashboard', load: loadAdminDashboard },
-  { match: (path) => path === '/admin/developer', load: loadAdminDeveloperPanel },
-  { match: (path) => path.startsWith('/admin/developer/errors'), load: loadAdminDeveloperErrors },
-  { match: (path) => path === '/admin/developer/integrity', load: loadAdminSecurityIntegrity },
-  { match: (path) => path === '/admin/developer/qa', load: loadAdminReleaseQa },
+  { match: (path) => path === '/admin/developer' || path.startsWith('/admin/developer?'), load: loadAdminDeveloperOperations },
+  { match: (path) => path.startsWith('/admin/developer/errors'), load: loadAdminDeveloperOperations },
+  { match: (path) => path === '/admin/developer/integrity', load: loadAdminDeveloperOperations },
+  { match: (path) => path === '/admin/developer/qa', load: loadAdminDeveloperOperations },
   { match: (path) => path === '/admin/team', load: loadAdminTeamManagement },
   { match: (path) => path === '/admin/founders-view', load: loadAdminFoundersView },
   { match: (path) => path === '/admin/founders-calendar', load: loadAdminFounderCalendar },

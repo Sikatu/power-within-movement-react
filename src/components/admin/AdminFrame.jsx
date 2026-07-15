@@ -204,23 +204,7 @@ const groupedItems = [
     items: [
       {
         to: '/admin/developer',
-        label: 'Developer Control Center',
-        developerOnly: true,
-        exact: true,
-      },
-      {
-        to: '/admin/developer/errors',
-        label: 'Developer Error Center',
-        developerOnly: true,
-      },
-      {
-        to: '/admin/developer/integrity',
-        label: 'Security & Data Integrity',
-        developerOnly: true,
-      },
-      {
-        to: '/admin/developer/qa',
-        label: 'Production Release QA',
+        label: 'Developer Operations',
         developerOnly: true,
       },
     ],
@@ -244,8 +228,8 @@ const workspaceDefinitions = [
   },
   {
     id: 'developer',
-    label: 'Developer Control Center',
-    description: 'System health and governance',
+    label: 'Developer Operations',
+    description: 'Health, security, access, and releases',
     to: '/admin/developer',
     roles: ['developer'],
   },

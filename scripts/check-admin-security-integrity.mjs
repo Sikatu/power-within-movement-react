@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs'
 const appSource = readFileSync('src/App.jsx', 'utf8')
 const frameSource = readFileSync('src/components/admin/AdminFrame.jsx', 'utf8')
 const pageSource = readFileSync('src/pages/admin/AdminSecurityIntegrity.jsx', 'utf8')
+const operationsSource = readFileSync('src/pages/admin/AdminDeveloperOperations.jsx', 'utf8')
 const preloadSource = readFileSync('src/components/admin/adminRoutePreloaders.js', 'utf8')
 const apiSource = readFileSync('src/lib/nativeApi.js', 'utf8')
 const serverAppSource = readFileSync('server/src/app.js', 'utf8')
@@ -20,11 +21,11 @@ const packageSource = readFileSync('package.json', 'utf8')
 const failures = []
 
 const routeTokens = [
-  'loadAdminSecurityIntegrity',
-  'const AdminSecurityIntegrity = lazy(loadAdminSecurityIntegrity)',
+  'loadAdminDeveloperOperations',
+  'const AdminDeveloperOperations = lazy(loadAdminDeveloperOperations)',
   "'/admin/developer/integrity': {",
   '<Route path="/admin/developer/integrity"',
-  '<AdminDeveloperRouteGuard><AdminSecurityIntegrity /></AdminDeveloperRouteGuard>',
+  '<AdminDeveloperRouteGuard><AdminDeveloperOperations /></AdminDeveloperRouteGuard>',
 ]
 
 const pageTokens = [
@@ -41,9 +42,9 @@ const pageTokens = [
 ]
 
 const navigationTokens = [
-  "to: '/admin/developer/integrity'",
-  "label: 'Security & Data Integrity'",
-  'developerOnly: true',
+  "legacyPath: '/admin/developer/integrity'",
+  "label: 'Security & Integrity'",
+  "id: 'integrity'",
 ]
 
 const backendTokens = [
@@ -90,7 +91,7 @@ for (const token of pageTokens) {
 }
 
 for (const token of navigationTokens) {
-  if (!frameSource.includes(token)) failures.push(`AdminFrame is missing security-integrity navigation token: ${token}`)
+  if (!(frameSource + operationsSource).includes(token)) failures.push(`Developer Operations is missing security-integrity navigation token: ${token}`)
 }
 
 for (const token of backendTokens) {
@@ -105,8 +106,8 @@ for (const token of securityTokens) {
   }
 }
 
-if (!preloadSource.includes('export const loadAdminSecurityIntegrity')) {
-  failures.push('Admin route preloaders are missing the Security & Data Integrity loader')
+if (!preloadSource.includes('export const loadAdminDeveloperOperations')) {
+  failures.push('Admin route preloaders are missing the unified Developer Operations loader')
 }
 if (!preloadSource.includes("path === '/admin/developer/integrity'")) {
   failures.push('Admin route preloaders are missing the Security & Data Integrity destination')

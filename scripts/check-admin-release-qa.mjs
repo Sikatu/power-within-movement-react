@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs'
 const appSource = readFileSync('src/App.jsx', 'utf8')
 const frameSource = readFileSync('src/components/admin/AdminFrame.jsx', 'utf8')
 const pageSource = readFileSync('src/pages/admin/AdminReleaseQa.jsx', 'utf8')
+const operationsSource = readFileSync('src/pages/admin/AdminDeveloperOperations.jsx', 'utf8')
 const checksSource = readFileSync('src/components/admin/adminReleaseQa.js', 'utf8')
 const preloadSource = readFileSync('src/components/admin/adminRoutePreloaders.js', 'utf8')
 const packageSource = readFileSync('package.json', 'utf8')
@@ -12,11 +13,11 @@ const stylesheet = readFileSync('src/pages/admin/AdminFreshUI.css', 'utf8')
 const failures = []
 
 const routeTokens = [
-  'loadAdminReleaseQa',
-  'const AdminReleaseQa = lazy(loadAdminReleaseQa)',
+  'loadAdminDeveloperOperations',
+  'const AdminDeveloperOperations = lazy(loadAdminDeveloperOperations)',
   "'/admin/developer/qa': {",
   '<Route path="/admin/developer/qa"',
-  '<AdminDeveloperRouteGuard><AdminReleaseQa /></AdminDeveloperRouteGuard>',
+  '<AdminDeveloperRouteGuard><AdminDeveloperOperations /></AdminDeveloperRouteGuard>',
 ]
 
 const workspaceTokens = [
@@ -54,9 +55,9 @@ const contractTokens = [
 ]
 
 const navigationTokens = [
-  "to: '/admin/developer/qa'",
-  "label: 'Production Release QA'",
-  'developerOnly: true',
+  "legacyPath: '/admin/developer/qa'",
+  "label: 'Release QA'",
+  "id: 'qa'",
 ]
 
 const reusedVisualSelectors = [
@@ -85,11 +86,11 @@ for (const token of contractTokens) {
 }
 
 for (const token of navigationTokens) {
-  if (!frameSource.includes(token)) failures.push(`AdminFrame is missing release-QA navigation token: ${token}`)
+  if (!(frameSource + operationsSource).includes(token)) failures.push(`Developer Operations is missing release-QA navigation token: ${token}`)
 }
 
-if (!preloadSource.includes('export const loadAdminReleaseQa')) {
-  failures.push('Admin route preloaders are missing the Production Release QA loader')
+if (!preloadSource.includes('export const loadAdminDeveloperOperations')) {
+  failures.push('Admin route preloaders are missing the unified Developer Operations loader')
 }
 if (!preloadSource.includes("path === '/admin/developer/qa'")) {
   failures.push('Admin route preloaders are missing the Production Release QA destination')
