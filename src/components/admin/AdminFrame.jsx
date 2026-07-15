@@ -156,6 +156,11 @@ const groupedItems = [
         module: 'clients',
       },
       {
+        to: '/admin/readiness',
+        label: 'Session Readiness',
+        module: 'sessions',
+      },
+      {
         to: '/admin/attention',
         label: 'Attention Queue',
         module: 'clients',

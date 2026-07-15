@@ -12,6 +12,7 @@ import {
   loadAdminAttentionQueue,
   loadAdminCapacityCenter,
   loadAdminClientMomentum,
+  loadAdminSessionReadiness,
   loadAdminDailyBrief,
   loadAdminWeekPlanner,
   loadAdminAuditLog,
@@ -66,6 +67,7 @@ const AdminActivityCenter = lazy(loadAdminActivityCenter)
 const AdminAttentionQueue = lazy(loadAdminAttentionQueue)
 const AdminCapacityCenter = lazy(loadAdminCapacityCenter)
 const AdminClientMomentum = lazy(loadAdminClientMomentum)
+const AdminSessionReadiness = lazy(loadAdminSessionReadiness)
 const AdminDailyBrief = lazy(loadAdminDailyBrief)
 const AdminWeekPlanner = lazy(loadAdminWeekPlanner)
 const AdminAuditLog = lazy(loadAdminAuditLog)
@@ -289,6 +291,10 @@ const routeMetadata = {
     title: 'Client Momentum | Power Within Collective',
     description: 'Review role-aware care momentum across active clients, recent touchpoints, accountable actions, sessions, and conversations.',
   },
+  '/admin/readiness': {
+    title: 'Session Readiness | Power Within Collective',
+    description: 'Prepare role-aware upcoming sessions with booking decisions, intake, onboarding, care actions, conversations, ownership, and confirmations in one view.',
+  },
   '/admin/activity': {
     title: 'Studio Activity Center | The Studio',
     description: 'Review role-aware notifications, priority updates, and recent operational activity across The Studio.',
@@ -498,6 +504,7 @@ function AppShell() {
         <Route path="/admin/week" element={<AdminRouteGuard><AdminWeekPlanner /></AdminRouteGuard>} />
         <Route path="/admin/capacity" element={<AdminRouteGuard><AdminCapacityCenter /></AdminRouteGuard>} />
         <Route path="/admin/momentum" element={<AdminRouteGuard><AdminClientMomentum /></AdminRouteGuard>} />
+        <Route path="/admin/readiness" element={<AdminRouteGuard><AdminSessionReadiness /></AdminRouteGuard>} />
         <Route path="/admin/activity" element={<AdminRouteGuard><AdminActivityCenter /></AdminRouteGuard>} />
         <Route path="/admin/attention" element={<AdminRouteGuard><AdminAttentionQueue /></AdminRouteGuard>} />
         <Route path="/admin/audit-log" element={<AdminRouteGuard><AdminAuditLog /></AdminRouteGuard>} />

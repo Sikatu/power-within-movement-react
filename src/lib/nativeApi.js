@@ -698,6 +698,10 @@ export async function getAdminClientMomentum() {
   return apiRequest('/api/admin/client-momentum')
 }
 
+export async function getAdminSessionReadiness(days = 14) {
+  return apiRequest(`/api/admin/session-readiness?days=${encodeURIComponent(days)}`)
+}
+
 export async function getMyTeamAccess() {
   return apiRequest('/api/admin/team/my-access')
 }
