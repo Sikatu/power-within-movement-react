@@ -27,6 +27,7 @@ import {
   loadAdminDeveloperErrors,
   loadAdminDeveloperPanel,
   loadAdminSecurityIntegrity,
+  loadAdminReleaseQa,
   loadAdminEncouragements,
   loadAdminFounderAvailability,
   loadAdminFounderCalendar,
@@ -85,6 +86,7 @@ const AdminDashboard = lazy(loadAdminDashboard)
 const AdminDeveloperErrors = lazy(loadAdminDeveloperErrors)
 const AdminDeveloperPanel = lazy(loadAdminDeveloperPanel)
 const AdminSecurityIntegrity = lazy(loadAdminSecurityIntegrity)
+const AdminReleaseQa = lazy(loadAdminReleaseQa)
 const AdminEncouragements = lazy(loadAdminEncouragements)
 const AdminFounderAvailability = lazy(loadAdminFounderAvailability)
 const AdminFounderCalendar = lazy(loadAdminFounderCalendar)
@@ -349,6 +351,10 @@ const routeMetadata = {
     title: 'Security & Data Integrity | Power Within Collective',
     description: 'Developer-only audit of privileged access, staff permissions, request trust, and operational data integrity.',
   },
+  '/admin/developer/qa': {
+    title: 'Production Release QA | Power Within Collective',
+    description: 'Developer-only real-data contract, latency, and responsive review gate for The Studio.',
+  },
 }
 
 function resolveRouteMetadata(pathname) {
@@ -500,6 +506,7 @@ function AppShell() {
         <Route path="/admin/developer" element={<AdminDeveloperRouteGuard><AdminDeveloperPanel /></AdminDeveloperRouteGuard>} />
         <Route path="/admin/developer/errors" element={<AdminDeveloperRouteGuard><AdminDeveloperErrors /></AdminDeveloperRouteGuard>} />
         <Route path="/admin/developer/integrity" element={<AdminDeveloperRouteGuard><AdminSecurityIntegrity /></AdminDeveloperRouteGuard>} />
+        <Route path="/admin/developer/qa" element={<AdminDeveloperRouteGuard><AdminReleaseQa /></AdminDeveloperRouteGuard>} />
         <Route path="/admin/team" element={<AdminDeveloperRouteGuard><AdminTeamManagement /></AdminDeveloperRouteGuard>} />
         <Route path="/admin/founders-view" element={<AdminOwnerRouteGuard><AdminFoundersView /></AdminOwnerRouteGuard>} />
         <Route path="/admin/founders-calendar" element={<AdminOwnerRouteGuard><AdminFounderCalendar /></AdminOwnerRouteGuard>} />

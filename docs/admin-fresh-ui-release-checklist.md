@@ -10,7 +10,7 @@ Run from the repository root:
 npm.cmd run admin:qa
 ```
 
-This must pass the Fresh UI stylesheet guard, route audit, safe-dialog audit, resilience audit, visual-coverage audit, ESLint, and the Vite production build.
+This must pass the Fresh UI stylesheet guard, route audit, safe-dialog audit, resilience audit, Production Release QA audit, visual-coverage audit, ESLint, and the Vite production build.
 
 ## Local runtime review
 
@@ -34,8 +34,14 @@ Review at desktop, tablet, and mobile widths:
 - `/admin/founders-availability`
 - `/admin/developer`
 - `/admin/developer/errors`
+- `/admin/developer/integrity`
+- `/admin/developer/qa`
 
 Confirm that navigation, dialogs, drawers, tables, empty states, and long records remain usable without horizontal page overflow.
+
+## Real-data gate
+
+Open `/admin/developer/qa`, run the complete read-only QA matrix, and retain a copied report. Resolve all failed contracts. Review warning routes at 1440 × 900, 1280 × 800, 768 × 1024, and 390 × 844.
 
 ## Production checks
 

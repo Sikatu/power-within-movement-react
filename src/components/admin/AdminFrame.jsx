@@ -214,6 +214,11 @@ const groupedItems = [
         label: 'Security & Data Integrity',
         developerOnly: true,
       },
+      {
+        to: '/admin/developer/qa',
+        label: 'Production Release QA',
+        developerOnly: true,
+      },
     ],
   },
 ]

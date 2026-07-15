@@ -11,6 +11,7 @@ const expectedRoutes = [
   '/admin/developer',
   '/admin/developer/errors',
   '/admin/developer/integrity',
+  '/admin/developer/qa',
   '/admin/team',
   '/admin/founders-view',
   '/admin/founders-calendar',
@@ -49,6 +50,7 @@ const expectedMetadata = [
   '/admin/developer',
   '/admin/developer/errors',
   '/admin/developer/integrity',
+  '/admin/developer/qa',
   '/admin/team',
   '/admin/founders-view',
   '/admin/founders-calendar',
@@ -106,6 +108,7 @@ const expectedNavigation = [
   '/admin/developer',
   '/admin/developer/errors',
   '/admin/developer/integrity',
+  '/admin/developer/qa',
   '/admin/founders-view',
 ]
 
