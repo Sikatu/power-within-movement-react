@@ -13,6 +13,7 @@ function cached(importer) {
   }
 }
 
+export const loadAdminAssetVault = cached(() => import('../../pages/admin/AdminAssetVault.jsx'))
 export const loadAdminActivityCenter = cached(() => import('../../pages/admin/AdminActivityCenter.jsx'))
 export const loadAdminAttentionQueue = cached(() => import('../../pages/admin/AdminAttentionQueue.jsx'))
 export const loadAdminCapacityCenter = cached(() => import('../../pages/admin/AdminCapacityCenter.jsx'))
@@ -53,6 +54,7 @@ const routePreloaders = [
   { match: (path) => path === '/admin/login', load: loadAdminLogin },
   { match: (path) => path === '/admin/change-password', load: loadAdminChangePassword },
   { match: (path) => path === '/admin/dashboard', load: loadAdminDashboard },
+  { match: (path) => path === '/admin/assets', load: loadAdminAssetVault },
   { match: (path) => path === '/admin/developer' || path.startsWith('/admin/developer?'), load: loadAdminDeveloperOperations },
   { match: (path) => path.startsWith('/admin/developer/errors'), load: loadAdminDeveloperOperations },
   { match: (path) => path === '/admin/developer/integrity', load: loadAdminDeveloperOperations },

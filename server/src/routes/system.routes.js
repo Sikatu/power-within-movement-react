@@ -34,6 +34,12 @@ const modules = [
     description: 'Private client login, dashboard, sessions, follow-ups, service history, visible notes, and assigned resources.',
   },
   {
+    key: 'asset_vault',
+    name: 'Asset Vault',
+    status: 'active',
+    description: 'Private reusable uploads, folders, tags, versions, client assignments, and authenticated file delivery.',
+  },
+  {
     key: 'email_studio',
     name: 'Letters & Broadcasts',
     status: 'foundation_active',

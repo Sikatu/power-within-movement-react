@@ -8569,6 +8569,11 @@ router.get('/developer/system-health', requireDeveloper, async (req, res, next) 
       'team_member_profiles',
       'team_member_permissions',
       'team_client_assignments',
+      'asset_folders',
+      'assets',
+      'asset_versions',
+      'asset_assignments',
+      'asset_access_logs',
     ]])
 
     const requiredTables = [
@@ -8597,6 +8602,11 @@ router.get('/developer/system-health', requireDeveloper, async (req, res, next) 
       'team_member_profiles',
       'team_member_permissions',
       'team_client_assignments',
+      'asset_folders',
+      'assets',
+      'asset_versions',
+      'asset_assignments',
+      'asset_access_logs',
     ]
     const foundTables = new Set(tablesResult.rows.map((row) => row.table_name))
     const missingTables = requiredTables.filter((tableName) => !foundTables.has(tableName))

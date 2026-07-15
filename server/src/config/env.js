@@ -91,6 +91,16 @@ const env = {
   resendApiKey: process.env.RESEND_API_KEY || '',
   portalEmailFrom: process.env.PORTAL_EMAIL_FROM || '',
 
+  assetStorageDriver: String(process.env.ASSET_STORAGE_DRIVER || 'local').trim().toLowerCase() === 's3' ? 's3' : 'local',
+  assetStorageDir: process.env.ASSET_STORAGE_DIR || require('path').resolve(__dirname, '..', '..', 'storage', 'assets'),
+  assetMaxUploadBytes: Number(process.env.ASSET_MAX_UPLOAD_BYTES || 50 * 1024 * 1024),
+  assetS3Endpoint: process.env.ASSET_S3_ENDPOINT || '',
+  assetS3Region: process.env.ASSET_S3_REGION || 'us-east-1',
+  assetS3Bucket: process.env.ASSET_S3_BUCKET || '',
+  assetS3AccessKeyId: process.env.ASSET_S3_ACCESS_KEY_ID || '',
+  assetS3SecretAccessKey: process.env.ASSET_S3_SECRET_ACCESS_KEY || '',
+  assetS3ForcePathStyle: parseBoolean(process.env.ASSET_S3_FORCE_PATH_STYLE, true),
+
   canonicalDeveloperEmail:
     process.env.CANONICAL_DEVELOPER_EMAIL || 'darelle.grande.mva@gmail.com',
   canonicalOwnerEmail:

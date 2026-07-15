@@ -25,6 +25,9 @@ const requiredSelectors = [
   '.error-center-state-icon',
   '.error-center-field-grid',
   '.error-center-input-with-suffix',
+  '.pwc-assets26-page',
+  '.pwc-assets26-workspace',
+  '.pwc-assets26-detail',
 ]
 
 const failures = []
@@ -38,7 +41,7 @@ for (const selector of requiredSelectors) {
 // Normalize Windows CRLF so the source-size guard is platform-independent.
 const normalizedStylesheet = stylesheet.replace(/\r\n/g, '\n')
 const stylesheetBytes = Buffer.byteLength(normalizedStylesheet, 'utf8')
-const stylesheetBudget = 420 * 1024
+const stylesheetBudget = 436 * 1024
 if (stylesheetBytes > stylesheetBudget) {
   failures.push(
     `AdminFreshUI.css exceeds the ${stylesheetBudget / 1024} KiB source budget (${Math.ceil(stylesheetBytes / 1024)} KiB)`,

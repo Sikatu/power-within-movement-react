@@ -1384,3 +1384,95 @@ export async function createDeveloperErrorTest() {
     method: 'POST',
   })
 }
+
+// phase-26-asset-vault-api-start
+function encodeAssetHeader(value) {
+  return encodeURIComponent(String(value || ''))
+}
+
+function assetQuery(params = {}) {
+  const search = new URLSearchParams()
+  Object.entries(params).forEach(([key, value]) => {
+    if (value !== undefined && value !== null && value !== '') search.set(key, String(value))
+  })
+  const query = search.toString()
+  return query ? `?${query}` : ''
+}
+
+async function uploadAssetBinary(path, file, metadata = {}) {
+  const response = await fetch(`${API_BASE_URL}${path}`, {
+    method: 'POST',
+    credentials: 'include',
+    headers: {
+      'Content-Type': file.type || 'application/octet-stream',
+      'X-PWC-File-Name': encodeAssetHeader(file.name),
+      ...(metadata.title ? { 'X-PWC-Asset-Title': encodeAssetHeader(metadata.title) } : {}),
+      ...(metadata.folderId ? { 'X-PWC-Folder-Id': metadata.folderId } : {}),
+      ...(metadata.tags?.length ? { 'X-PWC-Tags': encodeAssetHeader(metadata.tags.join(',')) } : {}),
+      ...(metadata.notes ? { 'X-PWC-Version-Notes': encodeAssetHeader(metadata.notes) } : {}),
+    },
+    body: file,
+  })
+
+  return parseResponse(response)
+}
+
+export async function getAssetVaultSummary() {
+  return apiRequest('/api/admin/assets/summary')
+}
+
+export async function getAssetVaultAssets(filters = {}) {
+  return apiRequest(`/api/admin/assets${assetQuery(filters)}`)
+}
+
+export async function getAssetVaultAsset(assetId) {
+  return apiRequest(`/api/admin/assets/${assetId}`)
+}
+
+export async function createAssetVaultFolder(payload) {
+  return apiRequest('/api/admin/assets/folders', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  })
+}
+
+export async function uploadAssetVaultFile(file, metadata = {}) {
+  return uploadAssetBinary('/api/admin/assets/upload', file, metadata)
+}
+
+export async function uploadAssetVaultVersion(assetId, file, notes = '') {
+  return uploadAssetBinary(`/api/admin/assets/${assetId}/versions`, file, { notes })
+}
+
+export async function updateAssetVaultAsset(assetId, payload) {
+  return apiRequest(`/api/admin/assets/${assetId}`, {
+    method: 'PATCH',
+    body: JSON.stringify(payload),
+  })
+}
+
+export async function archiveAssetVaultAsset(assetId) {
+  return apiRequest(`/api/admin/assets/${assetId}/archive`, { method: 'POST' })
+}
+
+export async function restoreAssetVaultAsset(assetId) {
+  return apiRequest(`/api/admin/assets/${assetId}/restore`, { method: 'POST' })
+}
+
+export async function assignAssetVaultAsset(assetId, payload) {
+  return apiRequest(`/api/admin/assets/${assetId}/assignments`, {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  })
+}
+
+export async function unassignAssetVaultAsset(assetId, assignmentId) {
+  return apiRequest(`/api/admin/assets/${assetId}/assignments/${assignmentId}`, {
+    method: 'DELETE',
+  })
+}
+
+export function getAssetVaultDownloadUrl(assetId) {
+  return `${API_BASE_URL}/api/admin/assets/${assetId}/download`
+}
+// phase-26-asset-vault-api-end

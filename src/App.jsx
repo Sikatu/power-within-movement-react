@@ -8,6 +8,7 @@ import AdminErrorBoundary from './components/admin/AdminErrorBoundary.jsx'
 import AdminOwnerRouteGuard from './components/admin/AdminOwnerRouteGuard.jsx'
 import AdminRouteGuard from './components/admin/AdminRouteGuard.jsx'
 import {
+  loadAdminAssetVault,
   loadAdminActivityCenter,
   loadAdminAttentionQueue,
   loadAdminCapacityCenter,
@@ -64,6 +65,7 @@ import Resources from './pages/Resources.jsx'
 import SignatureExperiencePage from './pages/SignatureExperiencePage.jsx'
 import TeenPrograms from './pages/TeenPrograms.jsx'
 
+const AdminAssetVault = lazy(loadAdminAssetVault)
 const AdminActivityCenter = lazy(loadAdminActivityCenter)
 const AdminAttentionQueue = lazy(loadAdminAttentionQueue)
 const AdminCapacityCenter = lazy(loadAdminCapacityCenter)
@@ -224,6 +226,10 @@ const routeMetadata = {
   '/admin/change-password': {
     title: 'Secure Account Setup | Power Within Collective',
     description: 'Create a permanent password for private Power Within Collective workspace access.',
+  },
+  '/admin/assets': {
+    title: 'Asset Vault | The Studio',
+    description: 'Upload, organize, version, and assign protected resources across Power Within Collective.',
   },
   '/admin/clients': {
     title: 'Client Circle | The Studio',
@@ -497,6 +503,7 @@ function AppShell() {
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/admin/change-password" element={<AdminChangePassword />} />
         <Route path="/admin/dashboard" element={<AdminRouteGuard><AdminDashboard /></AdminRouteGuard>} />
+        <Route path="/admin/assets" element={<AdminRouteGuard><AdminAssetVault /></AdminRouteGuard>} />
         <Route path="/admin/developer" element={<AdminDeveloperRouteGuard><AdminDeveloperOperations /></AdminDeveloperRouteGuard>} />
         <Route path="/admin/developer/errors" element={<AdminDeveloperRouteGuard><AdminDeveloperOperations /></AdminDeveloperRouteGuard>} />
         <Route path="/admin/developer/integrity" element={<AdminDeveloperRouteGuard><AdminDeveloperOperations /></AdminDeveloperRouteGuard>} />

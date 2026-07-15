@@ -93,7 +93,7 @@ const groupedItems = [
   {
     id: 'client-experience',
     label: 'Client Experience',
-    description: 'Programs and community',
+    description: 'Programs, assets, and community',
     items: [
       {
         to: '/admin/encouragements',
@@ -104,6 +104,10 @@ const groupedItems = [
         to: '/admin/courses',
         label: 'Learning Library',
         module: 'learning',
+      },
+      {
+        to: '/admin/assets',
+        label: 'Asset Vault',
       },
       {
         to: '/admin/memberships',

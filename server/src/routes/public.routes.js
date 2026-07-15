@@ -14,6 +14,7 @@ const {
   addDateKey: addFounderDateKey,
 } = require('../services/founderAvailability.service')
 const { getPlatformSettings } = require('../services/platformSettings.service')
+const { readObject, safeSegment } = require('../services/assetStorage.service')
 const { publishDueEncouragements } = require('../services/encouragements.service')
 const {
   clientCanAccessCourse,
@@ -2044,6 +2045,55 @@ router.get('/client-portal/resources', requireClientPortalUser, async (req, res,
   }
 })
 // phase-3-9d-client-portal-resources-public-end
+
+// phase-26-asset-vault-client-delivery-start
+router.get('/client-portal/assets/:assetId/download', requireClientPortalUser, async (req, res, next) => {
+  try {
+    const result = await pool.query(
+      `
+      SELECT
+        asset.*,
+        assignment.id AS assignment_id
+      FROM asset_assignments assignment
+      JOIN assets asset ON asset.id = assignment.asset_id
+      WHERE assignment.asset_id = $1
+        AND assignment.client_profile_id = $2
+        AND assignment.status = 'active'
+        AND asset.status = 'active'
+      LIMIT 1
+      `,
+      [req.params.assetId, req.clientProfile.id],
+    )
+    const asset = result.rows[0]
+
+    if (!asset) {
+      return res.status(404).json({ ok: false, error: 'This resource is not available in your private library.' })
+    }
+
+    const buffer = await readObject(asset)
+
+    await pool.query(
+      `
+      INSERT INTO asset_access_logs (
+        asset_id, assignment_id, actor_user_id, client_profile_id, action, metadata
+      )
+      VALUES ($1, $2, $3, $4, 'download', $5::jsonb)
+      `,
+      [asset.id, asset.assignment_id, req.clientPortalUser.id, req.clientProfile.id, JSON.stringify({ portal: 'client' })],
+    )
+
+    res.set({
+      'Content-Type': asset.mime_type,
+      'Content-Length': String(buffer.length),
+      'Content-Disposition': `attachment; filename="${safeSegment(asset.original_filename)}"`,
+      'Cache-Control': 'private, no-store, max-age=0',
+    })
+    return res.send(buffer)
+  } catch (error) {
+    return next(error)
+  }
+})
+// phase-26-asset-vault-client-delivery-end
 
 
 // client-portal-foundation-pass-13-start

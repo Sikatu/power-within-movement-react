@@ -38,6 +38,13 @@ function formatDate(value) {
 
 function safeUrl(value) {
   if (!value) return ''
+
+  if (String(value).startsWith('/api/')) {
+    const apiOrigin = import.meta.env.VITE_API_BASE_URL
+      || (import.meta.env.PROD ? window.location.origin : 'http://localhost:8787')
+    return `${String(apiOrigin).replace(/\/$/, '')}${value}`
+  }
+
   try {
     const url = new URL(value)
     return ['http:', 'https:'].includes(url.protocol) ? url.href : ''

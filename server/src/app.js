@@ -10,6 +10,7 @@ const healthRoutes = require('./routes/health.routes')
 const systemRoutes = require('./routes/system.routes')
 const authRoutes = require('./routes/auth.routes')
 const adminRoutes = require('./routes/admin.routes')
+const assetVaultRoutes = require('./routes/assetVault.routes')
 const publicRoutes = require('./routes/public.routes')
 const frontendErrorRoutes = require('./routes/frontendError.routes')
 const developerErrorRoutes = require('./routes/developerErrors.routes')
@@ -72,6 +73,7 @@ app.use(
   enforceTrustedMutation,
   developerErrorRoutes,
 )
+app.use('/api/admin/assets', sensitiveResponseHeaders, enforceTrustedMutation, assetVaultRoutes)
 app.use('/api/admin', sensitiveResponseHeaders, enforceTrustedMutation, adminRoutes)
 app.use('/api/public/error-reports', frontendErrorRoutes)
 app.use('/api/public/client-portal', sensitiveResponseHeaders, enforceTrustedMutation)

@@ -9,6 +9,7 @@ const expectedRoutes = [
   '/admin/login',
   '/admin/change-password',
   '/admin/dashboard',
+  '/admin/assets',
   '/admin/developer',
   '/admin/developer/errors',
   '/admin/developer/integrity',
@@ -48,6 +49,7 @@ const expectedMetadata = [
   '/admin/login',
   '/admin/change-password',
   '/admin/dashboard',
+  '/admin/assets',
   '/admin/developer',
   '/admin/developer/errors',
   '/admin/developer/integrity',
@@ -83,6 +85,7 @@ const expectedMetadata = [
 
 const expectedNavigation = [
   '/admin/dashboard',
+  '/admin/assets',
   '/admin/clients',
   '/admin/scheduler',
   '/admin/inbox',

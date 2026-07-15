@@ -126,6 +126,17 @@ export const RELEASE_QA_CHECKS = [
     densityThreshold: 30,
   },
   {
+    id: 'asset-vault',
+    title: 'Asset Vault',
+    category: 'Content Infrastructure',
+    endpoint: '/api/admin/assets',
+    route: '/admin/assets',
+    description: 'Checks protected asset metadata, assignment density, and reusable content records.',
+    collectionPaths: ['assets'],
+    densityThreshold: 80,
+    critical: true,
+  },
+  {
     id: 'security-integrity',
     title: 'Security and data integrity',
     category: 'System',
