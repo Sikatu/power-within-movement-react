@@ -123,56 +123,70 @@ export default function AdminDeveloperErrors({ embedded = false }) {
     }
   }
 
+  const monitoringStatus = settingsDraft && (
+    <div className="error-center-health-strip" aria-label="Monitoring status">
+      <span className={settingsDraft.enabled ? 'is-active' : 'is-paused'}>
+        <i aria-hidden="true" />
+        {settingsDraft.enabled ? 'Monitoring active' : 'Monitoring paused'}
+      </span>
+      <span>Uptime every {settingsDraft.uptimeIntervalMinutes} min</span>
+      <span>{settingsDraft.retentionDays}-day retention</span>
+    </div>
+  )
+
+  const headerActions = (
+    <div className="error-center-header-actions">
+      <button
+        className="btn secondary"
+        type="button"
+        disabled={isWorking}
+        onClick={() => act(createDeveloperErrorTest, 'Safe test event recorded.')}
+      >
+        Create safe test
+      </button>
+      <button
+        className="btn primary"
+        type="button"
+        disabled={isWorking}
+        onClick={() => act(runDeveloperErrorChecks, 'Production checks completed.')}
+      >
+        Run health checks
+      </button>
+      <button
+        className="error-center-refresh-button"
+        type="button"
+        disabled={isLoading || isWorking}
+        onClick={load}
+      >
+        Refresh data
+      </button>
+    </div>
+  )
+
   const content = (
       <div className="developer-error-center-page">
+      {embedded ? (
+        <section className="error-center-embedded-commandbar" aria-label="Error monitoring controls">
+          <div>
+            <strong>Error monitoring</strong>
+            {monitoringStatus}
+          </div>
+          {headerActions}
+        </section>
+      ) : (
         <header className="pwc-admin-page-header error-center-page-header">
-        <div className="error-center-title-block">
-          <p className="eyebrow">Developer Operations</p>
-          <h1>Developer Error Center</h1>
-          <p>
-            Review backend exceptions, database drift, frontend crashes, API failures,
-            missing assets, and public-site availability from one private workspace.
-          </p>
-
-          {settingsDraft && (
-            <div className="error-center-health-strip" aria-label="Monitoring status">
-              <span className={settingsDraft.enabled ? 'is-active' : 'is-paused'}>
-                <i aria-hidden="true" />
-                {settingsDraft.enabled ? 'Monitoring active' : 'Monitoring paused'}
-              </span>
-              <span>Uptime every {settingsDraft.uptimeIntervalMinutes} min</span>
-              <span>{settingsDraft.retentionDays}-day retention</span>
-            </div>
-          )}
-        </div>
-
-        <div className="error-center-header-actions">
-          <button
-            className="btn secondary"
-            type="button"
-            disabled={isWorking}
-            onClick={() => act(createDeveloperErrorTest, 'Safe test event recorded.')}
-          >
-            Create safe test
-          </button>
-          <button
-            className="btn primary"
-            type="button"
-            disabled={isWorking}
-            onClick={() => act(runDeveloperErrorChecks, 'Production checks completed.')}
-          >
-            Run health checks
-          </button>
-          <button
-            className="error-center-refresh-button"
-            type="button"
-            disabled={isLoading || isWorking}
-            onClick={load}
-          >
-            Refresh data
-          </button>
-        </div>
-      </header>
+          <div className="error-center-title-block">
+            <p className="eyebrow">Developer Operations</p>
+            <h1>Developer Error Center</h1>
+            <p>
+              Review backend exceptions, database drift, frontend crashes, API failures,
+              missing assets, and public-site availability from one private workspace.
+            </p>
+            {monitoringStatus}
+          </div>
+          {headerActions}
+        </header>
+      )}
 
       <section className="pwc-admin-metrics-grid error-center-metrics" aria-label="Error summary">
         <article className={Number(summary.open) > 0 ? 'is-attention' : ''}>

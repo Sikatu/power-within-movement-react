@@ -89,8 +89,8 @@ export default function AdminDeveloperOperations() {
             <p className="admin-eyebrow">Developer-only workspace</p>
             <h1>Developer Operations</h1>
             <p>
-              Operate, diagnose, secure, and release the platform from one streamlined command center.
-              Legacy Developer routes now open their matching section here.
+              Operate, diagnose, secure, and release the platform from one focused technical workspace.
+              Each section keeps the important data visible without overwhelming the screen.
             </p>
           </div>
           <div className="developer-operations-hero-actions">
@@ -122,7 +122,7 @@ export default function AdminDeveloperOperations() {
             <p>{activeDefinition.description}</p>
           </div>
           {activeDefinition.legacyPath && (
-            <span>Compatible route: {activeDefinition.legacyPath}</span>
+            <span>Deep link: {activeDefinition.legacyPath}</span>
           )}
         </section>
 

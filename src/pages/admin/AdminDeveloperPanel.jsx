@@ -130,6 +130,7 @@ export default function AdminDeveloperPanel({ embedded = false, mode = 'all' }) 
   const [accountSearch, setAccountSearch] = useState('')
   const [accountRoleFilter, setAccountRoleFilter] = useState('all')
   const [clientSearch, setClientSearch] = useState('')
+  const [clientPage, setClientPage] = useState(1)
   const [preview, setPreview] = useState(null)
   const [previewLoadingKey, setPreviewLoadingKey] = useState('')
   const [isClientPreviewPickerOpen, setIsClientPreviewPickerOpen] = useState(false)
@@ -222,6 +223,14 @@ export default function AdminDeveloperPanel({ embedded = false, mode = 'all' }) 
       return !query || haystack.includes(query)
     })
   }, [clients, clientSearch])
+
+  const clientPageSize = 6
+  const clientPageCount = Math.max(1, Math.ceil(filteredClients.length / clientPageSize))
+  const safeClientPage = Math.min(clientPage, clientPageCount)
+  const visibleClients = useMemo(() => {
+    const start = (safeClientPage - 1) * clientPageSize
+    return filteredClients.slice(start, start + clientPageSize)
+  }, [filteredClients, safeClientPage])
 
   const filteredPreviewClients = useMemo(() => {
     const query = previewClientSearch.trim().toLowerCase()
@@ -604,8 +613,12 @@ export default function AdminDeveloperPanel({ embedded = false, mode = 'all' }) 
               aria-selected={activeTab === tab.id}
               onClick={() => setActiveTab(tab.id)}
             >
-              {tab.label}
-              {tab.id === 'clients' && clientAttentionCount > 0 && <span>{clientAttentionCount}</span>}
+              <span className="developer-tab-label">{tab.label}</span>
+              {tab.id === 'clients' && clientAttentionCount > 0 && (
+                <span className="developer-tab-count" aria-label={`${clientAttentionCount} clients need attention`}>
+                  {clientAttentionCount}
+                </span>
+              )}
             </button>
           ))}
         </nav>
@@ -869,11 +882,20 @@ export default function AdminDeveloperPanel({ embedded = false, mode = 'all' }) 
             </div>
 
             <div className="developer-filter-row single">
-              <label><span>Search clients</span><input type="search" placeholder="Name, email, or access issue" value={clientSearch} onChange={(event) => setClientSearch(event.target.value)} /></label>
+              <label><span>Search clients</span><input type="search" placeholder="Name, email, or access issue" value={clientSearch} onChange={(event) => { setClientSearch(event.target.value); setClientPage(1) }} /></label>
+            </div>
+
+            <div className="developer-results-bar">
+              <span>Showing {filteredClients.length ? (safeClientPage - 1) * clientPageSize + 1 : 0}–{Math.min(safeClientPage * clientPageSize, filteredClients.length)} of {filteredClients.length} clients</span>
+              <div className="developer-pagination" aria-label="Client access pages">
+                <button type="button" className="btn secondary" disabled={safeClientPage === 1} onClick={() => setClientPage((current) => Math.max(1, current - 1))}>Previous</button>
+                <span>Page {safeClientPage} of {clientPageCount}</span>
+                <button type="button" className="btn secondary" disabled={safeClientPage === clientPageCount} onClick={() => setClientPage((current) => Math.min(clientPageCount, current + 1))}>Next</button>
+              </div>
             </div>
 
             <div className="developer-client-grid">
-              {filteredClients.map((client) => (
+              {visibleClients.map((client) => (
                 <article className="developer-client-card" key={client.client_profile_id}>
                   <div className="developer-client-card-top">
                     <div><h3>{clientName(client)}</h3><p>{client.email || client.public_contact_email || 'No email connected'}</p></div>
