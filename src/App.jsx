@@ -12,6 +12,7 @@ import {
   loadAdminAttentionQueue,
   loadAdminCapacityCenter,
   loadAdminClientMomentum,
+  loadAdminClientCoverage,
   loadAdminSessionReadiness,
   loadAdminSessionFollowThrough,
   loadAdminDailyBrief,
@@ -68,6 +69,7 @@ const AdminActivityCenter = lazy(loadAdminActivityCenter)
 const AdminAttentionQueue = lazy(loadAdminAttentionQueue)
 const AdminCapacityCenter = lazy(loadAdminCapacityCenter)
 const AdminClientMomentum = lazy(loadAdminClientMomentum)
+const AdminClientCoverage = lazy(loadAdminClientCoverage)
 const AdminSessionReadiness = lazy(loadAdminSessionReadiness)
 const AdminSessionFollowThrough = lazy(loadAdminSessionFollowThrough)
 const AdminDailyBrief = lazy(loadAdminDailyBrief)
@@ -293,6 +295,10 @@ const routeMetadata = {
     title: 'Client Momentum | Power Within Collective',
     description: 'Review role-aware care momentum across active clients, recent touchpoints, accountable actions, sessions, and conversations.',
   },
+  '/admin/coverage': {
+    title: 'Studio Coverage & Handoffs | Power Within Collective',
+    description: 'Review role-aware client ownership, team availability, backup coverage, active care pressure, and approaching sessions.',
+  },
   '/admin/readiness': {
     title: 'Session Readiness | Power Within Collective',
     description: 'Prepare role-aware upcoming sessions with booking decisions, intake, onboarding, care actions, conversations, ownership, and confirmations in one view.',
@@ -510,6 +516,7 @@ function AppShell() {
         <Route path="/admin/week" element={<AdminRouteGuard><AdminWeekPlanner /></AdminRouteGuard>} />
         <Route path="/admin/capacity" element={<AdminRouteGuard><AdminCapacityCenter /></AdminRouteGuard>} />
         <Route path="/admin/momentum" element={<AdminRouteGuard><AdminClientMomentum /></AdminRouteGuard>} />
+        <Route path="/admin/coverage" element={<AdminRouteGuard><AdminClientCoverage /></AdminRouteGuard>} />
         <Route path="/admin/readiness" element={<AdminRouteGuard><AdminSessionReadiness /></AdminRouteGuard>} />
         <Route path="/admin/follow-through" element={<AdminRouteGuard><AdminSessionFollowThrough /></AdminRouteGuard>} />
         <Route path="/admin/activity" element={<AdminRouteGuard><AdminActivityCenter /></AdminRouteGuard>} />

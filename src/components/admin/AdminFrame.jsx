@@ -156,6 +156,11 @@ const groupedItems = [
         module: 'clients',
       },
       {
+        to: '/admin/coverage',
+        label: 'Coverage & Handoffs',
+        module: 'clients',
+      },
+      {
         to: '/admin/readiness',
         label: 'Session Readiness',
         module: 'sessions',
