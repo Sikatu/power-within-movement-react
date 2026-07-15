@@ -8,6 +8,7 @@ import AdminErrorBoundary from './components/admin/AdminErrorBoundary.jsx'
 import AdminOwnerRouteGuard from './components/admin/AdminOwnerRouteGuard.jsx'
 import AdminRouteGuard from './components/admin/AdminRouteGuard.jsx'
 import {
+  loadAdminActivityCenter,
   loadAdminAuditLog,
   loadAdminAutomationStudio,
   loadAdminChangePassword,
@@ -56,6 +57,7 @@ import Resources from './pages/Resources.jsx'
 import SignatureExperiencePage from './pages/SignatureExperiencePage.jsx'
 import TeenPrograms from './pages/TeenPrograms.jsx'
 
+const AdminActivityCenter = lazy(loadAdminActivityCenter)
 const AdminAuditLog = lazy(loadAdminAuditLog)
 const AdminAutomationStudio = lazy(loadAdminAutomationStudio)
 const AdminChangePassword = lazy(loadAdminChangePassword)
@@ -261,6 +263,10 @@ const routeMetadata = {
     title: 'Encouragement Studio | The Studio',
     description: 'Draft, schedule, and publish thoughtful client encouragements.',
   },
+  '/admin/activity': {
+    title: 'Studio Activity Center | The Studio',
+    description: 'Review role-aware notifications, priority updates, and recent operational activity across The Studio.',
+  },
   '/admin/audit-log': {
     title: 'Activity Journal | The Studio',
     description: 'Review protected operational activity across The Studio.',
@@ -458,6 +464,7 @@ function AppShell() {
         <Route path="/admin/memberships" element={<AdminRouteGuard><AdminMembershipCircle /></AdminRouteGuard>} />
         <Route path="/admin/circle" element={<AdminRouteGuard><AdminCircleCommunity /></AdminRouteGuard>} />
         <Route path="/admin/encouragements" element={<AdminRouteGuard><AdminEncouragements /></AdminRouteGuard>} />
+        <Route path="/admin/activity" element={<AdminRouteGuard><AdminActivityCenter /></AdminRouteGuard>} />
         <Route path="/admin/audit-log" element={<AdminRouteGuard><AdminAuditLog /></AdminRouteGuard>} />
         <Route path="*" element={<NotFound />} />
           </Routes>

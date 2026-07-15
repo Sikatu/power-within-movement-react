@@ -29,6 +29,7 @@ const expectedRoutes = [
   '/admin/memberships',
   '/admin/circle',
   '/admin/encouragements',
+  '/admin/activity',
   '/admin/audit-log',
 ]
 
@@ -55,6 +56,7 @@ const expectedMetadata = [
   '/admin/memberships',
   '/admin/circle',
   '/admin/encouragements',
+  '/admin/activity',
   '/admin/audit-log',
 ]
 
@@ -72,6 +74,7 @@ const expectedNavigation = [
   '/admin/circle',
   '/admin/email-studio',
   '/admin/session-changes',
+  '/admin/activity',
   '/admin/audit-log',
   '/admin/team',
   '/admin/developer',

@@ -136,6 +136,11 @@ const groupedItems = [
     description: 'People and accountability',
     items: [
       {
+        to: '/admin/activity',
+        label: 'Studio Activity',
+        module: 'dashboard',
+      },
+      {
         to: '/admin/audit-log',
         label: 'Activity Journal',
         module: 'audit',

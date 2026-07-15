@@ -7,6 +7,7 @@ const preloadSource = readFileSync('src/components/admin/adminRoutePreloaders.js
 const packageSource = readFileSync('package.json', 'utf8')
 
 const expectedLoaders = [
+  'loadAdminActivityCenter',
   'loadAdminAuditLog',
   'loadAdminAutomationStudio',
   'loadAdminChangePassword',
@@ -55,6 +56,7 @@ const expectedPreloadRoutes = [
   '/admin/memberships',
   '/admin/circle',
   '/admin/encouragements',
+  '/admin/activity',
   '/admin/audit-log',
 ]
 

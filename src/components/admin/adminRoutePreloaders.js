@@ -13,6 +13,7 @@ function cached(importer) {
   }
 }
 
+export const loadAdminActivityCenter = cached(() => import('../../pages/admin/AdminActivityCenter.jsx'))
 export const loadAdminAuditLog = cached(() => import('../../pages/admin/AdminAuditLog.jsx'))
 export const loadAdminAutomationStudio = cached(() => import('../../pages/admin/AdminAutomationStudio.jsx'))
 export const loadAdminChangePassword = cached(() => import('../../pages/admin/AdminChangePassword.jsx'))
@@ -60,6 +61,7 @@ const routePreloaders = [
   { match: (path) => path === '/admin/memberships', load: loadAdminMembershipCircle },
   { match: (path) => path === '/admin/circle', load: loadAdminCircleCommunity },
   { match: (path) => path === '/admin/encouragements', load: loadAdminEncouragements },
+  { match: (path) => path === '/admin/activity', load: loadAdminActivityCenter },
   { match: (path) => path === '/admin/audit-log', load: loadAdminAuditLog },
 ]
 
