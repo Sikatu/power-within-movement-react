@@ -10,6 +10,7 @@ import AdminRouteGuard from './components/admin/AdminRouteGuard.jsx'
 import {
   loadAdminActivityCenter,
   loadAdminAttentionQueue,
+  loadAdminDailyBrief,
   loadAdminAuditLog,
   loadAdminAutomationStudio,
   loadAdminChangePassword,
@@ -60,6 +61,7 @@ import TeenPrograms from './pages/TeenPrograms.jsx'
 
 const AdminActivityCenter = lazy(loadAdminActivityCenter)
 const AdminAttentionQueue = lazy(loadAdminAttentionQueue)
+const AdminDailyBrief = lazy(loadAdminDailyBrief)
 const AdminAuditLog = lazy(loadAdminAuditLog)
 const AdminAutomationStudio = lazy(loadAdminAutomationStudio)
 const AdminChangePassword = lazy(loadAdminChangePassword)
@@ -264,6 +266,10 @@ const routeMetadata = {
   '/admin/encouragements': {
     title: 'Encouragement Studio | The Studio',
     description: 'Draft, schedule, and publish thoughtful client encouragements.',
+  },
+  '/admin/brief': {
+    title: 'Today in The Studio | Power Within Collective',
+    description: 'Begin the day with a role-aware summary of priority attention, upcoming sessions, and unread Studio activity.',
   },
   '/admin/activity': {
     title: 'Studio Activity Center | The Studio',
@@ -470,6 +476,7 @@ function AppShell() {
         <Route path="/admin/memberships" element={<AdminRouteGuard><AdminMembershipCircle /></AdminRouteGuard>} />
         <Route path="/admin/circle" element={<AdminRouteGuard><AdminCircleCommunity /></AdminRouteGuard>} />
         <Route path="/admin/encouragements" element={<AdminRouteGuard><AdminEncouragements /></AdminRouteGuard>} />
+        <Route path="/admin/brief" element={<AdminRouteGuard><AdminDailyBrief /></AdminRouteGuard>} />
         <Route path="/admin/activity" element={<AdminRouteGuard><AdminActivityCenter /></AdminRouteGuard>} />
         <Route path="/admin/attention" element={<AdminRouteGuard><AdminAttentionQueue /></AdminRouteGuard>} />
         <Route path="/admin/audit-log" element={<AdminRouteGuard><AdminAuditLog /></AdminRouteGuard>} />
