@@ -3,6 +3,7 @@ const { z } = require('zod')
 
 const { pool } = require('../db/pool')
 const { requireAuth, requireRole } = require('../middleware/auth.middleware')
+const { buildBulkAssignmentPlan } = require('../services/assetAssignment.service')
 const {
   collectRequestBuffer,
   deleteObject,
@@ -33,6 +34,8 @@ const assignmentSchema = z.object({
   title: z.string().trim().min(1).max(240).optional(),
   description: z.string().trim().max(5000).optional().default(''),
 })
+
+const bulkAssignmentSchema = assignmentSchema.omit({ clientProfileId: true })
 
 function slugify(value) {
   return String(value || '')
@@ -510,6 +513,146 @@ router.post('/:assetId/restore', async (req, res, next) => {
     await recordAccess({ assetId: before.id, actorUserId: req.user.id, action: 'restore' })
     await recordAudit(req, 'asset_restored', before.id, before, result.rows[0])
     return res.json({ ok: true, asset: result.rows[0], message: 'Asset restored.' })
+  } catch (error) {
+    try { await dbClient.query('ROLLBACK') } catch { /* preserve original error */ }
+    return next(error)
+  } finally {
+    dbClient.release()
+  }
+})
+
+router.post('/:assetId/assignments/all', async (req, res, next) => {
+  const parsed = bulkAssignmentSchema.safeParse(req.body)
+  if (!parsed.success) return res.status(400).json({ ok: false, error: parsed.error.issues[0]?.message || 'Check the bulk assignment details.' })
+
+  const dbClient = await pool.connect()
+  try {
+    await dbClient.query('BEGIN')
+    const assetResult = await dbClient.query(
+      `SELECT * FROM assets WHERE id = $1 AND status = 'active' LIMIT 1 FOR UPDATE`,
+      [req.params.assetId],
+    )
+    const asset = assetResult.rows[0]
+    if (!asset) {
+      await dbClient.query('ROLLBACK')
+      return res.status(404).json({ ok: false, error: 'Active asset not found.' })
+    }
+
+    const clientsResult = await dbClient.query(`
+      SELECT cp.id
+      FROM client_profiles cp
+      LEFT JOIN system_users user_record ON user_record.id = cp.user_id
+      WHERE COALESCE(cp.client_status, 'lead') <> 'archived'
+        AND (user_record.id IS NULL OR user_record.role = 'client')
+      ORDER BY cp.created_at ASC
+    `)
+    const clientIds = clientsResult.rows.map((row) => row.id)
+
+    if (clientIds.length === 0) {
+      await dbClient.query('COMMIT')
+      return res.json({
+        ok: true,
+        eligibleClients: 0,
+        assigned: 0,
+        alreadyAssigned: 0,
+        message: 'No eligible client profiles are available for assignment.',
+      })
+    }
+
+    const existingResult = await dbClient.query(
+      `
+      SELECT id, client_profile_id, status, portal_resource_id
+      FROM asset_assignments
+      WHERE asset_id = $1
+        AND client_profile_id = ANY($2::uuid[])
+      ORDER BY client_profile_id, (status = 'active') DESC, created_at DESC
+      `,
+      [asset.id, clientIds],
+    )
+    const plan = buildBulkAssignmentPlan({ clientIds, existingAssignments: existingResult.rows })
+    const title = parsed.data.title || asset.title
+    const description = parsed.data.description || asset.description || ''
+    const assignedRows = []
+
+    for (const target of plan.pending) {
+      const existing = target.existing
+      let portalResourceId = existing?.portal_resource_id || null
+
+      if (portalResourceId) {
+        await dbClient.query(
+          `
+          UPDATE client_portal_resources
+          SET title = $2, resource_type = $3, description = $4, resource_url = $5,
+              status = 'active', updated_at = now()
+          WHERE id = $1
+          `,
+          [portalResourceId, title, portalResourceType(asset), description || null, `/api/public/client-portal/assets/${asset.id}/download`],
+        )
+      } else {
+        const portalResult = await dbClient.query(
+          `
+          INSERT INTO client_portal_resources (
+            client_profile_id, title, resource_type, description, resource_url, status
+          )
+          VALUES ($1, $2, $3, $4, $5, 'active')
+          RETURNING id
+          `,
+          [target.clientProfileId, title, portalResourceType(asset), description || null, `/api/public/client-portal/assets/${asset.id}/download`],
+        )
+        portalResourceId = portalResult.rows[0].id
+      }
+
+      let assignmentResult
+      if (existing) {
+        assignmentResult = await dbClient.query(
+          `
+          UPDATE asset_assignments
+          SET status = 'active', revoked_at = NULL, assigned_by = $3, title_override = $4,
+              description_override = $5, portal_resource_id = $6, assigned_at = now()
+          WHERE id = $1 AND asset_id = $2
+          RETURNING *
+          `,
+          [existing.id, asset.id, req.user.id, parsed.data.title || null, parsed.data.description || null, portalResourceId],
+        )
+      } else {
+        assignmentResult = await dbClient.query(
+          `
+          INSERT INTO asset_assignments (
+            asset_id, client_profile_id, assigned_by, title_override, description_override, portal_resource_id
+          )
+          VALUES ($1, $2, $3, $4, $5, $6)
+          RETURNING *
+          `,
+          [asset.id, target.clientProfileId, req.user.id, parsed.data.title || null, parsed.data.description || null, portalResourceId],
+        )
+      }
+      assignedRows.push(assignmentResult.rows[0])
+    }
+
+    await dbClient.query(
+      `UPDATE assets SET visibility = 'client_assigned', updated_by = $2 WHERE id = $1`,
+      [asset.id, req.user.id],
+    )
+    await dbClient.query('COMMIT')
+
+    const result = {
+      eligibleClients: plan.eligibleCount,
+      assigned: assignedRows.length,
+      alreadyAssigned: plan.alreadyAssigned.length,
+    }
+    await recordAccess({
+      assetId: asset.id,
+      actorUserId: req.user.id,
+      action: 'assign',
+      metadata: { bulk: true, ...result },
+    })
+    await recordAudit(req, 'asset_assigned_to_all_clients', asset.id, {}, result)
+
+    const message = assignedRows.length > 0
+      ? `Asset assigned to ${assignedRows.length} client${assignedRows.length === 1 ? '' : 's'}. ${plan.alreadyAssigned.length} existing assignment${plan.alreadyAssigned.length === 1 ? ' was' : 's were'} skipped.`
+      : `All ${plan.alreadyAssigned.length} eligible clients already have this asset.`
+
+    return res.status(201).json({ ok: true, ...result, assignments: assignedRows, message })
   } catch (error) {
     try { await dbClient.query('ROLLBACK') } catch { /* preserve original error */ }
     return next(error)

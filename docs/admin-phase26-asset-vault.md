@@ -51,3 +51,14 @@ Client assignment creates a compatible `client_portal_resources` record. Revocat
 - MP4 and WebM video
 
 The default upload limit is 50 MB per file.
+
+## Phase 26R.1 — Assign to all clients
+
+A selected active asset can be assigned to every eligible client portal in one confirmed action.
+
+- Includes non-archived client profiles.
+- Excludes archived profiles and profiles attached to privileged non-client system accounts.
+- Skips existing active assignments instead of creating duplicates.
+- Reactivates revoked assignments and repairs assignments missing a portal resource.
+- Uses one database transaction and locks the selected asset during the bulk operation.
+- Records a bulk access event and audit summary with assigned and skipped counts.

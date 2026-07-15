@@ -1466,6 +1466,13 @@ export async function assignAssetVaultAsset(assetId, payload) {
   })
 }
 
+export async function assignAssetVaultAssetToAllClients(assetId, payload) {
+  return apiRequest(`/api/admin/assets/${assetId}/assignments/all`, {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  })
+}
+
 export async function unassignAssetVaultAsset(assetId, assignmentId) {
   return apiRequest(`/api/admin/assets/${assetId}/assignments/${assignmentId}`, {
     method: 'DELETE',
