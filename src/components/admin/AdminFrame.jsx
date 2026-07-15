@@ -136,6 +136,11 @@ const groupedItems = [
     description: 'People and accountability',
     items: [
       {
+        to: '/admin/attention',
+        label: 'Attention Queue',
+        module: 'clients',
+      },
+      {
         to: '/admin/activity',
         label: 'Studio Activity',
         module: 'dashboard',

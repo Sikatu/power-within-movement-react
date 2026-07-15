@@ -740,6 +740,19 @@ export async function updateAdminClientCareAction(clientId, actionId, payload) {
 }
 // client-360-pass-27-api-end
 
+// studio-attention-queue-phase-14-api-start
+export async function getAdminAttentionQueue() {
+  return apiRequest('/api/admin/attention-queue')
+}
+
+export async function updateAdminAttentionItem(sourceType, clientId, itemId, payload) {
+  return apiRequest(`/api/admin/attention-queue/${sourceType}/${clientId}/${itemId}`, {
+    method: 'PATCH',
+    body: JSON.stringify(payload),
+  })
+}
+// studio-attention-queue-phase-14-api-end
+
 // learning-library-pass-18-api-start
 export async function getAdminLearningLibrary() {
   return apiRequest('/api/admin/learning-library')

@@ -81,6 +81,7 @@ const {
   updateLeadFollowUp,
   updateLeadProfile,
 } = require('../services/leadPipeline.service')
+const { listAttentionQueue } = require('../services/attentionQueue.service')
 const {
   createEnrollment: createAutomationEnrollment,
   enrollMatchingAutomations,
@@ -3005,6 +3006,15 @@ const leadNoteSchema = z.object({
   note: z.string().trim().min(1, 'Write a note before saving.').max(6000),
 })
 
+const attentionQueueUpdateSchema = z.object({
+  status: z.enum(['open', 'in_progress', 'completed', 'cancelled']).optional(),
+  priority: z.enum(['low', 'normal', 'high', 'urgent']).optional(),
+  dueAt: z.string().trim().nullable().optional(),
+  assigneeUserId: z.string().uuid().nullable().optional(),
+}).refine((payload) => Object.keys(payload).length > 0, {
+  message: 'Choose at least one attention item change.',
+})
+
 router.get('/lead-pipeline', requireAdmin, async (req, res, next) => {
   try {
     const teamUserId = req.user?.role === 'staff' ? req.user.id : null
@@ -3256,6 +3266,139 @@ router.post('/lead-pipeline/:clientId/notes', requireAdmin, async (req, res, nex
   }
 })
 // leads-intake-pipeline-pass-28-end
+
+// studio-attention-queue-phase-14-start
+router.get('/attention-queue', requireAdmin, async (req, res, next) => {
+  try {
+    return res.json({
+      ok: true,
+      ...(await listAttentionQueue(req.user)),
+    })
+  } catch (error) {
+    return next(error)
+  }
+})
+
+router.patch('/attention-queue/:sourceType/:clientId/:itemId', requireAdmin, async (req, res, next) => {
+  const parsed = attentionQueueUpdateSchema.safeParse(req.body)
+
+  if (!parsed.success) {
+    return res.status(400).json({
+      ok: false,
+      error: parsed.error.issues[0]?.message || 'Please check the attention item.',
+    })
+  }
+
+  const sourceType = req.params.sourceType
+
+  if (!['lead_follow_up', 'care_action'].includes(sourceType)) {
+    return res.status(400).json({ ok: false, error: 'Unsupported attention item type.' })
+  }
+
+  if (sourceType === 'lead_follow_up' && parsed.data.status === 'in_progress') {
+    return res.status(400).json({
+      ok: false,
+      error: 'Lead follow-ups can be open, completed, or cancelled.',
+    })
+  }
+
+  if (sourceType === 'care_action' && parsed.data.priority === 'low') {
+    return res.status(400).json({
+      ok: false,
+      error: 'Client care actions use normal, high, or urgent priority.',
+    })
+  }
+
+  try {
+    let updated
+
+    if (sourceType === 'lead_follow_up') {
+      const payload = {}
+      if (Object.prototype.hasOwnProperty.call(parsed.data, 'status')) payload.status = parsed.data.status
+      if (Object.prototype.hasOwnProperty.call(parsed.data, 'priority')) payload.priority = parsed.data.priority
+      if (Object.prototype.hasOwnProperty.call(parsed.data, 'dueAt')) payload.dueAt = parsed.data.dueAt
+      if (Object.prototype.hasOwnProperty.call(parsed.data, 'assigneeUserId')) {
+        payload.assignedToUserId = parsed.data.assigneeUserId
+      }
+
+      updated = await updateLeadFollowUp(
+        req.params.clientId,
+        req.params.itemId,
+        payload,
+        req.user.id,
+      )
+    } else {
+      if (
+        Object.prototype.hasOwnProperty.call(parsed.data, 'assigneeUserId')
+        && !(await isAssignedClientCareOwner(req.params.clientId, parsed.data.assigneeUserId))
+      ) {
+        return res.status(400).json({
+          ok: false,
+          error: 'The selected action owner is not assigned to this client.',
+        })
+      }
+
+      const payload = {}
+      if (Object.prototype.hasOwnProperty.call(parsed.data, 'status')) payload.status = parsed.data.status
+      if (Object.prototype.hasOwnProperty.call(parsed.data, 'priority')) payload.priority = parsed.data.priority
+      if (Object.prototype.hasOwnProperty.call(parsed.data, 'dueAt')) payload.dueAt = parsed.data.dueAt
+      if (Object.prototype.hasOwnProperty.call(parsed.data, 'assigneeUserId')) {
+        payload.ownerUserId = parsed.data.assigneeUserId
+      }
+
+      updated = await updateClientCareAction(
+        req.params.clientId,
+        req.params.itemId,
+        payload,
+        req.user.id,
+      )
+    }
+
+    if (!updated) {
+      return res.status(404).json({ ok: false, error: 'Attention item not found.' })
+    }
+
+    await pool.query(
+      `
+      INSERT INTO audit_logs (
+        actor_user_id,
+        action,
+        entity_type,
+        entity_id,
+        before_data,
+        after_data,
+        ip_address,
+        user_agent
+      )
+      VALUES ($1, 'attention_queue_item_updated', $2, $3, $4::jsonb, $5::jsonb, $6, $7)
+      `,
+      [
+        req.user.id,
+        sourceType === 'lead_follow_up' ? 'lead_follow_ups' : 'client_care_actions',
+        req.params.itemId,
+        JSON.stringify(updated.before || null),
+        JSON.stringify(updated.after || updated),
+        req.ip || null,
+        req.get('user-agent') || null,
+      ],
+    )
+
+    const completed = parsed.data.status === 'completed'
+
+    return res.json({
+      ok: true,
+      message: completed ? 'Attention item completed.' : 'Attention item updated.',
+      ...(await listAttentionQueue(req.user)),
+    })
+  } catch (error) {
+    if (error.code === 'INVALID_FOLLOW_UP_ASSIGNEE') {
+      return res.status(400).json({ ok: false, error: error.message })
+    }
+    return next(error)
+  }
+})
+// studio-attention-queue-phase-14-end
+
 
 // phase-3-8-follow-up-care-queue-start
 router.get('/follow-ups', requireAdmin, async (req, res, next) => {

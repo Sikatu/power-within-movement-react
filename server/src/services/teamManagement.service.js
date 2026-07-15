@@ -98,6 +98,7 @@ function routePermissionModule(pathname = '') {
   if (path.startsWith('/overview')) return 'dashboard'
   if (
     path.startsWith('/clients') ||
+    path.startsWith('/attention-queue') ||
     path.startsWith('/onboarding-studio') ||
     path.startsWith('/lead-pipeline') ||
     path.startsWith('/follow-ups') ||

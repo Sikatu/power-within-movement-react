@@ -8,6 +8,7 @@ const packageSource = readFileSync('package.json', 'utf8')
 
 const expectedLoaders = [
   'loadAdminActivityCenter',
+  'loadAdminAttentionQueue',
   'loadAdminAuditLog',
   'loadAdminAutomationStudio',
   'loadAdminChangePassword',
@@ -57,6 +58,7 @@ const expectedPreloadRoutes = [
   '/admin/circle',
   '/admin/encouragements',
   '/admin/activity',
+  '/admin/attention',
   '/admin/audit-log',
 ]
 
