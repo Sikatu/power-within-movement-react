@@ -209,6 +209,11 @@ const groupedItems = [
         label: 'Developer Error Center',
         developerOnly: true,
       },
+      {
+        to: '/admin/developer/integrity',
+        label: 'Security & Data Integrity',
+        developerOnly: true,
+      },
     ],
   },
 ]

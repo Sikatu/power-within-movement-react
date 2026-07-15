@@ -34,7 +34,10 @@ async function requireAuth(req, res, next) {
       })
     }
 
-    const payload = jwt.verify(token, env.jwtSecret)
+    const payload = jwt.verify(token, env.jwtSecret, {
+      algorithms: ['HS256'],
+      clockTolerance: 5,
+    })
 
     if (payload.purpose && payload.purpose !== 'auth') {
       return res.status(401).json({

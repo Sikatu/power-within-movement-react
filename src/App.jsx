@@ -26,6 +26,7 @@ import {
   loadAdminDashboard,
   loadAdminDeveloperErrors,
   loadAdminDeveloperPanel,
+  loadAdminSecurityIntegrity,
   loadAdminEncouragements,
   loadAdminFounderAvailability,
   loadAdminFounderCalendar,
@@ -83,6 +84,7 @@ const AdminClients = lazy(loadAdminClients)
 const AdminDashboard = lazy(loadAdminDashboard)
 const AdminDeveloperErrors = lazy(loadAdminDeveloperErrors)
 const AdminDeveloperPanel = lazy(loadAdminDeveloperPanel)
+const AdminSecurityIntegrity = lazy(loadAdminSecurityIntegrity)
 const AdminEncouragements = lazy(loadAdminEncouragements)
 const AdminFounderAvailability = lazy(loadAdminFounderAvailability)
 const AdminFounderCalendar = lazy(loadAdminFounderCalendar)
@@ -343,6 +345,10 @@ const routeMetadata = {
     title: 'Developer Error Center | Power Within Collective',
     description: 'Private platform monitoring and error review.',
   },
+  '/admin/developer/integrity': {
+    title: 'Security & Data Integrity | Power Within Collective',
+    description: 'Developer-only audit of privileged access, staff permissions, request trust, and operational data integrity.',
+  },
 }
 
 function resolveRouteMetadata(pathname) {
@@ -493,6 +499,7 @@ function AppShell() {
         <Route path="/admin/dashboard" element={<AdminRouteGuard><AdminDashboard /></AdminRouteGuard>} />
         <Route path="/admin/developer" element={<AdminDeveloperRouteGuard><AdminDeveloperPanel /></AdminDeveloperRouteGuard>} />
         <Route path="/admin/developer/errors" element={<AdminDeveloperRouteGuard><AdminDeveloperErrors /></AdminDeveloperRouteGuard>} />
+        <Route path="/admin/developer/integrity" element={<AdminDeveloperRouteGuard><AdminSecurityIntegrity /></AdminDeveloperRouteGuard>} />
         <Route path="/admin/team" element={<AdminDeveloperRouteGuard><AdminTeamManagement /></AdminDeveloperRouteGuard>} />
         <Route path="/admin/founders-view" element={<AdminOwnerRouteGuard><AdminFoundersView /></AdminOwnerRouteGuard>} />
         <Route path="/admin/founders-calendar" element={<AdminOwnerRouteGuard><AdminFounderCalendar /></AdminOwnerRouteGuard>} />

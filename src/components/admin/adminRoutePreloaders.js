@@ -31,6 +31,7 @@ export const loadAdminClients = cached(() => import('../../pages/admin/AdminClie
 export const loadAdminDashboard = cached(() => import('../../pages/admin/AdminDashboard.jsx'))
 export const loadAdminDeveloperErrors = cached(() => import('../../pages/admin/AdminDeveloperErrors.jsx'))
 export const loadAdminDeveloperPanel = cached(() => import('../../pages/admin/AdminDeveloperPanel.jsx'))
+export const loadAdminSecurityIntegrity = cached(() => import('../../pages/admin/AdminSecurityIntegrity.jsx'))
 export const loadAdminEncouragements = cached(() => import('../../pages/admin/AdminEncouragements.jsx'))
 export const loadAdminFounderAvailability = cached(() => import('../../pages/admin/AdminFounderAvailability.jsx'))
 export const loadAdminFounderCalendar = cached(() => import('../../pages/admin/AdminFounderCalendar.jsx'))
@@ -52,6 +53,7 @@ const routePreloaders = [
   { match: (path) => path === '/admin/dashboard', load: loadAdminDashboard },
   { match: (path) => path === '/admin/developer', load: loadAdminDeveloperPanel },
   { match: (path) => path.startsWith('/admin/developer/errors'), load: loadAdminDeveloperErrors },
+  { match: (path) => path === '/admin/developer/integrity', load: loadAdminSecurityIntegrity },
   { match: (path) => path === '/admin/team', load: loadAdminTeamManagement },
   { match: (path) => path === '/admin/founders-view', load: loadAdminFoundersView },
   { match: (path) => path === '/admin/founders-calendar', load: loadAdminFounderCalendar },

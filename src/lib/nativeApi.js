@@ -669,6 +669,10 @@ export async function getDeveloperSystemHealth() {
   return apiRequest('/api/admin/developer/system-health')
 }
 
+export async function getDeveloperSecurityIntegrity() {
+  return apiRequest('/api/admin/developer/security-integrity')
+}
+
 export async function getDeveloperSettings() {
   return apiRequest('/api/admin/developer/settings')
 }

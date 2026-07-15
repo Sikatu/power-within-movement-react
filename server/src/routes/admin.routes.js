@@ -87,6 +87,7 @@ const { listClientMomentum } = require('../services/clientMomentum.service')
 const { listClientCoverage } = require('../services/clientCoverage.service')
 const { listSessionReadiness } = require('../services/sessionReadiness.service')
 const { listSessionFollowThrough } = require('../services/sessionFollowThrough.service')
+const { getSecurityIntegritySnapshot } = require('../services/securityIntegrity.service')
 const {
   createEnrollment: createAutomationEnrollment,
   enrollMatchingAutomations,
@@ -8516,6 +8517,15 @@ router.get('/developer/client-access', requireDeveloper, async (req, res, next) 
     return res.json({ ok: true, clients })
   } catch (error) {
     return next(error)
+  }
+})
+
+router.get('/developer/security-integrity', requireDeveloper, async (req, res, next) => {
+  try {
+    const snapshot = await getSecurityIntegritySnapshot()
+    res.json(snapshot)
+  } catch (error) {
+    next(error)
   }
 })
 
