@@ -141,6 +141,11 @@ const groupedItems = [
         module: 'dashboard',
       },
       {
+        to: '/admin/week',
+        label: 'Studio Week Planner',
+        module: 'dashboard',
+      },
+      {
         to: '/admin/attention',
         label: 'Attention Queue',
         module: 'clients',
