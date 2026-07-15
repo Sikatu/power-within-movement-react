@@ -123,70 +123,57 @@ export default function AdminDeveloperErrors({ embedded = false }) {
     }
   }
 
-  const monitoringStatus = settingsDraft && (
-    <div className="error-center-health-strip" aria-label="Monitoring status">
-      <span className={settingsDraft.enabled ? 'is-active' : 'is-paused'}>
-        <i aria-hidden="true" />
-        {settingsDraft.enabled ? 'Monitoring active' : 'Monitoring paused'}
-      </span>
-      <span>Uptime every {settingsDraft.uptimeIntervalMinutes} min</span>
-      <span>{settingsDraft.retentionDays}-day retention</span>
-    </div>
-  )
-
-  const headerActions = (
-    <div className="error-center-header-actions">
-      <button
-        className="btn secondary"
-        type="button"
-        disabled={isWorking}
-        onClick={() => act(createDeveloperErrorTest, 'Safe test event recorded.')}
-      >
-        Create safe test
-      </button>
-      <button
-        className="btn primary"
-        type="button"
-        disabled={isWorking}
-        onClick={() => act(runDeveloperErrorChecks, 'Production checks completed.')}
-      >
-        Run health checks
-      </button>
-      <button
-        className="error-center-refresh-button"
-        type="button"
-        disabled={isLoading || isWorking}
-        onClick={load}
-      >
-        Refresh data
-      </button>
-    </div>
-  )
-
   const content = (
       <div className="developer-error-center-page">
-      {embedded ? (
-        <section className="error-center-embedded-commandbar" aria-label="Error monitoring controls">
-          <div>
-            <strong>Error monitoring</strong>
-            {monitoringStatus}
+        <header className={`error-center-commandbar${embedded ? ' is-embedded' : ''}`}>
+          <div className="error-center-commandbar-copy">
+            <div className="error-center-commandbar-title">
+              <span className="error-center-command-icon" aria-hidden="true">!</span>
+              <div>
+                <strong>Incident monitor</strong>
+                <small>Application, API, database, asset, and availability signals</small>
+              </div>
+            </div>
+
+            {settingsDraft && (
+              <div className="error-center-health-strip" aria-label="Monitoring status">
+                <span className={settingsDraft.enabled ? 'is-active' : 'is-paused'}>
+                  <i aria-hidden="true" />
+                  {settingsDraft.enabled ? 'Monitoring active' : 'Monitoring paused'}
+                </span>
+                <span>Checks every {settingsDraft.uptimeIntervalMinutes} min</span>
+                <span>{settingsDraft.retentionDays}-day retention</span>
+              </div>
+            )}
           </div>
-          {headerActions}
-        </section>
-      ) : (
-        <header className="pwc-admin-page-header error-center-page-header">
-          <div className="error-center-title-block">
-            <p className="eyebrow">Developer Operations</p>
-            <h1>Developer Error Center</h1>
-            <p>
-              Review backend exceptions, database drift, frontend crashes, API failures,
-              missing assets, and public-site availability from one private workspace.
-            </p>
-            {monitoringStatus}
+
+          <div className="error-center-header-actions">
+            <button
+              className="btn secondary"
+              type="button"
+              disabled={isWorking}
+              onClick={() => act(createDeveloperErrorTest, 'Safe test event recorded.')}
+            >
+              Create safe test
+            </button>
+            <button
+              className="btn primary"
+              type="button"
+              disabled={isWorking}
+              onClick={() => act(runDeveloperErrorChecks, 'Production checks completed.')}
+            >
+              Run health checks
+            </button>
+            <button
+              className="error-center-refresh-button"
+              type="button"
+              disabled={isLoading || isWorking}
+              onClick={load}
+            >
+              Refresh
+            </button>
           </div>
-          {headerActions}
         </header>
-      )}
 
       <section className="pwc-admin-metrics-grid error-center-metrics" aria-label="Error summary">
         <article className={Number(summary.open) > 0 ? 'is-attention' : ''}>
@@ -434,18 +421,19 @@ export default function AdminDeveloperErrors({ embedded = false }) {
       )}
 
       {settingsDraft && (
-        <section className="error-center-settings">
-          <div className="error-center-section-heading error-center-settings-heading">
+        <details className="error-center-settings">
+          <summary className="error-center-section-heading error-center-settings-heading">
             <div>
-              <p className="eyebrow">Detection Policy</p>
-              <h2>Monitoring settings</h2>
-              <p>Control what is captured, how often checks run, and how long resolved records remain.</p>
+              <p className="eyebrow">Detection policy</p>
+              <h2>Monitoring configuration</h2>
+              <p>Capture rules, alert behavior, retention, and automated check cadence.</p>
             </div>
             <span className={`error-center-monitoring-badge ${settingsDraft.enabled ? 'is-active' : 'is-paused'}`}>
               {settingsDraft.enabled ? 'Monitoring on' : 'Monitoring paused'}
             </span>
-          </div>
+          </summary>
 
+          <div className="error-center-settings-body">
           <div className="error-center-settings-layout">
             <div className="error-center-settings-panel">
               <div className="error-center-panel-heading">
@@ -537,7 +525,7 @@ export default function AdminDeveloperErrors({ embedded = false }) {
           </div>
 
           <div className="error-center-settings-footer">
-            <p>Settings apply to the private developer monitor and do not change client-facing content.</p>
+            <p>Settings apply only to the private developer monitor and never change client-facing content.</p>
             <button
               className="btn primary"
               type="button"
@@ -550,7 +538,8 @@ export default function AdminDeveloperErrors({ embedded = false }) {
               Save monitoring settings
             </button>
           </div>
-        </section>
+          </div>
+        </details>
       )}
       </div>
   )

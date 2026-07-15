@@ -9,39 +9,53 @@ import AdminReleaseQa from './AdminReleaseQa.jsx'
 const sections = [
   {
     id: 'overview',
+    code: '01',
+    icon: '⌂',
     label: 'Overview',
-    description: 'Platform totals, previews, and the fastest paths into active Studio workspaces.',
+    description: 'Platform totals, live health, previews, and direct paths into critical Studio workspaces.',
   },
   {
     id: 'health',
+    code: '02',
+    icon: '◌',
     label: 'System Health',
-    description: 'Database, application, memory, email, and runtime health in one focused view.',
+    description: 'Database, application, memory, email, and runtime health in one focused technical view.',
   },
   {
     id: 'errors',
+    code: '03',
+    icon: '!',
     label: 'Errors',
     description: 'Detected issues, technical context, status decisions, and monitoring policy.',
     legacyPath: '/admin/developer/errors',
   },
   {
     id: 'integrity',
+    code: '04',
+    icon: '✓',
     label: 'Security & Integrity',
     description: 'Privileged access, permission, request-trust, and operational data checks.',
     legacyPath: '/admin/developer/integrity',
   },
   {
     id: 'qa',
+    code: '05',
+    icon: '◇',
     label: 'Release QA',
     description: 'Read-only contract, latency, density, and responsive release verification.',
     legacyPath: '/admin/developer/qa',
   },
   {
     id: 'access',
+    code: '06',
+    icon: '◎',
     label: 'Accounts & Access',
-    description: 'Account governance, client access diagnosis, temporary credentials, and session control.',
+    description: 'Identity governance, client access diagnosis, temporary credentials, and session control.',
   },
   {
     id: 'configuration',
+    code: '07',
+    icon: '⚙',
     label: 'Configuration',
     description: 'Feature flags, maintenance controls, monitoring behavior, and platform settings.',
   },
@@ -85,14 +99,24 @@ export default function AdminDeveloperOperations() {
     <AdminFrame>
       <div className="developer-operations-page">
         <header className="developer-operations-hero">
-          <div>
-            <p className="admin-eyebrow">Developer-only workspace</p>
+          <div className="developer-operations-hero-copy">
+            <div className="developer-operations-kicker">
+              <span className="developer-operations-live-dot" aria-hidden="true" />
+              Private developer command center
+            </div>
             <h1>Developer Operations</h1>
             <p>
-              Operate, diagnose, secure, and release the platform from one focused technical workspace.
-              Each section keeps the important data visible without overwhelming the screen.
+              Diagnose platform health, govern access, investigate failures, and prepare releases
+              from one technical workspace designed for fast, confident decisions.
+              Legacy Developer routes now open their matching section here.
             </p>
+            <div className="developer-operations-meta" aria-label="Workspace characteristics">
+              <span><strong>7</strong> operational views</span>
+              <span><strong>Read-only</strong> audit tools</span>
+              <span><strong>Protected</strong> developer access</span>
+            </div>
           </div>
+
           <div className="developer-operations-hero-actions">
             <Link className="btn secondary" to="/admin/audit-log">Activity Journal</Link>
             <Link className="btn primary" to="/admin/dashboard">Open The Studio</Link>
@@ -109,20 +133,24 @@ export default function AdminDeveloperOperations() {
               className={activeSection === section.id ? 'is-active' : ''}
               onClick={() => openSection(section)}
             >
-              <span>{section.label}</span>
-              <small>{section.description}</small>
+              <span className="developer-operations-nav-icon" aria-hidden="true">{section.icon}</span>
+              <span className="developer-operations-nav-copy">
+                <small>{section.code}</small>
+                <strong>{section.label}</strong>
+              </span>
             </button>
           ))}
         </nav>
 
         <section className="developer-operations-section-heading" aria-live="polite">
+          <span className="developer-operations-section-index" aria-hidden="true">{activeDefinition.code}</span>
           <div>
-            <p className="admin-eyebrow">Current section</p>
+            <p className="admin-eyebrow">Current operation</p>
             <h2>{activeDefinition.label}</h2>
             <p>{activeDefinition.description}</p>
           </div>
           {activeDefinition.legacyPath && (
-            <span>Deep link: {activeDefinition.legacyPath}</span>
+            <code>{activeDefinition.legacyPath}</code>
           )}
         </section>
 

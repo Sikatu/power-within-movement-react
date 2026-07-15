@@ -132,7 +132,8 @@ export default function AdminSecurityIntegrity({ embedded = false }) {
   }
 
   const content = (
-      <div className="pwc-week16-page pwc-capacity17-page">
+      <div className="pwc-week16-page pwc-capacity17-page developer-audit-workspace">
+        {!embedded && (
         <header className="pwc-week16-hero pwc-capacity17-hero">
           <div>
             <p className="admin-eyebrow">Security &amp; Data Integrity</p>
@@ -152,6 +153,7 @@ export default function AdminSecurityIntegrity({ embedded = false }) {
             </div>
           </aside>
         </header>
+        )}
 
         <section className="pwc-week16-toolbar pwc-capacity17-toolbar" aria-label="Security audit controls">
           <div>

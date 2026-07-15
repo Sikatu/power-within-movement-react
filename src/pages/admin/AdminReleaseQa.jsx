@@ -183,7 +183,8 @@ export default function AdminReleaseQa({ embedded = false }) {
   }
 
   const content = (
-      <div className="pwc-week16-page pwc-capacity17-page">
+      <div className="pwc-week16-page pwc-capacity17-page developer-release-workspace">
+        {!embedded && (
         <header className="pwc-week16-hero pwc-capacity17-hero">
           <div>
             <p className="admin-eyebrow">Phase 23 · Release QA</p>
@@ -203,6 +204,7 @@ export default function AdminReleaseQa({ embedded = false }) {
             </div>
           </aside>
         </header>
+        )}
 
         <section className="pwc-week16-toolbar pwc-capacity17-toolbar" aria-label="Release QA controls">
           <div>

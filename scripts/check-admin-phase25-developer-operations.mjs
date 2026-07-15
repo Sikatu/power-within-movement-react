@@ -34,7 +34,7 @@ const sectionSafeguards = [
   "legacyPath: '/admin/developer/integrity'",
   "legacyPath: '/admin/developer/qa'",
   'Developer Operations sections',
-  'Each section keeps the important data visible without overwhelming the screen.',
+  'Legacy Developer routes now open their matching section here.',
   '<AdminDeveloperPanel embedded mode="health" />',
   '<AdminDeveloperErrors embedded />',
   '<AdminSecurityIntegrity embedded />',
@@ -61,9 +61,9 @@ const visualSafeguards = [
   '.developer-operations-section-heading',
   '.developer-control-center.is-embedded',
   '.developer-control-center.developer-mode-health',
-  '.developer-error-center-page .error-center-layout',
-  '.developer-error-center-page .error-center-list-scroll',
-  '.developer-error-center-page .error-center-detail',
+  '.developer-operations-content.is-errors .error-center-layout',
+  '.developer-operations-content.is-errors .error-center-list-scroll',
+  '.developer-operations-content.is-errors .error-center-detail',
   '.developer-operations-content.is-access .developer-tab-bar',
 ]
 
