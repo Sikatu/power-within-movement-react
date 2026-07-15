@@ -98,6 +98,7 @@ function routePermissionModule(pathname = '') {
   if (path === '/team/workload') return 'dashboard'
   if (path === '/client-momentum') return 'clients'
   if (path === '/session-readiness') return 'sessions'
+  if (path === '/session-follow-through') return 'sessions'
   if (path.startsWith('/overview')) return 'dashboard'
   if (
     path.startsWith('/clients') ||

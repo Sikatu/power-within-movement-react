@@ -161,6 +161,11 @@ const groupedItems = [
         module: 'sessions',
       },
       {
+        to: '/admin/follow-through',
+        label: 'Session Follow-Through',
+        module: 'sessions',
+      },
+      {
         to: '/admin/attention',
         label: 'Attention Queue',
         module: 'clients',

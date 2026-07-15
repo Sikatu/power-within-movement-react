@@ -702,6 +702,10 @@ export async function getAdminSessionReadiness(days = 14) {
   return apiRequest(`/api/admin/session-readiness?days=${encodeURIComponent(days)}`)
 }
 
+export async function getAdminSessionFollowThrough(days = 30) {
+  return apiRequest(`/api/admin/session-follow-through?days=${encodeURIComponent(days)}`)
+}
+
 export async function getMyTeamAccess() {
   return apiRequest('/api/admin/team/my-access')
 }

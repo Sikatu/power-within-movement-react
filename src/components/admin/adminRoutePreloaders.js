@@ -18,6 +18,7 @@ export const loadAdminAttentionQueue = cached(() => import('../../pages/admin/Ad
 export const loadAdminCapacityCenter = cached(() => import('../../pages/admin/AdminCapacityCenter.jsx'))
 export const loadAdminClientMomentum = cached(() => import('../../pages/admin/AdminClientMomentum.jsx'))
 export const loadAdminSessionReadiness = cached(() => import('../../pages/admin/AdminSessionReadiness.jsx'))
+export const loadAdminSessionFollowThrough = cached(() => import('../../pages/admin/AdminSessionFollowThrough.jsx'))
 export const loadAdminDailyBrief = cached(() => import('../../pages/admin/AdminDailyBrief.jsx'))
 export const loadAdminWeekPlanner = cached(() => import('../../pages/admin/AdminWeekPlanner.jsx'))
 export const loadAdminAuditLog = cached(() => import('../../pages/admin/AdminAuditLog.jsx'))
@@ -74,6 +75,7 @@ const routePreloaders = [
   { match: (path) => path === '/admin/capacity', load: loadAdminCapacityCenter },
   { match: (path) => path === '/admin/momentum', load: loadAdminClientMomentum },
   { match: (path) => path === '/admin/readiness', load: loadAdminSessionReadiness },
+  { match: (path) => path === '/admin/follow-through', load: loadAdminSessionFollowThrough },
   { match: (path) => path === '/admin/audit-log', load: loadAdminAuditLog },
 ]
 

@@ -85,6 +85,7 @@ const { listAttentionQueue } = require('../services/attentionQueue.service')
 const { listTeamWorkload } = require('../services/teamWorkload.service')
 const { listClientMomentum } = require('../services/clientMomentum.service')
 const { listSessionReadiness } = require('../services/sessionReadiness.service')
+const { listSessionFollowThrough } = require('../services/sessionFollowThrough.service')
 const {
   createEnrollment: createAutomationEnrollment,
   enrollMatchingAutomations,
@@ -11811,6 +11812,17 @@ router.get('/session-readiness', requireAdmin, async (req, res, next) => {
     return res.json({
       ok: true,
       ...(await listSessionReadiness(req.user, { days: req.query.days })),
+    })
+  } catch (error) {
+    return next(error)
+  }
+})
+
+router.get('/session-follow-through', requireAdmin, async (req, res, next) => {
+  try {
+    return res.json({
+      ok: true,
+      ...(await listSessionFollowThrough(req.user, { days: req.query.days })),
     })
   } catch (error) {
     return next(error)
