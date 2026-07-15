@@ -151,6 +151,11 @@ const groupedItems = [
         module: 'dashboard',
       },
       {
+        to: '/admin/momentum',
+        label: 'Client Momentum',
+        module: 'clients',
+      },
+      {
         to: '/admin/attention',
         label: 'Attention Queue',
         module: 'clients',

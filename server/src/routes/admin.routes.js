@@ -83,6 +83,7 @@ const {
 } = require('../services/leadPipeline.service')
 const { listAttentionQueue } = require('../services/attentionQueue.service')
 const { listTeamWorkload } = require('../services/teamWorkload.service')
+const { listClientMomentum } = require('../services/clientMomentum.service')
 const {
   createEnrollment: createAutomationEnrollment,
   enrollMatchingAutomations,
@@ -11787,6 +11788,17 @@ router.get('/team/workload', requireAdmin, async (req, res, next) => {
     return res.json({
       ok: true,
       ...(await listTeamWorkload(req.user)),
+    })
+  } catch (error) {
+    return next(error)
+  }
+})
+
+router.get('/client-momentum', requireAdmin, async (req, res, next) => {
+  try {
+    return res.json({
+      ok: true,
+      ...(await listClientMomentum(req.user)),
     })
   } catch (error) {
     return next(error)

@@ -694,6 +694,10 @@ export async function getAdminTeamWorkload() {
   return apiRequest('/api/admin/team/workload')
 }
 
+export async function getAdminClientMomentum() {
+  return apiRequest('/api/admin/client-momentum')
+}
+
 export async function getMyTeamAccess() {
   return apiRequest('/api/admin/team/my-access')
 }

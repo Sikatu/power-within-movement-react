@@ -96,6 +96,7 @@ function routePermissionModule(pathname = '') {
   if (path.startsWith('/notifications')) return null
   if (path === '/team/my-access') return null
   if (path === '/team/workload') return 'dashboard'
+  if (path === '/client-momentum') return 'clients'
   if (path.startsWith('/overview')) return 'dashboard'
   if (
     path.startsWith('/clients') ||
