@@ -146,6 +146,11 @@ const groupedItems = [
         module: 'dashboard',
       },
       {
+        to: '/admin/capacity',
+        label: 'Studio Capacity',
+        module: 'dashboard',
+      },
+      {
         to: '/admin/attention',
         label: 'Attention Queue',
         module: 'clients',

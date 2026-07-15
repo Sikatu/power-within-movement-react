@@ -82,6 +82,7 @@ const {
   updateLeadProfile,
 } = require('../services/leadPipeline.service')
 const { listAttentionQueue } = require('../services/attentionQueue.service')
+const { listTeamWorkload } = require('../services/teamWorkload.service')
 const {
   createEnrollment: createAutomationEnrollment,
   enrollMatchingAutomations,
@@ -11780,6 +11781,17 @@ async function getTeamManagementSnapshot() {
     modules: TEAM_PERMISSION_MODULES,
   }
 }
+
+router.get('/team/workload', requireAdmin, async (req, res, next) => {
+  try {
+    return res.json({
+      ok: true,
+      ...(await listTeamWorkload(req.user)),
+    })
+  } catch (error) {
+    return next(error)
+  }
+})
 
 router.get('/team/my-access', requireAdmin, async (req, res, next) => {
   try {

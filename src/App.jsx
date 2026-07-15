@@ -10,6 +10,7 @@ import AdminRouteGuard from './components/admin/AdminRouteGuard.jsx'
 import {
   loadAdminActivityCenter,
   loadAdminAttentionQueue,
+  loadAdminCapacityCenter,
   loadAdminDailyBrief,
   loadAdminWeekPlanner,
   loadAdminAuditLog,
@@ -62,6 +63,7 @@ import TeenPrograms from './pages/TeenPrograms.jsx'
 
 const AdminActivityCenter = lazy(loadAdminActivityCenter)
 const AdminAttentionQueue = lazy(loadAdminAttentionQueue)
+const AdminCapacityCenter = lazy(loadAdminCapacityCenter)
 const AdminDailyBrief = lazy(loadAdminDailyBrief)
 const AdminWeekPlanner = lazy(loadAdminWeekPlanner)
 const AdminAuditLog = lazy(loadAdminAuditLog)
@@ -277,6 +279,10 @@ const routeMetadata = {
     title: 'Studio Week Planner | Power Within Collective',
     description: 'Balance scheduled sessions and accountable client-care work across a clear role-aware seven-day Studio plan.',
   },
+  '/admin/capacity': {
+    title: 'Studio Capacity | Power Within Collective',
+    description: 'Balance role-aware team workload, accountable client care, upcoming sessions, and configured Studio capacity.',
+  },
   '/admin/activity': {
     title: 'Studio Activity Center | The Studio',
     description: 'Review role-aware notifications, priority updates, and recent operational activity across The Studio.',
@@ -484,6 +490,7 @@ function AppShell() {
         <Route path="/admin/encouragements" element={<AdminRouteGuard><AdminEncouragements /></AdminRouteGuard>} />
         <Route path="/admin/brief" element={<AdminRouteGuard><AdminDailyBrief /></AdminRouteGuard>} />
         <Route path="/admin/week" element={<AdminRouteGuard><AdminWeekPlanner /></AdminRouteGuard>} />
+        <Route path="/admin/capacity" element={<AdminRouteGuard><AdminCapacityCenter /></AdminRouteGuard>} />
         <Route path="/admin/activity" element={<AdminRouteGuard><AdminActivityCenter /></AdminRouteGuard>} />
         <Route path="/admin/attention" element={<AdminRouteGuard><AdminAttentionQueue /></AdminRouteGuard>} />
         <Route path="/admin/audit-log" element={<AdminRouteGuard><AdminAuditLog /></AdminRouteGuard>} />

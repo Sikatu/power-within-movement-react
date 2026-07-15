@@ -690,6 +690,10 @@ export async function getDeveloperClientPreview(clientProfileId) {
 // developer-operations-phase-2-api-end
 
 // staff-team-management-pass-26-api-start
+export async function getAdminTeamWorkload() {
+  return apiRequest('/api/admin/team/workload')
+}
+
 export async function getMyTeamAccess() {
   return apiRequest('/api/admin/team/my-access')
 }
