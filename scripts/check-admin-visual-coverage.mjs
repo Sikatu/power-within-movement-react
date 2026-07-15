@@ -35,7 +35,9 @@ for (const selector of requiredSelectors) {
   }
 }
 
-const stylesheetBytes = Buffer.byteLength(stylesheet, 'utf8')
+// Normalize Windows CRLF so the source-size guard is platform-independent.
+const normalizedStylesheet = stylesheet.replace(/\r\n/g, '\n')
+const stylesheetBytes = Buffer.byteLength(normalizedStylesheet, 'utf8')
 const stylesheetBudget = 420 * 1024
 if (stylesheetBytes > stylesheetBudget) {
   failures.push(
