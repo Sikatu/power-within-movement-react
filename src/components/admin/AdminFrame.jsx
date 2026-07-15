@@ -28,6 +28,10 @@ import {
   preloadAdminRoute,
   preloadAdminRoutes,
 } from './adminRoutePreloaders.js'
+import {
+  acquireAdminScrollLock,
+  mountAdminScrollRoot,
+} from './adminScrollLock.js'
 
 import '../../pages/admin/AdminFreshUI.css'
 
@@ -498,8 +502,10 @@ function AdminFrame({ children }) {
 
   useEffect(() => {
     document.body.classList.add('admin-app-mode')
+    const unmountScrollRoot = mountAdminScrollRoot()
 
     return () => {
+      unmountScrollRoot()
       document.body.classList.remove('admin-app-mode')
     }
   }, [])
@@ -584,13 +590,7 @@ function AdminFrame({ children }) {
 
   useEffect(() => {
     if (!mobileOpen) return undefined
-
-    const previousOverflow = document.body.style.overflow
-    document.body.style.overflow = 'hidden'
-
-    return () => {
-      document.body.style.overflow = previousOverflow
-    }
+    return acquireAdminScrollLock()
   }, [mobileOpen])
 
   useEffect(() => {
@@ -606,7 +606,7 @@ function AdminFrame({ children }) {
       setOpenGroupOverride(undefined)
 
       if (previousPath !== location.pathname) {
-        mainContentRef.current?.scrollTo({ top: 0, behavior: 'auto' })
+        window.scrollTo({ top: 0, left: 0, behavior: 'auto' })
         mainContentRef.current?.focus({ preventScroll: true })
       }
     })

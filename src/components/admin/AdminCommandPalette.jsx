@@ -10,6 +10,8 @@ import {
   rememberAdminDestination,
 } from './adminRecentDestinations.js'
 
+import { acquireAdminScrollLock } from './adminScrollLock.js'
+
 function normalize(value) {
   return String(value || '').trim().toLowerCase()
 }
@@ -123,14 +125,13 @@ function AdminCommandPalette({
   useEffect(() => {
     previousFocusRef.current = document.activeElement
 
-    const previousOverflow = document.body.style.overflow
-    document.body.style.overflow = 'hidden'
+    const releaseScrollLock = acquireAdminScrollLock()
 
     const focusFrame = window.requestAnimationFrame(() => inputRef.current?.focus())
 
     return () => {
       window.cancelAnimationFrame(focusFrame)
-      document.body.style.overflow = previousOverflow
+      releaseScrollLock()
       window.setTimeout(() => previousFocusRef.current?.focus?.(), 0)
     }
   }, [])

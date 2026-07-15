@@ -333,6 +333,14 @@ export default function AdminCircleCommunity() {
 
         <div className="circle-admin-layout">
           <aside className="circle-admin-sidebar">
+            <div className="circle-admin-sidebar-heading">
+              <div>
+                <span>Post library</span>
+                <strong>{filteredPosts.length} post{filteredPosts.length === 1 ? '' : 's'} in view</strong>
+              </div>
+              <button type="button" onClick={startNewPost}>New</button>
+            </div>
+
             <div className="circle-admin-filters">
               <input
                 type="search"
@@ -356,8 +364,10 @@ export default function AdminCircleCommunity() {
                 <p>Loading The Circle...</p>
               ) : filteredPosts.length === 0 ? (
                 <div className="circle-empty-card">
+                  <span aria-hidden="true">✦</span>
                   <strong>No posts match this view.</strong>
                   <p>Create a new post or change the filter.</p>
+                  <button type="button" onClick={startNewPost}>Create a Circle post</button>
                 </div>
               ) : (
                 filteredPosts.map((post) => (
@@ -388,6 +398,7 @@ export default function AdminCircleCommunity() {
               <button
                 type="button"
                 className={activeTab === 'content' ? 'is-active' : ''}
+                aria-selected={activeTab === 'content'}
                 onClick={() => setActiveTab('content')}
               >
                 Content
@@ -395,6 +406,7 @@ export default function AdminCircleCommunity() {
               <button
                 type="button"
                 className={activeTab === 'moderation' ? 'is-active' : ''}
+                aria-selected={activeTab === 'moderation'}
                 onClick={() => setActiveTab('moderation')}
                 disabled={!selectedPost}
               >
@@ -419,6 +431,7 @@ export default function AdminCircleCommunity() {
                   )}
                 </div>
 
+                <div className="circle-composer-fields">
                 <div className="circle-form-grid two-columns">
                   <label>
                     <span>Post type</span>
@@ -447,7 +460,7 @@ export default function AdminCircleCommunity() {
                 </div>
 
                 <label className="circle-field">
-                  <span>Title</span>
+                  <span className="circle-field-label"><span>Title</span><small>{composer.title.length}/180</small></span>
                   <input
                     value={composer.title}
                     maxLength={180}
@@ -514,12 +527,14 @@ export default function AdminCircleCommunity() {
                   </label>
                 </div>
 
+                </div>
+
                 <div className="circle-action-bar">
-                  <div>
+                  <div className="circle-action-meta">
                     {selectedPost?.published_at && <span>Published {formatDateTime(selectedPost.published_at)} ET</span>}
                     <small>Community dates and times are displayed in Eastern Time.</small>
                   </div>
-                  <div>
+                  <div className="circle-action-buttons">
                     <button type="button" className="is-secondary" onClick={() => savePost('draft')} disabled={isSaving}>
                       {isSaving ? 'Saving...' : 'Save Draft'}
                     </button>

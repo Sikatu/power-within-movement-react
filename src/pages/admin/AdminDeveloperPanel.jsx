@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import AdminFrame from '../../components/admin/AdminFrame'
+import { acquireAdminScrollLock } from '../../components/admin/adminScrollLock.js'
 import { useAdminConfirm } from '../../components/admin/AdminConfirmContext'
 import {
   applyDeveloperAccountCleanup,
@@ -540,8 +541,7 @@ export default function AdminDeveloperPanel() {
   useEffect(() => {
     if (!preview && !isClientPreviewPickerOpen) return undefined
 
-    const previousOverflow = document.body.style.overflow
-    document.body.style.overflow = 'hidden'
+    const releaseScrollLock = acquireAdminScrollLock()
 
     const handleKeyDown = (event) => {
       if (event.key !== 'Escape') return
@@ -556,7 +556,7 @@ export default function AdminDeveloperPanel() {
     window.addEventListener('keydown', handleKeyDown)
 
     return () => {
-      document.body.style.overflow = previousOverflow
+      releaseScrollLock()
       window.removeEventListener('keydown', handleKeyDown)
     }
   }, [preview, isClientPreviewPickerOpen])

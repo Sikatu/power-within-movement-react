@@ -289,7 +289,16 @@ function AdminClientMomentum() {
           </section>
         ) : (
           <div className="pwc-capacity17-grid pwc-momentum18-grid">
-            <section aria-label="Client momentum board">
+            <section className="pwc-momentum18-list-panel" aria-label="Client momentum board">
+              <header className="pwc-momentum18-list-heading">
+                <div>
+                  <p className="admin-eyebrow">Client journeys</p>
+                  <h2>Momentum board</h2>
+                  <p>Review the clients with the clearest care signal first, then open the detail panel for context.</p>
+                </div>
+                <span>{filteredClients.length} in view</span>
+              </header>
+
               <div className="pwc-capacity17-cards pwc-momentum18-cards" aria-live="polite">
                 {filteredClients.map((client) => {
                   const selected = client.id === selectedClient?.id
@@ -341,7 +350,7 @@ function AdminClientMomentum() {
                   <div>
                     <p className="admin-eyebrow">Selected client</p>
                     <h2>{selectedClient.name}</h2>
-                    <small>{relativeTouch(selectedClient.signal?.lastTouchDays)}</small>
+                    <small>{selectedClient.email || 'No portal email'} · {relativeTouch(selectedClient.signal?.lastTouchDays)}</small>
                   </div>
                   <span className={`is-${selectedClient.signal?.band}`}>{signalLabel(selectedClient.signal?.band)}</span>
                 </header>

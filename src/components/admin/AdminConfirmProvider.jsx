@@ -8,6 +8,8 @@ import {
 import { createPortal } from 'react-dom'
 import { AdminConfirmContext } from './AdminConfirmContext'
 
+import { acquireAdminScrollLock } from './adminScrollLock.js'
+
 function normalizeRequest(options) {
   if (typeof options === 'string') {
     return {
@@ -62,8 +64,7 @@ export default function AdminConfirmProvider({ children }) {
   useEffect(() => {
     if (!request) return undefined
 
-    const previousOverflow = document.body.style.overflow
-    document.body.style.overflow = 'hidden'
+    const releaseScrollLock = acquireAdminScrollLock()
     cancelButtonRef.current?.focus()
 
     function handleKeyDown(event) {
@@ -101,7 +102,7 @@ export default function AdminConfirmProvider({ children }) {
 
     return () => {
       document.removeEventListener('keydown', handleKeyDown)
-      document.body.style.overflow = previousOverflow
+      releaseScrollLock()
     }
   }, [request, settle])
 
