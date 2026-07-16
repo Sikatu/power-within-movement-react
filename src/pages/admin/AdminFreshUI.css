@@ -12140,3 +12140,185 @@ body.admin-app-mode .founder-hours__side {
   }
 }
 /* phase-37-founder-workflow-streamlining-end */
+
+/* phase-38-developer-workflow-streamlining-start */
+body.admin-app-mode .pwc-dev38-workflows {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.55rem;
+  margin-bottom: 0.65rem;
+  padding: 0.45rem;
+  border: 1px solid var(--admin-border);
+  border-radius: 1rem;
+  background: rgba(255, 252, 249, 0.76);
+  box-shadow: var(--admin-shadow-soft);
+}
+
+body.admin-app-mode .pwc-dev38-workflows > button {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 0.65rem;
+  min-width: 0;
+  min-height: 4.2rem;
+  padding: 0.7rem 0.8rem;
+  border: 1px solid transparent;
+  border-radius: 0.75rem;
+  background: transparent;
+  color: var(--admin-body);
+  text-align: left;
+  cursor: pointer;
+}
+
+body.admin-app-mode .pwc-dev38-workflows > button:hover {
+  border-color: var(--admin-border);
+  background: rgba(255, 255, 255, 0.6);
+}
+
+body.admin-app-mode .pwc-dev38-workflows > button.is-active {
+  border-color: rgba(77, 40, 49, 0.3);
+  background: linear-gradient(155deg, #4d2831, #38202a);
+  color: #fdf6f0;
+  box-shadow: 0 18px 32px -25px rgba(58, 37, 40, 0.92);
+}
+
+body.admin-app-mode .pwc-dev38-workflows > button > span {
+  display: grid;
+  width: 1.8rem;
+  height: 1.8rem;
+  place-items: center;
+  border-radius: 50%;
+  background: rgba(200, 169, 106, 0.14);
+  color: var(--admin-gold-deep);
+  font-size: 0.55rem;
+  font-weight: 850;
+}
+
+body.admin-app-mode .pwc-dev38-workflows > button.is-active > span {
+  background: rgba(200, 169, 106, 0.22);
+  color: #e9d9c8;
+}
+
+body.admin-app-mode .pwc-dev38-workflows > button > div {
+  display: grid;
+  gap: 0.18rem;
+  min-width: 0;
+}
+
+body.admin-app-mode .pwc-dev38-workflows strong {
+  font-size: 0.68rem;
+}
+
+body.admin-app-mode .pwc-dev38-workflows small {
+  overflow: hidden;
+  color: var(--admin-muted);
+  font-size: 0.53rem;
+  line-height: 1.35;
+  text-overflow: ellipsis;
+}
+
+body.admin-app-mode .pwc-dev38-workflows button.is-active small {
+  color: rgba(253, 246, 240, 0.58);
+}
+
+body.admin-app-mode .pwc-dev38-sections {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 0.8rem;
+}
+
+body.admin-app-mode .pwc-dev38-sections button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 2.35rem;
+  padding: 0.45rem 0.75rem;
+  border: 1px solid var(--admin-border);
+  border-radius: 999px;
+  background: rgba(255, 252, 249, 0.68);
+  color: var(--admin-burgundy);
+  font-size: 0.58rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+body.admin-app-mode .pwc-dev38-sections button.is-active {
+  border-color: var(--admin-burgundy);
+  background: rgba(77, 40, 49, 0.1);
+}
+
+body.admin-app-mode .pwc-dev38-team-tabs {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.45rem;
+  margin: 1rem 0 0;
+  padding: 0.4rem;
+  border: 1px solid var(--admin-border);
+  border-radius: 0.9rem;
+  background: rgba(255, 252, 249, 0.7);
+}
+
+body.admin-app-mode .pwc-dev38-team-tabs button {
+  display: grid;
+  gap: 0.15rem;
+  min-width: 0;
+  min-height: 3.4rem;
+  padding: 0.6rem 0.7rem;
+  border: 1px solid transparent;
+  border-radius: 0.65rem;
+  background: transparent;
+  color: var(--admin-body);
+  text-align: left;
+  cursor: pointer;
+}
+
+body.admin-app-mode .pwc-dev38-team-tabs button.is-active {
+  border-color: rgba(77, 40, 49, 0.28);
+  background: var(--admin-burgundy);
+  color: #fff;
+}
+
+body.admin-app-mode .pwc-dev38-team-tabs strong {
+  font-size: 0.65rem;
+}
+
+body.admin-app-mode .pwc-dev38-team-tabs small {
+  overflow: hidden;
+  color: var(--admin-muted);
+  font-size: 0.52rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+body.admin-app-mode .pwc-dev38-team-tabs button.is-active small {
+  color: rgba(255, 255, 255, 0.62);
+}
+
+body.admin-app-mode .team-member-form > [hidden],
+body.admin-app-mode .team-workspace-panel > [hidden],
+body.admin-app-mode .team-save-row[hidden] {
+  display: none;
+}
+
+@media (max-width: 900px) {
+  body.admin-app-mode .pwc-dev38-workflows {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 620px) {
+  body.admin-app-mode .pwc-dev38-workflows {
+    grid-template-columns: 1fr;
+  }
+
+  body.admin-app-mode .pwc-dev38-team-tabs {
+    display: flex;
+    overflow-x: auto;
+  }
+
+  body.admin-app-mode .pwc-dev38-team-tabs button {
+    flex: 1 0 9rem;
+  }
+}
+/* phase-38-developer-workflow-streamlining-end */

@@ -721,7 +721,7 @@ function AdminFrame({ children }) {
               </div>
 
               <section className="pwc-nav33-primary" aria-label={`${activeWorkspace.label} primary destinations`}>
-                {accessiblePrimaryItems.map((item) => (
+                {accessiblePrimaryItems.filter((item) => !item.hiddenInSidebar).map((item) => (
                   <NavLink
                     className={routeMatches(location.pathname, item) ? 'is-active' : undefined}
                     key={item.to}

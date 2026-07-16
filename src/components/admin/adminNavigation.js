@@ -88,11 +88,10 @@ export const workspacePrimaryItems = {
     {
       id: 'developer-overview',
       to: '/admin/developer',
-      label: 'Operations',
-      description: 'Platform health and controls',
+      label: 'Command Center',
+      description: 'Monitor, protect, release, and configure',
       roles: ['developer'],
       developerOnly: true,
-      exact: true,
       icon: 'developer',
     },
     {
@@ -103,6 +102,7 @@ export const workspacePrimaryItems = {
       roles: ['developer'],
       developerOnly: true,
       icon: 'errors',
+      hiddenInSidebar: true,
     },
     {
       id: 'developer-integrity',
@@ -112,6 +112,7 @@ export const workspacePrimaryItems = {
       roles: ['developer'],
       developerOnly: true,
       icon: 'security',
+      hiddenInSidebar: true,
     },
     {
       id: 'developer-release',
@@ -121,6 +122,7 @@ export const workspacePrimaryItems = {
       roles: ['developer'],
       developerOnly: true,
       icon: 'release',
+      hiddenInSidebar: true,
     },
     {
       id: 'developer-team',

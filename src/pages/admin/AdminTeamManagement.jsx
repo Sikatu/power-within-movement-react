@@ -79,6 +79,7 @@ export default function AdminTeamManagement() {
   const [isSavingAssignments, setIsSavingAssignments] = useState(false)
   const [error, setError] = useState('')
   const [notice, setNotice] = useState('')
+  const [workspaceMode, setWorkspaceMode] = useState('profile')
 
   const loadTeam = useCallback(async ({ preserveSelection = true } = {}) => {
     setIsLoading(true)
@@ -120,6 +121,7 @@ export default function AdminTeamManagement() {
       setForm(initialForm(selectedMember))
       setAssignmentDraft(selectedMember?.clientAssignments || [])
       setClientSearch('')
+      setWorkspaceMode('profile')
       setError('')
       setNotice('')
     }, 0)
@@ -334,8 +336,28 @@ export default function AdminTeamManagement() {
                   </dl>
                 </div>
 
+                <nav className="pwc-dev38-team-tabs" aria-label="Team member sections" role="tablist">
+                  {[
+                    ['profile', 'Profile', 'Identity and workload'],
+                    ['permissions', 'Permissions', 'Studio role boundaries'],
+                    ['assignments', 'Client assignments', `${assignmentDraft.length} selected`],
+                  ].map(([mode, label, description]) => (
+                    <button
+                      type="button"
+                      role="tab"
+                      aria-selected={workspaceMode === mode}
+                      className={workspaceMode === mode ? 'is-active' : ''}
+                      onClick={() => setWorkspaceMode(mode)}
+                      key={mode}
+                    >
+                      <strong>{label}</strong>
+                      <small>{description}</small>
+                    </button>
+                  ))}
+                </nav>
+
                 <form className="team-member-form" onSubmit={saveMember}>
-                  <section className="team-form-card">
+                  <section className="team-form-card" hidden={workspaceMode !== 'profile'}>
                     <div className="team-form-card-heading">
                       <div>
                         <p className="admin-eyebrow">Team Profile</p>
@@ -389,7 +411,7 @@ export default function AdminTeamManagement() {
                     </label>
                   </section>
 
-                  <section className="team-form-card">
+                  <section className="team-form-card" hidden={workspaceMode !== 'permissions'}>
                     <div className="team-form-card-heading">
                       <div>
                         <p className="admin-eyebrow">Role Boundaries</p>
@@ -449,14 +471,14 @@ export default function AdminTeamManagement() {
                     </div>
                   </section>
 
-                  <div className="team-save-row">
+                  <div className="team-save-row" hidden={workspaceMode === 'assignments'}>
                     <button className="btn primary" type="submit" disabled={isSaving}>
-                      {isSaving ? 'Saving…' : 'Save profile & permissions'}
+                      {isSaving ? 'Saving…' : workspaceMode === 'profile' ? 'Save profile' : 'Save permissions'}
                     </button>
                   </div>
                 </form>
 
-                <section className="team-form-card team-assignments-card">
+                <section className="team-form-card team-assignments-card" hidden={workspaceMode !== 'assignments'}>
                   <div className="team-form-card-heading">
                     <div>
                       <p className="admin-eyebrow">Client Ownership</p>

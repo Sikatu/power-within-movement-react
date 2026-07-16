@@ -63,6 +63,36 @@ const sections = [
 ]
 
 const sectionIds = new Set(sections.map((section) => section.id))
+const workflows = [
+  {
+    id: 'monitor',
+    code: '01',
+    label: 'Monitor',
+    description: 'See health, current signals, and production issues.',
+    sections: ['overview', 'health', 'errors'],
+  },
+  {
+    id: 'protect',
+    code: '02',
+    label: 'Protect',
+    description: 'Review integrity, identity, and operational access.',
+    sections: ['integrity', 'access'],
+  },
+  {
+    id: 'release',
+    code: '03',
+    label: 'Release',
+    description: 'Confirm evidence, readiness, and rollback safety.',
+    sections: ['qa'],
+  },
+  {
+    id: 'configure',
+    code: '04',
+    label: 'Configure',
+    description: 'Manage flags, maintenance, and monitoring behavior.',
+    sections: ['configuration'],
+  },
+]
 
 function resolveSection(pathname, search) {
   if (pathname.endsWith('/errors')) return 'errors'
@@ -96,9 +126,18 @@ export default function AdminDeveloperOperations() {
     () => sections.find((section) => section.id === activeSection) || sections[0],
     [activeSection],
   )
+  const activeWorkflow = useMemo(
+    () => workflows.find((workflow) => workflow.sections.includes(activeSection)) || workflows[0],
+    [activeSection],
+  )
 
   function openSection(section) {
     navigate(`/admin/developer?section=${section.id}`)
+  }
+
+  function openWorkflow(workflow) {
+    const firstSection = sections.find((section) => section.id === workflow.sections[0])
+    if (firstSection) openSection(firstSection)
   }
 
   return (
@@ -112,12 +151,13 @@ export default function AdminDeveloperOperations() {
             </div>
             <h1>Developer Operations</h1>
             <p>
-              Diagnose platform health, govern access, investigate failures, and prepare releases
-              from one technical workspace designed for fast, confident decisions.
-              Legacy Developer routes now open their matching section here.
+              Choose the technical outcome you need, then work in one protected view at a time.
+              Health, access, failures, release evidence, and configuration remain together without
+              crowding the navigation. Legacy Developer routes now open their matching section here.
             </p>
             <div className="developer-operations-meta" aria-label="Workspace characteristics">
-              <span><strong>7</strong> operational views</span>
+              <span><strong>4</strong> work modes</span>
+              <span><strong>7</strong> protected views</span>
               <span><strong>Read-only</strong> audit tools</span>
               <span><strong>Protected</strong> developer access</span>
             </div>
@@ -129,23 +169,40 @@ export default function AdminDeveloperOperations() {
           </div>
         </header>
 
-        <nav className="developer-operations-nav" aria-label="Developer Operations sections" role="tablist">
-          {sections.map((section) => (
+        <nav className="pwc-dev38-workflows" aria-label="Developer Operations sections" role="tablist">
+          {workflows.map((workflow) => (
             <button
-              key={section.id}
+              key={workflow.id}
               type="button"
               role="tab"
-              aria-selected={activeSection === section.id}
-              className={activeSection === section.id ? 'is-active' : ''}
-              onClick={() => openSection(section)}
+              aria-selected={activeWorkflow.id === workflow.id}
+              className={activeWorkflow.id === workflow.id ? 'is-active' : ''}
+              onClick={() => openWorkflow(workflow)}
             >
-              <span className="developer-operations-nav-icon" aria-hidden="true">{section.icon}</span>
-              <span className="developer-operations-nav-copy">
-                <small>{section.code}</small>
-                <strong>{section.label}</strong>
-              </span>
+              <span>{workflow.code}</span>
+              <div><strong>{workflow.label}</strong><small>{workflow.description}</small></div>
             </button>
           ))}
+        </nav>
+
+        <nav className="pwc-dev38-sections" aria-label={`${activeWorkflow.label} views`}>
+          {activeWorkflow.sections.map((sectionId) => {
+            const section = sections.find((item) => item.id === sectionId)
+            if (!section) return null
+
+            return (
+              <button
+                type="button"
+                className={activeSection === section.id ? 'is-active' : ''}
+                aria-current={activeSection === section.id ? 'page' : undefined}
+                onClick={() => openSection(section)}
+                key={section.id}
+              >
+                <span className="developer-operations-nav-icon" aria-hidden="true">{section.icon}</span>
+                {section.label}
+              </button>
+            )
+          })}
         </nav>
 
         <section className="developer-operations-section-heading" aria-live="polite">
