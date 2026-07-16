@@ -3931,6 +3931,7 @@ body.admin-app-mode
   .client-record-table-v2
   tbody
   tr {
+  cursor: pointer ;
   outline: none ;
   transition: background 160ms ease, box-shadow 160ms ease ;
 }
@@ -4031,72 +4032,180 @@ body.admin-app-mode
 
 body.admin-app-mode
   .client-circle-page-v2.admin-clients-rework-v1
+  .client-action-column-label-v3 {
+  color: var(--admin-muted) ;
+  font-size: 9px ;
+}
+
+body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1
   .client-action-menu-button-v1 {
+  display: inline-grid ;
+  place-items: center ;
   width: 36px ;
   height: 36px ;
   min-height: 36px ;
+  padding: 0 ;
+  border: 1px solid rgba(91, 49, 61, 0.14) ;
   border-radius: 11px ;
+  background: rgba(255, 255, 255, 0.78) ;
+  color: var(--admin-burgundy) ;
+  font: inherit ;
+  font-size: 12px ;
+  font-weight: 800 ;
+  letter-spacing: 1px ;
+  cursor: pointer ;
 }
 
 body.admin-app-mode
   .client-circle-page-v2.admin-clients-rework-v1
-  .client-action-menu-panel-v1 {
-  width: 170px ;
-  min-width: 170px ;
-  max-width: 170px ;
+  .client-action-menu-button-v1:hover,
+body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1
+  .client-action-menu-button-v1[aria-expanded='true'] {
+  border-color: rgba(91, 49, 61, 0.28) ;
+  background: #fff ;
+  box-shadow: 0 8px 20px rgba(69, 47, 47, 0.11) ;
+}
+
+body.admin-app-mode .client-action-menu-panel-v1 {
+  position: fixed ;
+  z-index: 120 ;
+  display: grid ;
+  width: 208px ;
+  min-width: 208px ;
+  max-width: 208px ;
+  gap: 2px ;
   padding: 6px ;
   border: 1px solid var(--admin-border-strong) ;
-  border-radius: 15px ;
+  border-radius: 14px ;
   background: #fffcf9 ;
-  box-shadow: 0 22px 54px rgba(58, 37, 40, 0.2) ;
+  box-shadow: 0 20px 48px rgba(58, 37, 40, 0.22) ;
 }
 
-body.admin-app-mode
-  .client-circle-page-v2.admin-clients-rework-v1
-  .client-action-menu-panel-v1
-  button {
-  min-height: 36px ;
-  padding: 0 11px ;
-  border-radius: 10px ;
+body.admin-app-mode .client-action-menu-context-v3 {
+  display: grid ;
+  min-width: 0 ;
+  gap: 2px ;
+  padding: 6px 9px 7px ;
+  border-bottom: 1px solid var(--admin-border) ;
+}
+
+body.admin-app-mode .client-action-menu-context-v3 span {
+  color: var(--admin-muted) ;
+  font-size: 8px ;
+  font-weight: 800 ;
+  letter-spacing: 0.1em ;
+  text-transform: uppercase ;
+}
+
+body.admin-app-mode .client-action-menu-context-v3 strong {
+  overflow: hidden ;
+  color: var(--admin-ink) ;
   font-size: 11px ;
+  text-overflow: ellipsis ;
+  white-space: nowrap ;
+}
+
+body.admin-app-mode .client-action-menu-panel-v1 > button {
+  display: grid ;
+  grid-template-columns: 28px minmax(0, 1fr) ;
+  align-items: center ;
+  gap: 8px ;
+  width: 100% ;
+  min-height: 42px ;
+  padding: 5px 8px ;
+  border: 0 ;
+  border-radius: 9px ;
+  background: transparent ;
+  color: var(--admin-body) ;
+  font: inherit ;
+  cursor: pointer ;
   text-align: left ;
 }
 
-body.admin-app-mode
-  .client-circle-page-v2.admin-clients-rework-v1.is-client-detail-open-v2:not(.is-client-form-open-v2)::after,
-body.admin-app-mode
-  .client-circle-page-v2.admin-clients-rework-v1.is-client-form-open-v2::after {
-  content: '' ;
+body.admin-app-mode .client-action-menu-panel-v1 > button:hover,
+body.admin-app-mode .client-action-menu-panel-v1 > button:focus-visible {
+  background: rgba(200, 169, 106, 0.13) ;
+  color: var(--admin-ink) ;
+  outline: none ;
+}
+
+body.admin-app-mode .client-action-menu-panel-v1 > button > span:last-child {
+  display: grid ;
+  min-width: 0 ;
+  gap: 1px ;
+}
+
+body.admin-app-mode .client-action-menu-panel-v1 > button strong,
+body.admin-app-mode .client-action-menu-panel-v1 > button small {
+  overflow: hidden ;
+  text-overflow: ellipsis ;
+  white-space: nowrap ;
+}
+
+body.admin-app-mode .client-action-menu-panel-v1 > button strong {
+  font-size: 10.5px ;
+}
+
+body.admin-app-mode .client-action-menu-panel-v1 > button small {
+  color: var(--admin-muted) ;
+  font-size: 8.5px ;
+}
+
+body.admin-app-mode .client-action-menu-icon-v3 {
+  display: inline-grid ;
+  place-items: center ;
+  width: 28px ;
+  height: 28px ;
+  border-radius: 8px ;
+  background: rgba(91, 49, 61, 0.07) ;
+  color: var(--admin-burgundy) ;
+  font-size: 13px ;
+}
+
+body.admin-app-mode .client-drawer-backdrop-v3 {
   position: fixed ;
   inset: 0 ;
   z-index: 64 ;
   display: block ;
-  pointer-events: none ;
+  width: 100% ;
+  height: 100% ;
+  padding: 0 ;
+  border: 0 ;
   background: rgba(45, 27, 36, 0.18) ;
   backdrop-filter: blur(2px) ;
+  cursor: default ;
 }
 
 body.admin-app-mode
   .client-circle-page-v2.admin-clients-rework-v1.is-client-detail-open-v2:not(.is-client-form-open-v2)
   .client-circle-detail-v2 {
-  top: 20px ;
-  right: 20px ;
-  bottom: 20px ;
-  width: min(640px, calc(100vw - 40px)) ;
-  max-height: calc(100vh - 40px) ;
+  position: fixed ;
+  top: 16px ;
+  right: 16px ;
+  bottom: 16px ;
+  display: block ;
+  width: min(560px, calc(100vw - 32px)) ;
+  max-height: calc(100vh - 32px) ;
+  overflow: hidden ;
   z-index: 70 ;
 }
 
 body.admin-app-mode
   .client-circle-page-v2.admin-clients-rework-v1.is-client-form-open-v2
   .client-form-drawer-v2 {
-  top: 20px ;
-  right: 20px ;
-  bottom: 20px ;
-  width: min(560px, calc(100vw - 40px)) ;
-  max-height: calc(100vh - 40px) ;
+  position: fixed ;
+  top: 16px ;
+  right: 16px ;
+  bottom: 16px ;
+  width: min(560px, calc(100vw - 32px)) ;
+  max-height: calc(100vh - 32px) ;
   z-index: 90 ;
   padding: 0 ;
+  overflow-y: auto ;
+  overscroll-behavior: contain ;
+  scrollbar-gutter: stable ;
   border: 1px solid var(--admin-border-strong) ;
   border-radius: 26px ;
   background: #fffcf9 ;
@@ -4104,8 +4213,20 @@ body.admin-app-mode
 }
 
 body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1.is-client-form-open-v2
+  .client-circle-detail-v2 {
+  display: none ;
+}
+
+body.admin-app-mode
   .client-circle-page-v2.admin-clients-rework-v1
   .client-detail-card-v2 {
+  width: 100% ;
+  height: 100% ;
+  padding-bottom: 20px ;
+  overflow-y: auto ;
+  overscroll-behavior: contain ;
+  scrollbar-gutter: stable ;
   border: 1px solid var(--admin-border-strong) ;
   border-radius: 26px ;
   background: #fffcf9 ;
@@ -4122,8 +4243,57 @@ body.admin-app-mode
   position: sticky ;
   top: 0 ;
   z-index: 9 ;
+  display: flex ;
+  align-items: center ;
+  justify-content: space-between ;
+  gap: 12px ;
   padding: 18px 20px ;
+  border-bottom: 1px solid var(--admin-border) ;
   background: rgba(255, 252, 249, 0.97) ;
+}
+
+body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1
+  .client-detail-card-v2
+  > .client-card-header-v2
+  h2 {
+  margin: 3px 0 0 ;
+  font-size: clamp(25px, 3vw, 34px) ;
+  line-height: 1 ;
+}
+
+body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1
+  .client-detail-header-actions-v2 {
+  display: flex ;
+  align-items: center ;
+  justify-content: flex-end ;
+  flex-wrap: nowrap ;
+  gap: 6px ;
+}
+
+body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1
+  .client-detail-header-actions-v2
+  button {
+  min-height: 34px ;
+  padding: 0 10px ;
+  border-radius: 10px ;
+  font-size: 9.5px ;
+}
+
+body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1
+  .client-detail-header-actions-v2
+  .client-detail-close-v3 {
+  display: inline-grid ;
+  place-items: center ;
+  width: 34px ;
+  min-width: 34px ;
+  padding: 0 ;
+  border-radius: 50% ;
+  font-size: 20px ;
+  font-weight: 500 ;
 }
 
 body.admin-app-mode
@@ -4148,10 +4318,17 @@ body.admin-app-mode
 body.admin-app-mode
   .client-circle-page-v2.admin-clients-rework-v1
   .client-detail-jump-nav-v2 {
+  position: sticky ;
   top: 76px ;
+  z-index: 8 ;
+  display: flex ;
+  align-items: center ;
+  gap: 6px ;
   padding: 11px 20px ;
   overflow-x: auto ;
   flex-wrap: nowrap ;
+  border-bottom: 1px solid var(--admin-border) ;
+  background: rgba(255, 252, 249, 0.95) ;
 }
 
 body.admin-app-mode
@@ -4159,6 +4336,24 @@ body.admin-app-mode
   .client-detail-jump-nav-v2
   button {
   flex: 0 0 auto ;
+  min-height: 31px ;
+  padding: 0 10px ;
+  border: 1px solid var(--admin-border) ;
+  border-radius: 999px ;
+  background: transparent ;
+  color: var(--admin-body) ;
+  font-size: 9px ;
+  font-weight: 750 ;
+  cursor: pointer ;
+}
+
+body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1
+  .client-detail-jump-nav-v2
+  button.is-active {
+  border-color: var(--admin-burgundy) ;
+  background: var(--admin-burgundy) ;
+  color: #fffaf6 ;
 }
 
 body.admin-app-mode
@@ -4170,8 +4365,124 @@ body.admin-app-mode
     .client-care-summary-v2,
     .client-notes-grid-v2
   ) {
+  display: grid ;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) ;
   gap: 10px ;
   padding: 16px 20px 0 ;
+}
+
+body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1
+  .client-detail-card-v2
+  :is(.client-care-highlights-v2, .client-care-summary-v2) {
+  grid-template-columns: repeat(3, minmax(0, 1fr)) ;
+}
+
+body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1
+  .client-detail-card-v2
+  .client-detail-grid-v2
+  > div,
+body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1
+  .client-detail-card-v2
+  :is(.client-care-highlights-v2, .client-care-summary-v2)
+  > article,
+body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1
+  .client-detail-card-v2
+  .client-notes-grid-v2
+  > section {
+  min-width: 0 ;
+  padding: 12px ;
+  border: 1px solid var(--admin-border) ;
+  border-radius: 13px ;
+  background: rgba(249, 244, 239, 0.72) ;
+}
+
+body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1
+  .client-detail-card-v2
+  :is(.client-detail-grid-v2, .client-care-highlights-v2, .client-care-summary-v2)
+  span {
+  display: block ;
+  margin-bottom: 5px ;
+  color: var(--admin-muted) ;
+  font-size: 8px ;
+  font-weight: 800 ;
+  letter-spacing: 0.08em ;
+  text-transform: uppercase ;
+}
+
+body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1
+  .client-detail-card-v2
+  :is(.client-detail-grid-v2, .client-care-highlights-v2, .client-care-summary-v2)
+  strong {
+  display: block ;
+  overflow-wrap: anywhere ;
+  color: var(--admin-ink) ;
+  font-size: 11px ;
+  line-height: 1.35 ;
+}
+
+body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1
+  .client-detail-card-v2
+  :is(.client-care-highlights-v2, .client-care-summary-v2)
+  p,
+body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1
+  .client-detail-card-v2
+  .client-notes-grid-v2
+  p {
+  margin: 6px 0 0 ;
+  color: var(--admin-muted) ;
+  font-size: 9px ;
+  line-height: 1.5 ;
+}
+
+body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1
+  .client-detail-card-v2
+  .client-communication-card-v3 {
+  display: grid ;
+  gap: 12px ;
+  padding: 14px ;
+  border: 1px solid var(--admin-border) ;
+  border-radius: 15px ;
+  background: rgba(249, 244, 239, 0.64) ;
+}
+
+body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1
+  .client-detail-card-v2
+  .client-communication-card-v3
+  h3 {
+  margin: 3px 0 4px ;
+  font-size: 15px ;
+}
+
+body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1
+  .client-detail-card-v2
+  .client-communication-card-v3
+  p {
+  margin: 0 ;
+  color: var(--admin-muted) ;
+  font-size: 9px ;
+  line-height: 1.5 ;
+}
+
+body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1
+  .client-detail-card-v2
+  .client-communication-contact-grid-v3
+  > article {
+  min-width: 0 ;
+  padding: 11px ;
+  border-radius: 12px ;
+  background: rgba(255, 252, 249, 0.88) ;
 }
 
 body.admin-app-mode
@@ -4593,6 +4904,27 @@ body.admin-app-mode .client-360-text-link:hover {
     left: 8px ;
     width: auto ;
     max-height: calc(100vh - 16px) ;
+  }
+
+  body.admin-app-mode
+    .client-circle-page-v2.admin-clients-rework-v1
+    .client-detail-card-v2
+    .client-detail-jump-nav-v2 {
+    position: relative ;
+    top: auto ;
+  }
+
+  body.admin-app-mode
+    .client-circle-page-v2.admin-clients-rework-v1
+    .client-detail-header-actions-v2 {
+    justify-content: flex-start ;
+  }
+
+  body.admin-app-mode
+    .client-circle-page-v2.admin-clients-rework-v1
+    .client-detail-header-actions-v2
+    .client-detail-close-v3 {
+    margin-left: auto ;
   }
 
   body.admin-app-mode
