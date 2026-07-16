@@ -60,12 +60,14 @@ import Experiences from './pages/Experiences.jsx'
 import Home from './pages/Home.jsx'
 import NotFound from './pages/NotFound.jsx'
 import Podcast from './pages/Podcast.jsx'
+import PrivacyPolicy from './pages/PrivacyPolicy.jsx'
 import Professionals from './pages/Professionals.jsx'
 import RadianceReclaimed from './pages/RadianceReclaimed.jsx'
 import ResourceArticle from './pages/ResourceArticle.jsx'
 import Resources from './pages/Resources.jsx'
 import SignatureExperiencePage from './pages/SignatureExperiencePage.jsx'
 import TeenPrograms from './pages/TeenPrograms.jsx'
+import TermsAndConditions from './pages/TermsAndConditions.jsx'
 
 const AdminAssetVault = lazy(loadAdminAssetVault)
 const AdminAudience = lazy(loadAdminAudience)
@@ -178,6 +180,14 @@ const routeMetadata = {
   '/contact': {
     title: 'Contact Power Within Collective | Private Consultations & Speaking',
     description: 'Contact Power Within Collective about private consultations, color analysis, personal style guidance, Radiance Reclaimed, professional education, speaking, podcast, or collaboration.',
+  },
+  '/privacy-policy': {
+    title: 'Privacy Policy | Power Within Collective',
+    description: 'Read how Power Within Collective collects, uses, protects, and responds to requests about personal information.',
+  },
+  '/terms-and-conditions': {
+    title: 'Terms & Conditions | Power Within Collective',
+    description: 'Review the terms governing use of the Power Within Collective website, content, resources, and brand materials.',
   },
   '/client-portal/login': {
     title: 'Client Portal Login | Power Within Collective',
@@ -498,6 +508,8 @@ function AppShell() {
         <Route path="/teens" element={<TeenPrograms />} />
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<ContactRoute />} />
+        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+        <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
         <Route path="/client-portal" element={<Navigate to="/client-portal/login" replace />} />
         <Route path="/client-portal/login" element={<ClientPortalLogin />} />
         <Route path="/client-portal/invite/:token" element={<ClientPortalInvite />} />
