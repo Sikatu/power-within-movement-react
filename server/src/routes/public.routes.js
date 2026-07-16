@@ -50,9 +50,55 @@ const {
   startClientOnboarding: startBookingClientOnboarding,
   validateBookingIntake,
 } = require('../services/bookingOnboarding.service')
+const { upsertSubscriber } = require('../services/newsletterAudience.service')
 
 const router = express.Router()
 const contactDbModule = require('../db/pool')
+
+const publicNewsletterSchema = z.object({
+  email: z.string().trim().email().max(320),
+  firstName: z.string().trim().max(120).optional().default(''),
+  lastName: z.string().trim().max(120).optional().default(''),
+  consent: z.literal(true),
+  website: z.string().max(0).optional().default(''),
+})
+
+router.post('/newsletter/subscribe', publicSubmissionRateLimit, async (req, res, next) => {
+  if (!pool) return res.status(503).json({ ok: false, error: 'Newsletter signup is temporarily unavailable.' })
+
+  const parsed = publicNewsletterSchema.safeParse(req.body)
+  if (!parsed.success) {
+    return res.status(400).json({
+      ok: false,
+      error: parsed.error.issues[0]?.message || 'A valid email and newsletter consent are required.',
+    })
+  }
+
+  const db = await pool.connect()
+  try {
+    await db.query('BEGIN')
+    await upsertSubscriber(db, {
+      email: parsed.data.email,
+      firstName: parsed.data.firstName,
+      lastName: parsed.data.lastName,
+      status: 'subscribed',
+      consentStatus: 'granted',
+      explicitConsent: true,
+      source: 'website_home',
+      tags: ['Website newsletter'],
+    }, { source: 'website_home' })
+    await db.query('COMMIT')
+    return res.status(201).json({
+      ok: true,
+      message: 'Thank you — your newsletter preference has been recorded.',
+    })
+  } catch (error) {
+    await db.query('ROLLBACK')
+    return next(error)
+  } finally {
+    db.release()
+  }
+})
 
 
 // phase-3-12d-smart-time-slot-protection-start

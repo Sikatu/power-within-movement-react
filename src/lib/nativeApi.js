@@ -1532,3 +1532,100 @@ export function getAssetVaultPreviewUrl(assetId) {
   return `${API_BASE_URL}/api/admin/assets/${assetId}/preview`
 }
 // phase-26-asset-vault-api-end
+
+// phase-27-newsletter-audience-api-start
+function audienceQuery(params = {}) {
+  const search = new URLSearchParams()
+  Object.entries(params).forEach(([key, value]) => {
+    if (value !== undefined && value !== null && value !== '') search.set(key, String(value))
+  })
+  const query = search.toString()
+  return query ? `?${query}` : ''
+}
+
+export async function subscribePublicNewsletter(payload) {
+  return apiRequest('/api/public/newsletter/subscribe', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  })
+}
+
+export async function getNewsletterAudienceSummary() {
+  return apiRequest('/api/admin/audience/summary')
+}
+
+export async function getNewsletterAudienceSubscribers(filters = {}) {
+  return apiRequest(`/api/admin/audience/subscribers${audienceQuery(filters)}`)
+}
+
+export async function getNewsletterAudienceSubscriber(subscriberId) {
+  return apiRequest(`/api/admin/audience/subscribers/${subscriberId}`)
+}
+
+export async function getNewsletterAudiencePreviewCount(filters = {}) {
+  return apiRequest(`/api/admin/audience/preview-count${audienceQuery(filters)}`)
+}
+
+export async function createNewsletterAudienceSubscriber(payload) {
+  return apiRequest('/api/admin/audience/subscribers', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  })
+}
+
+export async function createNewsletterAudienceBulk(payload) {
+  return apiRequest('/api/admin/audience/subscribers/bulk', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  })
+}
+
+export async function importNewsletterAudienceCsv(payload) {
+  return apiRequest('/api/admin/audience/imports/csv', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  })
+}
+
+export async function addClientToNewsletterAudience(clientProfileId, payload) {
+  return apiRequest(`/api/admin/audience/clients/${clientProfileId}`, {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  })
+}
+
+export async function updateNewsletterAudienceSubscriber(subscriberId, payload) {
+  return apiRequest(`/api/admin/audience/subscribers/${subscriberId}`, {
+    method: 'PATCH',
+    body: JSON.stringify(payload),
+  })
+}
+
+export async function updateNewsletterAudienceStatus(subscriberId, payload) {
+  return apiRequest(`/api/admin/audience/subscribers/${subscriberId}/status`, {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  })
+}
+
+export async function bulkUpdateNewsletterAudienceTags(payload) {
+  return apiRequest('/api/admin/audience/bulk/tags', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  })
+}
+
+export async function bulkUpdateNewsletterAudienceSegments(payload) {
+  return apiRequest('/api/admin/audience/bulk/segments', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  })
+}
+
+export async function createNewsletterAudienceSegment(payload) {
+  return apiRequest('/api/admin/audience/segments', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  })
+}
+// phase-27-newsletter-audience-api-end

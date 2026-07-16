@@ -132,6 +132,11 @@ const groupedItems = [
         module: 'communications',
       },
       {
+        to: '/admin/audience',
+        label: 'Newsletter Audience',
+        module: 'communications',
+      },
+      {
         to: '/admin/session-changes',
         label: 'Session Changes',
         module: 'sessions',

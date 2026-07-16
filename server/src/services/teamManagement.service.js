@@ -119,7 +119,7 @@ function routePermissionModule(pathname = '') {
     path.startsWith('/session-change-requests')
   ) return 'sessions'
   if (path.startsWith('/inbox')) return 'inbox'
-  if (path.startsWith('/mail-studio') || path.startsWith('/automation-studio')) return 'communications'
+  if (path.startsWith('/mail-studio') || path.startsWith('/automation-studio') || path.startsWith('/audience')) return 'communications'
   if (path.startsWith('/learning-library')) return 'learning'
   if (path.startsWith('/memberships')) return 'memberships'
   if (path.startsWith('/circle')) return 'circle'

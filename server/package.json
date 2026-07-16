@@ -37,7 +37,8 @@
     "db:migrate-developer-error-center": "node scripts/ensure-developer-error-center.cjs",
     "db:migrate-notification-center": "node scripts/ensure-notification-center.cjs",
     "db:migrate:ordered": "node scripts/run-ordered-migrations.cjs",
-    "db:migrate-asset-vault": "node scripts/ensure-asset-vault.cjs"
+    "db:migrate-asset-vault": "node scripts/ensure-asset-vault.cjs",
+    "db:migrate-newsletter-audience": "node scripts/ensure-newsletter-audience.cjs"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",

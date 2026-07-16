@@ -9,6 +9,7 @@ import AdminOwnerRouteGuard from './components/admin/AdminOwnerRouteGuard.jsx'
 import AdminRouteGuard from './components/admin/AdminRouteGuard.jsx'
 import {
   loadAdminAssetVault,
+  loadAdminAudience,
   loadAdminActivityCenter,
   loadAdminAttentionQueue,
   loadAdminCapacityCenter,
@@ -66,6 +67,7 @@ import SignatureExperiencePage from './pages/SignatureExperiencePage.jsx'
 import TeenPrograms from './pages/TeenPrograms.jsx'
 
 const AdminAssetVault = lazy(loadAdminAssetVault)
+const AdminAudience = lazy(loadAdminAudience)
 const AdminActivityCenter = lazy(loadAdminActivityCenter)
 const AdminAttentionQueue = lazy(loadAdminAttentionQueue)
 const AdminCapacityCenter = lazy(loadAdminCapacityCenter)
@@ -254,6 +256,10 @@ const routeMetadata = {
   '/admin/email-studio': {
     title: 'Mail Studio | The Studio',
     description: 'Prepare and deliver thoughtful client communications.',
+  },
+  '/admin/audience': {
+    title: 'Newsletter Audience | The Studio',
+    description: 'Manage consent-aware newsletter recipients, segments, imports, and suppression protections.',
   },
   '/admin/leads': {
     title: 'Leads & Intake | The Studio',
@@ -521,6 +527,7 @@ function AppShell() {
         <Route path="/admin/session-changes" element={<AdminRouteGuard><AdminSessionChangeRequests /></AdminRouteGuard>} />
         <Route path="/admin/inbox" element={<AdminRouteGuard><AdminInbox /></AdminRouteGuard>} />
         <Route path="/admin/email-studio" element={<AdminRouteGuard><AdminMailStudio /></AdminRouteGuard>} />
+        <Route path="/admin/audience" element={<AdminRouteGuard><AdminAudience /></AdminRouteGuard>} />
         <Route path="/admin/automations" element={<AdminRouteGuard><AdminAutomationStudio /></AdminRouteGuard>} />
         <Route path="/admin/onboarding" element={<AdminRouteGuard><AdminOnboardingStudio /></AdminRouteGuard>} />
         <Route path="/admin/courses" element={<AdminRouteGuard><AdminLearningLibrary /></AdminRouteGuard>} />
