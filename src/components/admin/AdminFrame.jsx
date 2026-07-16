@@ -844,7 +844,7 @@ function AdminFrame({ children }) {
                             id={`pwc-nav33-group-${group.id}`}
                             hidden={!isOpen}
                           >
-                            {group.items.map((item) => (
+                            {group.items.filter((item) => !item.hiddenInSidebar).map((item) => (
                               <NavLink
                                 className={routeMatches(location.pathname, item) ? 'is-active' : undefined}
                                 key={item.to}

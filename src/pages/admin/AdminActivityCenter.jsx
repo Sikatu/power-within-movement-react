@@ -5,6 +5,7 @@ import {
   useState,
 } from 'react'
 import { useNavigate } from 'react-router-dom'
+import AdminAdvancedFilterToggle from '../../components/admin/AdminAdvancedFilterToggle.jsx'
 import AdminFrame from '../../components/admin/AdminFrame'
 import { useAdminConfirm } from '../../components/admin/AdminConfirmContext'
 import {
@@ -178,6 +179,7 @@ export default function AdminActivityCenter() {
   const [category, setCategory] = useState('all')
   const [readState, setReadState] = useState('all')
   const [importance, setImportance] = useState('all')
+  const [filtersOpen, setFiltersOpen] = useState(false)
   const [loading, setLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false)
   const [saving, setSaving] = useState(false)
@@ -514,7 +516,7 @@ export default function AdminActivityCenter() {
             ))}
           </div>
 
-          <div className="pwc-activity13-controls">
+          <div className={`pwc-activity13-controls pwc-ops36-filters${filtersOpen ? ' is-open' : ''}`}>
             <label className="pwc-activity13-search">
               <span>Search activity</span>
               <input
@@ -524,6 +526,12 @@ export default function AdminActivityCenter() {
                 onChange={(event) => setQuery(event.target.value)}
               />
             </label>
+
+            <AdminAdvancedFilterToggle
+              open={filtersOpen}
+              activeCount={[readState !== 'all', importance !== 'all'].filter(Boolean).length}
+              onToggle={() => setFiltersOpen((current) => !current)}
+            />
 
             <label>
               <span>Read state</span>

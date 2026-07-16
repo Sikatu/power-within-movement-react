@@ -39,6 +39,7 @@ import {
   loadAdminLetters,
   loadAdminMembershipCircle,
   loadAdminOnboardingStudio,
+  loadAdminOperationsCenter,
   loadAdminScheduler,
   loadAdminSessionChangeRequests,
   loadAdminTeamManagement,
@@ -100,6 +101,7 @@ const AdminMailStudio = lazy(loadAdminMailStudio)
 const AdminLetters = lazy(loadAdminLetters)
 const AdminMembershipCircle = lazy(loadAdminMembershipCircle)
 const AdminOnboardingStudio = lazy(loadAdminOnboardingStudio)
+const AdminOperationsCenter = lazy(loadAdminOperationsCenter)
 const AdminScheduler = lazy(loadAdminScheduler)
 const AdminSessionChangeRequests = lazy(loadAdminSessionChangeRequests)
 const AdminTeamManagement = lazy(loadAdminTeamManagement)
@@ -304,6 +306,10 @@ const routeMetadata = {
   '/admin/encouragements': {
     title: 'Encouragement Studio | The Studio',
     description: 'Draft, schedule, and publish thoughtful client encouragements.',
+  },
+  '/admin/operations': {
+    title: 'Studio Operations Center | Power Within Collective',
+    description: 'Choose a clear Studio Operations lane for planning, client care, session continuity, or accountable history.',
   },
   '/admin/brief': {
     title: 'Today in The Studio | Power Within Collective',
@@ -553,6 +559,7 @@ function AppShell() {
         <Route path="/admin/memberships" element={<AdminRouteGuard><AdminMembershipCircle /></AdminRouteGuard>} />
         <Route path="/admin/circle" element={<AdminRouteGuard><AdminCircleCommunity /></AdminRouteGuard>} />
         <Route path="/admin/encouragements" element={<AdminRouteGuard><AdminEncouragements /></AdminRouteGuard>} />
+        <Route path="/admin/operations" element={<AdminRouteGuard><AdminOperationsCenter /></AdminRouteGuard>} />
         <Route path="/admin/brief" element={<AdminRouteGuard><AdminDailyBrief /></AdminRouteGuard>} />
         <Route path="/admin/week" element={<AdminRouteGuard><AdminWeekPlanner /></AdminRouteGuard>} />
         <Route path="/admin/capacity" element={<AdminRouteGuard><AdminCapacityCenter /></AdminRouteGuard>} />

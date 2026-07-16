@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import AdminAdvancedFilterToggle from '../../components/admin/AdminAdvancedFilterToggle.jsx'
 import AdminFrame from '../../components/admin/AdminFrame.jsx'
 import { getAdminClientMomentum } from '../../lib/nativeApi.js'
 
@@ -99,6 +100,7 @@ function AdminClientMomentum() {
   const [signal, setSignal] = useState('all')
   const [stage, setStage] = useState('all')
   const [ownership, setOwnership] = useState('all')
+  const [filtersOpen, setFiltersOpen] = useState(false)
   const [loading, setLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false)
   const [error, setError] = useState('')
@@ -239,7 +241,7 @@ function AdminClientMomentum() {
           </article>
         </section>
 
-        <section className="pwc-week16-filters" aria-label="Momentum filters">
+        <section className={`pwc-week16-filters pwc-ops36-filters${filtersOpen ? ' is-open' : ''}`} aria-label="Momentum filters">
           <label className="pwc-week16-search">
             <span>Search clients</span>
             <input
@@ -249,6 +251,11 @@ function AdminClientMomentum() {
               onChange={(event) => setQuery(event.target.value)}
             />
           </label>
+          <AdminAdvancedFilterToggle
+            open={filtersOpen}
+            activeCount={[signal !== 'all', stage !== 'all', ownership !== 'all'].filter(Boolean).length}
+            onToggle={() => setFiltersOpen((current) => !current)}
+          />
           <label>
             <span>Momentum</span>
             <select value={signal} onChange={(event) => setSignal(event.target.value)}>

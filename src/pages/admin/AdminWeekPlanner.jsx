@@ -5,6 +5,7 @@ import {
   useState,
 } from 'react'
 import { useNavigate } from 'react-router-dom'
+import AdminAdvancedFilterToggle from '../../components/admin/AdminAdvancedFilterToggle.jsx'
 import AdminFrame from '../../components/admin/AdminFrame.jsx'
 import {
   getAdminAttentionQueue,
@@ -161,6 +162,7 @@ export default function AdminWeekPlanner() {
   const [owner, setOwner] = useState('all')
   const [kind, setKind] = useState('all')
   const [priority, setPriority] = useState('all')
+  const [filtersOpen, setFiltersOpen] = useState(false)
   const [loading, setLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false)
   const [savingKey, setSavingKey] = useState('')
@@ -443,7 +445,7 @@ export default function AdminWeekPlanner() {
           </article>
         </section>
 
-        <section className="pwc-week16-filters" aria-label="Planner filters">
+        <section className={`pwc-week16-filters pwc-ops36-filters${filtersOpen ? ' is-open' : ''}`} aria-label="Planner filters">
           <label className="pwc-week16-search">
             <span>Search</span>
             <input
@@ -453,6 +455,12 @@ export default function AdminWeekPlanner() {
               onChange={(event) => setQuery(event.target.value)}
             />
           </label>
+
+          <AdminAdvancedFilterToggle
+            open={filtersOpen}
+            activeCount={[kind !== 'all', owner !== 'all', priority !== 'all'].filter(Boolean).length}
+            onToggle={() => setFiltersOpen((current) => !current)}
+          />
 
           <label>
             <span>Show</span>
