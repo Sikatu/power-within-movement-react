@@ -10,12 +10,23 @@ process.env.ASSET_STORAGE_DIR = temporaryRoot
 process.env.ASSET_MAX_UPLOAD_BYTES = String(1024 * 1024)
 
 const {
+  canPreviewAsset,
   deleteObject,
   readObject,
   safeSegment,
   validateUpload,
   writeUploadedAsset,
 } = require('../src/services/assetStorage.service')
+const {
+  createSignedGrant,
+  hashGrantToken,
+  verifySignedGrant,
+} = require('../src/services/assetAccessGrant.service')
+const {
+  assertAssetUsable,
+  getInitialScanState,
+  isAssetUsable,
+} = require('../src/services/assetScan.service')
 
 test('asset filename sanitizer removes unsafe path characters', () => {
   assert.equal(safeSegment('../../Client Notes July.pdf'), '..-..-Client-Notes-July.pdf')
@@ -36,6 +47,43 @@ test('asset upload validation blocks unsupported and oversized files', () => {
   const oversized = validateUpload({ fileName: 'large.pdf', mimeType: 'application/pdf', sizeBytes: 2 * 1024 * 1024 })
   assert.equal(oversized.ok, false)
   assert.match(oversized.errors.join(' '), /upload limit/i)
+})
+
+test('Asset Vault preview policy allows safe browser formats only', () => {
+  assert.equal(canPreviewAsset({ mime_type: 'application/pdf' }), true)
+  assert.equal(canPreviewAsset({ mime_type: 'image/png' }), true)
+  assert.equal(canPreviewAsset({ mime_type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' }), false)
+})
+
+test('short-lived asset grants verify scope, signature, and expiry', () => {
+  const now = new Date('2026-07-16T00:00:00.000Z')
+  const grant = createSignedGrant({
+    grantId: 'grant-test-id',
+    assetId: 'asset-test-id',
+    actorUserId: 'developer-test-id',
+    purpose: 'preview',
+    ttlSeconds: 60,
+    secret: 'phase-26r2-test-secret',
+    now,
+  })
+
+  assert.equal(hashGrantToken(grant.token).length, 64)
+  assert.equal(verifySignedGrant(grant.token, { secret: 'phase-26r2-test-secret', purpose: 'preview', now }).assetId, 'asset-test-id')
+  assert.throws(() => verifySignedGrant(grant.token, { secret: 'wrong-secret', now }), /invalid or expired/i)
+  assert.throws(() => verifySignedGrant(grant.token, { secret: 'phase-26r2-test-secret', purpose: 'download', now }), /cannot be used/i)
+  assert.throws(() => verifySignedGrant(grant.token, { secret: 'phase-26r2-test-secret', now: new Date('2026-07-16T00:01:01.000Z') }), /expired/i)
+})
+
+test('asset scan abstraction is truthful and gates unsafe states', () => {
+  const disabled = getInitialScanState('disabled')
+  const configured = getInitialScanState('clamav')
+  assert.equal(disabled.status, 'disabled')
+  assert.match(disabled.message, /not configured/i)
+  assert.equal(configured.status, 'pending')
+  assert.equal(isAssetUsable({ status: 'active', scan_status: 'clean' }), true)
+  assert.equal(isAssetUsable({ status: 'active', scan_status: 'pending' }), false)
+  assert.doesNotThrow(() => assertAssetUsable({ status: 'active', scan_status: 'disabled' }))
+  assert.throws(() => assertAssetUsable({ status: 'active', scan_status: 'blocked' }), /blocked/i)
 })
 
 test('local asset adapter writes, reads, verifies, and deletes private content', async () => {

@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom'
 import AdminFrame from '../../components/admin/AdminFrame'
 import AdminDeveloperPanel from './AdminDeveloperPanel.jsx'
 import AdminDeveloperErrors from './AdminDeveloperErrors.jsx'
+import AdminDeveloperMonitoringConfiguration from './AdminDeveloperMonitoringConfiguration.jsx'
 import AdminSecurityIntegrity from './AdminSecurityIntegrity.jsx'
 import AdminReleaseQa from './AdminReleaseQa.jsx'
 
@@ -78,7 +79,12 @@ function SectionContent({ section }) {
   if (section === 'integrity') return <AdminSecurityIntegrity embedded />
   if (section === 'qa') return <AdminReleaseQa embedded />
   if (section === 'access') return <AdminDeveloperPanel embedded mode="access" />
-  if (section === 'configuration') return <AdminDeveloperPanel embedded mode="configuration" />
+  if (section === 'configuration') return (
+    <>
+      <AdminDeveloperPanel embedded mode="configuration" />
+      <AdminDeveloperMonitoringConfiguration />
+    </>
+  )
   return <AdminDeveloperPanel embedded mode="overview" />
 }
 

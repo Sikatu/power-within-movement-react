@@ -50,6 +50,9 @@ async function main() {
         storage_driver TEXT NOT NULL CHECK (storage_driver IN ('local', 's3')),
         storage_key TEXT NOT NULL UNIQUE,
         status TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'archived')),
+        scan_status TEXT NOT NULL DEFAULT 'disabled' CHECK (scan_status IN ('disabled', 'pending', 'clean', 'blocked', 'failed')),
+        scan_message TEXT,
+        scanned_at TIMESTAMPTZ,
         visibility TEXT NOT NULL DEFAULT 'private' CHECK (visibility IN ('private', 'client_assigned')),
         folder_id UUID REFERENCES asset_folders(id) ON DELETE SET NULL,
         tags TEXT[] NOT NULL DEFAULT '{}'::TEXT[],
@@ -60,6 +63,22 @@ async function main() {
         created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
         updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
       )
+    `)
+
+    await client.query(`
+      ALTER TABLE assets
+      ADD COLUMN IF NOT EXISTS scan_status TEXT NOT NULL DEFAULT 'disabled',
+      ADD COLUMN IF NOT EXISTS scan_message TEXT,
+      ADD COLUMN IF NOT EXISTS scanned_at TIMESTAMPTZ
+    `)
+    await client.query(`
+      ALTER TABLE assets
+      DROP CONSTRAINT IF EXISTS assets_scan_status_check
+    `)
+    await client.query(`
+      ALTER TABLE assets
+      ADD CONSTRAINT assets_scan_status_check
+      CHECK (scan_status IN ('disabled', 'pending', 'clean', 'blocked', 'failed'))
     `)
 
     await client.query(`
@@ -119,6 +138,54 @@ async function main() {
     `)
 
     await client.query(`
+      ALTER TABLE asset_access_logs
+      DROP CONSTRAINT IF EXISTS asset_access_logs_action_check
+    `)
+    await client.query(`
+      ALTER TABLE asset_access_logs
+      ADD CONSTRAINT asset_access_logs_action_check CHECK (
+        action IN (
+          'upload', 'download', 'preview', 'metadata_update', 'version_upload',
+          'assign', 'assign_bulk', 'unassign', 'archive', 'restore', 'folder_create',
+          'grant_create', 'grant_redeem', 'scan_status', 'relationship_create', 'relationship_remove'
+        )
+      )
+    `)
+
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS asset_access_grants (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        token_hash TEXT NOT NULL UNIQUE,
+        asset_id UUID NOT NULL REFERENCES assets(id) ON DELETE CASCADE,
+        assignment_id UUID REFERENCES asset_assignments(id) ON DELETE SET NULL,
+        issued_to_user_id UUID REFERENCES system_users(id) ON DELETE SET NULL,
+        client_profile_id UUID REFERENCES client_profiles(id) ON DELETE SET NULL,
+        purpose TEXT NOT NULL CHECK (purpose IN ('download', 'preview')),
+        status TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'consumed', 'revoked', 'expired')),
+        expires_at TIMESTAMPTZ NOT NULL,
+        consumed_at TIMESTAMPTZ,
+        created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+      )
+    `)
+
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS asset_relationships (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        asset_id UUID NOT NULL REFERENCES assets(id) ON DELETE CASCADE,
+        related_asset_id UUID REFERENCES assets(id) ON DELETE CASCADE,
+        context_type TEXT NOT NULL DEFAULT 'generic' CHECK (context_type IN ('letter', 'circle_post', 'founder_recording', 'transcript', 'generic')),
+        context_id TEXT,
+        relationship_type TEXT NOT NULL DEFAULT 'attachment' CHECK (relationship_type IN ('attachment', 'source_recording', 'transcript', 'featured')),
+        created_by UUID REFERENCES system_users(id) ON DELETE SET NULL,
+        archived_at TIMESTAMPTZ,
+        created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+        updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+        CHECK (related_asset_id IS NULL OR related_asset_id <> asset_id),
+        CHECK (related_asset_id IS NOT NULL OR context_id IS NOT NULL)
+      )
+    `)
+
+    await client.query(`
       CREATE INDEX IF NOT EXISTS idx_assets_status_created
       ON assets(status, created_at DESC)
     `)
@@ -142,8 +209,31 @@ async function main() {
       CREATE INDEX IF NOT EXISTS idx_asset_access_logs_asset_created
       ON asset_access_logs(asset_id, created_at DESC)
     `)
+    await client.query(`
+      CREATE INDEX IF NOT EXISTS idx_asset_access_grants_asset_status
+      ON asset_access_grants(asset_id, status, expires_at DESC)
+    `)
+    await client.query(`
+      CREATE INDEX IF NOT EXISTS idx_asset_access_grants_expiry
+      ON asset_access_grants(status, expires_at)
+    `)
+    await client.query(`
+      CREATE UNIQUE INDEX IF NOT EXISTS idx_asset_relationships_active_asset
+      ON asset_relationships(asset_id, related_asset_id, relationship_type)
+      WHERE archived_at IS NULL AND related_asset_id IS NOT NULL
+    `)
+    await client.query(`
+      CREATE UNIQUE INDEX IF NOT EXISTS idx_asset_relationships_active_context
+      ON asset_relationships(asset_id, context_type, context_id, relationship_type)
+      WHERE archived_at IS NULL AND context_id IS NOT NULL
+    `)
+    await client.query(`
+      CREATE INDEX IF NOT EXISTS idx_asset_relationships_context
+      ON asset_relationships(context_type, context_id)
+      WHERE archived_at IS NULL
+    `)
 
-    for (const tableName of ['asset_folders', 'assets', 'asset_assignments']) {
+    for (const tableName of ['asset_folders', 'assets', 'asset_assignments', 'asset_relationships']) {
       await client.query(`DROP TRIGGER IF EXISTS set_${tableName}_updated_at ON ${tableName}`)
       await client.query(`
         CREATE TRIGGER set_${tableName}_updated_at
@@ -178,7 +268,9 @@ async function main() {
       SELECT
         (SELECT COUNT(*)::int FROM asset_folders WHERE archived_at IS NULL) AS folders,
         (SELECT COUNT(*)::int FROM assets WHERE status = 'active') AS assets,
-        (SELECT COUNT(*)::int FROM asset_assignments WHERE status = 'active') AS assignments
+        (SELECT COUNT(*)::int FROM asset_assignments WHERE status = 'active') AS assignments,
+        (SELECT COUNT(*)::int FROM asset_relationships WHERE archived_at IS NULL) AS relationships,
+        (SELECT COUNT(*)::int FROM asset_access_grants WHERE status = 'active' AND expires_at > now()) AS active_grants
     `)
 
     console.log('\nAsset Vault database support is ready.')

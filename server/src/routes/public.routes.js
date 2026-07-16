@@ -1,5 +1,6 @@
 const express = require('express')
 const { z } = require('zod')
+const { pipeline } = require('stream/promises')
 
 const { pool } = require('../db/pool')
 const { env } = require('../config/env')
@@ -14,7 +15,8 @@ const {
   addDateKey: addFounderDateKey,
 } = require('../services/founderAvailability.service')
 const { getPlatformSettings } = require('../services/platformSettings.service')
-const { readObject, safeSegment } = require('../services/assetStorage.service')
+const { getObjectStream, safeSegment } = require('../services/assetStorage.service')
+const { assertAssetUsable } = require('../services/assetScan.service')
 const { publishDueEncouragements } = require('../services/encouragements.service')
 const {
   clientCanAccessCourse,
@@ -2070,7 +2072,8 @@ router.get('/client-portal/assets/:assetId/download', requireClientPortalUser, a
       return res.status(404).json({ ok: false, error: 'This resource is not available in your private library.' })
     }
 
-    const buffer = await readObject(asset)
+    assertAssetUsable(asset)
+    const stream = await getObjectStream(asset)
 
     await pool.query(
       `
@@ -2084,12 +2087,17 @@ router.get('/client-portal/assets/:assetId/download', requireClientPortalUser, a
 
     res.set({
       'Content-Type': asset.mime_type,
-      'Content-Length': String(buffer.length),
+      'Content-Length': String(asset.size_bytes),
       'Content-Disposition': `attachment; filename="${safeSegment(asset.original_filename)}"`,
       'Cache-Control': 'private, no-store, max-age=0',
     })
-    return res.send(buffer)
+    await pipeline(stream, res)
+    return undefined
   } catch (error) {
+    if (res.headersSent) {
+      res.destroy(error)
+      return undefined
+    }
     return next(error)
   }
 })

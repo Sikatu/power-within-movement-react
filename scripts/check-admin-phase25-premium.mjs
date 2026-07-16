@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs'
 const operations = readFileSync('src/pages/admin/AdminDeveloperOperations.jsx', 'utf8')
 const panel = readFileSync('src/pages/admin/AdminDeveloperPanel.jsx', 'utf8')
 const errors = readFileSync('src/pages/admin/AdminDeveloperErrors.jsx', 'utf8')
+const monitoring = readFileSync('src/pages/admin/AdminDeveloperMonitoringConfiguration.jsx', 'utf8')
 const integrity = readFileSync('src/pages/admin/AdminSecurityIntegrity.jsx', 'utf8')
 const qa = readFileSync('src/pages/admin/AdminReleaseQa.jsx', 'utf8')
 const stylesheet = readFileSync('src/pages/admin/AdminFreshUI.css', 'utf8')
@@ -27,11 +28,11 @@ const interactionSafeguards = [
 ]
 
 const errorSafeguards = [
-  'error-center-commandbar',
-  'Incident monitor',
-  '<details className="error-center-settings">',
-  'error-center-settings-body',
-  'error-center-refresh-button',
+  [errors, 'error-center-commandbar'],
+  [errors, 'Incident monitor'],
+  [monitoring, 'developer-monitoring-configuration'],
+  [monitoring, 'error-center-settings-body'],
+  [errors, 'error-center-refresh-button'],
 ]
 
 const embeddedSafeguards = [
@@ -68,8 +69,8 @@ for (const token of interactionSafeguards) {
   if (!panel.includes(token)) failures.push(`Developer account/client workflow is missing: ${token}`)
 }
 
-for (const token of errorSafeguards) {
-  if (!errors.includes(token)) failures.push(`Premium Error Center is missing: ${token}`)
+for (const [source, token] of errorSafeguards) {
+  if (!source.includes(token)) failures.push(`Premium Error Center is missing: ${token}`)
 }
 
 for (const [source, token] of embeddedSafeguards) {

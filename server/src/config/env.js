@@ -100,6 +100,9 @@ const env = {
   assetS3AccessKeyId: process.env.ASSET_S3_ACCESS_KEY_ID || '',
   assetS3SecretAccessKey: process.env.ASSET_S3_SECRET_ACCESS_KEY || '',
   assetS3ForcePathStyle: parseBoolean(process.env.ASSET_S3_FORCE_PATH_STYLE, true),
+  assetAccessGrantSecret: process.env.ASSET_ACCESS_GRANT_SECRET || jwtSecret,
+  assetAccessGrantTtlSeconds: Math.min(Math.max(Number(process.env.ASSET_ACCESS_GRANT_TTL_SECONDS || 300), 30), 900),
+  assetMalwareScanner: String(process.env.ASSET_MALWARE_SCANNER || 'disabled').trim().toLowerCase(),
 
   canonicalDeveloperEmail:
     process.env.CANONICAL_DEVELOPER_EMAIL || 'darelle.grande.mva@gmail.com',

@@ -1,16 +1,21 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import AdminFrame from '../../components/admin/AdminFrame.jsx'
 import { useAdminConfirm } from '../../components/admin/AdminConfirmContext.js'
+import AssetVaultPicker from '../../components/admin/AssetVaultPicker.jsx'
 import {
   archiveAssetVaultAsset,
   assignAssetVaultAsset,
   assignAssetVaultAssetToAllClients,
+  assignAssetVaultAssetToClients,
+  createAssetVaultAccessGrant,
   createAssetVaultFolder,
+  createAssetVaultRelationship,
   getAdminClients,
   getAssetVaultAsset,
   getAssetVaultAssets,
-  getAssetVaultDownloadUrl,
+  getAssetVaultRelationships,
   getAssetVaultSummary,
+  removeAssetVaultRelationship,
   restoreAssetVaultAsset,
   unassignAssetVaultAsset,
   updateAssetVaultAsset,
@@ -61,6 +66,20 @@ function assetName(asset) {
   return asset?.title || asset?.original_filename || 'Untitled asset'
 }
 
+function canPreview(asset) {
+  const mime = String(asset?.mime_type || '').toLowerCase()
+  return mime === 'application/pdf' || mime.startsWith('image/') || mime.startsWith('audio/') || mime.startsWith('video/') || mime.startsWith('text/')
+}
+
+function scanLabel(asset) {
+  const status = String(asset?.scan_status || 'disabled')
+  if (status === 'clean') return 'Security scan clean'
+  if (status === 'disabled') return 'Scanner not configured'
+  if (status === 'blocked') return 'Security scan blocked'
+  if (status === 'failed') return 'Security scan failed'
+  return 'Security scan pending'
+}
+
 function AdminAssetVault() {
   const requestConfirm = useAdminConfirm()
   const fileInputRef = useRef(null)
@@ -79,6 +98,13 @@ function AdminAssetVault() {
   const [uploadDraft, setUploadDraft] = useState({ title: '', folderId: '', tags: '' })
   const [newFolderName, setNewFolderName] = useState('')
   const [versionNotes, setVersionNotes] = useState('')
+  const [versionProgress, setVersionProgress] = useState(0)
+  const [uploadQueue, setUploadQueue] = useState([])
+  const [selectedClientIds, setSelectedClientIds] = useState([])
+  const [clientSearch, setClientSearch] = useState('')
+  const [previewUrl, setPreviewUrl] = useState('')
+  const [relationships, setRelationships] = useState([])
+  const [relatedAssetId, setRelatedAssetId] = useState('')
   const [dragActive, setDragActive] = useState(false)
   const [loading, setLoading] = useState(true)
   const [busy, setBusy] = useState('')
@@ -106,10 +132,18 @@ function AdminAssetVault() {
   const loadDetail = useCallback(async (assetId) => {
     if (!assetId) {
       setDetail(null)
+      setRelationships([])
+      setPreviewUrl('')
       return
     }
-    const response = await getAssetVaultAsset(assetId)
+    const [response, relationshipResponse] = await Promise.all([
+      getAssetVaultAsset(assetId),
+      getAssetVaultRelationships(assetId),
+    ])
     setDetail(response)
+    setRelationships(relationshipResponse.relationships || [])
+    setPreviewUrl('')
+    setSelectedClientIds([])
     const asset = response.asset || {}
     setMetadataDraft({
       title: asset.title || '',
@@ -150,22 +184,42 @@ function AdminAssetVault() {
   const activeAssignmentClientIds = useMemo(() => new Set(activeAssignments.map((assignment) => assignment.client_profile_id)), [activeAssignments])
   const bulkAssignableCount = useMemo(() => eligibleBulkClients.filter((client) => !activeAssignmentClientIds.has(client.id)).length, [activeAssignmentClientIds, eligibleBulkClients])
   const selectedAsset = detail?.asset || assets.find((asset) => asset.id === selectedAssetId) || null
+  const assetUsable = selectedAsset?.status === 'active' && ['clean', 'disabled'].includes(selectedAsset?.scan_status || 'disabled')
+  const selectableClients = useMemo(() => {
+    const query = clientSearch.trim().toLowerCase()
+    return eligibleBulkClients.filter((client) => {
+      if (activeAssignmentClientIds.has(client.id)) return false
+      return !query || `${clientName(client)} ${client.email || ''}`.toLowerCase().includes(query)
+    })
+  }, [activeAssignmentClientIds, clientSearch, eligibleBulkClients])
 
   async function handleFiles(fileList) {
     const files = [...(fileList || [])]
     if (!files.length) return
+    const queue = files.map((file, index) => ({
+      id: `${Date.now()}-${index}-${file.name}`,
+      file,
+      name: file.name,
+      percent: 0,
+      status: 'queued',
+    }))
+    setUploadQueue(queue)
     setBusy('upload')
     setError('')
     setNotice('')
 
     try {
       let lastAsset = null
-      for (const file of files) {
-        const response = await uploadAssetVaultFile(file, {
+      for (const entry of queue) {
+        setUploadQueue((current) => current.map((item) => item.id === entry.id ? { ...item, status: 'uploading' } : item))
+        const response = await uploadAssetVaultFile(entry.file, {
           title: files.length === 1 ? uploadDraft.title : '',
           folderId: uploadDraft.folderId,
           tags: uploadDraft.tags.split(',').map((tag) => tag.trim()).filter(Boolean),
+        }, {
+          onProgress: ({ percent }) => setUploadQueue((current) => current.map((item) => item.id === entry.id ? { ...item, percent } : item)),
         })
+        setUploadQueue((current) => current.map((item) => item.id === entry.id ? { ...item, percent: 100, status: 'complete' } : item))
         lastAsset = response.asset
       }
       setUploadDraft({ title: '', folderId: uploadDraft.folderId, tags: '' })
@@ -173,6 +227,7 @@ function AdminAssetVault() {
       await Promise.all([loadSummary(), loadAssets()])
       if (lastAsset?.id) setSelectedAssetId(lastAsset.id)
     } catch (uploadError) {
+      setUploadQueue((current) => current.map((item) => ['queued', 'uploading'].includes(item.status) ? { ...item, status: 'failed' } : item))
       setError(uploadError.message || 'The upload could not be completed.')
     } finally {
       setBusy('')
@@ -246,7 +301,7 @@ function AdminAssetVault() {
   }
 
   async function handleAssign() {
-    if (!selectedAsset || !assignmentDraft.clientProfileId) return
+    if (!selectedAsset || !assetUsable || !assignmentDraft.clientProfileId) return
     setBusy('assign')
     setError('')
     try {
@@ -262,7 +317,7 @@ function AdminAssetVault() {
   }
 
   async function handleAssignAll() {
-    if (!selectedAsset || eligibleBulkClients.length === 0) return
+    if (!selectedAsset || !assetUsable || eligibleBulkClients.length === 0) return
     const alreadyAssignedCount = eligibleBulkClients.length - bulkAssignableCount
     const accepted = await requestConfirm({
       title: `Assign to all ${eligibleBulkClients.length} clients?`,
@@ -283,6 +338,95 @@ function AdminAssetVault() {
       await Promise.all([loadSummary(), loadAssets(), loadDetail(selectedAsset.id)])
     } catch (assignError) {
       setError(assignError.message || 'The bulk client assignment could not be completed.')
+    } finally {
+      setBusy('')
+    }
+  }
+
+  async function handleAssignSelected() {
+    if (!selectedAsset || !assetUsable || selectedClientIds.length === 0) return
+    const accepted = await requestConfirm({
+      title: `Assign to ${selectedClientIds.length} selected client${selectedClientIds.length === 1 ? '' : 's'}?`,
+      message: `“${assetName(selectedAsset)}” will be added to the chosen client portals. Existing assignments are skipped safely.`,
+      confirmLabel: 'Assign selected clients',
+      tone: 'default',
+    })
+    if (!accepted) return
+
+    setBusy('assign-selected')
+    setError('')
+    try {
+      const response = await assignAssetVaultAssetToClients(selectedAsset.id, {
+        clientProfileIds: selectedClientIds,
+        title: assignmentDraft.title,
+        description: assignmentDraft.description,
+      })
+      setNotice(response.message || 'Asset assigned to the selected clients.')
+      setSelectedClientIds([])
+      await Promise.all([loadSummary(), loadAssets(), loadDetail(selectedAsset.id)])
+    } catch (assignError) {
+      setError(assignError.message || 'The selected client assignments could not be completed.')
+    } finally {
+      setBusy('')
+    }
+  }
+
+  async function handleAssetAccess(purpose) {
+    if (!selectedAsset || !assetUsable) return
+    setBusy(`access-${purpose}`)
+    setError('')
+    try {
+      const response = await createAssetVaultAccessGrant(selectedAsset.id, purpose)
+      if (purpose === 'preview') {
+        setPreviewUrl(response.url)
+        setNotice('A short-lived preview was opened. It will not remain publicly accessible.')
+      } else {
+        const link = document.createElement('a')
+        link.href = response.url
+        link.target = '_blank'
+        link.rel = 'noopener noreferrer'
+        document.body.appendChild(link)
+        link.click()
+        link.remove()
+        setNotice('A short-lived download link was created and opened.')
+      }
+    } catch (accessError) {
+      setError(accessError.message || `The asset ${purpose} could not be opened.`)
+    } finally {
+      setBusy('')
+    }
+  }
+
+  async function handleCreateRelationship() {
+    if (!selectedAsset || !relatedAssetId) return
+    setBusy('relationship')
+    setError('')
+    try {
+      const response = await createAssetVaultRelationship(selectedAsset.id, {
+        relatedAssetId,
+        relationshipType: 'attachment',
+        contextType: 'generic',
+      })
+      setNotice(response.message || 'Asset relationship saved.')
+      setRelatedAssetId('')
+      await loadDetail(selectedAsset.id)
+    } catch (relationshipError) {
+      setError(relationshipError.message || 'The asset relationship could not be saved.')
+    } finally {
+      setBusy('')
+    }
+  }
+
+  async function handleRemoveRelationship(relationshipId) {
+    if (!selectedAsset) return
+    setBusy(`relationship-${relationshipId}`)
+    setError('')
+    try {
+      const response = await removeAssetVaultRelationship(selectedAsset.id, relationshipId)
+      setNotice(response.message || 'Asset relationship removed.')
+      await loadDetail(selectedAsset.id)
+    } catch (relationshipError) {
+      setError(relationshipError.message || 'The asset relationship could not be removed.')
     } finally {
       setBusy('')
     }
@@ -312,9 +456,12 @@ function AdminAssetVault() {
   async function handleVersionFile(file) {
     if (!selectedAsset || !file) return
     setBusy('version')
+    setVersionProgress(0)
     setError('')
     try {
-      const response = await uploadAssetVaultVersion(selectedAsset.id, file, versionNotes)
+      const response = await uploadAssetVaultVersion(selectedAsset.id, file, versionNotes, {
+        onProgress: ({ percent }) => setVersionProgress(percent),
+      })
       setNotice(response.message || 'A new version was uploaded.')
       setVersionNotes('')
       await Promise.all([loadSummary(), loadAssets(), loadDetail(selectedAsset.id)])
@@ -375,6 +522,13 @@ function AdminAssetVault() {
           </div>
         </section>
 
+        {uploadQueue.length > 0 && (
+          <section className="pwc-assets26-upload-queue" aria-label="Upload progress" aria-live="polite">
+            <header><div><p className="pwc-assets26-eyebrow">Transfer queue</p><h2>Secure upload progress</h2></div><button type="button" onClick={() => setUploadQueue([])} disabled={busy === 'upload'}>Clear completed</button></header>
+            <div>{uploadQueue.map((item) => <article key={item.id} className={`is-${item.status}`}><div><strong>{item.name}</strong><span>{item.status === 'failed' ? 'Upload failed' : item.status === 'complete' ? 'Stored securely' : item.status === 'queued' ? 'Waiting' : `${item.percent}% uploaded`}</span></div><progress max="100" value={item.percent}>{item.percent}%</progress></article>)}</div>
+          </section>
+        )}
+
         <section className="pwc-assets26-workspace">
           <aside className="pwc-assets26-library">
             <header><div><p className="pwc-assets26-eyebrow">Vault library</p><h2>{assets.length} asset{assets.length === 1 ? '' : 's'}</h2></div><button type="button" className="is-compact" onClick={() => setFilters((current) => ({ ...current, status: current.status === 'active' ? 'archived' : 'active' }))}>{filters.status === 'active' ? 'View archive' : 'View active'}</button></header>
@@ -408,12 +562,21 @@ function AdminAssetVault() {
               <>
                 <header className="pwc-assets26-detail-header">
                   <div><span className={`pwc-assets26-filemark is-${fileFamily(selectedAsset.mime_type).toLowerCase()}`}>{fileFamily(selectedAsset.mime_type).slice(0, 3).toUpperCase()}</span><div><p className="pwc-assets26-eyebrow">Version {selectedAsset.current_version_number}</p><h2>{assetName(selectedAsset)}</h2><p>{selectedAsset.original_filename}</p></div></div>
-                  <div><a href={getAssetVaultDownloadUrl(selectedAsset.id)} target="_blank" rel="noreferrer">Download</a><button type="button" className="is-secondary" onClick={handleArchiveToggle}>{selectedAsset.status === 'archived' ? 'Restore' : 'Archive'}</button></div>
+                  <div>{canPreview(selectedAsset) && <button type="button" className="is-secondary" onClick={() => handleAssetAccess('preview')} disabled={!assetUsable || busy === 'access-preview'}>{busy === 'access-preview' ? 'Opening…' : 'Preview'}</button>}<button type="button" onClick={() => handleAssetAccess('download')} disabled={!assetUsable || busy === 'access-download'}>{busy === 'access-download' ? 'Preparing…' : 'Download'}</button><button type="button" className="is-secondary" onClick={handleArchiveToggle}>{selectedAsset.status === 'archived' ? 'Restore' : 'Archive'}</button></div>
                 </header>
 
                 <div className="pwc-assets26-facts">
-                  <div><span>Type</span><strong>{selectedAsset.mime_type}</strong></div><div><span>Size</span><strong>{formatBytes(selectedAsset.size_bytes)}</strong></div><div><span>Updated</span><strong>{formatDate(selectedAsset.updated_at)}</strong></div><div><span>Checksum</span><strong title={selectedAsset.checksum_sha256}>{String(selectedAsset.checksum_sha256 || '').slice(0, 12)}…</strong></div>
+                  <div><span>Type</span><strong>{selectedAsset.mime_type}</strong></div><div><span>Size</span><strong>{formatBytes(selectedAsset.size_bytes)}</strong></div><div><span>Updated</span><strong>{formatDate(selectedAsset.updated_at)}</strong></div><div><span>Checksum</span><strong title={selectedAsset.checksum_sha256}>{String(selectedAsset.checksum_sha256 || '').slice(0, 12)}…</strong></div><div className={`is-scan-${selectedAsset.scan_status || 'disabled'}`}><span>File security</span><strong>{scanLabel(selectedAsset)}</strong></div>
                 </div>
+
+                {!assetUsable && <div className="pwc-assets26-scan-warning" role="alert"><strong>{scanLabel(selectedAsset)}</strong><span>{selectedAsset.scan_message || 'Preview, download, and client assignment are locked until this asset is safe to use.'}</span></div>}
+
+                {previewUrl && (
+                  <section className="pwc-assets26-preview" aria-label={`Preview of ${assetName(selectedAsset)}`}>
+                    <header><div><p className="pwc-assets26-eyebrow">Short-lived preview</p><h3>{assetName(selectedAsset)}</h3></div><button type="button" onClick={() => setPreviewUrl('')}>Close preview</button></header>
+                    {selectedAsset.mime_type.startsWith('image/') ? <img src={previewUrl} alt={`Preview of ${assetName(selectedAsset)}`} /> : selectedAsset.mime_type.startsWith('audio/') ? <audio src={previewUrl} controls /> : selectedAsset.mime_type.startsWith('video/') ? <video src={previewUrl} controls /> : <iframe src={previewUrl} title={`Preview of ${assetName(selectedAsset)}`} />}
+                  </section>
+                )}
 
                 <section className="pwc-assets26-panel">
                   <header><div><p className="pwc-assets26-eyebrow">Organization</p><h3>Reusable asset details</h3></div><button type="button" onClick={handleMetadataSave} disabled={busy === 'metadata'}>{busy === 'metadata' ? 'Saving…' : 'Save details'}</button></header>
@@ -422,15 +585,28 @@ function AdminAssetVault() {
 
                 <section className="pwc-assets26-panel">
                   <header><div><p className="pwc-assets26-eyebrow">Client delivery</p><h3>Assignments</h3></div><span>{activeAssignments.length} active</span></header>
-                  <div className="pwc-assets26-assignment-form"><select value={assignmentDraft.clientProfileId} onChange={(event) => setAssignmentDraft((current) => ({ ...current, clientProfileId: event.target.value }))}><option value="">Choose a client</option>{clients.map((client) => <option key={client.id} value={client.id}>{clientName(client)}</option>)}</select><input value={assignmentDraft.title} onChange={(event) => setAssignmentDraft((current) => ({ ...current, title: event.target.value }))} placeholder="Client-facing title" /><button type="button" onClick={handleAssign} disabled={!assignmentDraft.clientProfileId || busy === 'assign'}>{busy === 'assign' ? 'Assigning…' : 'Assign to portal'}</button></div>
-                  <div className="pwc-assets26-assignment-bulk"><div><strong>Share with every client</strong><span>{bulkAssignableCount > 0 ? `${bulkAssignableCount} of ${eligibleBulkClients.length} eligible clients do not have this resource yet.` : eligibleBulkClients.length > 0 ? 'Every eligible client already has this resource.' : 'No eligible client profiles are available.'}</span><small>Archived profiles and non-client system accounts are excluded.</small></div><button type="button" onClick={handleAssignAll} disabled={busy === 'assign-all' || eligibleBulkClients.length === 0}>{busy === 'assign-all' ? 'Assigning to all…' : 'Assign to all clients'}</button></div>
+                  <div className="pwc-assets26-assignment-form"><select value={assignmentDraft.clientProfileId} onChange={(event) => setAssignmentDraft((current) => ({ ...current, clientProfileId: event.target.value }))}><option value="">Choose a client</option>{clients.map((client) => <option key={client.id} value={client.id}>{clientName(client)}</option>)}</select><input value={assignmentDraft.title} onChange={(event) => setAssignmentDraft((current) => ({ ...current, title: event.target.value }))} placeholder="Client-facing title" /><button type="button" onClick={handleAssign} disabled={!assetUsable || !assignmentDraft.clientProfileId || busy === 'assign'}>{busy === 'assign' ? 'Assigning…' : 'Assign to portal'}</button></div>
+                  <div className="pwc-assets26-client-multi">
+                    <header><div><strong>Choose multiple clients</strong><span>Select only the portals that should receive this resource.</span></div><em>{selectedClientIds.length} selected</em></header>
+                    <div className="pwc-assets26-client-multi-tools"><input type="search" value={clientSearch} onChange={(event) => setClientSearch(event.target.value)} placeholder="Search eligible clients" aria-label="Search eligible clients" /><button type="button" onClick={() => setSelectedClientIds(selectableClients.map((client) => client.id))}>Select shown</button><button type="button" onClick={() => setSelectedClientIds([])}>Clear</button></div>
+                    <div className="pwc-assets26-client-options">{selectableClients.length === 0 ? <p>No unassigned clients match this search.</p> : selectableClients.map((client) => <label key={client.id}><input type="checkbox" checked={selectedClientIds.includes(client.id)} onChange={(event) => setSelectedClientIds((current) => event.target.checked ? [...new Set([...current, client.id])] : current.filter((id) => id !== client.id))} /><span><strong>{clientName(client)}</strong><small>{client.email || 'Private client profile'}</small></span></label>)}</div>
+                    <button type="button" onClick={handleAssignSelected} disabled={!assetUsable || selectedClientIds.length === 0 || busy === 'assign-selected'}>{busy === 'assign-selected' ? 'Assigning selected…' : `Assign ${selectedClientIds.length || ''} selected client${selectedClientIds.length === 1 ? '' : 's'}`}</button>
+                  </div>
+                  <div className="pwc-assets26-assignment-bulk"><div><strong>Share with every client</strong><span>{bulkAssignableCount > 0 ? `${bulkAssignableCount} of ${eligibleBulkClients.length} eligible clients do not have this resource yet.` : eligibleBulkClients.length > 0 ? 'Every eligible client already has this resource.' : 'No eligible client profiles are available.'}</span><small>Archived profiles and non-client system accounts are excluded.</small></div><button type="button" onClick={handleAssignAll} disabled={!assetUsable || busy === 'assign-all' || eligibleBulkClients.length === 0}>{busy === 'assign-all' ? 'Assigning to all…' : 'Assign to all clients'}</button></div>
                   <div className="pwc-assets26-assignment-list">{activeAssignments.length === 0 ? <p>No active client assignments.</p> : activeAssignments.map((assignment) => <article key={assignment.id}><div><strong>{[assignment.first_name, assignment.last_name].filter(Boolean).join(' ') || assignment.email || 'Client'}</strong><span>{assignment.email || 'Private client profile'}</span><small>Assigned {formatDate(assignment.assigned_at)}</small></div><button type="button" onClick={() => handleUnassign(assignment)} disabled={busy === `unassign-${assignment.id}`}>Remove</button></article>)}</div>
+                </section>
+
+                <section className="pwc-assets26-panel">
+                  <header><div><p className="pwc-assets26-eyebrow">Reuse foundation</p><h3>Asset relationships</h3></div><span>{relationships.length} linked</span></header>
+                  <div className="pwc-assets26-relationship-create"><AssetVaultPicker value={relatedAssetId} onChange={setRelatedAssetId} excludeAssetIds={[selectedAsset.id]} label="Relate another vault asset" /><button type="button" onClick={handleCreateRelationship} disabled={!relatedAssetId || busy === 'relationship'}>{busy === 'relationship' ? 'Linking…' : 'Link asset'}</button></div>
+                  <div className="pwc-assets26-relationship-list">{relationships.length === 0 ? <p>No related assets yet. This foundation can be reused by letters, Circle posts, recordings, and transcripts.</p> : relationships.map((relationship) => <article key={relationship.id}><div><strong>{relationship.related_asset_title || relationship.context_id || 'Related content'}</strong><span>{relationship.related_asset_filename || `${relationship.context_type} · ${relationship.relationship_type}`}</span></div><button type="button" onClick={() => handleRemoveRelationship(relationship.id)} disabled={busy === `relationship-${relationship.id}`}>Remove</button></article>)}</div>
                 </section>
 
                 <section className="pwc-assets26-panel">
                   <header><div><p className="pwc-assets26-eyebrow">Version history</p><h3>{detail?.versions?.length || 0} saved version{detail?.versions?.length === 1 ? '' : 's'}</h3></div><button type="button" className="is-secondary" onClick={() => versionInputRef.current?.click()} disabled={busy === 'version'}>{busy === 'version' ? 'Uploading…' : 'Upload new version'}</button></header>
                   <input ref={versionInputRef} type="file" hidden onChange={(event) => handleVersionFile(event.target.files?.[0])} />
                   <label className="pwc-assets26-version-notes"><span>Version notes</span><input value={versionNotes} onChange={(event) => setVersionNotes(event.target.value)} placeholder="What changed in this version?" /></label>
+                  {(busy === 'version' || versionProgress > 0) && <div className="pwc-assets26-version-progress" aria-live="polite"><progress max="100" value={versionProgress}>{versionProgress}%</progress><span>{versionProgress < 100 ? `${versionProgress}% uploaded` : 'Upload complete'}</span></div>}
                   <div className="pwc-assets26-version-list">{(detail?.versions || []).map((version) => <article key={version.id}><span>v{version.version_number}</span><div><strong>{version.original_filename}</strong><small>{formatBytes(version.size_bytes)} · {formatDate(version.created_at)}</small></div><em>{version.notes || (version.version_number === selectedAsset.current_version_number ? 'Current version' : 'Saved version')}</em></article>)}</div>
                 </section>
               </>

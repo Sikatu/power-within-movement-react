@@ -1399,22 +1399,37 @@ function assetQuery(params = {}) {
   return query ? `?${query}` : ''
 }
 
-async function uploadAssetBinary(path, file, metadata = {}) {
-  const response = await fetch(`${API_BASE_URL}${path}`, {
-    method: 'POST',
-    credentials: 'include',
-    headers: {
-      'Content-Type': file.type || 'application/octet-stream',
-      'X-PWC-File-Name': encodeAssetHeader(file.name),
-      ...(metadata.title ? { 'X-PWC-Asset-Title': encodeAssetHeader(metadata.title) } : {}),
-      ...(metadata.folderId ? { 'X-PWC-Folder-Id': metadata.folderId } : {}),
-      ...(metadata.tags?.length ? { 'X-PWC-Tags': encodeAssetHeader(metadata.tags.join(',')) } : {}),
-      ...(metadata.notes ? { 'X-PWC-Version-Notes': encodeAssetHeader(metadata.notes) } : {}),
-    },
-    body: file,
-  })
+async function uploadAssetBinary(path, file, metadata = {}, options = {}) {
+  return new Promise((resolve, reject) => {
+    const request = new XMLHttpRequest()
+    request.open('POST', `${API_BASE_URL}${path}`)
+    request.withCredentials = true
+    request.setRequestHeader('Content-Type', file.type || 'application/octet-stream')
+    request.setRequestHeader('X-PWC-File-Name', encodeAssetHeader(file.name))
+    if (metadata.title) request.setRequestHeader('X-PWC-Asset-Title', encodeAssetHeader(metadata.title))
+    if (metadata.folderId) request.setRequestHeader('X-PWC-Folder-Id', metadata.folderId)
+    if (metadata.tags?.length) request.setRequestHeader('X-PWC-Tags', encodeAssetHeader(metadata.tags.join(',')))
+    if (metadata.notes) request.setRequestHeader('X-PWC-Version-Notes', encodeAssetHeader(metadata.notes))
 
-  return parseResponse(response)
+    request.upload.addEventListener('progress', (event) => {
+      if (!event.lengthComputable || typeof options.onProgress !== 'function') return
+      options.onProgress({ loaded: event.loaded, total: event.total, percent: Math.round((event.loaded / event.total) * 100) })
+    })
+    request.addEventListener('load', () => {
+      let data = null
+      try { data = request.responseText ? JSON.parse(request.responseText) : null } catch { /* non-JSON upload error */ }
+      if (request.status >= 200 && request.status < 300) {
+        options.onProgress?.({ loaded: file.size, total: file.size, percent: 100 })
+        resolve(data)
+        return
+      }
+      reject(new Error(data?.error || data?.message || `Upload failed with status ${request.status}`))
+    })
+    request.addEventListener('error', () => reject(new Error('The upload connection was interrupted.')))
+    request.addEventListener('abort', () => reject(new DOMException('The upload was cancelled.', 'AbortError')))
+    options.signal?.addEventListener('abort', () => request.abort(), { once: true })
+    request.send(file)
+  })
 }
 
 export async function getAssetVaultSummary() {
@@ -1436,12 +1451,12 @@ export async function createAssetVaultFolder(payload) {
   })
 }
 
-export async function uploadAssetVaultFile(file, metadata = {}) {
-  return uploadAssetBinary('/api/admin/assets/upload', file, metadata)
+export async function uploadAssetVaultFile(file, metadata = {}, options = {}) {
+  return uploadAssetBinary('/api/admin/assets/upload', file, metadata, options)
 }
 
-export async function uploadAssetVaultVersion(assetId, file, notes = '') {
-  return uploadAssetBinary(`/api/admin/assets/${assetId}/versions`, file, { notes })
+export async function uploadAssetVaultVersion(assetId, file, notes = '', options = {}) {
+  return uploadAssetBinary(`/api/admin/assets/${assetId}/versions`, file, { notes }, options)
 }
 
 export async function updateAssetVaultAsset(assetId, payload) {
@@ -1473,6 +1488,36 @@ export async function assignAssetVaultAssetToAllClients(assetId, payload) {
   })
 }
 
+export async function assignAssetVaultAssetToClients(assetId, payload) {
+  return apiRequest(`/api/admin/assets/${assetId}/assignments/selected`, {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  })
+}
+
+export async function createAssetVaultAccessGrant(assetId, purpose = 'download') {
+  const response = await apiRequest(`/api/admin/assets/${assetId}/access-grants`, {
+    method: 'POST',
+    body: JSON.stringify({ purpose }),
+  })
+  return { ...response, url: `${API_BASE_URL}${response.path}` }
+}
+
+export async function getAssetVaultRelationships(assetId) {
+  return apiRequest(`/api/admin/assets/${assetId}/relationships`)
+}
+
+export async function createAssetVaultRelationship(assetId, payload) {
+  return apiRequest(`/api/admin/assets/${assetId}/relationships`, {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  })
+}
+
+export async function removeAssetVaultRelationship(assetId, relationshipId) {
+  return apiRequest(`/api/admin/assets/${assetId}/relationships/${relationshipId}`, { method: 'DELETE' })
+}
+
 export async function unassignAssetVaultAsset(assetId, assignmentId) {
   return apiRequest(`/api/admin/assets/${assetId}/assignments/${assignmentId}`, {
     method: 'DELETE',
@@ -1481,5 +1526,9 @@ export async function unassignAssetVaultAsset(assetId, assignmentId) {
 
 export function getAssetVaultDownloadUrl(assetId) {
   return `${API_BASE_URL}/api/admin/assets/${assetId}/download`
+}
+
+export function getAssetVaultPreviewUrl(assetId) {
+  return `${API_BASE_URL}/api/admin/assets/${assetId}/preview`
 }
 // phase-26-asset-vault-api-end

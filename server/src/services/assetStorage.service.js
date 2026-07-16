@@ -30,6 +30,23 @@ const allowedMimeTypes = new Set([
   'video/webm',
 ])
 
+const previewableMimeTypes = new Set([
+  'application/pdf',
+  'image/jpeg',
+  'image/png',
+  'image/webp',
+  'image/gif',
+  'audio/mpeg',
+  'audio/mp4',
+  'audio/wav',
+  'audio/x-wav',
+  'audio/webm',
+  'video/mp4',
+  'video/webm',
+  'text/plain',
+  'text/csv',
+])
+
 function safeSegment(value, fallback = 'file') {
   const normalized = String(value || '')
     .normalize('NFKD')
@@ -233,6 +250,22 @@ async function readObject(input) {
   return fs.readFile(localPathForKey(storageKey))
 }
 
+async function getObjectStream(input) {
+  const storageDriver = input.storageDriver || input.storage_driver
+  const storageKey = input.storageKey || input.storage_key
+  if (storageDriver === 's3') {
+    const response = await s3Request({ method: 'GET', storageKey })
+    if (!response.body) throw new Error('Object storage returned an empty response.')
+    return Readable.fromWeb(response.body)
+  }
+
+  return require('fs').createReadStream(localPathForKey(storageKey))
+}
+
+function canPreviewAsset(input) {
+  return previewableMimeTypes.has(String(input?.mime_type || input?.mimeType || '').toLowerCase())
+}
+
 async function deleteObject(input) {
   const storageDriver = input.storageDriver || input.storage_driver
   const storageKey = input.storageKey || input.storage_key
@@ -296,15 +329,20 @@ function getStorageStatus() {
       ? Boolean(env.assetStorageDir)
       : Boolean(env.assetS3Endpoint && env.assetS3Bucket && env.assetS3AccessKeyId && env.assetS3SecretAccessKey),
     privateDelivery: 'authenticated_proxy',
+    accessGrants: 'short_lived_scoped',
+    malwareScanner: env.assetMalwareScanner,
   }
 }
 
 module.exports = {
   allowedMimeTypes,
   bufferToStream,
+  canPreviewAsset,
   collectRequestBuffer,
   deleteObject,
   getStorageStatus,
+  getObjectStream,
+  previewableMimeTypes,
   readObject,
   safeSegment,
   validateUpload,

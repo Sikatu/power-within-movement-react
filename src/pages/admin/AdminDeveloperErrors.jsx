@@ -6,9 +6,9 @@ import {
   deleteDeveloperError,
   getDeveloperErrorCenter,
   runDeveloperErrorChecks,
-  saveDeveloperErrorSettings,
   updateDeveloperErrorStatus,
 } from '../../lib/nativeApi'
+import { buildDeveloperErrorCopy } from '../../lib/safeTechnicalCopy.js'
 
 
 const statusOptions = ['open', 'investigating', 'resolved', 'ignored']
@@ -37,35 +37,12 @@ function buildQuery(filters) {
   return params.toString()
 }
 
-const monitoringOptions = [
-  {
-    key: 'enabled',
-    title: 'Error Center enabled',
-    description: 'Capture and organize production issues in this private workspace.',
-  },
-  {
-    key: 'frontendCaptureEnabled',
-    title: 'Frontend browser capture',
-    description: 'Record safe client-side crashes without exposing private information.',
-  },
-  {
-    key: 'uptimeChecksEnabled',
-    title: 'Automated uptime checks',
-    description: 'Monitor the public site, portals, and backend health automatically.',
-  },
-  {
-    key: 'criticalNotificationsEnabled',
-    title: 'Critical developer alerts',
-    description: 'Notify active developers when a high or critical issue is detected.',
-  },
-]
-
 export default function AdminDeveloperErrors({ embedded = false }) {
   const confirmAction = useAdminConfirm()
   const [snapshot, setSnapshot] = useState(null)
   const [selectedId, setSelectedId] = useState('')
   const [filters, setFilters] = useState({ status: '', severity: '', source: '', search: '' })
-  const [settingsDraft, setSettingsDraft] = useState(null)
+  const [monitoringSettings, setMonitoringSettings] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
   const [isWorking, setIsWorking] = useState(false)
   const [error, setError] = useState('')
@@ -78,7 +55,7 @@ export default function AdminDeveloperErrors({ embedded = false }) {
     try {
       const result = await getDeveloperErrorCenter(buildQuery(filters))
       setSnapshot(result)
-      setSettingsDraft((current) => current || result.settings)
+      setMonitoringSettings(result.settings)
       const loadedErrors = result.errors || []
       setSelectedId((current) => (
         loadedErrors.some((item) => item.id === current)
@@ -108,6 +85,33 @@ export default function AdminDeveloperErrors({ embedded = false }) {
     setFilters({ status: '', severity: '', source: '', search: '' })
   }
 
+  const copySelected = async (kind) => {
+    const copy = buildDeveloperErrorCopy(selected, kind)
+    if (!copy) return
+
+    try {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(copy)
+      } else {
+        const field = document.createElement('textarea')
+        field.value = copy
+        field.setAttribute('readonly', '')
+        field.style.position = 'fixed'
+        field.style.opacity = '0'
+        document.body.appendChild(field)
+        field.select()
+        const copied = document.execCommand('copy')
+        field.remove()
+        if (!copied) throw new Error('Clipboard unavailable')
+      }
+      setError('')
+      setNotice(`${kind === 'stack' ? 'Stack trace' : kind === 'message' ? 'Message' : 'Error summary'} copied with sensitive values redacted.`)
+    } catch {
+      setNotice('')
+      setError('Clipboard access was unavailable. Try again from a secure browser window.')
+    }
+  }
+
   const act = async (callback, successMessage) => {
     setIsWorking(true)
     setError('')
@@ -135,14 +139,14 @@ export default function AdminDeveloperErrors({ embedded = false }) {
               </div>
             </div>
 
-            {settingsDraft && (
+            {monitoringSettings && (
               <div className="error-center-health-strip" aria-label="Monitoring status">
-                <span className={settingsDraft.enabled ? 'is-active' : 'is-paused'}>
+                <span className={monitoringSettings.enabled ? 'is-active' : 'is-paused'}>
                   <i aria-hidden="true" />
-                  {settingsDraft.enabled ? 'Monitoring active' : 'Monitoring paused'}
+                  {monitoringSettings.enabled ? 'Monitoring active' : 'Monitoring paused'}
                 </span>
-                <span>Checks every {settingsDraft.uptimeIntervalMinutes} min</span>
-                <span>{settingsDraft.retentionDays}-day retention</span>
+                <span>Checks every {monitoringSettings.uptimeIntervalMinutes} min</span>
+                <span>{monitoringSettings.retentionDays}-day retention</span>
               </div>
             )}
           </div>
@@ -353,6 +357,12 @@ export default function AdminDeveloperErrors({ embedded = false }) {
 
                 <p className="error-center-message">{selected.message}</p>
 
+                <div className="error-center-copy-actions" aria-label="Copy safe technical details">
+                  <button type="button" onClick={() => copySelected('summary')}>Copy summary</button>
+                  <button type="button" onClick={() => copySelected('message')}>Copy message</button>
+                  <button type="button" onClick={() => copySelected('stack')} disabled={!selected.stackTrace}>Copy stack trace</button>
+                </div>
+
                 <dl className="error-center-facts">
                   <div><dt>Source</dt><dd>{label(selected.source)}</dd></div>
                   <div><dt>Route</dt><dd>{selected.method ? `${selected.method} ` : ''}{selected.route || 'Not available'}</dd></div>
@@ -420,127 +430,6 @@ export default function AdminDeveloperErrors({ embedded = false }) {
         </div>
       )}
 
-      {settingsDraft && (
-        <details className="error-center-settings">
-          <summary className="error-center-section-heading error-center-settings-heading">
-            <div>
-              <p className="eyebrow">Detection policy</p>
-              <h2>Monitoring configuration</h2>
-              <p>Capture rules, alert behavior, retention, and automated check cadence.</p>
-            </div>
-            <span className={`error-center-monitoring-badge ${settingsDraft.enabled ? 'is-active' : 'is-paused'}`}>
-              {settingsDraft.enabled ? 'Monitoring on' : 'Monitoring paused'}
-            </span>
-          </summary>
-
-          <div className="error-center-settings-body">
-          <div className="error-center-settings-layout">
-            <div className="error-center-settings-panel">
-              <div className="error-center-panel-heading">
-                <p className="eyebrow">Capture & Alerts</p>
-                <h3>What the system watches</h3>
-              </div>
-
-              <div className="error-center-toggle-grid">
-                {monitoringOptions.map(({ key, title, description }) => (
-                  <label className="error-center-toggle" key={key}>
-                    <input
-                      type="checkbox"
-                      checked={Boolean(settingsDraft[key])}
-                      onChange={(event) => setSettingsDraft((current) => ({
-                        ...current,
-                        [key]: event.target.checked,
-                      }))}
-                    />
-                    <span>
-                      <strong>{title}</strong>
-                      <small>{description}</small>
-                    </span>
-                  </label>
-                ))}
-              </div>
-            </div>
-
-            <div className="error-center-settings-panel">
-              <div className="error-center-panel-heading">
-                <p className="eyebrow">Retention & Timing</p>
-                <h3>Monitoring cadence</h3>
-              </div>
-
-              <div className="error-center-field-grid">
-                <label>
-                  <span>Retention days</span>
-                  <small>Resolved and ignored records are eligible for cleanup after this period.</small>
-                  <div className="error-center-input-with-suffix">
-                    <input
-                      type="number"
-                      min="7"
-                      max="365"
-                      value={settingsDraft.retentionDays}
-                      onChange={(event) => setSettingsDraft((current) => ({
-                        ...current,
-                        retentionDays: Number(event.target.value),
-                      }))}
-                    />
-                    <span>days</span>
-                  </div>
-                </label>
-                <label>
-                  <span>Uptime interval</span>
-                  <small>How frequently automated availability checks should run.</small>
-                  <div className="error-center-input-with-suffix">
-                    <input
-                      type="number"
-                      min="1"
-                      max="60"
-                      value={settingsDraft.uptimeIntervalMinutes}
-                      onChange={(event) => setSettingsDraft((current) => ({
-                        ...current,
-                        uptimeIntervalMinutes: Number(event.target.value),
-                      }))}
-                    />
-                    <span>minutes</span>
-                  </div>
-                </label>
-                <label>
-                  <span>Slow-response threshold</span>
-                  <small>Responses slower than this threshold are recorded for review.</small>
-                  <div className="error-center-input-with-suffix">
-                    <input
-                      type="number"
-                      min="500"
-                      max="30000"
-                      step="100"
-                      value={settingsDraft.slowResponseThresholdMs}
-                      onChange={(event) => setSettingsDraft((current) => ({
-                        ...current,
-                        slowResponseThresholdMs: Number(event.target.value),
-                      }))}
-                    />
-                    <span>ms</span>
-                  </div>
-                </label>
-              </div>
-            </div>
-          </div>
-
-          <div className="error-center-settings-footer">
-            <p>Settings apply only to the private developer monitor and never change client-facing content.</p>
-            <button
-              className="btn primary"
-              type="button"
-              disabled={isWorking}
-              onClick={() => act(
-                () => saveDeveloperErrorSettings(settingsDraft),
-                'Monitoring settings saved.',
-              )}
-            >
-              Save monitoring settings
-            </button>
-          </div>
-          </div>
-        </details>
-      )}
       </div>
   )
 
