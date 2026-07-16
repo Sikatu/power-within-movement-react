@@ -11981,3 +11981,162 @@ body.admin-app-mode .circle-admin-page{width:100%;max-width:none;padding:0 0 5re
 /* phase-32-daily-workflow-streamlining-start */body.admin-app-mode .studio-focus-actions-v4{flex-wrap:wrap;gap:8px;margin-top:14px;display:flex}body.admin-app-mode .studio-focus-actions-v4 a{min-height:34px;color:var(--admin-burgundy);border:1px solid #7c514b29;border-radius:999px;justify-content:center;align-items:center;padding:0 12px;font-size:10px;font-weight:800;display:inline-flex}body.admin-app-mode .studio-focus-actions-v4 a:first-child{background:var(--admin-burgundy);color:#fffaf6;border-color:#0000}body.admin-app-mode .studio-metrics-v3>a{border:1px solid var(--admin-border);border-radius:var(--admin-radius);background:var(--admin-surface-soft);min-width:0;color:inherit;padding:16px 18px;display:block;box-shadow:0 24px 48px -44px #3a25286b}body.admin-app-mode .studio-metrics-v3>a>span{color:var(--admin-gold-deep);letter-spacing:.15em;text-transform:uppercase;margin-bottom:6px;font-size:8.5px;font-weight:800;display:block}body.admin-app-mode .studio-metrics-v3>a>strong{color:var(--admin-ink);margin-bottom:4px;font-family:Cormorant Garamond,Georgia,serif;font-size:clamp(1.8rem,3vw,2.35rem);font-weight:550;line-height:.95;display:block}body.admin-app-mode .studio-metrics-v3>a>p{color:var(--admin-muted);margin:0;font-size:10.5px}body.admin-app-mode .pwc-scheduler-page{gap:18px}body.admin-app-mode .pwc-scheduler-hero{border-radius:24px;align-items:center;padding:clamp(22px,3vw,32px)}body.admin-app-mode .pwc-scheduler-hero h1{font-size:clamp(46px,5vw,66px)}body.admin-app-mode .pwc-scheduler-hero-copy>p:not(.eyebrow){max-width:620px;margin-top:12px;font-size:13px;line-height:1.6}body.admin-app-mode .pwc-scheduler-view-tabs{border:1px solid var(--scheduler-line);background:#fffcf9ad;border-radius:18px;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;padding:8px;display:grid;box-shadow:0 18px 40px -38px #3a25287a}body.admin-app-mode .pwc-scheduler-view-tabs button{min-width:0;color:var(--admin-body);text-align:left;background:0 0;border:1px solid #0000;border-radius:13px;gap:3px;padding:12px 14px;display:grid}body.admin-app-mode .pwc-scheduler-view-tabs button:hover{border-color:var(--scheduler-line);background:#ffffffb8}body.admin-app-mode .pwc-scheduler-view-tabs button.is-active{background:var(--admin-burgundy);color:#fffaf6;border-color:#7c514b38;box-shadow:0 14px 30px -22px #3a2528c2}body.admin-app-mode .pwc-scheduler-view-tabs span{font-size:12px;font-weight:850}body.admin-app-mode .pwc-scheduler-view-tabs small{color:var(--admin-muted);text-overflow:ellipsis;white-space:nowrap;font-size:9.5px;overflow:hidden}body.admin-app-mode .pwc-scheduler-view-tabs button.is-active small{color:#fffaf6a8}body.admin-app-mode .pwc-scheduler-metrics{gap:10px}body.admin-app-mode .pwc-scheduler-metrics article{border-radius:18px;min-height:92px;padding:15px 17px}body.admin-app-mode .pwc-scheduler-metrics strong{margin:7px 8px 0 0;font-size:32px;display:inline-block}body.admin-app-mode .pwc-scheduler-metrics small{margin-top:0;font-size:10px;display:inline}body.admin-app-mode .admin-inbox__metrics{gap:9px;margin-bottom:12px}body.admin-app-mode .admin-inbox__metrics:where(article,button){border:1px solid var(--admin-border);min-width:0;min-height:62px;color:inherit;text-align:left;background:#fffcf9cc;border-radius:15px;justify-content:space-between;align-items:center;gap:12px;padding:12px 14px;display:flex;position:relative;overflow:hidden;box-shadow:0 18px 38px -38px #3a25288a}body.admin-app-mode .admin-inbox__metrics button:hover,body.admin-app-mode .admin-inbox__metrics button.is-attention{background:#c8a96a17;border-color:#a8793952}body.admin-app-mode .admin-inbox__metrics:where(article,button)>span{color:var(--admin-gold-deep);letter-spacing:.12em;text-transform:uppercase;margin:0;font-size:9px;font-weight:800}body.admin-app-mode .admin-inbox__metrics:where(article,button)>strong{color:var(--admin-ink);font-family:Cormorant Garamond,Georgia,serif;font-size:28px;line-height:1}body.admin-app-mode .admin-inbox__toolbar,body.admin-app-mode .client-directory-toolbar-v4{border:1px solid var(--admin-border);background:#fffcf9c2;align-items:center;gap:9px;padding:10px;display:flex}body.admin-app-mode .admin-inbox__toolbar{border-radius:16px;margin-bottom:8px}body.admin-app-mode .admin-inbox__toolbar .admin-inbox__search,body.admin-app-mode .client-directory-toolbar-v4 .client-circle-search-v2{flex:auto;min-width:0}body.admin-app-mode .admin-inbox__toolbar input,body.admin-app-mode .client-directory-toolbar-v4 input{border:1px solid var(--admin-border);background:#ffffffd1;border-radius:11px;width:100%;min-height:40px;padding:0 13px}body.admin-app-mode .admin-inbox__toolbar .btn{min-height:40px;padding-inline:13px}body.admin-app-mode .admin-inbox__toolbar .btn.is-active{background:#7c514b17;border-color:#7c514b47}body.admin-app-mode .admin-inbox__filters{grid-template-columns:repeat(2,minmax(0,1fr));margin-bottom:8px;padding:12px}body.admin-app-mode .admin-inbox__workspace{height:min(720px,100vh - 118px);min-height:610px}body.admin-app-mode .client-directory-toolbar-v4{border-width:0 0 1px;border-radius:0;padding:11px 22px}body.admin-app-mode .client-directory-toolbar-actions-v4{flex:none;gap:8px;display:flex}body.admin-app-mode .client-directory-toolbar-actions-v4 button{border:1px solid var(--admin-border);min-height:40px;color:var(--admin-burgundy);background:#fffcf9c7;border-radius:11px;padding:0 13px;font-size:10.5px;font-weight:800}body.admin-app-mode .client-directory-toolbar-actions-v4 button.is-active{background:#7c514b17;border-color:#7c514b47}body.admin-app-mode .client-circle-page-v2.admin-clients-rework-v1 .client-advanced-filters-v4{grid-template-columns:repeat(3,minmax(0,1fr));padding-block:12px}@media (width<=900px){body.admin-app-mode .pwc-scheduler-view-tabs{grid-template-columns:1fr}body.admin-app-mode .pwc-scheduler-view-tabs small{white-space:normal}}@media (width<=700px){body.admin-app-mode .studio-metrics-v3,body.admin-app-mode .pwc-scheduler-metrics,body.admin-app-mode .admin-inbox__metrics{grid-template-columns:repeat(2,minmax(0,1fr))}body.admin-app-mode .admin-inbox__toolbar,body.admin-app-mode .client-directory-toolbar-v4{flex-wrap:wrap;align-items:stretch}body.admin-app-mode .admin-inbox__toolbar:where(.admin-inbox__search),body.admin-app-mode .client-directory-toolbar-v4 .client-circle-search-v2{flex-basis:100%}body.admin-app-mode .client-circle-page-v2.admin-clients-rework-v1 .client-advanced-filters-v4,body.admin-app-mode .admin-inbox__filters{grid-template-columns:1fr}}/* phase-32-daily-workflow-streamlining-end */
 
 /* phase-35-communication-streamlining-start */.pwc-phase35-primary-tabs{background:#fffcf9eb;border:1px solid #5b373f24;border-radius:.9rem;grid-template-columns:repeat(3,minmax(0,1fr));gap:.35rem;margin:0 0 1rem;padding:.35rem;display:grid}.pwc-phase35-primary-tabs>button{color:#725f63;min-height:2.75rem;font:inherit;cursor:pointer;background:0 0;border:0;border-radius:.65rem;padding:.55rem .8rem;font-size:.66rem;font-weight:800}.pwc-phase35-primary-tabs>button.is-active{color:#fff;background:#512631;box-shadow:0 8px 20px #49232d24}.pwc-phase35-primary-tabs>button span{background:#ffffff2e;border-radius:999px;place-items:center;min-width:1.25rem;min-height:1.25rem;margin-left:.35rem;padding:0 .3rem;font-size:.52rem;display:inline-grid}.pwc-letters28-tabs.pwc-phase35-primary-tabs{grid-template-columns:repeat(3,minmax(0,1fr))}.pwc-phase35-letter-library,.pwc-phase35-delivery-stack,.pwc-phase35-record-workspace{gap:.8rem;display:grid}.pwc-phase35-taskbar,.pwc-phase35-record-header{background:#fffcf9f0;border:1px solid #5b373f24;border-radius:1rem;justify-content:space-between;align-items:center;gap:1rem;padding:1rem 1.1rem;display:flex}.pwc-phase35-taskbar :is(p,h2),.pwc-phase35-record-header :is(p,h2){margin:0}.pwc-phase35-taskbar h2,.pwc-phase35-record-header h2{margin-top:.18rem;font-family:Georgia,serif;font-size:1.45rem;font-weight:500}.pwc-phase35-taskbar__actions,.pwc-phase35-directory-actions{justify-content:flex-end;align-items:center;gap:.5rem;display:flex}.pwc-phase35-view-switch{background:#f8f2ed;border:1px solid #5b373f24;border-radius:.7rem;align-items:center;gap:.2rem;padding:.22rem;display:inline-flex}.pwc-phase35-view-switch>button,.pwc-phase35-primary-action,.pwc-phase35-directory-actions>button,.pwc-phase35-record-header>button{color:#512631;min-height:2.35rem;font:inherit;cursor:pointer;background:0 0;border:0;border-radius:.55rem;padding:.45rem .75rem;font-size:.58rem;font-weight:800}.pwc-phase35-view-switch>button.is-active,.pwc-phase35-primary-action,.pwc-phase35-directory-actions>button{color:#fff;background:#512631}.pwc-phase35-create-panel{justify-self:end;width:min(100%,48rem)}.pwc-phase35-audience-ready{justify-content:space-between;align-items:center;gap:1rem;padding:1rem 1.1rem;display:flex}.pwc-phase35-audience-ready :is(p,h2){margin:0}.pwc-phase35-audience-ready h2{margin:.2rem 0;font-size:1rem}.pwc-phase35-audience-ready p:last-child{color:#7d6a6f;font-size:.6rem}.pwc-phase35-audience-ready>a{color:#512631;flex:none;font-size:.62rem;font-weight:800}.pwc-phase35-directory-actions>span{color:#806d70;font-size:.58rem;font-weight:700}.pwc-phase35-record-header{justify-content:flex-start}.pwc-phase35-record-header>div{flex:1;min-width:0}.pwc-phase35-record-header>div>p:last-child{color:#7d6a6f;margin-top:.15rem;font-size:.58rem}.pwc-phase35-record-tabs{justify-self:start}.pwc-phase35-wide-card{grid-column:1/-1}.session-change-admin__workbench{grid-template-columns:minmax(14rem,.42fr) minmax(0,1fr);align-items:start;gap:.75rem;display:grid}.session-change-admin__queue{background:#fffcf9f0;border:1px solid #5b373f24;border-radius:1rem;overflow:hidden}.session-change-admin__queue>header{border-bottom:1px solid #5b373f1f;justify-content:space-between;align-items:center;gap:.5rem;padding:.8rem;font-size:.64rem;display:flex}.session-change-admin__queue>header span{color:#512631;background:#f1e7df;border-radius:999px;place-items:center;min-width:1.5rem;min-height:1.5rem;font-size:.55rem;font-weight:800;display:grid}.session-change-admin__queue>div{max-height:38rem;display:grid;overflow:auto}.session-change-admin__queue button{color:#3f2930;width:100%;font:inherit;text-align:left;cursor:pointer;background:0 0;border:0;border-bottom:1px solid #5b373f1a;justify-items:start;gap:.28rem;padding:.75rem .8rem;display:grid}.session-change-admin__queue button:hover,.session-change-admin__queue button.is-selected{background:#f8f0ea}.session-change-admin__queue button.is-selected{box-shadow:inset 3px 0 #b58a3d}.session-change-admin__queue button>strong{font-size:.67rem}.session-change-admin__queue button>small{color:#806d70;font-size:.54rem}.session-change-card--focused{margin:0}@media (width<=860px){.session-change-admin__workbench{grid-template-columns:1fr}.session-change-admin__queue>div{grid-template-columns:repeat(auto-fit,minmax(13rem,1fr));max-height:none}}@media (width<=640px){.pwc-phase35-primary-tabs{display:flex;overflow-x:auto}.pwc-phase35-primary-tabs>button{flex:1 0 auto}.pwc-phase35-taskbar,.pwc-phase35-audience-ready,.pwc-phase35-record-header{flex-direction:column;align-items:stretch}.pwc-phase35-taskbar__actions,.pwc-phase35-directory-actions{flex-wrap:wrap;justify-content:flex-start;align-items:stretch}.pwc-phase35-view-switch{max-width:100%;overflow-x:auto}.pwc-phase35-record-tabs{justify-self:stretch}}/* phase-35-communication-streamlining-end */
+
+/* phase-37-founder-workflow-streamlining-start */
+body.admin-app-mode .founder-home__task-nav {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.5rem;
+  margin: 0 0 1rem;
+  padding: 0.45rem;
+  border: 1px solid var(--admin-border);
+  border-radius: 1.1rem;
+  background: rgba(255, 252, 249, 0.76);
+  box-shadow: var(--admin-shadow);
+}
+
+body.admin-app-mode .founder-home__task-nav button {
+  display: grid;
+  gap: 0.2rem;
+  min-width: 0;
+  min-height: 3.8rem;
+  padding: 0.7rem 0.85rem;
+  border: 1px solid transparent;
+  border-radius: 0.8rem;
+  background: transparent;
+  color: var(--admin-body);
+  text-align: left;
+  cursor: pointer;
+}
+
+body.admin-app-mode .founder-home__task-nav button:hover {
+  border-color: var(--admin-border);
+  background: rgba(255, 255, 255, 0.6);
+}
+
+body.admin-app-mode .founder-home__task-nav button.is-active {
+  border-color: rgba(77, 40, 49, 0.25);
+  background: linear-gradient(155deg, #4d2831, #38202a);
+  color: #fdf6f0;
+  box-shadow: 0 18px 35px -26px rgba(58, 37, 40, 0.9);
+}
+
+body.admin-app-mode .founder-home__task-nav strong {
+  font-size: 0.7rem;
+}
+
+body.admin-app-mode .founder-home__task-nav small {
+  overflow: hidden;
+  color: var(--admin-muted);
+  font-size: 0.55rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+body.admin-app-mode .founder-home__task-nav button.is-active small {
+  color: rgba(253, 246, 240, 0.62);
+}
+
+body.admin-app-mode .founder-home__grid > .founder-home__panel[hidden],
+body.admin-app-mode .founder-hours__layout > [hidden] {
+  display: none;
+}
+
+body.admin-app-mode .founder-home__focus-loading {
+  display: grid;
+  min-height: 13rem;
+  place-items: center;
+  padding: 2rem;
+  border: 1px dashed var(--admin-border);
+  border-radius: 1.1rem;
+  color: var(--admin-muted);
+  background: rgba(255, 252, 249, 0.62);
+  font-size: 0.7rem;
+}
+
+body.admin-app-mode .founder-hours__task-nav {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.65rem;
+  margin-bottom: 1rem;
+}
+
+body.admin-app-mode .founder-hours__task-nav button {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+  min-height: 4.4rem;
+  padding: 0.75rem 0.9rem;
+  border: 1px solid var(--admin-border);
+  border-radius: 1rem;
+  background: rgba(255, 252, 249, 0.74);
+  color: var(--admin-body);
+  text-align: left;
+  cursor: pointer;
+  box-shadow: var(--admin-shadow);
+}
+
+body.admin-app-mode .founder-hours__task-nav button > span {
+  display: grid;
+  width: 2rem;
+  height: 2rem;
+  place-items: center;
+  border-radius: 50%;
+  background: rgba(200, 169, 106, 0.14);
+  color: var(--admin-gold-deep);
+  font-size: 0.65rem;
+  font-weight: 800;
+}
+
+body.admin-app-mode .founder-hours__task-nav button > div {
+  display: grid;
+  gap: 0.15rem;
+}
+
+body.admin-app-mode .founder-hours__task-nav strong {
+  color: var(--admin-ink);
+  font-size: 0.72rem;
+}
+
+body.admin-app-mode .founder-hours__task-nav small {
+  color: var(--admin-muted);
+  font-size: 0.56rem;
+}
+
+body.admin-app-mode .founder-hours__task-nav button.is-active {
+  border-color: rgba(77, 40, 49, 0.48);
+  background: rgba(77, 40, 49, 0.08);
+  box-shadow: inset 0 0 0 1px rgba(77, 40, 49, 0.08);
+}
+
+body.admin-app-mode .founder-hours__task-nav button.is-active > span {
+  background: var(--admin-burgundy);
+  color: #fff;
+}
+
+body.admin-app-mode .founder-hours__layout {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+body.admin-app-mode .founder-hours__side {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+@media (max-width: 760px) {
+  body.admin-app-mode .founder-home__task-nav {
+    display: flex;
+    overflow-x: auto;
+  }
+
+  body.admin-app-mode .founder-home__task-nav button {
+    flex: 1 0 10rem;
+  }
+
+  body.admin-app-mode .founder-hours__side,
+  body.admin-app-mode .founder-hours__task-nav {
+    grid-template-columns: 1fr;
+  }
+}
+/* phase-37-founder-workflow-streamlining-end */

@@ -361,6 +361,9 @@ export default function AdminFounderAvailability() {
   const [error, setError] = useState('')
   const [copyStatus, setCopyStatus] = useState('')
   const [copiedWeekdays, setCopiedWeekdays] = useState([])
+  const availabilityView = searchParams.get('view') === 'date' || searchParams.has('date')
+    ? 'date'
+    : 'week'
 
   const availabilityBlocks = useMemo(
     () => workspace?.availabilityBlocks || [],
@@ -587,7 +590,12 @@ export default function AdminFounderAvailability() {
 
   function chooseOverrideDate(dateValue) {
     setSelectedDate(dateValue)
-    setSearchParams({ date: dateValue })
+    setSearchParams({ view: 'date', date: dateValue })
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
+  function openAvailabilityView(view) {
+    setSearchParams(view === 'date' ? { view: 'date', date: selectedDate } : { view: 'week' })
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
@@ -647,22 +655,28 @@ export default function AdminFounderAvailability() {
           </div>
         </section>
 
-        <section className="founder-hours__guide" aria-label="How availability works">
-          <div>
+        <nav className="founder-hours__task-nav" aria-label="Availability tasks" role="tablist">
+          <button
+            type="button"
+            role="tab"
+            aria-selected={availabilityView === 'week'}
+            className={availabilityView === 'week' ? 'is-active' : ''}
+            onClick={() => openAvailabilityView('week')}
+          >
             <span>1</span>
-            <div>
-              <strong>Set your usual week</strong>
-              <small>Choose the days and hours you normally meet with clients.</small>
-            </div>
-          </div>
-          <div>
+            <div><strong>Usual week</strong><small>Set the days and hours you normally meet.</small></div>
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={availabilityView === 'date'}
+            className={availabilityView === 'date' ? 'is-active' : ''}
+            onClick={() => openAvailabilityView('date')}
+          >
             <span>2</span>
-            <div>
-              <strong>Change one date when life shifts</strong>
-              <small>Take a day off or open different hours without changing every week.</small>
-            </div>
-          </div>
-        </section>
+            <div><strong>Change one date</strong><small>Take a day off or use different hours once.</small></div>
+          </button>
+        </nav>
 
         <section className="founder-hours__summary" aria-label="Availability overview">
           <article>
@@ -723,6 +737,7 @@ export default function AdminFounderAvailability() {
           <form
             className="founder-hours__card founder-hours__weekly"
             onSubmit={handleSaveWeekly}
+            hidden={availabilityView !== 'week'}
           >
             <div className="founder-hours__card-heading">
               <div>
@@ -920,7 +935,7 @@ export default function AdminFounderAvailability() {
             </div>
           </form>
 
-          <aside className="founder-hours__side">
+          <aside className="founder-hours__side" hidden={availabilityView !== 'date'}>
             <form
               className="founder-hours__card founder-hours__override"
               onSubmit={handleSaveDate}

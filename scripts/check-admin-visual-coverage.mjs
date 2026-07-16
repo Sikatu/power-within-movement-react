@@ -50,7 +50,7 @@ for (const selector of requiredSelectors) {
 // Normalize Windows CRLF so the source-size guard is platform-independent.
 const normalizedStylesheet = stylesheet.replace(/\r\n/g, '\n')
 const stylesheetBytes = Buffer.byteLength(normalizedStylesheet, 'utf8')
-const stylesheetBudget = 532 * 1024
+const stylesheetBudget = 540 * 1024
 if (stylesheetBytes > stylesheetBudget) {
   failures.push(
     `AdminFreshUI.css exceeds the ${stylesheetBudget / 1024} KiB source budget (${Math.ceil(stylesheetBytes / 1024)} KiB)`,
