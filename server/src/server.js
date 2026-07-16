@@ -5,6 +5,7 @@ const { startAutomationDispatcher } = require('./services/automationStudio.servi
 const { startBookingCommunicationDispatcher } = require('./services/bookingOnboarding.service')
 const { pool } = require('./db/pool')
 const { startLetterBroadcastDispatcher } = require('./services/letterBroadcast.service')
+const { startFounderTranscriptionDispatcher } = require('./services/founderTranscription.service')
 const {
   installProcessErrorHandlers,
   startDeveloperErrorMonitor,
@@ -18,5 +19,6 @@ app.listen(env.port, () => {
   startAutomationDispatcher()
   startBookingCommunicationDispatcher()
   startLetterBroadcastDispatcher(pool)
+  startFounderTranscriptionDispatcher(pool)
   startDeveloperErrorMonitor()
 })

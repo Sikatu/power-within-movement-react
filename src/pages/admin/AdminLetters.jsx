@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import AdminFrame from '../../components/admin/AdminFrame.jsx'
 import { useAdminConfirm } from '../../components/admin/AdminConfirmContext.js'
 import LetterBlockSettings from '../../components/admin/LetterBlockSettings.jsx'
@@ -120,6 +120,7 @@ function clone(value) {
 
 export default function AdminLetters() {
   const requestConfirm = useAdminConfirm()
+  const [searchParams] = useSearchParams()
   const [activeTab, setActiveTab] = useState('letters')
   const [overview, setOverview] = useState({ metrics: {}, letters: [], templates: [], broadcasts: [] })
   const [audience, setAudience] = useState({ metrics: {}, tags: [], segments: [], sources: [] })
@@ -149,6 +150,7 @@ export default function AdminLetters() {
   const editVersionRef = useRef(0)
   const audiencePreviewSequenceRef = useRef(0)
   const audiencePreviewTimerRef = useRef(null)
+  const requestedLetterRef = useRef('')
 
   const loadWorkspace = useCallback(async ({ preserveMessages = false } = {}) => {
     setLoading(true)
@@ -187,7 +189,7 @@ export default function AdminLetters() {
   const sentBroadcasts = (overview.broadcasts || []).filter((broadcast) => ['sent', 'partial'].includes(broadcast.status))
   const readOnly = ['scheduled', 'sent', 'sending', 'archived'].includes(working?.status)
 
-  async function openLetter(letterId) {
+  const openLetter = useCallback(async (letterId) => {
     setBusy('open-letter')
     setError('')
     try {
@@ -208,7 +210,14 @@ export default function AdminLetters() {
     } finally {
       setBusy('')
     }
-  }
+  }, [])
+
+  useEffect(() => {
+    const requestedLetterId = searchParams.get('letter') || ''
+    if (loading || !requestedLetterId || requestedLetterRef.current === requestedLetterId) return
+    requestedLetterRef.current = requestedLetterId
+    openLetter(requestedLetterId)
+  }, [loading, openLetter, searchParams])
 
   const persistWorking = useCallback(async (reason = 'autosave') => {
     if (!working || readOnly) return null

@@ -116,6 +116,12 @@ const env = {
   assetAccessGrantTtlSeconds: Math.min(Math.max(Number(process.env.ASSET_ACCESS_GRANT_TTL_SECONDS || 300), 30), 900),
   assetMalwareScanner: String(process.env.ASSET_MALWARE_SCANNER || 'disabled').trim().toLowerCase(),
 
+  founderTranscriptionProvider: String(process.env.FOUNDER_TRANSCRIPTION_PROVIDER || 'disabled').trim().toLowerCase(),
+  founderTranscriptionApiUrl: process.env.FOUNDER_TRANSCRIPTION_API_URL || '',
+  founderTranscriptionApiKey: process.env.FOUNDER_TRANSCRIPTION_API_KEY || '',
+  founderTranscriptionModel: process.env.FOUNDER_TRANSCRIPTION_MODEL || '',
+  founderTranscriptionTimeoutMs: parseBoundedNumber(process.env.FOUNDER_TRANSCRIPTION_TIMEOUT_MS, 120000, 5000, 600000),
+
   canonicalDeveloperEmail:
     process.env.CANONICAL_DEVELOPER_EMAIL || 'darelle.grande.mva@gmail.com',
   canonicalOwnerEmail:

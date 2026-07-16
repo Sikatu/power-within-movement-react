@@ -18,6 +18,7 @@ const orderedMigrations = [
   'db:migrate-asset-vault',
   'db:migrate-newsletter-audience',
   'db:migrate-letter-builder',
+  'db:migrate-founder-command-center',
   'db:migrate-learning-library',
   'db:migrate-membership-circle',
   'db:migrate-circle-community',

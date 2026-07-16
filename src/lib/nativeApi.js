@@ -516,6 +516,76 @@ export async function updateAdminFounderAvailabilityException(exceptionId, paylo
   })
 }
 
+// phase-29-founder-command-center-api-start
+export async function getFounderCommandCenter(filters = {}) {
+  const search = new URLSearchParams()
+  if (filters.search) search.set('search', filters.search)
+  if (filters.status) search.set('status', filters.status)
+  const query = search.toString()
+  return apiRequest(`/api/admin/founder-tools/overview${query ? `?${query}` : ''}`)
+}
+
+export async function saveFounderToolPreferences(payload) {
+  return apiRequest('/api/admin/founder-tools/preferences', {
+    method: 'PATCH',
+    body: JSON.stringify(payload),
+  })
+}
+
+export async function getFounderRecording(recordingId) {
+  return apiRequest(`/api/admin/founder-tools/recordings/${recordingId}`)
+}
+
+export async function saveFounderRecording(recordingId, payload) {
+  return apiRequest(`/api/admin/founder-tools/recordings/${recordingId}`, {
+    method: 'PATCH',
+    body: JSON.stringify(payload),
+  })
+}
+
+export async function requestFounderTranscription(recordingId) {
+  return apiRequest(`/api/admin/founder-tools/recordings/${recordingId}/transcription`, { method: 'POST' })
+}
+
+export async function getFounderRecordingAccess(recordingId, purpose) {
+  const response = await apiRequest(`/api/admin/founder-tools/recordings/${recordingId}/access`, {
+    method: 'POST',
+    body: JSON.stringify({ purpose }),
+  })
+  return { ...response, url: `${API_BASE_URL}${response.path}` }
+}
+
+export async function assignFounderRecording(recordingId, clientProfileId) {
+  return apiRequest(`/api/admin/founder-tools/recordings/${recordingId}/assignments`, {
+    method: 'POST',
+    body: JSON.stringify({ clientProfileId }),
+  })
+}
+
+export async function unassignFounderRecording(recordingId, assignmentId) {
+  return apiRequest(`/api/admin/founder-tools/recordings/${recordingId}/assignments/${assignmentId}`, { method: 'DELETE' })
+}
+
+export async function reuseFounderTranscriptInLetter(recordingId) {
+  return apiRequest(`/api/admin/founder-tools/recordings/${recordingId}/reuse-letter`, { method: 'POST' })
+}
+
+export async function archiveFounderRecording(recordingId) {
+  return apiRequest(`/api/admin/founder-tools/recordings/${recordingId}/archive`, { method: 'POST' })
+}
+
+export async function restoreFounderRecording(recordingId) {
+  return apiRequest(`/api/admin/founder-tools/recordings/${recordingId}/restore`, { method: 'POST' })
+}
+
+export async function permanentlyDeleteFounderRecording(recordingId, confirmation) {
+  return apiRequest(`/api/admin/founder-tools/recordings/${recordingId}`, {
+    method: 'DELETE',
+    body: JSON.stringify({ confirmation }),
+  })
+}
+// phase-29-founder-command-center-api-end
+
 
 export async function getAdminFounderAvailability() {
   return apiRequest('/api/admin/founders-view/availability')
@@ -1427,6 +1497,40 @@ async function uploadAssetBinary(path, file, metadata = {}, options = {}) {
     })
     request.addEventListener('error', () => reject(new Error('The upload connection was interrupted.')))
     request.addEventListener('abort', () => reject(new DOMException('The upload was cancelled.', 'AbortError')))
+    options.signal?.addEventListener('abort', () => request.abort(), { once: true })
+    request.send(file)
+  })
+}
+
+export async function uploadFounderRecording(file, metadata = {}, options = {}) {
+  return new Promise((resolve, reject) => {
+    const request = new XMLHttpRequest()
+    request.open('POST', `${API_BASE_URL}/api/admin/founder-tools/recordings/upload`)
+    request.withCredentials = true
+    request.setRequestHeader('Content-Type', file.type || 'audio/webm')
+    request.setRequestHeader('X-PWC-File-Name', encodeAssetHeader(file.name))
+    request.setRequestHeader('X-PWC-Recording-Title', encodeAssetHeader(metadata.title || file.name))
+    if (metadata.notes) request.setRequestHeader('X-PWC-Recording-Notes', encodeAssetHeader(metadata.notes))
+    if (metadata.folderId) request.setRequestHeader('X-PWC-Folder-Id', metadata.folderId)
+    if (metadata.tags?.length) request.setRequestHeader('X-PWC-Tags', encodeAssetHeader(metadata.tags.join(',')))
+    request.setRequestHeader('X-PWC-Duration-Ms', String(Math.max(0, Number(metadata.durationMs || 0))))
+
+    request.upload.addEventListener('progress', (event) => {
+      if (!event.lengthComputable || typeof options.onProgress !== 'function') return
+      options.onProgress({ loaded: event.loaded, total: event.total, percent: Math.round((event.loaded / event.total) * 100) })
+    })
+    request.addEventListener('load', () => {
+      let data = null
+      try { data = request.responseText ? JSON.parse(request.responseText) : null } catch { /* non-JSON upload error */ }
+      if (request.status >= 200 && request.status < 300) {
+        options.onProgress?.({ loaded: file.size, total: file.size, percent: 100 })
+        resolve(data)
+        return
+      }
+      reject(new Error(data?.error || data?.message || `Upload failed with status ${request.status}`))
+    })
+    request.addEventListener('error', () => reject(new Error('The recording upload was interrupted.')))
+    request.addEventListener('abort', () => reject(new DOMException('The recording upload was cancelled.', 'AbortError')))
     options.signal?.addEventListener('abort', () => request.abort(), { once: true })
     request.send(file)
   })

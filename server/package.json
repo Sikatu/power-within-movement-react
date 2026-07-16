@@ -39,7 +39,8 @@
     "db:migrate:ordered": "node scripts/run-ordered-migrations.cjs",
     "db:migrate-asset-vault": "node scripts/ensure-asset-vault.cjs",
     "db:migrate-newsletter-audience": "node scripts/ensure-newsletter-audience.cjs",
-    "db:migrate-letter-builder": "node scripts/ensure-letter-builder.cjs"
+    "db:migrate-letter-builder": "node scripts/ensure-letter-builder.cjs",
+    "db:migrate-founder-command-center": "node scripts/ensure-founder-command-center.cjs"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",

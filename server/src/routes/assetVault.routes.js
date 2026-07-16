@@ -339,6 +339,27 @@ router.get('/access/:token', async (req, res, next) => {
 
 router.use(requireAssetManager)
 
+router.param('assetId', async (req, res, next, assetId) => {
+  if (req.user?.role !== 'admin') return next()
+  try {
+    const protectedResult = await pool.query(
+      `
+      SELECT EXISTS (
+        SELECT 1 FROM asset_relationships
+        WHERE asset_id = $1
+          AND context_type = 'founder_recording'
+          AND archived_at IS NULL
+      ) AS protected
+      `,
+      [assetId],
+    )
+    if (protectedResult.rows[0]?.protected) {
+      return res.status(403).json({ ok: false, error: 'Founder recordings require the owner or developer account.' })
+    }
+    return next()
+  } catch (error) { return next(error) }
+})
+
 router.get('/summary', async (req, res, next) => {
   try {
     const [countsResult, foldersResult, tagsResult] = await Promise.all([
@@ -354,22 +375,42 @@ router.get('/summary', async (req, res, next) => {
           LEFT JOIN asset_assignments assignment ON assignment.asset_id = asset.id
           GROUP BY asset.id
         ) asset_totals
-      `),
+        WHERE ($1::boolean = false OR NOT EXISTS (
+          SELECT 1 FROM asset_relationships protected_relationship
+          WHERE protected_relationship.asset_id = asset_totals.id
+            AND protected_relationship.context_type = 'founder_recording'
+            AND protected_relationship.archived_at IS NULL
+        ))
+      `, [req.user?.role === 'admin']),
       pool.query(`
-        SELECT folder.id, folder.name, folder.slug, COUNT(asset.id) FILTER (WHERE asset.status = 'active')::int AS asset_count
+        SELECT folder.id, folder.name, folder.slug, COUNT(asset.id) FILTER (
+          WHERE asset.status = 'active'
+            AND ($1::boolean = false OR NOT EXISTS (
+              SELECT 1 FROM asset_relationships protected_relationship
+              WHERE protected_relationship.asset_id = asset.id
+                AND protected_relationship.context_type = 'founder_recording'
+                AND protected_relationship.archived_at IS NULL
+            ))
+        )::int AS asset_count
         FROM asset_folders folder
         LEFT JOIN assets asset ON asset.folder_id = folder.id
         WHERE folder.archived_at IS NULL
         GROUP BY folder.id
         ORDER BY folder.name ASC
-      `),
+      `, [req.user?.role === 'admin']),
       pool.query(`
         SELECT DISTINCT unnest(tags) AS tag
-        FROM assets
-        WHERE status = 'active'
+        FROM assets asset
+        WHERE asset.status = 'active'
+          AND ($1::boolean = false OR NOT EXISTS (
+            SELECT 1 FROM asset_relationships protected_relationship
+            WHERE protected_relationship.asset_id = asset.id
+              AND protected_relationship.context_type = 'founder_recording'
+              AND protected_relationship.archived_at IS NULL
+          ))
         ORDER BY tag ASC
         LIMIT 100
-      `),
+      `, [req.user?.role === 'admin']),
     ])
 
     return res.json({
@@ -454,10 +495,16 @@ router.get('/', async (req, res, next) => {
           OR lower(asset.original_filename) LIKE '%' || lower($5) || '%'
           OR lower(COALESCE(asset.description, '')) LIKE '%' || lower($5) || '%'
         )
+        AND ($6::boolean = false OR NOT EXISTS (
+          SELECT 1 FROM asset_relationships protected_relationship
+          WHERE protected_relationship.asset_id = asset.id
+            AND protected_relationship.context_type = 'founder_recording'
+            AND protected_relationship.archived_at IS NULL
+        ))
       ORDER BY asset.updated_at DESC
       LIMIT 250
       `,
-      [status, folderId, type, tag, search],
+      [status, folderId, type, tag, search, req.user?.role === 'admin'],
     )
 
     return res.json({ ok: true, assets: result.rows })
