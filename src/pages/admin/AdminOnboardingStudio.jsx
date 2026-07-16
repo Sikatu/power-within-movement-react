@@ -98,7 +98,7 @@ function onboardingToForm(record) {
 
 export default function AdminOnboardingStudio() {
   const [studio, setStudio] = useState(null)
-  const [activeTab, setActiveTab] = useState('templates')
+  const [activeTab, setActiveTab] = useState('clients')
   const [selectedTemplateId, setSelectedTemplateId] = useState('')
   const [templateForm, setTemplateForm] = useState({ ...emptyTemplate, fields: [emptyField(1)] })
   const [selectedRecordId, setSelectedRecordId] = useState('')
@@ -340,10 +340,10 @@ export default function AdminOnboardingStudio() {
         <header className="onboarding-studio-header">
           <div>
             <p className="eyebrow">Client Journey</p>
-            <h1>Booking, Intake & Onboarding</h1>
-            <p>Connect appointment requests, private intake forms, client preparation, portal onboarding, and reminder communication in one guided flow.</p>
+            <h1>Onboarding</h1>
+            <p>Move each client from booking to a prepared, welcoming start.</p>
           </div>
-          <button type="button" onClick={runDueMessages} disabled={isSaving}>Process Due Messages</button>
+          <button type="button" onClick={runDueMessages} disabled={isSaving}>Send Due Messages</button>
         </header>
 
         {error && <div className="onboarding-studio-alert is-error" role="alert">{error}</div>}
@@ -358,9 +358,9 @@ export default function AdminOnboardingStudio() {
         </section>
 
         <nav className="onboarding-studio-tabs" aria-label="Booking and onboarding sections">
-          <button className={activeTab === 'templates' ? 'is-active' : ''} type="button" onClick={() => setActiveTab('templates')}>Intake Templates</button>
-          <button className={activeTab === 'appointments' ? 'is-active' : ''} type="button" onClick={() => setActiveTab('appointments')}>Appointment Automation</button>
-          <button className={activeTab === 'clients' ? 'is-active' : ''} type="button" onClick={() => setActiveTab('clients')}>Client Onboarding</button>
+          <button className={activeTab === 'clients' ? 'is-active' : ''} type="button" onClick={() => setActiveTab('clients')}>Clients</button>
+          <button className={activeTab === 'appointments' ? 'is-active' : ''} type="button" onClick={() => setActiveTab('appointments')}>Booking Rules</button>
+          <button className={activeTab === 'templates' ? 'is-active' : ''} type="button" onClick={() => setActiveTab('templates')}>Forms</button>
         </nav>
 
         {activeTab === 'templates' && (

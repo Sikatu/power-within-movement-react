@@ -108,6 +108,8 @@ export default function AdminLeadPipeline() {
   const [note, setNote] = useState('')
   const [search, setSearch] = useState('')
   const [priorityFilter, setPriorityFilter] = useState('all')
+  const [pipelineStageView, setPipelineStageView] = useState('new_inquiry')
+  const [leadWorkspaceView, setLeadWorkspaceView] = useState('profile')
   const [isLoading, setIsLoading] = useState(true)
   const [isDetailLoading, setIsDetailLoading] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
@@ -128,6 +130,10 @@ export default function AdminLeadPipeline() {
         : leads.find((lead) => lead.clientStatus === 'lead')?.id || leads[0]?.id || ''
 
       setSelectedLeadId(nextLeadId)
+      if (!preserveSelection) {
+        const nextLead = leads.find((lead) => lead.id === nextLeadId)
+        setPipelineStageView(nextLead?.pipelineStage || result.stages?.[0] || 'all')
+      }
     } catch (loadError) {
       setError(loadError.message || 'Unable to load the Leads & Intake Pipeline.')
     } finally {
@@ -197,6 +203,15 @@ export default function AdminLeadPipeline() {
     ]),
   ), [filteredLeads, pipeline?.stages])
 
+  function selectPipelineStage(stage) {
+    setPipelineStageView(stage)
+    setLeadWorkspaceView('profile')
+
+    if (stage !== 'all' && !leadsByStage[stage]?.some((lead) => lead.id === selectedLeadId)) {
+      setSelectedLeadId(leadsByStage[stage]?.[0]?.id || '')
+    }
+  }
+
   async function handleLeadSave(event) {
     event.preventDefault()
     if (!selectedLeadId) return
@@ -228,6 +243,11 @@ export default function AdminLeadPipeline() {
     } finally {
       setIsSaving(false)
     }
+  }
+
+  function selectLead(clientId) {
+    setSelectedLeadId(clientId)
+    setLeadWorkspaceView('profile')
   }
 
   async function handleFollowUpCreate(event) {
@@ -305,11 +325,8 @@ export default function AdminLeadPipeline() {
         <header className="lead-pipeline-header">
           <div>
             <p className="eyebrow">Client growth</p>
-            <h1>Leads & Intake Pipeline</h1>
-            <p>
-              A calm, native workspace for inquiries, consultation readiness,
-              intentional follow-up, and client conversion.
-            </p>
+            <h1>Leads</h1>
+            <p>Review new inquiries, assign the next step, and keep follow-up clear.</p>
           </div>
           <div className="lead-pipeline-header-actions">
             <Link className="button secondary" to="/admin/clients">All clients</Link>
@@ -351,8 +368,35 @@ export default function AdminLeadPipeline() {
           </label>
         </section>
 
-        <section className="lead-pipeline-board" aria-busy={isLoading}>
+        <nav className="onboarding-studio-tabs" aria-label="Lead pipeline stages">
+          <button
+            className={pipelineStageView === 'all' ? 'is-active' : ''}
+            onClick={() => selectPipelineStage('all')}
+            type="button"
+          >
+            All ({filteredLeads.length})
+          </button>
           {(pipeline?.stages || Object.keys(stageLabels)).map((stage) => (
+            <button
+              className={pipelineStageView === stage ? 'is-active' : ''}
+              key={stage}
+              onClick={() => selectPipelineStage(stage)}
+              type="button"
+            >
+              {stageLabels[stage] || stage} ({leadsByStage[stage]?.length || 0})
+            </button>
+          ))}
+        </nav>
+
+        <section
+          className="lead-pipeline-board"
+          aria-busy={isLoading}
+          style={pipelineStageView === 'all' ? undefined : { gridAutoColumns: 'minmax(280px, 520px)' }}
+        >
+          {(pipelineStageView === 'all'
+            ? pipeline?.stages || Object.keys(stageLabels)
+            : [pipelineStageView]
+          ).map((stage) => (
             <article className="lead-pipeline-column" key={stage}>
               <header>
                 <div>
@@ -366,7 +410,7 @@ export default function AdminLeadPipeline() {
                     isSelected={lead.id === selectedLeadId}
                     key={lead.id}
                     lead={lead}
-                    onSelect={setSelectedLeadId}
+                    onSelect={selectLead}
                   />
                 ))}
                 {!isLoading && !(leadsByStage[stage] || []).length && (
@@ -407,7 +451,36 @@ export default function AdminLeadPipeline() {
                 </div>
               </div>
 
-              <div className="lead-pipeline-detail-grid">
+              <nav className="onboarding-studio-tabs" aria-label="Selected lead workspace">
+                <button
+                  className={leadWorkspaceView === 'profile' ? 'is-active' : ''}
+                  onClick={() => setLeadWorkspaceView('profile')}
+                  type="button"
+                >
+                  Profile
+                </button>
+                <button
+                  className={leadWorkspaceView === 'followups' ? 'is-active' : ''}
+                  onClick={() => setLeadWorkspaceView('followups')}
+                  type="button"
+                >
+                  Follow-ups ({detail.followUps?.length || 0})
+                </button>
+                <button
+                  className={leadWorkspaceView === 'activity' ? 'is-active' : ''}
+                  onClick={() => setLeadWorkspaceView('activity')}
+                  type="button"
+                >
+                  Notes & activity ({detail.activities?.length || 0})
+                </button>
+              </nav>
+
+              {leadWorkspaceView !== 'activity' && (
+              <div
+                className="lead-pipeline-detail-grid"
+                style={{ gridTemplateColumns: 'minmax(0, 1fr)' }}
+              >
+                {leadWorkspaceView === 'profile' && (
                 <form className="lead-pipeline-panel" onSubmit={handleLeadSave}>
                   <header>
                     <h3>Pipeline profile</h3>
@@ -487,7 +560,9 @@ export default function AdminLeadPipeline() {
                     {isSaving ? 'Saving…' : leadForm.pipelineStage === 'converted' ? 'Convert and save' : 'Save lead'}
                   </button>
                 </form>
+                )}
 
+                {leadWorkspaceView === 'followups' && (
                 <form className="lead-pipeline-panel" onSubmit={handleFollowUpCreate}>
                   <header>
                     <h3>Schedule follow-up</h3>
@@ -552,9 +627,16 @@ export default function AdminLeadPipeline() {
                     {isSaving ? 'Scheduling…' : 'Schedule follow-up'}
                   </button>
                 </form>
+                )}
               </div>
+              )}
 
-              <div className="lead-pipeline-detail-grid lead-pipeline-lower-grid">
+              {leadWorkspaceView !== 'profile' && (
+              <div
+                className="lead-pipeline-detail-grid lead-pipeline-lower-grid"
+                style={{ gridTemplateColumns: 'minmax(0, 1fr)' }}
+              >
+                {leadWorkspaceView === 'followups' && (
                 <section className="lead-pipeline-panel">
                   <header>
                     <h3>Follow-up queue</h3>
@@ -614,7 +696,9 @@ export default function AdminLeadPipeline() {
                     {!detail.followUps?.length && <p className="lead-pipeline-empty">No follow-ups yet.</p>}
                   </div>
                 </section>
+                )}
 
+                {leadWorkspaceView === 'activity' && (
                 <section className="lead-pipeline-panel">
                   <header>
                     <h3>Activity & notes</h3>
@@ -645,7 +729,9 @@ export default function AdminLeadPipeline() {
                     {!detail.activities?.length && <p className="lead-pipeline-empty">No activity recorded yet.</p>}
                   </div>
                 </section>
+                )}
               </div>
+              )}
             </>
           )}
         </section>
