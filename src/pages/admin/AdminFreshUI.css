@@ -3600,6 +3600,7 @@ body.admin-app-mode
 body.admin-app-mode
   .client-circle-page-v2.admin-clients-rework-v1
   .client-circle-metrics-v2 {
+  display: grid ;
   width: 100% ;
   grid-template-columns: repeat(3, minmax(0, 1fr)) ;
   gap: 10px ;
@@ -3609,6 +3610,10 @@ body.admin-app-mode
 body.admin-app-mode
   .client-circle-page-v2.admin-clients-rework-v1
   .client-circle-metric-v2 {
+  display: grid ;
+  align-content: center ;
+  justify-items: start ;
+  gap: 6px ;
   min-height: 98px ;
   padding: 15px 16px ;
   border: 1px solid rgba(124, 81, 75, 0.11) ;
@@ -3633,7 +3638,8 @@ body.admin-app-mode
 body.admin-app-mode
   .client-circle-page-v2.admin-clients-rework-v1
   .client-circle-workspace-v2 {
-  display: block ;
+  display: grid ;
+  gap: 18px ;
   min-height: 0 ;
   padding: 0 ;
   overflow: visible ;
@@ -3645,9 +3651,9 @@ body.admin-app-mode
   display: flex ;
   flex-direction: column ;
   width: 100% ;
-  height: clamp(540px, calc(100vh - 330px), 720px) ;
-  min-height: 540px ;
-  max-height: 720px ;
+  height: auto ;
+  min-height: 0 ;
+  max-height: none ;
   margin: 0 ;
   padding: 0 ;
   overflow: hidden ;
@@ -3664,9 +3670,24 @@ body.admin-app-mode
   position: relative ;
   top: auto ;
   z-index: 4 ;
+  display: flex ;
+  align-items: center ;
+  justify-content: space-between ;
+  gap: 18px ;
   flex: 0 0 auto ;
   padding: 19px 22px 17px ;
+  border-bottom: 1px solid var(--admin-border) ;
   background: rgba(255, 252, 249, 0.92) ;
+}
+
+body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1
+  .client-records-card-v2
+  > .client-card-header-v2
+  h2 {
+  margin: 3px 0 0 ;
+  font-size: clamp(28px, 2.5vw, 36px) ;
+  line-height: 1 ;
 }
 
 body.admin-app-mode
@@ -3738,11 +3759,21 @@ body.admin-app-mode
   position: relative ;
   top: auto ;
   z-index: 3 ;
+  display: grid ;
+  align-items: end ;
   flex: 0 0 auto ;
   grid-template-columns: minmax(240px, 1.5fr) repeat(3, minmax(145px, 0.75fr)) auto ;
   gap: 10px ;
   padding: 15px 22px ;
+  border-bottom: 1px solid var(--admin-border) ;
   background: rgba(248, 240, 233, 0.54) ;
+}
+
+body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1
+  .client-circle-filter-bar-v2
+  > label {
+  min-width: 0 ;
 }
 
 body.admin-app-mode
@@ -3778,10 +3809,13 @@ body.admin-app-mode
   position: relative ;
   top: auto ;
   z-index: 2 ;
+  display: flex ;
+  align-items: center ;
   flex: 0 0 auto ;
   flex-wrap: nowrap ;
   gap: 8px ;
   padding: 12px 22px ;
+  border-bottom: 1px solid var(--admin-border) ;
   overflow-x: auto ;
   scrollbar-width: thin ;
   background: rgba(255, 252, 249, 0.58) ;
@@ -3790,10 +3824,36 @@ body.admin-app-mode
 body.admin-app-mode
   .client-circle-page-v2.admin-clients-rework-v1
   .client-quick-filter-chip-v2 {
+  display: inline-flex ;
+  align-items: center ;
+  gap: 5px ;
   flex: 0 0 auto ;
   min-height: 34px ;
   padding: 6px 11px ;
   border-radius: 999px ;
+}
+
+body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1
+  .client-quick-filter-chip-v2
+  strong {
+  display: inline-grid ;
+  place-items: center ;
+  min-width: 22px ;
+  height: 22px ;
+  padding: 0 5px ;
+  border-radius: 999px ;
+  background: rgba(200, 169, 106, 0.13) ;
+  font-size: 10px ;
+  line-height: 1 ;
+}
+
+body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1
+  .client-quick-filter-chip-v2.is-active
+  strong {
+  background: rgba(255, 250, 246, 0.2) ;
+  color: inherit ;
 }
 
 body.admin-app-mode
@@ -3811,8 +3871,9 @@ body.admin-app-mode
 body.admin-app-mode
   .client-circle-page-v2.admin-clients-rework-v1
   .client-record-table-wrap-v2 {
-  flex: 1 1 auto ;
-  min-height: 0 ;
+  flex: 0 1 auto ;
+  min-height: 280px ;
+  max-height: min(62vh, 720px) ;
   overflow: auto ;
   overscroll-behavior: contain ;
   scrollbar-gutter: stable ;
@@ -3821,8 +3882,11 @@ body.admin-app-mode
 body.admin-app-mode
   .client-circle-page-v2.admin-clients-rework-v1
   .client-record-table-v2 {
+  width: 100% ;
   min-width: 980px ;
+  border-collapse: collapse ;
   table-layout: fixed ;
+  background: transparent ;
 }
 
 body.admin-app-mode
@@ -3834,7 +3898,45 @@ body.admin-app-mode
   .client-record-table-v2
   td {
   padding: 13px 15px ;
+  border-bottom: 1px solid var(--admin-border) ;
   line-height: 1.4 ;
+  vertical-align: middle ;
+}
+
+body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1
+  .client-circle-workspace-v2
+  > .client-detail-card-v2 {
+  position: relative ;
+  padding: clamp(22px, 3vw, 32px) ;
+  border-color: var(--admin-border) ;
+  background:
+    radial-gradient(circle at 94% 10%, rgba(200, 169, 106, 0.1), transparent 34%),
+    var(--admin-surface) ;
+  box-shadow: var(--admin-shadow) ;
+}
+
+body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1
+  .client-circle-workspace-v2
+  > .client-detail-card-v2
+  h2 {
+  max-width: 880px ;
+  margin: 8px 0 12px ;
+  font-size: clamp(27px, 3vw, 38px) ;
+  line-height: 1.05 ;
+}
+
+body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1
+  .client-circle-workspace-v2
+  > .client-detail-card-v2
+  > p:last-child {
+  max-width: 820px ;
+  margin: 0 ;
+  color: var(--admin-muted) ;
+  font-size: 12px ;
+  line-height: 1.65 ;
 }
 
 body.admin-app-mode
@@ -3842,6 +3944,7 @@ body.admin-app-mode
   .client-record-table-v2
   thead
   th {
+  position: sticky ;
   top: 0 ;
   z-index: 2 ;
   background: rgba(255, 252, 249, 0.98) ;
@@ -4380,7 +4483,8 @@ body.admin-app-mode .client-360-text-link:hover {
   body.admin-app-mode
     .client-circle-page-v2.admin-clients-rework-v1
     .client-record-table-wrap-v2 {
-    max-height: 620px ;
+    min-height: 260px ;
+    max-height: min(62vh, 620px) ;
   }
 
   body.admin-app-mode .client-360-hero-actions {
