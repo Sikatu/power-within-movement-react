@@ -3656,7 +3656,7 @@ body.admin-app-mode
   max-height: none ;
   margin: 0 ;
   padding: 0 ;
-  overflow: hidden ;
+  overflow: visible ;
   border: 1px solid var(--admin-border) ;
   border-radius: 24px ;
   background: var(--admin-surface) ;
@@ -3688,6 +3688,16 @@ body.admin-app-mode
   margin: 3px 0 0 ;
   font-size: clamp(28px, 2.5vw, 36px) ;
   line-height: 1 ;
+}
+
+body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1
+  .client-record-instruction-v2 {
+  max-width: 520px ;
+  margin: 8px 0 0 ;
+  color: var(--admin-muted) ;
+  font-size: 11px ;
+  line-height: 1.5 ;
 }
 
 body.admin-app-mode
@@ -3871,12 +3881,13 @@ body.admin-app-mode
 body.admin-app-mode
   .client-circle-page-v2.admin-clients-rework-v1
   .client-record-table-wrap-v2 {
-  flex: 0 1 auto ;
-  min-height: 280px ;
-  max-height: min(62vh, 720px) ;
-  overflow: auto ;
-  overscroll-behavior: contain ;
-  scrollbar-gutter: stable ;
+  flex: 0 0 auto ;
+  min-height: 0 ;
+  max-height: none ;
+  overflow-x: auto ;
+  overflow-y: visible ;
+  overscroll-behavior-x: contain ;
+  scrollbar-gutter: auto ;
 }
 
 body.admin-app-mode
@@ -3901,42 +3912,6 @@ body.admin-app-mode
   border-bottom: 1px solid var(--admin-border) ;
   line-height: 1.4 ;
   vertical-align: middle ;
-}
-
-body.admin-app-mode
-  .client-circle-page-v2.admin-clients-rework-v1
-  .client-circle-workspace-v2
-  > .client-detail-card-v2 {
-  position: relative ;
-  padding: clamp(22px, 3vw, 32px) ;
-  border-color: var(--admin-border) ;
-  background:
-    radial-gradient(circle at 94% 10%, rgba(200, 169, 106, 0.1), transparent 34%),
-    var(--admin-surface) ;
-  box-shadow: var(--admin-shadow) ;
-}
-
-body.admin-app-mode
-  .client-circle-page-v2.admin-clients-rework-v1
-  .client-circle-workspace-v2
-  > .client-detail-card-v2
-  h2 {
-  max-width: 880px ;
-  margin: 8px 0 12px ;
-  font-size: clamp(27px, 3vw, 38px) ;
-  line-height: 1.05 ;
-}
-
-body.admin-app-mode
-  .client-circle-page-v2.admin-clients-rework-v1
-  .client-circle-workspace-v2
-  > .client-detail-card-v2
-  > p:last-child {
-  max-width: 820px ;
-  margin: 0 ;
-  color: var(--admin-muted) ;
-  font-size: 12px ;
-  line-height: 1.65 ;
 }
 
 body.admin-app-mode
@@ -4483,8 +4458,8 @@ body.admin-app-mode .client-360-text-link:hover {
   body.admin-app-mode
     .client-circle-page-v2.admin-clients-rework-v1
     .client-record-table-wrap-v2 {
-    min-height: 260px ;
-    max-height: min(62vh, 620px) ;
+    min-height: 0 ;
+    max-height: none ;
   }
 
   body.admin-app-mode .client-360-hero-actions {

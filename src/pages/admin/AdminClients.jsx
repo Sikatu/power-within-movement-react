@@ -1560,6 +1560,9 @@ export default function AdminClients() {
               <div>
                 <p className="admin-eyebrow">Client Records</p>
                 <h2>Private Client Records</h2>
+                <p className="client-record-instruction-v2">
+                  Choose any client row to open their complete care profile.
+                </p>
               </div>
 
               <div className="client-record-header-actions-v2">
@@ -2745,16 +2748,7 @@ export default function AdminClients() {
                 )}
               </div>
             </article>
-          ) : (
-            <article className="client-circle-card-v2 client-detail-card-v2">
-              <p className="admin-eyebrow">Care Notes</p>
-              <h2>Select someone from the Client Circle to view and care for their profile.</h2>
-              <p>
-                Private notes, portal-facing notes, profile details, booking
-                history, and activity timeline will appear here.
-              </p>
-            </article>
-          )}
+          ) : null}
         </section>
       </div>
     </AdminFrame>

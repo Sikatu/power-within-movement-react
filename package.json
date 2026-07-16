@@ -26,6 +26,7 @@
     "admin:qa:phase29": "node scripts/check-admin-phase29-founder.mjs && node --test server/tests/founder-command-center.test.cjs",
     "admin:qa:phase30": "npm run admin:qa && node --test server/tests/phase30-release-readiness.test.cjs scripts/phase30-release-gate.test.mjs",
     "admin:qa:phase30r2": "node scripts/check-admin-phase30r2-clients-layout.mjs",
+    "admin:qa:phase30r3": "node scripts/check-admin-phase30r2-clients-layout.mjs",
     "phase30:gate": "node scripts/check-phase30-release-evidence.mjs"
   },
   "dependencies": {

@@ -35,7 +35,7 @@ requireRule('.client-circle-workspace-v2', ['display: grid', 'gap: 18px'])
 requireRule('.client-records-card-v2', [
   'height: auto',
   'max-height: none',
-  'overflow: hidden',
+  'overflow: visible',
 ])
 requireRule('.client-records-card-v2 > .client-card-header-v2', [
   'display: flex',
@@ -63,9 +63,10 @@ requireRule('.client-quick-filter-chip-v2 strong', [
   'border-radius: 999px',
 ])
 requireRule('.client-record-table-wrap-v2', [
-  'min-height: 280px',
-  'max-height: min(62vh, 720px)',
-  'overflow: auto',
+  'min-height: 0',
+  'max-height: none',
+  'overflow-x: auto',
+  'overflow-y: visible',
 ])
 requireRule('.client-record-table-v2', [
   'width: 100%',
@@ -77,10 +78,10 @@ requireRule('.client-record-table-v2 thead th', [
   'top: 0',
   'z-index: 2',
 ])
-requireRule('.client-circle-workspace-v2 > .client-detail-card-v2', [
-  'position: relative',
-  'padding: clamp(22px, 3vw, 32px)',
-  'box-shadow: var(--admin-shadow)',
+requireRule('.client-record-instruction-v2', [
+  'margin: 8px 0 0',
+  'color: var(--admin-muted)',
+  'font-size: 11px',
 ])
 
 for (const token of [
@@ -90,9 +91,15 @@ for (const token of [
   'client-circle-filter-bar-v2',
   'client-quick-filter-strip-v2',
   'client-record-table-wrap-v2',
+  'client-record-instruction-v2',
+  'Choose any client row to open their complete care profile.',
   'aria-label="Quick client filters"',
 ]) {
   if (!clients.includes(token)) failures.push(`AdminClients.jsx is missing layout hook: ${token}`)
+}
+
+if (clients.includes('Select someone from the Client Circle to view and care for their profile.')) {
+  failures.push('AdminClients.jsx still renders the oversized empty care panel.')
 }
 
 for (const token of ['@media (max-width: 860px)', '@media (max-width: 620px)']) {
@@ -101,6 +108,7 @@ for (const token of ['@media (max-width: 860px)', '@media (max-width: 620px)']) 
 
 for (const token of [
   'admin:qa:phase30r2',
+  'admin:qa:phase30r3',
   'node scripts/check-admin-phase30r2-clients-layout.mjs',
 ]) {
   if (!packageSource.includes(token)) failures.push(`package.json is missing Phase 30R.2 QA hook: ${token}`)
@@ -112,4 +120,4 @@ if (failures.length) {
   process.exit(1)
 }
 
-console.log('Admin Phase 30R.2 Clients layout audit passed (metric grid, compact filters, stable table viewport, responsive records header, and separated care panel).')
+console.log('Admin Clients release layout audit passed (metric grid, compact filters, natural page scrolling, responsive records header, and selection-first care flow).')
