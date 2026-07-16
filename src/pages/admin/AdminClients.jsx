@@ -440,6 +440,7 @@ export default function AdminClients() {
   const [clientStatusFilter, setClientStatusFilter] = useState('all')
   const [clientInterestFilter, setClientInterestFilter] = useState('all')
   const [portalStatusFilter, setPortalStatusFilter] = useState('all')
+  const [showClientFilters, setShowClientFilters] = useState(false)
   const [selectedClient, setSelectedClient] = useState(null)
   const [clientActionMenu, setClientActionMenu] = useState(null)
   const [editingClient, setEditingClient] = useState(null)
@@ -772,6 +773,12 @@ export default function AdminClients() {
     clientInterestFilter !== 'all' ||
     clientStatusFilter !== 'all' ||
     portalStatusFilter !== 'all'
+
+  const advancedClientFilterCount = [
+    clientInterestFilter !== 'all',
+    clientStatusFilter !== 'all',
+    portalStatusFilter !== 'all',
+  ].filter(Boolean).length
 
   const selectedClientIsHiddenByFilters =
     selectedClient &&
@@ -1684,16 +1691,41 @@ export default function AdminClients() {
               </div>
             </div>
 
-            <div className="client-circle-filter-bar-v2">
+            <div className="client-directory-toolbar-v4">
               <label className="client-circle-search-v2">
-                <span>Search Client Circle</span>
+                <span className="sr-only">Search Client Circle</span>
                 <input
                   type="search"
                   value={clientSearchTerm}
                   onChange={(event) => setClientSearchTerm(event.target.value)}
-                  placeholder="Search name, email, phone, or status..."
+                  placeholder="Search clients"
                 />
               </label>
+
+              <div className="client-directory-toolbar-actions-v4">
+                <button
+                  type="button"
+                  className={showClientFilters ? 'is-active' : ''}
+                  aria-expanded={showClientFilters}
+                  aria-controls="client-advanced-filters"
+                  onClick={() => setShowClientFilters((current) => !current)}
+                >
+                  Filters{advancedClientFilterCount > 0 ? ` (${advancedClientFilterCount})` : ''}
+                </button>
+
+                {hasClientFilters && (
+                  <button type="button" onClick={handleClearClientFilters}>
+                    Reset
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {showClientFilters && (
+            <div
+              id="client-advanced-filters"
+              className="client-circle-filter-bar-v2 client-advanced-filters-v4"
+            >
 
               <label>
                 <span>Interest</span>
@@ -1742,13 +1774,8 @@ export default function AdminClients() {
                   ))}
                 </select>
               </label>
-
-              {hasClientFilters && (
-                                <button type="button" onClick={handleClearClientFilters}>
-                  Clear Filters
-                </button>
-              )}
             </div>
+            )}
 
             <div className="client-quick-filter-strip-v2" aria-label="Quick client filters">
               <button

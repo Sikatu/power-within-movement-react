@@ -65,6 +65,7 @@ export default function AdminInbox() {
   const selectedIdRef = useRef(requestedConversationId)
   const [selectedConversation, setSelectedConversation] = useState(null)
   const [filters, setFilters] = useState({ status: 'all', priority: 'all', search: '' })
+  const [showFilters, setShowFilters] = useState(false)
   const [showNew, setShowNew] = useState(false)
   const [newConversation, setNewConversation] = useState(emptyNewConversation)
   const [reply, setReply] = useState(emptyReply)
@@ -130,6 +131,16 @@ export default function AdminInbox() {
     }
     return `${conversations.length} matching conversations`
   }, [conversations.length, filters])
+
+  const activeFilterCount = [
+    filters.status !== 'all',
+    filters.priority !== 'all',
+  ].filter(Boolean).length
+
+  function resetFilters() {
+    setFilters({ status: 'all', priority: 'all', search: '' })
+    setShowFilters(false)
+  }
 
   async function perform(action, successMessage, preferredId = selectedId) {
     setBusy(true)
@@ -215,14 +226,14 @@ export default function AdminInbox() {
         <header className="admin-inbox__header">
           <div>
             <p className="eyebrow">Private Client Care</p>
-            <h1>Secure Inbox</h1>
+            <h1>Inbox</h1>
             <p>
-              Keep client questions, private replies, internal notes, and follow-up ownership in one auditable workspace.
+              Reply to clients, leave private team notes, and keep every conversation moving.
             </p>
           </div>
           <div className="admin-inbox__header-actions">
             <button className="btn primary" type="button" onClick={() => setShowNew(true)}>
-              New Client Message
+              New Message
             </button>
             <button className="btn secondary" type="button" disabled={loading} onClick={() => loadInbox()}>
               {loading ? 'Refreshing…' : 'Refresh'}
@@ -231,8 +242,12 @@ export default function AdminInbox() {
         </header>
 
         <section className="admin-inbox__metrics" aria-label="Inbox summary">
-          <article><span>Open</span><strong>{Number(metrics.active || 0)}</strong></article>
-          <article><span>Needs Reply</span><strong>{Number(metrics.waiting_on_team || 0)}</strong></article>
+          <button type="button" onClick={() => setFilters((current) => ({ ...current, status: 'open' }))}>
+            <span>Open</span><strong>{Number(metrics.active || 0)}</strong>
+          </button>
+          <button className="is-attention" type="button" onClick={() => setFilters((current) => ({ ...current, status: 'waiting_on_team' }))}>
+            <span>Needs Reply</span><strong>{Number(metrics.waiting_on_team || 0)}</strong>
+          </button>
           <article><span>Unread</span><strong>{Number(metrics.unread || 0)}</strong></article>
           <article className="is-urgent"><span>Urgent</span><strong>{Number(metrics.urgent || 0)}</strong></article>
         </section>
@@ -246,7 +261,34 @@ export default function AdminInbox() {
           </div>
         )}
 
-        <section className="admin-inbox__filters" aria-label="Inbox filters">
+        <section className="admin-inbox__toolbar" aria-label="Find conversations">
+          <label className="admin-inbox__search">
+            <span className="sr-only">Search conversations</span>
+            <input
+              type="search"
+              value={filters.search}
+              onChange={(event) => setFilters((current) => ({ ...current, search: event.target.value }))}
+              placeholder="Search client, email, or subject"
+            />
+          </label>
+          <button
+            className={`btn secondary${showFilters ? ' is-active' : ''}`}
+            type="button"
+            aria-expanded={showFilters}
+            aria-controls="inbox-advanced-filters"
+            onClick={() => setShowFilters((current) => !current)}
+          >
+            Filters{activeFilterCount > 0 ? ` (${activeFilterCount})` : ''}
+          </button>
+          {(activeFilterCount > 0 || filters.search.trim()) && (
+            <button className="btn secondary" type="button" onClick={resetFilters}>
+              Reset
+            </button>
+          )}
+        </section>
+
+        {showFilters && (
+        <section id="inbox-advanced-filters" className="admin-inbox__filters" aria-label="Inbox filters">
           <label>
             <span>Status</span>
             <select value={filters.status} onChange={(event) => setFilters((current) => ({ ...current, status: event.target.value }))}>
@@ -266,19 +308,8 @@ export default function AdminInbox() {
               <option value="normal">Normal</option>
             </select>
           </label>
-          <label className="admin-inbox__search">
-            <span>Search</span>
-            <input
-              type="search"
-              value={filters.search}
-              onChange={(event) => setFilters((current) => ({ ...current, search: event.target.value }))}
-              placeholder="Client, email, or subject"
-            />
-          </label>
-          <button className="btn secondary" type="button" onClick={() => loadInbox()}>
-            Apply Filters
-          </button>
         </section>
+        )}
 
         <p className="admin-inbox__count">{filteredCountLabel}</p>
 

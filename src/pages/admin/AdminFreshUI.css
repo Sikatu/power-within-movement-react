@@ -11872,3 +11872,332 @@ body.admin-app-mode .pwc-nav33-connection small {
   }
 }
 /* phase-31-admin-streamlining-foundation-end */
+
+/* phase-32-daily-workflow-streamlining-start */
+body.admin-app-mode .studio-focus-actions-v4 {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+body.admin-app-mode .studio-focus-actions-v4 a {
+  display: inline-flex;
+  min-height: 34px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(124, 81, 75, 0.16);
+  border-radius: 999px;
+  padding: 0 12px;
+  color: var(--admin-burgundy);
+  font-size: 10px;
+  font-weight: 800;
+}
+
+body.admin-app-mode .studio-focus-actions-v4 a:first-child {
+  border-color: transparent;
+  background: var(--admin-burgundy);
+  color: #fffaf6;
+}
+
+body.admin-app-mode .studio-metrics-v3 > a {
+  min-width: 0;
+  display: block;
+  border: 1px solid var(--admin-border);
+  border-radius: var(--admin-radius);
+  background: var(--admin-surface-soft);
+  padding: 16px 18px;
+  color: inherit;
+  box-shadow: 0 24px 48px -44px rgba(58, 37, 40, 0.42);
+}
+
+body.admin-app-mode .studio-metrics-v3 > a > span {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--admin-gold-deep);
+  font-size: 8.5px;
+  font-weight: 800;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+body.admin-app-mode .studio-metrics-v3 > a > strong {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--admin-ink);
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: clamp(1.8rem, 3vw, 2.35rem);
+  font-weight: 550;
+  line-height: 0.95;
+}
+
+body.admin-app-mode .studio-metrics-v3 > a > p {
+  margin: 0;
+  color: var(--admin-muted);
+  font-size: 10.5px;
+}
+
+body.admin-app-mode .pwc-scheduler-page {
+  gap: 18px;
+}
+
+body.admin-app-mode .pwc-scheduler-hero {
+  align-items: center;
+  padding: clamp(22px, 3vw, 32px);
+  border-radius: 24px;
+}
+
+body.admin-app-mode .pwc-scheduler-hero h1 {
+  font-size: clamp(46px, 5vw, 66px);
+}
+
+body.admin-app-mode .pwc-scheduler-hero-copy > p:not(.eyebrow) {
+  max-width: 620px;
+  margin-top: 12px;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+body.admin-app-mode .pwc-scheduler-view-tabs {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  border: 1px solid var(--scheduler-line);
+  border-radius: 18px;
+  background: rgba(255, 252, 249, 0.68);
+  padding: 8px;
+  box-shadow: 0 18px 40px -38px rgba(58, 37, 40, 0.48);
+}
+
+body.admin-app-mode .pwc-scheduler-view-tabs button {
+  min-width: 0;
+  display: grid;
+  gap: 3px;
+  border: 1px solid transparent;
+  border-radius: 13px;
+  background: transparent;
+  padding: 12px 14px;
+  color: var(--admin-body);
+  text-align: left;
+}
+
+body.admin-app-mode .pwc-scheduler-view-tabs button:hover {
+  border-color: var(--scheduler-line);
+  background: rgba(255, 255, 255, 0.72);
+}
+
+body.admin-app-mode .pwc-scheduler-view-tabs button.is-active {
+  border-color: rgba(124, 81, 75, 0.22);
+  background: var(--admin-burgundy);
+  color: #fffaf6;
+  box-shadow: 0 14px 30px -22px rgba(58, 37, 40, 0.76);
+}
+
+body.admin-app-mode .pwc-scheduler-view-tabs span {
+  font-size: 12px;
+  font-weight: 850;
+}
+
+body.admin-app-mode .pwc-scheduler-view-tabs small {
+  overflow: hidden;
+  color: var(--admin-muted);
+  font-size: 9.5px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+body.admin-app-mode .pwc-scheduler-view-tabs button.is-active small {
+  color: rgba(255, 250, 246, 0.66);
+}
+
+body.admin-app-mode .pwc-scheduler-metrics {
+  gap: 10px;
+}
+
+body.admin-app-mode .pwc-scheduler-metrics article {
+  min-height: 92px;
+  padding: 15px 17px;
+  border-radius: 18px;
+}
+
+body.admin-app-mode .pwc-scheduler-metrics strong {
+  display: inline-block;
+  margin: 7px 8px 0 0;
+  font-size: 32px;
+}
+
+body.admin-app-mode .pwc-scheduler-metrics small {
+  display: inline;
+  margin-top: 0;
+  font-size: 10px;
+}
+
+body.admin-app-mode .admin-inbox__metrics {
+  gap: 9px;
+  margin-bottom: 12px;
+}
+
+body.admin-app-mode .admin-inbox__metrics :where(article, button) {
+  position: relative;
+  min-width: 0;
+  display: flex;
+  min-height: 62px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  overflow: hidden;
+  border: 1px solid var(--admin-border);
+  border-radius: 15px;
+  background: rgba(255, 252, 249, 0.8);
+  padding: 12px 14px;
+  color: inherit;
+  text-align: left;
+  box-shadow: 0 18px 38px -38px rgba(58, 37, 40, 0.54);
+}
+
+body.admin-app-mode .admin-inbox__metrics button:hover,
+body.admin-app-mode .admin-inbox__metrics button.is-attention {
+  border-color: rgba(168, 121, 57, 0.32);
+  background: rgba(200, 169, 106, 0.09);
+}
+
+body.admin-app-mode .admin-inbox__metrics :where(article, button) > span {
+  margin: 0;
+  color: var(--admin-gold-deep);
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+body.admin-app-mode .admin-inbox__metrics :where(article, button) > strong {
+  color: var(--admin-ink);
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 28px;
+  line-height: 1;
+}
+
+body.admin-app-mode .admin-inbox__toolbar,
+body.admin-app-mode .client-directory-toolbar-v4 {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  border: 1px solid var(--admin-border);
+  background: rgba(255, 252, 249, 0.76);
+  padding: 10px;
+}
+
+body.admin-app-mode .admin-inbox__toolbar {
+  margin-bottom: 8px;
+  border-radius: 16px;
+}
+
+body.admin-app-mode .admin-inbox__toolbar .admin-inbox__search,
+body.admin-app-mode .client-directory-toolbar-v4 .client-circle-search-v2 {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+body.admin-app-mode .admin-inbox__toolbar input,
+body.admin-app-mode .client-directory-toolbar-v4 input {
+  width: 100%;
+  min-height: 40px;
+  border: 1px solid var(--admin-border);
+  border-radius: 11px;
+  background: rgba(255, 255, 255, 0.82);
+  padding: 0 13px;
+}
+
+body.admin-app-mode .admin-inbox__toolbar .btn {
+  min-height: 40px;
+  padding-inline: 13px;
+}
+
+body.admin-app-mode .admin-inbox__toolbar .btn.is-active {
+  border-color: rgba(124, 81, 75, 0.28);
+  background: rgba(124, 81, 75, 0.09);
+}
+
+body.admin-app-mode .admin-inbox__filters {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-bottom: 8px;
+  padding: 12px;
+}
+
+body.admin-app-mode .admin-inbox__workspace {
+  min-height: 610px;
+  height: min(720px, calc(100vh - 118px));
+}
+
+body.admin-app-mode .client-directory-toolbar-v4 {
+  border-width: 0 0 1px;
+  border-radius: 0;
+  padding: 11px 22px;
+}
+
+body.admin-app-mode .client-directory-toolbar-actions-v4 {
+  display: flex;
+  flex: 0 0 auto;
+  gap: 8px;
+}
+
+body.admin-app-mode .client-directory-toolbar-actions-v4 button {
+  min-height: 40px;
+  border: 1px solid var(--admin-border);
+  border-radius: 11px;
+  background: rgba(255, 252, 249, 0.78);
+  padding: 0 13px;
+  color: var(--admin-burgundy);
+  font-size: 10.5px;
+  font-weight: 800;
+}
+
+body.admin-app-mode .client-directory-toolbar-actions-v4 button.is-active {
+  border-color: rgba(124, 81, 75, 0.28);
+  background: rgba(124, 81, 75, 0.09);
+}
+
+body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1
+  .client-advanced-filters-v4 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  padding-block: 12px;
+}
+
+@media (max-width: 900px) {
+  body.admin-app-mode .pwc-scheduler-view-tabs {
+    grid-template-columns: 1fr;
+  }
+
+  body.admin-app-mode .pwc-scheduler-view-tabs small {
+    white-space: normal;
+  }
+
+}
+
+@media (max-width: 700px) {
+  body.admin-app-mode .studio-metrics-v3,
+  body.admin-app-mode .pwc-scheduler-metrics,
+  body.admin-app-mode .admin-inbox__metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  body.admin-app-mode .admin-inbox__toolbar,
+  body.admin-app-mode .client-directory-toolbar-v4 {
+    align-items: stretch;
+    flex-wrap: wrap;
+  }
+
+  body.admin-app-mode .admin-inbox__toolbar :where(.admin-inbox__search),
+  body.admin-app-mode .client-directory-toolbar-v4 .client-circle-search-v2 {
+    flex-basis: 100%;
+  }
+
+  body.admin-app-mode
+    .client-circle-page-v2.admin-clients-rework-v1
+    .client-advanced-filters-v4,
+  body.admin-app-mode .admin-inbox__filters {
+    grid-template-columns: 1fr;
+  }
+}
+/* phase-32-daily-workflow-streamlining-end */

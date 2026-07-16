@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { Link } from 'react-router-dom'
 import AdminFrame from '../../components/admin/AdminFrame'
 import {
   checkAdminAccess,
@@ -204,21 +205,25 @@ export default function AdminDashboard() {
         label: 'Client Circle',
         value: clients.length,
         detail: 'Private client records',
+        href: '/admin/clients',
       },
       {
         label: 'Needs Follow-Up',
         value: followUpStats.total || followUps.length,
         detail: `${followUpStats.overdue || 0} overdue`,
+        href: '/admin/clients',
       },
       {
         label: 'Open Sessions',
         value: pendingBookings.length,
         detail: 'Requests and active care',
+        href: '/admin/scheduler',
       },
       {
         label: 'Journal Events',
         value: auditLogs.length,
         detail: 'Recent studio activity',
+        href: '/admin/audit-log',
       },
     ],
     [
@@ -251,13 +256,12 @@ export default function AdminDashboard() {
             <p className="admin-eyebrow">The Studio</p>
             <h1>Welcome back, {adminUser?.role === 'developer' ? 'Developer' : adminUser?.role === 'owner' ? 'Kim' : 'Studio Team'}.</h1>
             <p>
-              A calm command center for sessions, Client Circle care, follow-up
-              reminders, and recent studio movement.
+              See what needs care today, then move directly into the right workspace.
             </p>
           </div>
 
           <div className="studio-focus-card-v3">
-            <span>Today Gentle Focus</span>
+            <span>Today&apos;s priority</span>
             <strong>
               {followUpStats.total > 0
                 ? 'Care follow-ups are waiting.'
@@ -268,6 +272,10 @@ export default function AdminDashboard() {
                 ? `${followUpStats.total} service record(s) need follow-up attention.`
                 : 'No active follow-up service records are waiting right now.'}
             </p>
+            <div className="studio-focus-actions-v4">
+              <Link to="/admin/clients">Open clients</Link>
+              <Link to="/admin/scheduler">Review sessions</Link>
+            </div>
           </div>
         </header>
 
@@ -279,11 +287,11 @@ export default function AdminDashboard() {
           <>
             <section className="studio-metrics-v3">
               {dashboardMetrics.map((metric) => (
-                <article key={metric.label}>
+                <Link key={metric.label} to={metric.href}>
                   <span>{metric.label}</span>
                   <strong>{metric.value}</strong>
                   <p>{metric.detail}</p>
-                </article>
+                </Link>
               ))}
             </section>
 
@@ -393,28 +401,6 @@ export default function AdminDashboard() {
                   </div>
                 )}
               </article>
-            </section>
-
-            <section className="studio-rooms-v3">
-              <a href="/admin/clients">
-                <span>Client Circle</span>
-                <strong>Care for client profiles and service records.</strong>
-              </a>
-
-              <a href="/admin/scheduler">
-                <span>Sessions & Calendar</span>
-                <strong>Review requests and session flow.</strong>
-              </a>
-
-              <a href="/admin/email-studio">
-                <span>Letters & Broadcasts</span>
-                <strong>Future email care and nurture sequences.</strong>
-              </a>
-
-              <a href="/admin/audit-log">
-                <span>Activity Journal</span>
-                <strong>Review studio changes and admin movement.</strong>
-              </a>
             </section>
 
             {overview?.message && (
