@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs'
 
-const read = (path) => readFileSync(path, 'utf8')
+const read = (path) => readFileSync(path, 'utf8').replace(/\r\n?/g, '\n')
 const navigationSource = read('src/components/admin/adminNavigation.js')
 const frameSource = read('src/components/admin/AdminFrame.jsx')
 const operationsSource = read('src/pages/admin/AdminDeveloperOperations.jsx')
