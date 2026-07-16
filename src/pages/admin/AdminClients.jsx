@@ -842,6 +842,12 @@ export default function AdminClients() {
 
     setClientDetailSection(normalizedSection)
     navigate(`/admin/clients/${selectedClient.id}/${normalizedSection}`)
+    window.requestAnimationFrame(() => {
+      document.querySelector('.client-detail-card-v2')?.scrollTo({
+        top: 0,
+        behavior: 'smooth',
+      })
+    })
   }
 
   async function handleViewClient(client) {
@@ -853,6 +859,9 @@ export default function AdminClients() {
     setForm(emptyClientForm)
     setNotice('')
     setError('')
+    window.requestAnimationFrame(() => {
+      document.querySelector('.client-detail-card-v2')?.scrollTo({ top: 0 })
+    })
     await Promise.all([
       loadCareTimeline(client),
       loadPortalInvites(client),
@@ -1966,7 +1975,7 @@ export default function AdminClients() {
             <article className="client-circle-card-v2 client-detail-card-v2">
               <div className="client-card-header-v2 is-horizontal">
                 <div>
-                  <p className="admin-eyebrow">Care Timeline</p>
+                  <p className="admin-eyebrow">Quick Profile</p>
                   <h2>{selectedClient.name}</h2>
                 </div>
 
@@ -2004,44 +2013,60 @@ export default function AdminClients() {
                 onSelect={handleClientSectionChange}
               />
 
-              <section className="client-communication-card-v3">
-                <div>
-                  <p className="admin-eyebrow">Direct Communication</p>
-                  <h3>Contact {selectedClient.name}</h3>
-                  <p>
-                    Keep direct contact details and portal email activity together
-                    without mixing them into the care record.
-                  </p>
-                </div>
-
-                <div className="client-communication-contact-grid-v3">
-                  <article>
-                    <span>Email</span>
-                    <strong>
-                      {getClientEmailDisplay(selectedClient) || 'No email saved'}
-                    </strong>
-                    <div className="client-profile-quick-actions-v2">
-                      <button type="button" onClick={handleCopySelectedClientEmail}>
-                        Copy Email
-                      </button>
-                      <button type="button" onClick={handleEmailSelectedClient}>
-                        Email Client
-                      </button>
+              {clientDetailSection === 'communication' && (
+                <section
+                  id="client-profile-panel-communication"
+                  className="client-detail-panel-v3"
+                  role="tabpanel"
+                  aria-labelledby="client-profile-tab-communication"
+                >
+                  <section className="client-communication-card-v3">
+                    <div>
+                      <p className="admin-eyebrow">Direct Communication</p>
+                      <h3>Contact {selectedClient.name}</h3>
+                      <p>
+                        Keep direct contact details and portal email activity together
+                        without mixing them into the care record.
+                      </p>
                     </div>
-                  </article>
 
-                  <article>
-                    <span>Phone</span>
-                    <strong>{selectedClient.phone || 'No phone saved'}</strong>
-                    <div className="client-profile-quick-actions-v2">
-                      <button type="button" onClick={handleCopySelectedClientPhone}>
-                        Copy Phone
-                      </button>
+                    <div className="client-communication-contact-grid-v3">
+                      <article>
+                        <span>Email</span>
+                        <strong>
+                          {getClientEmailDisplay(selectedClient) || 'No email saved'}
+                        </strong>
+                        <div className="client-profile-quick-actions-v2">
+                          <button type="button" onClick={handleCopySelectedClientEmail}>
+                            Copy Email
+                          </button>
+                          <button type="button" onClick={handleEmailSelectedClient}>
+                            Email Client
+                          </button>
+                        </div>
+                      </article>
+
+                      <article>
+                        <span>Phone</span>
+                        <strong>{selectedClient.phone || 'No phone saved'}</strong>
+                        <div className="client-profile-quick-actions-v2">
+                          <button type="button" onClick={handleCopySelectedClientPhone}>
+                            Copy Phone
+                          </button>
+                        </div>
+                      </article>
                     </div>
-                  </article>
-                </div>
-              </section>
+                  </section>
+                </section>
+              )}
 
+              {clientDetailSection === 'overview' && (
+                <section
+                  id="client-profile-panel-overview"
+                  className="client-detail-panel-v3"
+                  role="tabpanel"
+                  aria-labelledby="client-profile-tab-overview"
+                >
               <div className="client-detail-grid-v2">
                 <div>
                   <span>Email</span>
@@ -2146,9 +2171,15 @@ export default function AdminClients() {
                 </section>
               </div>
 
-
-
-              {/* phase-3-7-service-records-ui-start */}
+                </section>
+              )}
+              {clientDetailSection === 'portal-access' && (
+                <section
+                  id="client-profile-panel-portal-access"
+                  className="client-detail-panel-v3"
+                  role="tabpanel"
+                  aria-labelledby="client-profile-tab-portal-access"
+                >
               {/* phase-3-9a-portal-invite-ui-start */}
               <div className="client-portal-invite-v2">
                 <div>
@@ -2434,6 +2465,16 @@ export default function AdminClients() {
               </div>
               {/* phase-3-9i-portal-invite-email-ui-end */}
 
+                </section>
+              )}
+
+              {clientDetailSection === 'resources' && (
+                <section
+                  id="client-profile-panel-resources"
+                  className="client-detail-panel-v3"
+                  role="tabpanel"
+                  aria-labelledby="client-profile-tab-resources"
+                >
               {/* phase-3-9d-client-portal-resources-ui-start */}
               <div className="client-portal-resources-v2">
                 <div className="client-timeline-header-v2">
@@ -2602,6 +2643,17 @@ export default function AdminClients() {
               </div>
               {/* phase-3-9d-client-portal-resources-ui-end */}
 
+                </section>
+              )}
+
+              {clientDetailSection === 'care' && (
+                <section
+                  id="client-profile-panel-care"
+                  className="client-detail-panel-v3"
+                  role="tabpanel"
+                  aria-labelledby="client-profile-tab-care"
+                >
+              {/* phase-3-7-service-records-ui-start */}
               <div className="client-service-records-v2">
                 <div className="client-timeline-header-v2">
                   <div>
@@ -2867,6 +2919,16 @@ export default function AdminClients() {
               </div>
               {/* phase-3-7-service-records-ui-end */}
 
+                </section>
+              )}
+
+              {clientDetailSection === 'activity' && (
+                <section
+                  id="client-profile-panel-activity"
+                  className="client-detail-panel-v3"
+                  role="tabpanel"
+                  aria-labelledby="client-profile-tab-activity"
+                >
               <div className="client-timeline-v2">
                 <div className="client-timeline-header-v2">
                   <div>
@@ -2901,6 +2963,8 @@ export default function AdminClients() {
                   </ol>
                 )}
               </div>
+                </section>
+              )}
             </article>
           ) : null}
         </section>

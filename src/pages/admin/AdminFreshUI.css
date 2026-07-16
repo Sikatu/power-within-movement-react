@@ -4373,6 +4373,16 @@ body.admin-app-mode
 
 body.admin-app-mode
   .client-circle-page-v2.admin-clients-rework-v1
+  .client-detail-panel-v3 {
+  display: grid ;
+  align-content: start ;
+  min-width: 0 ;
+  width: 100% ;
+  padding-bottom: 8px ;
+}
+
+body.admin-app-mode
+  .client-circle-page-v2.admin-clients-rework-v1
   .client-detail-card-v2
   :is(
     .client-detail-grid-v2,
