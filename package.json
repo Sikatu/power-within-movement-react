@@ -28,6 +28,7 @@
     "admin:qa:phase30r2": "node scripts/check-admin-phase30r2-clients-layout.mjs",
     "admin:qa:phase30r3": "node scripts/check-admin-phase30r2-clients-layout.mjs",
     "admin:qa:phase30r4": "node scripts/check-admin-phase30r2-clients-layout.mjs && node scripts/check-admin-phase30r4-client-actions.mjs",
+    "admin:qa:phase30r5": "node scripts/check-admin-phase30r2-clients-layout.mjs && node scripts/check-admin-phase30r4-client-actions.mjs",
     "phase30:gate": "node scripts/check-phase30-release-evidence.mjs"
   },
   "dependencies": {

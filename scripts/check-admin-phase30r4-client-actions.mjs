@@ -42,6 +42,10 @@ requireRule('.client-drawer-backdrop-v3', [
   'position: fixed',
   'inset: 0',
   'z-index: 64',
+  'border-radius: 0',
+  'box-shadow: none',
+  'transform: none',
+  'transition: none',
 ])
 requireRule('.client-circle-detail-v2', [
   'position: fixed',
@@ -94,7 +98,18 @@ if (clients.includes('<details className="client-action-menu-v1"')) {
 }
 
 for (const token of [
+  '.client-drawer-backdrop-v3:hover:not(:disabled)',
+  '.client-drawer-backdrop-v3:active:not(:disabled)',
+  'background: rgba(45, 27, 36, 0.18)',
+]) {
+  if (!compactCss.includes(token)) {
+    failures.push(`Drawer backdrop is missing its isolated interaction state: ${token}`)
+  }
+}
+
+for (const token of [
   'admin:qa:phase30r4',
+  'admin:qa:phase30r5',
   'node scripts/check-admin-phase30r4-client-actions.mjs',
 ]) {
   if (!packageSource.includes(token)) {
