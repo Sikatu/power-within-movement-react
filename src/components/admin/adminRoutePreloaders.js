@@ -45,6 +45,7 @@ export const loadAdminLeadPipeline = cached(() => import('../../pages/admin/Admi
 export const loadAdminLearningLibrary = cached(() => import('../../pages/admin/AdminLearningLibrary.jsx'))
 export const loadAdminLogin = cached(() => import('../../pages/admin/AdminLogin.jsx'))
 export const loadAdminMailStudio = cached(() => import('../../pages/admin/AdminMailStudio.jsx'))
+export const loadAdminLetters = cached(() => import('../../pages/admin/AdminLetters.jsx'))
 export const loadAdminMembershipCircle = cached(() => import('../../pages/admin/AdminMembershipCircle.jsx'))
 export const loadAdminOnboardingStudio = cached(() => import('../../pages/admin/AdminOnboardingStudio.jsx'))
 export const loadAdminScheduler = cached(() => import('../../pages/admin/AdminScheduler.jsx'))
@@ -72,6 +73,7 @@ const routePreloaders = [
   { match: (path) => path === '/admin/session-changes', load: loadAdminSessionChangeRequests },
   { match: (path) => path === '/admin/inbox', load: loadAdminInbox },
   { match: (path) => path === '/admin/email-studio', load: loadAdminMailStudio },
+  { match: (path) => path === '/admin/letters', load: loadAdminLetters },
   { match: (path) => path === '/admin/automations', load: loadAdminAutomationStudio },
   { match: (path) => path === '/admin/onboarding', load: loadAdminOnboardingStudio },
   { match: (path) => path === '/admin/courses', load: loadAdminLearningLibrary },

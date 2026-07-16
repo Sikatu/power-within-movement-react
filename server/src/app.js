@@ -12,6 +12,8 @@ const authRoutes = require('./routes/auth.routes')
 const adminRoutes = require('./routes/admin.routes')
 const assetVaultRoutes = require('./routes/assetVault.routes')
 const newsletterAudienceRoutes = require('./routes/newsletterAudience.routes')
+const letterBuilderRoutes = require('./routes/letterBuilder.routes')
+const letterPublicRoutes = require('./routes/letterPublic.routes')
 const publicRoutes = require('./routes/public.routes')
 const frontendErrorRoutes = require('./routes/frontendError.routes')
 const developerErrorRoutes = require('./routes/developerErrors.routes')
@@ -51,7 +53,12 @@ app.use(
   }),
 )
 
-app.use(express.json({ limit: '1mb' }))
+app.use(express.json({
+  limit: '1mb',
+  verify(req, _res, buffer) {
+    req.rawBody = Buffer.from(buffer)
+  },
+}))
 app.use(express.urlencoded({ extended: true }))
 app.use(cookieParser())
 app.use(requestErrorContext)
@@ -76,8 +83,10 @@ app.use(
 )
 app.use('/api/admin/assets', sensitiveResponseHeaders, enforceTrustedMutation, assetVaultRoutes)
 app.use('/api/admin/audience', sensitiveResponseHeaders, enforceTrustedMutation, newsletterAudienceRoutes)
+app.use('/api/admin/letters', sensitiveResponseHeaders, enforceTrustedMutation, letterBuilderRoutes)
 app.use('/api/admin', sensitiveResponseHeaders, enforceTrustedMutation, adminRoutes)
 app.use('/api/public/error-reports', frontendErrorRoutes)
+app.use('/api/public/letters', letterPublicRoutes)
 app.use('/api/public/client-portal', sensitiveResponseHeaders, enforceTrustedMutation)
 app.use('/api/public', publicRoutes)
 

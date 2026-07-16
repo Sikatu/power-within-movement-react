@@ -1629,3 +1629,102 @@ export async function createNewsletterAudienceSegment(payload) {
   })
 }
 // phase-27-newsletter-audience-api-end
+
+// phase-28-letter-builder-api-start
+function letterQuery(params = {}) {
+  const search = new URLSearchParams()
+  Object.entries(params).forEach(([key, value]) => {
+    if (value !== undefined && value !== null && value !== '') search.set(key, String(value))
+  })
+  const query = search.toString()
+  return query ? `?${query}` : ''
+}
+
+export async function getLetterBuilderOverview() {
+  return apiRequest('/api/admin/letters/overview')
+}
+
+export async function getLetters(filters = {}) {
+  return apiRequest(`/api/admin/letters/letters${letterQuery(filters)}`)
+}
+
+export async function getLetter(letterId) {
+  return apiRequest(`/api/admin/letters/letters/${letterId}`)
+}
+
+export async function createLetter(payload) {
+  return apiRequest('/api/admin/letters/letters', { method: 'POST', body: JSON.stringify(payload) })
+}
+
+export async function saveLetter(letterId, payload) {
+  return apiRequest(`/api/admin/letters/letters/${letterId}`, { method: 'PATCH', body: JSON.stringify(payload) })
+}
+
+export async function duplicateLetter(letterId) {
+  return apiRequest(`/api/admin/letters/letters/${letterId}/duplicate`, { method: 'POST' })
+}
+
+export async function previewLetter(letterId) {
+  return apiRequest(`/api/admin/letters/letters/${letterId}/preview`, { method: 'POST' })
+}
+
+export async function sendLetterTest(letterId, email) {
+  return apiRequest(`/api/admin/letters/letters/${letterId}/test-send`, { method: 'POST', body: JSON.stringify({ email }) })
+}
+
+export async function getLetterVersions(letterId) {
+  return apiRequest(`/api/admin/letters/letters/${letterId}/versions`)
+}
+
+export async function restoreLetterVersion(letterId, versionId) {
+  return apiRequest(`/api/admin/letters/letters/${letterId}/versions/${versionId}/restore`, { method: 'POST' })
+}
+
+export async function getLetterTemplates(status = 'active') {
+  return apiRequest(`/api/admin/letters/templates?status=${encodeURIComponent(status)}`)
+}
+
+export async function createLetterTemplate(payload) {
+  return apiRequest('/api/admin/letters/templates', { method: 'POST', body: JSON.stringify(payload) })
+}
+
+export async function saveLetterAsTemplate(letterId, payload) {
+  return apiRequest(`/api/admin/letters/letters/${letterId}/save-template`, { method: 'POST', body: JSON.stringify(payload) })
+}
+
+export async function previewLetterAudience(audienceFilter) {
+  return apiRequest('/api/admin/letters/audience-preview', { method: 'POST', body: JSON.stringify(audienceFilter) })
+}
+
+export async function prepareLetterBroadcast(letterId, audienceFilter) {
+  return apiRequest(`/api/admin/letters/letters/${letterId}/broadcasts/prepare`, { method: 'POST', body: JSON.stringify({ audienceFilter }) })
+}
+
+export async function getLetterBroadcasts(filters = {}) {
+  return apiRequest(`/api/admin/letters/broadcasts${letterQuery(filters)}`)
+}
+
+export async function getLetterBroadcast(broadcastId) {
+  return apiRequest(`/api/admin/letters/broadcasts/${broadcastId}`)
+}
+
+export async function scheduleLetterBroadcast(broadcastId, scheduledAt) {
+  return apiRequest(`/api/admin/letters/broadcasts/${broadcastId}/schedule`, { method: 'POST', body: JSON.stringify({ scheduledAt }) })
+}
+
+export async function sendLetterBroadcastNow(broadcastId) {
+  return apiRequest(`/api/admin/letters/broadcasts/${broadcastId}/send-now`, { method: 'POST' })
+}
+
+export async function cancelLetterBroadcast(broadcastId) {
+  return apiRequest(`/api/admin/letters/broadcasts/${broadcastId}/cancel`, { method: 'POST' })
+}
+
+export async function processDueLetterBroadcasts() {
+  return apiRequest('/api/admin/letters/process-due', { method: 'POST' })
+}
+
+export function getLetterBroadcastExportUrl(broadcastId) {
+  return `${API_BASE_URL}/api/admin/letters/broadcasts/${broadcastId}/export.csv`
+}
+// phase-28-letter-builder-api-end

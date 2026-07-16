@@ -27,6 +27,11 @@ function parseBoolean(value, fallback = false) {
   return fallback
 }
 
+function parseBoundedNumber(value, fallback, minimum, maximum) {
+  const parsed = Number(value)
+  return Number.isFinite(parsed) ? Math.min(Math.max(parsed, minimum), maximum) : fallback
+}
+
 function normalizeSameSite(value, fallback) {
   const normalized = String(value || fallback || 'lax').trim().toLowerCase()
   const allowed = new Set(['lax', 'strict', 'none'])
@@ -90,6 +95,13 @@ const env = {
 
   resendApiKey: process.env.RESEND_API_KEY || '',
   portalEmailFrom: process.env.PORTAL_EMAIL_FROM || '',
+  newsletterEmailFrom: process.env.NEWSLETTER_EMAIL_FROM || process.env.RESEND_FROM_EMAIL || process.env.PORTAL_EMAIL_FROM || '',
+  newsletterReplyTo: process.env.NEWSLETTER_REPLY_TO || '',
+  resendWebhookSecret: process.env.RESEND_WEBHOOK_SECRET || '',
+  publicApiUrl: process.env.PUBLIC_API_URL || process.env.PUBLIC_SITE_URL || clientOrigins[0] || DEFAULT_DEV_CLIENT_ORIGIN,
+  letterSigningSecret: process.env.LETTER_SIGNING_SECRET || jwtSecret,
+  letterSendConcurrency: parseBoundedNumber(process.env.LETTER_SEND_CONCURRENCY, 1, 1, 5),
+  letterSendBatchDelayMs: parseBoundedNumber(process.env.LETTER_SEND_BATCH_DELAY_MS, 550, 0, 5000),
 
   assetStorageDriver: String(process.env.ASSET_STORAGE_DRIVER || 'local').trim().toLowerCase() === 's3' ? 's3' : 'local',
   assetStorageDir: process.env.ASSET_STORAGE_DIR || require('path').resolve(__dirname, '..', '..', 'storage', 'assets'),

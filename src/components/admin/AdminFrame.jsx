@@ -127,7 +127,7 @@ const groupedItems = [
     description: 'Letters and session updates',
     items: [
       {
-        to: '/admin/email-studio',
+        to: '/admin/letters',
         label: 'Letters & Broadcasts',
         module: 'communications',
       },

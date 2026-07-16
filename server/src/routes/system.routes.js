@@ -42,8 +42,8 @@ const modules = [
   {
     key: 'email_studio',
     name: 'Letters & Broadcasts',
-    status: 'foundation_active',
-    description: 'Mail templates, branded previews, client email drafting, provider-ready sending, and email activity logs.',
+    status: 'active',
+    description: 'Visual letter design, consent-aware recipient snapshots, testing, scheduling, protected delivery, and broadcast analytics.',
   },
   {
     key: 'founders_view',

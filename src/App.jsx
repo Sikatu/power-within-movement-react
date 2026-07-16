@@ -36,6 +36,7 @@ import {
   loadAdminLearningLibrary,
   loadAdminLogin,
   loadAdminMailStudio,
+  loadAdminLetters,
   loadAdminMembershipCircle,
   loadAdminOnboardingStudio,
   loadAdminScheduler,
@@ -94,6 +95,7 @@ const AdminLeadPipeline = lazy(loadAdminLeadPipeline)
 const AdminLearningLibrary = lazy(loadAdminLearningLibrary)
 const AdminLogin = lazy(loadAdminLogin)
 const AdminMailStudio = lazy(loadAdminMailStudio)
+const AdminLetters = lazy(loadAdminLetters)
 const AdminMembershipCircle = lazy(loadAdminMembershipCircle)
 const AdminOnboardingStudio = lazy(loadAdminOnboardingStudio)
 const AdminScheduler = lazy(loadAdminScheduler)
@@ -256,6 +258,10 @@ const routeMetadata = {
   '/admin/email-studio': {
     title: 'Mail Studio | The Studio',
     description: 'Prepare and deliver thoughtful client communications.',
+  },
+  '/admin/letters': {
+    title: 'Letters & Broadcasts | The Studio',
+    description: 'Design, test, schedule, send, and analyze consent-aware Power Within letters.',
   },
   '/admin/audience': {
     title: 'Newsletter Audience | The Studio',
@@ -527,6 +533,7 @@ function AppShell() {
         <Route path="/admin/session-changes" element={<AdminRouteGuard><AdminSessionChangeRequests /></AdminRouteGuard>} />
         <Route path="/admin/inbox" element={<AdminRouteGuard><AdminInbox /></AdminRouteGuard>} />
         <Route path="/admin/email-studio" element={<AdminRouteGuard><AdminMailStudio /></AdminRouteGuard>} />
+        <Route path="/admin/letters" element={<AdminRouteGuard><AdminLetters /></AdminRouteGuard>} />
         <Route path="/admin/audience" element={<AdminRouteGuard><AdminAudience /></AdminRouteGuard>} />
         <Route path="/admin/automations" element={<AdminRouteGuard><AdminAutomationStudio /></AdminRouteGuard>} />
         <Route path="/admin/onboarding" element={<AdminRouteGuard><AdminOnboardingStudio /></AdminRouteGuard>} />
