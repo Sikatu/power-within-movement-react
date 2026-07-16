@@ -112,6 +112,7 @@ export default function AdminEncouragements() {
   const [featureEnabled, setFeatureEnabled] = useState(true)
   const [form, setForm] = useState(emptyForm)
   const [editingId, setEditingId] = useState('')
+  const [workspaceView, setWorkspaceView] = useState('library')
   const [filters, setFilters] = useState({
     status: 'all',
     visibility: 'all',
@@ -191,6 +192,11 @@ export default function AdminEncouragements() {
     setError('')
   }
 
+  function startNewEncouragement() {
+    resetComposer()
+    setWorkspaceView('compose')
+  }
+
   function editEncouragement(post) {
     const scheduleParts = getDateTimeParts(post.scheduled_at)
 
@@ -206,10 +212,11 @@ export default function AdminEncouragements() {
     })
     setNotice('Editing this encouragement. Save when the message is ready.')
     setError('')
+    setWorkspaceView('compose')
 
-    window.requestAnimationFrame(() => {
+    window.setTimeout(() => {
       composerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-    })
+    }, 0)
   }
 
   function validateForm() {
@@ -271,6 +278,7 @@ export default function AdminEncouragements() {
       setEditingId('')
       setForm(emptyForm)
       await loadEncouragements(filters)
+      setWorkspaceView('library')
     } catch (saveError) {
       setError(saveError.message || 'Unable to save this encouragement.')
     } finally {
@@ -359,13 +367,10 @@ export default function AdminEncouragements() {
           <div>
             <p className="eyebrow">Client Care</p>
             <h1>Encouragements</h1>
-            <p>
-              Share a thoughtful note with everyone, or send something privately to one
-              client. Draft it, publish it now, or choose a future Eastern Time delivery.
-            </p>
+            <p>Write, schedule, and review thoughtful notes for every client or one person.</p>
           </div>
 
-          <button className="btn secondary" type="button" onClick={resetComposer}>
+          <button className="btn secondary" type="button" onClick={startNewEncouragement}>
             New encouragement
           </button>
         </header>
@@ -402,7 +407,17 @@ export default function AdminEncouragements() {
           </article>
         </section>
 
-        <section className="encouragement-studio__workspace">
+        <nav className="onboarding-studio-tabs" aria-label="Encouragement workspace">
+          <button className={workspaceView === 'library' ? 'is-active' : ''} onClick={() => setWorkspaceView('library')} type="button">
+            Messages ({encouragements.length})
+          </button>
+          <button className={workspaceView === 'compose' ? 'is-active' : ''} onClick={() => setWorkspaceView('compose')} type="button">
+            {editingId ? 'Edit message' : 'Compose'}
+          </button>
+        </nav>
+
+        <section className="encouragement-studio__workspace" style={{ gridTemplateColumns: 'minmax(0, 1fr)' }}>
+          {workspaceView === 'compose' && (
           <form
             className="encouragement-composer"
             onSubmit={saveEncouragement}
@@ -551,7 +566,9 @@ export default function AdminEncouragements() {
                       : 'Save draft'}
             </button>
           </form>
+          )}
 
+          {workspaceView === 'library' && (
           <section className="encouragement-library">
             <div className="encouragement-library__heading">
               <div>
@@ -670,6 +687,7 @@ export default function AdminEncouragements() {
               </div>
             )}
           </section>
+          )}
         </section>
       </div>
     </AdminFrame>

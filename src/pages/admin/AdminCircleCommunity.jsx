@@ -109,6 +109,7 @@ export default function AdminCircleCommunity() {
       eventStartsAt: toDateTimeLocal(post.event_starts_at),
       eventEndsAt: toDateTimeLocal(post.event_ends_at),
     })
+    return post
   }, [])
 
   const loadWorkspace = useCallback(async (preferredPostId = '') => {
@@ -127,7 +128,8 @@ export default function AdminCircleCommunity() {
           : nextPosts[0]?.id || ''
 
     setSelectedPostId(nextId)
-    await loadPost(nextId)
+    const post = await loadPost(nextId)
+    setActiveTab(post?.reports?.some((report) => report.status === 'open') ? 'moderation' : 'content')
   }, [loadPost, selectedPostId])
 
   useEffect(() => {
@@ -187,7 +189,8 @@ export default function AdminCircleCommunity() {
     setError('')
     setNotice('')
     try {
-      await loadPost(postId)
+      const post = await loadPost(postId)
+      setActiveTab(post?.reports?.some((report) => report.status === 'open') ? 'moderation' : 'content')
     } catch (loadError) {
       setError(loadError.message || 'This Circle post could not load.')
     }
@@ -304,11 +307,8 @@ export default function AdminCircleCommunity() {
         <header className="circle-admin-header">
           <div>
             <p className="admin-eyebrow">Community</p>
-            <h1>The Circle</h1>
-            <p>
-              Create a thoughtful member community with founder posts, conversations,
-              events, challenges, and careful moderation.
-            </p>
+            <h1>Circle</h1>
+            <p>Publish member posts and handle conversations that need care.</p>
           </div>
           <button type="button" onClick={startNewPost}>New Circle Post</button>
         </header>
@@ -401,7 +401,7 @@ export default function AdminCircleCommunity() {
                 aria-selected={activeTab === 'content'}
                 onClick={() => setActiveTab('content')}
               >
-                Content
+                Post
               </button>
               <button
                 type="button"
