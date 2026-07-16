@@ -1,19 +1,54 @@
-import { Link, NavLink } from 'react-router-dom'
+import { useEffect, useRef, useState } from 'react'
+import { Link, NavLink, useLocation } from 'react-router-dom'
 import logo from '../assets/images/logo.webp'
 import './ClientPortalChrome.css'
 
-const portalLinks = [
-  ['/client-portal/home', 'Home'],
+const primaryPortalLinks = [
+  ['/client-portal/home', 'Today'],
   ['/client-portal/journey', 'Journey'],
-  ['/client-portal/resources', 'Resources'],
-  ['/client-portal/learning', 'Learning'],
-  ['/client-portal/membership', 'Membership'],
-  ['/client-portal/circle', 'The Circle'],
+  ['/client-portal/resources', 'Library'],
   ['/client-portal/sessions', 'Sessions'],
   ['/client-portal/messages', 'Messages'],
 ]
 
+const explorePortalLinks = [
+  ['/client-portal/learning', 'Learning'],
+  ['/client-portal/membership', 'Membership'],
+  ['/client-portal/circle', 'The Circle'],
+]
+
 function ClientPortalChrome({ client, loggingOut, messageCount = 0, onLogout }) {
+  const location = useLocation()
+  const exploreRef = useRef(null)
+  const [exploreOpen, setExploreOpen] = useState(false)
+  const exploreActive = explorePortalLinks.some(([path]) => location.pathname.startsWith(path))
+
+  useEffect(() => {
+    if (!exploreOpen) return undefined
+
+    function closeExplore(event) {
+      if (event.key === 'Escape' || (event.type === 'pointerdown' && !exploreRef.current?.contains(event.target))) {
+        setExploreOpen(false)
+      }
+    }
+
+    document.addEventListener('keydown', closeExplore)
+    document.addEventListener('pointerdown', closeExplore)
+    return () => {
+      document.removeEventListener('keydown', closeExplore)
+      document.removeEventListener('pointerdown', closeExplore)
+    }
+  }, [exploreOpen])
+
+  function portalLink([path, label]) {
+    return (
+      <NavLink key={path} to={path} className={({ isActive }) => (isActive ? 'is-active' : '')} onClick={() => setExploreOpen(false)}>
+        {label}
+        {label === 'Messages' && messageCount > 0 && <span>{messageCount}</span>}
+      </NavLink>
+    )
+  }
+
   return (
     <>
       <header className="portal-chrome-header">
@@ -35,12 +70,30 @@ function ClientPortalChrome({ client, loggingOut, messageCount = 0, onLogout }) 
       </header>
 
       <nav className="portal-chrome-nav" aria-label="Client portal">
-        {portalLinks.map(([path, label]) => (
-          <NavLink key={path} to={path} className={({ isActive }) => (isActive ? 'is-active' : '')}>
-            {label}
-            {label === 'Messages' && messageCount > 0 && <span>{messageCount}</span>}
-          </NavLink>
-        ))}
+        <div className="portal-chrome-primary-links">
+          {primaryPortalLinks.map(portalLink)}
+        </div>
+        <div className="portal-chrome-explore" ref={exploreRef}>
+          <button
+            type="button"
+            className={exploreActive ? 'is-active' : ''}
+            aria-haspopup="menu"
+            aria-expanded={exploreOpen}
+            onClick={() => setExploreOpen((current) => !current)}
+          >
+            Explore
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5" /></svg>
+          </button>
+          {exploreOpen && (
+            <div className="portal-chrome-explore-menu" role="menu">
+              {explorePortalLinks.map(([path, label]) => (
+                <NavLink key={path} to={path} role="menuitem" className={({ isActive }) => (isActive ? 'is-active' : '')} onClick={() => setExploreOpen(false)}>
+                  {label}
+                </NavLink>
+              ))}
+            </div>
+          )}
+        </div>
       </nav>
     </>
   )
