@@ -47,6 +47,9 @@ const contractTokens = [
   "endpoint: '/api/admin/client-coverage'",
   "endpoint: '/api/admin/session-readiness?days=14'",
   "endpoint: '/api/admin/session-follow-through?days=30'",
+  "endpoint: '/api/admin/audience/summary'",
+  "endpoint: '/api/admin/letters/overview'",
+  "endpoint: '/api/admin/developer/release-readiness'",
   "endpoint: '/api/admin/developer/security-integrity'",
   "endpoint: '/api/admin/developer/system-health'",
   'densityThreshold',
@@ -56,7 +59,7 @@ const contractTokens = [
 
 const navigationTokens = [
   "legacyPath: '/admin/developer/qa'",
-  "label: 'Release QA'",
+  "label: 'Release Gate'",
   "id: 'qa'",
 ]
 

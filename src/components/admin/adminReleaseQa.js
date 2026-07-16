@@ -5,6 +5,29 @@ export const RELEASE_QA_VIEWPORTS = [
   { id: 'mobile', label: 'Mobile', width: 390, height: 844 },
 ]
 
+export const PHASE30_EVIDENCE_GATES = [
+  { id: 'postgres-backup', category: 'Database', title: 'PostgreSQL backup restored and verified' },
+  { id: 'migration-rehearsal', category: 'Database', title: 'Ordered migrations passed on an isolated restored clone' },
+  { id: 'object-storage-roundtrip', category: 'Storage', title: 'Private upload, download, checksum, and cleanup passed' },
+  { id: 'signed-private-link', category: 'Storage', title: 'Scoped link access, denial, and expiry passed' },
+  { id: 'client-resource-assignment', category: 'Client portal', title: 'Asset assignment and client delivery passed' },
+  { id: 'audience-import', category: 'Audience', title: 'CSV import and invalid-row reporting passed' },
+  { id: 'duplicate-subscriber', category: 'Audience', title: 'Duplicate subscriber merge behavior passed' },
+  { id: 'unsubscribe-suppression', category: 'Audience', title: 'Unsubscribe and suppression enforcement passed' },
+  { id: 'newsletter-test-send', category: 'Letters', title: 'Newsletter test send and protected links passed' },
+  { id: 'founder-recording', category: 'Founder tools', title: 'Private recording capture, playback, and retention passed' },
+  { id: 'founder-transcription', category: 'Founder tools', title: 'Async transcription lifecycle passed' },
+  { id: 'founder-timezone', category: 'Founder tools', title: 'Chicago clock and independent scheduling timezone passed' },
+  { id: 'complete-route-audit', category: 'Application', title: 'Public, portal, Studio, Founder, and Developer routes passed' },
+  { id: 'four-viewport-review', category: 'Application', title: 'Four-viewport screenshot review retained' },
+  { id: 'interaction-review', category: 'Accessibility', title: 'Mouse-wheel, keyboard, and touch review passed' },
+  { id: 'accessibility-review', category: 'Accessibility', title: 'Focus, labels, contrast, zoom, and reduced-motion review passed' },
+  { id: 'authentication-permissions', category: 'Security', title: 'Authentication and role-permission matrix passed' },
+  { id: 'security-integrity-scan', category: 'Security', title: 'Security and data-integrity scan passed' },
+  { id: 'build-lint-tests', category: 'Application', title: 'Build, lint, backend tests, and app QA passed' },
+  { id: 'rollback-checkpoint', category: 'Recovery', title: 'Git, build, PM2, database, storage, email, and env rollback proof retained' },
+]
+
 export const RELEASE_QA_CHECKS = [
   {
     id: 'developer-access',
@@ -137,6 +160,43 @@ export const RELEASE_QA_CHECKS = [
     critical: true,
   },
   {
+    id: 'audience',
+    title: 'Newsletter audience',
+    category: 'Communication',
+    endpoint: '/api/admin/audience/summary',
+    route: '/admin/audience',
+    description: 'Checks consent-aware audience totals, segments, sources, and recent import visibility.',
+    collectionPaths: ['recentImports'],
+    requiredPaths: ['metrics', 'tags', 'segments'],
+    densityThreshold: 8,
+    critical: true,
+  },
+  {
+    id: 'letters',
+    title: 'Letters and broadcasts',
+    category: 'Communication',
+    endpoint: '/api/admin/letters/overview',
+    route: '/admin/letters',
+    description: 'Checks letter, template, broadcast, and provider-facing delivery aggregates.',
+    collectionPaths: ['letters'],
+    requiredPaths: ['metrics', 'templates', 'broadcasts'],
+    densityThreshold: 20,
+    critical: true,
+  },
+  {
+    id: 'phase30-readiness',
+    title: 'Integrated release readiness',
+    category: 'System',
+    endpoint: '/api/admin/developer/release-readiness',
+    route: '/admin/developer/qa',
+    description: 'Checks Phase 30 schema, production-shaped configuration, storage, providers, authentication, and HTTPS.',
+    collectionPaths: ['checks'],
+    requiredPaths: ['summary', 'database', 'storage', 'providers', 'environment'],
+    releaseStatePath: 'summary.status',
+    densityThreshold: 25,
+    critical: true,
+  },
+  {
     id: 'security-integrity',
     title: 'Security and data integrity',
     category: 'System',
@@ -234,6 +294,20 @@ export function inspectReleaseQaResponse({
     }
   }
 
+  if (contract.releaseStatePath) {
+    const releaseState = getReleaseQaValue(response, contract.releaseStatePath)
+    if (releaseState === 'blocked') {
+      status = 'fail'
+      notes.push('The integrated readiness snapshot contains one or more deployment blockers.')
+    } else if (releaseState === 'review' && status !== 'fail') {
+      status = 'review'
+      notes.push('The integrated readiness snapshot still requires production-shaped review.')
+    } else if (releaseState !== 'ready') {
+      status = 'fail'
+      notes.push(`Unexpected integrated readiness state: ${String(releaseState || 'missing')}.`)
+    }
+  }
+
   const roundedDuration = Math.max(0, Math.round(durationMs))
   if (roundedDuration >= 2500) {
     status = contract.critical ? 'fail' : status === 'pass' ? 'review' : status
@@ -273,17 +347,33 @@ export function summarizeReleaseQaResults(results = []) {
     review,
     failed,
     averageLatencyMs,
-    ready: completed.length === results.length && failed === 0,
+    ready: completed.length === results.length && failed === 0 && review === 0,
   }
 }
 
-export function buildReleaseQaReport(results = [], generatedAt = new Date().toISOString()) {
+export function summarizePhase30Evidence(completedById = {}) {
+  const completed = PHASE30_EVIDENCE_GATES.filter((gate) => completedById[gate.id]).length
+  return {
+    total: PHASE30_EVIDENCE_GATES.length,
+    completed,
+    pending: PHASE30_EVIDENCE_GATES.length - completed,
+    ready: completed === PHASE30_EVIDENCE_GATES.length,
+  }
+}
+
+export function buildReleaseQaReport(
+  results = [],
+  generatedAt = new Date().toISOString(),
+  completedEvidence = {},
+) {
   const summary = summarizeReleaseQaResults(results)
+  const evidence = summarizePhase30Evidence(completedEvidence)
   const lines = [
-    'Power Within Collective — Phase 23 Release QA',
+    'Power Within Collective — Phase 30 Integrated Release QA',
     `Generated: ${generatedAt}`,
-    `Status: ${summary.ready ? 'READY FOR MANUAL VISUAL REVIEW' : 'NOT READY'}`,
+    `Status: ${summary.ready && evidence.ready ? 'READY FOR SIGNED DEPLOYMENT GATE' : 'NOT READY'}`,
     `Checks: ${summary.passed} passed, ${summary.review} review, ${summary.failed} failed`,
+    `External evidence: ${evidence.completed}/${evidence.total} completed`,
     `Average response: ${summary.averageLatencyMs} ms`,
     '',
   ]
@@ -295,6 +385,11 @@ export function buildReleaseQaReport(results = [], generatedAt = new Date().toIS
     if (result.count !== null && result.count !== undefined) lines.push(`Records: ${result.count}`)
     for (const note of result.notes || []) lines.push(`- ${note}`)
     lines.push('')
+  }
+
+  lines.push('Phase 30 external evidence')
+  for (const gate of PHASE30_EVIDENCE_GATES) {
+    lines.push(`[${completedEvidence[gate.id] ? 'COMPLETE' : 'PENDING'}] ${gate.title}`)
   }
 
   return lines.join('\n').trim()

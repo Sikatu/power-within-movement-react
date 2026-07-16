@@ -11226,3 +11226,25 @@ body.admin-app-mode .circle-admin-page{width:100%;max-width:none;padding:0 0 5re
 @media(prefers-reduced-motion:reduce){.pwc-founder29-mic.is-recording .pwc-founder29-level{animation:none}}
 @media(forced-colors:active){.pwc-founder29-clocks,.pwc-founder29-capture,.pwc-founder29-library,.pwc-founder29-detail,.pwc-founder29-transcription{border:1px solid CanvasText}}
 /* phase-29-founder-command-center-end */
+
+/* phase-30-integrated-release-gate */
+.pwc-phase30-evidence{display:grid;gap:1rem;padding:1.15rem;border:1px solid var(--dev-line);border-radius:20px;background:var(--dev-surface);box-shadow:var(--dev-shadow)}
+.pwc-phase30-evidence>header{display:flex;align-items:flex-start;justify-content:space-between;gap:1.2rem}
+.pwc-phase30-evidence>header>div:first-child{max-width:48rem}
+.pwc-phase30-evidence small{color:var(--dev-muted);font-size:.58rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase}
+.pwc-phase30-evidence h2{margin:.15rem 0 .3rem;font-family:var(--font-display);font-size:1.7rem;font-weight:600}
+.pwc-phase30-evidence p{margin:0;color:var(--dev-muted);font-size:.68rem;line-height:1.55}
+.pwc-phase30-evidence-summary{display:grid;justify-items:end;gap:.2rem;min-width:9.5rem}
+.pwc-phase30-evidence-summary strong{color:var(--dev-wine);font-family:var(--font-display);font-size:2rem;line-height:1}
+.pwc-phase30-evidence-summary span{color:var(--dev-muted);font-size:.62rem;font-weight:700}
+.pwc-phase30-evidence-summary button{min-height:2rem;margin-top:.25rem;padding:.35rem .65rem;font-size:.58rem}
+.pwc-phase30-evidence-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.55rem}
+.pwc-phase30-evidence-grid>button{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:.7rem;min-height:4rem;padding:.65rem .75rem;border-color:var(--dev-line);border-radius:13px;background:#faf6f2;text-align:left}
+.pwc-phase30-evidence-grid>button>span:first-child{display:grid;place-items:center;width:1.65rem;height:1.65rem;border-radius:50%;background:#eee5df;color:var(--dev-muted);font-weight:900}
+.pwc-phase30-evidence-grid>button>span:last-child{display:grid;gap:.12rem}
+.pwc-phase30-evidence-grid strong{color:var(--dev-ink);font-size:.68rem;line-height:1.35}
+.pwc-phase30-evidence-grid>button.is-complete{border-color:rgba(73,123,89,.3);background:rgba(73,123,89,.07)}
+.pwc-phase30-evidence-grid>button.is-complete>span:first-child{background:#497b59;color:#fff}
+@media(max-width:760px){.pwc-phase30-evidence>header{flex-direction:column}.pwc-phase30-evidence-summary{justify-items:start}.pwc-phase30-evidence-grid{grid-template-columns:1fr}}
+@media(forced-colors:active){.pwc-phase30-evidence,.pwc-phase30-evidence-grid>button{border:1px solid CanvasText}}
+/* phase-30-integrated-release-gate-end */

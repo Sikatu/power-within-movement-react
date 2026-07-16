@@ -6,10 +6,12 @@ import {
 import { useNavigate } from 'react-router-dom'
 import AdminFrame from '../../components/admin/AdminFrame.jsx'
 import {
+  PHASE30_EVIDENCE_GATES,
   RELEASE_QA_CHECKS,
   RELEASE_QA_VIEWPORTS,
   buildReleaseQaReport,
   inspectReleaseQaResponse,
+  summarizePhase30Evidence,
   summarizeReleaseQaResults,
 } from '../../components/admin/adminReleaseQa.js'
 import { apiRequest } from '../../lib/nativeApi.js'
@@ -34,11 +36,23 @@ function statusClass(status) {
   }[status] || 'watch'
 }
 
-function releaseLabel(summary) {
+const PHASE30_EVIDENCE_STORAGE_KEY = 'pwc.phase30.release-evidence.v1'
+
+function loadEvidence() {
+  try {
+    const value = JSON.parse(window.localStorage.getItem(PHASE30_EVIDENCE_STORAGE_KEY) || '{}')
+    return value && typeof value === 'object' && !Array.isArray(value) ? value : {}
+  } catch {
+    return {}
+  }
+}
+
+function releaseLabel(summary, evidence) {
   if (!summary.completed) return 'QA not started'
   if (summary.failed) return 'Release blocked'
   if (summary.review) return 'Manual review needed'
-  if (summary.ready) return 'Automated gate passed'
+  if (summary.ready && evidence.ready) return 'Ready for signed gate'
+  if (summary.ready) return 'External evidence pending'
   return 'QA in progress'
 }
 
@@ -76,8 +90,13 @@ export default function AdminReleaseQa({ embedded = false }) {
   const [running, setRunning] = useState(false)
   const [lastRunAt, setLastRunAt] = useState('')
   const [notice, setNotice] = useState('')
+  const [completedEvidence, setCompletedEvidence] = useState(loadEvidence)
 
   const summary = useMemo(() => summarizeReleaseQaResults(results), [results])
+  const evidenceSummary = useMemo(
+    () => summarizePhase30Evidence(completedEvidence),
+    [completedEvidence],
+  )
 
   const categories = useMemo(() => (
     Array.from(new Set(RELEASE_QA_CHECKS.map((check) => check.category))).sort()
@@ -169,7 +188,11 @@ export default function AdminReleaseQa({ embedded = false }) {
 
   async function copyReport() {
     try {
-      await navigator.clipboard.writeText(buildReleaseQaReport(results, lastRunAt || new Date().toISOString()))
+      await navigator.clipboard.writeText(buildReleaseQaReport(
+        results,
+        lastRunAt || new Date().toISOString(),
+        completedEvidence,
+      ))
       setNotice('Release QA report copied to the clipboard.')
     } catch {
       setNotice('The report could not be copied. Review browser clipboard permissions.')
@@ -182,16 +205,30 @@ export default function AdminReleaseQa({ embedded = false }) {
     setStatus('all')
   }
 
+  function toggleEvidence(gateId) {
+    setCompletedEvidence((current) => {
+      const next = { ...current, [gateId]: !current[gateId] }
+      try { window.localStorage.setItem(PHASE30_EVIDENCE_STORAGE_KEY, JSON.stringify(next)) } catch { /* browser storage is optional */ }
+      return next
+    })
+  }
+
+  function resetEvidence() {
+    setCompletedEvidence({})
+    try { window.localStorage.removeItem(PHASE30_EVIDENCE_STORAGE_KEY) } catch { /* browser storage is optional */ }
+    setNotice('Browser-local evidence marks were reset. No server evidence was changed.')
+  }
+
   const content = (
       <div className="pwc-week16-page pwc-capacity17-page developer-release-workspace">
         {!embedded && (
         <header className="pwc-week16-hero pwc-capacity17-hero">
           <div>
-            <p className="admin-eyebrow">Phase 23 · Release QA</p>
-            <h1>Validate real Studio data before the production deployment gate.</h1>
+            <p className="admin-eyebrow">Phase 30 · Integrated Release QA</p>
+            <h1>Prove the complete system before the signed production gate.</h1>
             <p>
-              Run read-only endpoint contracts, response-time checks, and high-density visual flags
-              against the current environment. No client, session, or system record is modified.
+              Run read-only contracts and production-shaped configuration checks, then retain
+              external evidence for provider, migration, accessibility, and rollback verification.
             </p>
           </div>
 
@@ -199,7 +236,7 @@ export default function AdminReleaseQa({ embedded = false }) {
             <span aria-hidden="true">◎</span>
             <div>
               <small>Developer-only release gate</small>
-              <strong>{releaseLabel(summary)}</strong>
+              <strong>{releaseLabel(summary, evidenceSummary)}</strong>
               <p>Last completed {formatDateTime(lastRunAt)}</p>
             </div>
           </aside>
@@ -248,6 +285,41 @@ export default function AdminReleaseQa({ embedded = false }) {
             <strong>{summary.failed}</strong>
             <p>Resolve before production deployment</p>
           </article>
+        </section>
+
+        <section className="pwc-phase30-evidence" aria-labelledby="phase30-evidence-title">
+          <header>
+            <div>
+              <small>Required external evidence</small>
+              <h2 id="phase30-evidence-title">Production proof ledger</h2>
+              <p>
+                These browser-local marks support review only. The deployment script requires the
+                signed JSON evidence file and does not trust browser state.
+              </p>
+            </div>
+            <div className="pwc-phase30-evidence-summary">
+              <strong>{evidenceSummary.completed}/{evidenceSummary.total}</strong>
+              <span>{evidenceSummary.ready ? 'Evidence complete' : `${evidenceSummary.pending} pending`}</span>
+              <button type="button" onClick={resetEvidence} disabled={!evidenceSummary.completed}>Reset marks</button>
+            </div>
+          </header>
+          <div className="pwc-phase30-evidence-grid">
+            {PHASE30_EVIDENCE_GATES.map((gate) => {
+              const complete = Boolean(completedEvidence[gate.id])
+              return (
+                <button
+                  className={complete ? 'is-complete' : ''}
+                  key={gate.id}
+                  type="button"
+                  aria-pressed={complete}
+                  onClick={() => toggleEvidence(gate.id)}
+                >
+                  <span aria-hidden="true">{complete ? '✓' : '○'}</span>
+                  <span><small>{gate.category}</small><strong>{gate.title}</strong></span>
+                </button>
+              )
+            })}
+          </div>
         </section>
 
         <section className="pwc-week16-filters" aria-label="Release QA filters">

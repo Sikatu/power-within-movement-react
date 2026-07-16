@@ -71,3 +71,31 @@ test('release QA summary blocks deployment when a check fails', async () => {
   assert.equal(summary.averageLatencyMs, 200)
   assert.equal(summary.ready, false)
 })
+
+test('release QA summary keeps review findings out of the signed deployment gate', async () => {
+  const { summarizeReleaseQaResults } = await loadQaHelpers()
+  const summary = summarizeReleaseQaResults([
+    { status: 'pass', durationMs: 100 },
+    { status: 'review', durationMs: 200 },
+  ])
+
+  assert.equal(summary.failed, 0)
+  assert.equal(summary.review, 1)
+  assert.equal(summary.ready, false)
+})
+
+test('release QA maps integrated readiness blockers into a failed contract', async () => {
+  const { inspectReleaseQaResponse } = await loadQaHelpers()
+  const result = inspectReleaseQaResponse({
+    response: { summary: { status: 'blocked' }, checks: [] },
+    durationMs: 100,
+    contract: {
+      requiredPaths: ['summary'],
+      collectionPaths: ['checks'],
+      releaseStatePath: 'summary.status',
+    },
+  })
+
+  assert.equal(result.status, 'fail')
+  assert.match(result.notes.join(' '), /deployment blockers/)
+})

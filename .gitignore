@@ -7,6 +7,9 @@ server/.env
 server/node_modules/
 server/dist/
 server/storage/
+release-artifacts/
+*.dump
+*.dump.manifest.json
 *.log
 .DS_Store
 

@@ -56,4 +56,4 @@ for (const check of RELEASE_QA_CHECKS) {
 
 const summary = summarizeReleaseQaResults(results)
 console.log(buildReleaseQaReport(results))
-process.exit(summary.failed ? 1 : 0)
+process.exit(summary.ready ? 0 : 1)

@@ -42,8 +42,8 @@ const sections = [
     id: 'qa',
     code: '05',
     icon: '◇',
-    label: 'Release QA',
-    description: 'Read-only contract, latency, density, and responsive release verification.',
+    label: 'Release Gate',
+    description: 'Phase 30 contracts, production-shaped readiness, external evidence, and rollback verification.',
     legacyPath: '/admin/developer/qa',
   },
   {
