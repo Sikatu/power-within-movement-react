@@ -76,6 +76,7 @@ function AdminCommandPalette({
   onClose,
   onNavigate,
   onWarmRoute,
+  workspaceLabel,
   pinnedPaths,
   onTogglePinned,
 }) {
@@ -246,7 +247,7 @@ function AdminCommandPalette({
         <header className="pwc-command11-header">
           <span className="pwc-command11-mark" aria-hidden="true">⌘</span>
           <span>
-            <small>Studio command center</small>
+            <small>{workspaceLabel} · all accessible workspaces</small>
             <strong id="pwc-command11-title">Quick Find</strong>
           </span>
           <button
@@ -260,7 +261,7 @@ function AdminCommandPalette({
         </header>
 
         <p className="sr-only" id="pwc-command11-description">
-          Search accessible Studio destinations. Use the arrow keys to move, Enter to open, and Alt P to pin a destination.
+          Search accessible admin destinations. Use the arrow keys to move, Enter to open, and Alt P to pin a destination.
         </p>
 
         <label className="pwc-command11-search">
@@ -268,7 +269,7 @@ function AdminCommandPalette({
             <circle cx="11" cy="11" r="7" />
             <path d="m20 20-4-4" />
           </svg>
-          <span className="sr-only">Search Studio destinations</span>
+          <span className="sr-only">Search admin destinations</span>
           <input
             ref={inputRef}
             type="search"
@@ -307,7 +308,7 @@ function AdminCommandPalette({
           className="pwc-command11-results"
           id="pwc-command11-results"
           role="listbox"
-          aria-label="Studio destinations"
+          aria-label="Admin destinations"
         >
           {visibleItems.length ? visibleItems.map((item, index) => {
             const selected = index === activeIndex

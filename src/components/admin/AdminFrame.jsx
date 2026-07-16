@@ -139,7 +139,6 @@ function NavIcon({ name }) {
 function AdminFrame({ children }) {
   const location = useLocation()
   const navigate = useNavigate()
-  const searchInputRef = useRef(null)
   const workspaceRef = useRef(null)
   const sidebarRef = useRef(null)
   const mobileTriggerRef = useRef(null)
@@ -148,7 +147,6 @@ function AdminFrame({ children }) {
   const [adminUser, setAdminUser] = useState(readCachedUser)
   const [roleVerified, setRoleVerified] = useState(false)
   const [teamAccess, setTeamAccess] = useState(null)
-  const [searchQuery, setSearchQuery] = useState('')
   const [openGroupOverride, setOpenGroupOverride] = useState(undefined)
   const [allToolsOpen, setAllToolsOpen] = useState(false)
   const [workspaceOpen, setWorkspaceOpen] = useState(false)
@@ -175,7 +173,6 @@ function AdminFrame({ children }) {
 
     setWorkspaceOpen(false)
     setMobileOpen(false)
-    setSearchQuery('')
 
     window.requestAnimationFrame(() => {
       if (restoreToMobileTrigger) {
@@ -377,7 +374,6 @@ function AdminFrame({ children }) {
         const shouldReturnFocus = mobileOpen
         setWorkspaceOpen(false)
         setMobileOpen(false)
-        setSearchQuery('')
 
         if (shouldReturnFocus) {
           window.setTimeout(() => mobileTriggerRef.current?.focus(), 0)
@@ -432,7 +428,6 @@ function AdminFrame({ children }) {
       setWorkspaceOpen(false)
       setMobileOpen(false)
       setCommandOpen(false)
-      setSearchQuery('')
       setOpenGroupOverride(undefined)
       setAllToolsOpen(false)
 
@@ -458,15 +453,6 @@ function AdminFrame({ children }) {
     ],
     [accessibleGroups, allAccessiblePrimaryItems],
   )
-
-  const filteredItems = useMemo(() => {
-    const normalizedQuery = searchQuery.trim().toLowerCase()
-    if (!normalizedQuery) return []
-
-    return searchableItems.filter((item) => (
-      `${item.label} ${item.groupLabel}`.toLowerCase().includes(normalizedQuery)
-    ))
-  }, [searchQuery, searchableItems])
 
   const commandItems = useMemo(() => [
     ...accessibleWorkspaces.map((workspace) => ({
@@ -553,7 +539,6 @@ function AdminFrame({ children }) {
     setMobileOpen(false)
     setWorkspaceOpen(false)
     setCommandOpen(false)
-    setSearchQuery('')
     setOpenGroupOverride(undefined)
     setAllToolsOpen(false)
   }
@@ -581,7 +566,7 @@ function AdminFrame({ children }) {
         aria-expanded={mobileOpen}
         onClick={() => {
           setMobileOpen(true)
-          window.setTimeout(() => searchInputRef.current?.focus(), 0)
+          window.setTimeout(() => sidebarRef.current?.querySelector('.pwc-nav39-find-trigger')?.focus(), 0)
         }}
       >
         <span aria-hidden="true">☰</span>
@@ -592,7 +577,7 @@ function AdminFrame({ children }) {
         <button
           className="pwc-nav33-mobile-backdrop"
           type="button"
-          aria-label="Close Studio navigation"
+          aria-label={`Close ${activeWorkspace.label} navigation`}
           onClick={() => closeMobileNavigation()}
         />
       )}
@@ -625,7 +610,7 @@ function AdminFrame({ children }) {
             <button
               className="pwc-nav33-mobile-close"
               type="button"
-              aria-label="Close Studio navigation"
+              aria-label={`Close ${activeWorkspace.label} navigation`}
               onClick={() => closeMobileNavigation()}
             >
               ×
@@ -642,7 +627,7 @@ function AdminFrame({ children }) {
               onClick={() => setWorkspaceOpen((current) => !current)}
             >
               <span>
-                <small>Current workspace</small>
+                <small>Switch workspace</small>
                 <strong>{activeWorkspace.label}</strong>
               </span>
               {accessibleWorkspaces.length > 1 && (
@@ -672,21 +657,21 @@ function AdminFrame({ children }) {
             )}
           </div>
 
-          <label className="pwc-nav33-search">
+          <button
+            className="pwc-nav33-quick-find pwc-nav39-find-trigger"
+            type="button"
+            onClick={openCommandPalette}
+          >
             <svg viewBox="0 0 24 24" aria-hidden="true">
               <circle cx="11" cy="11" r="7" />
               <path d="m20 20-4-4" />
             </svg>
-            <span className="sr-only">Search accessible workspaces</span>
-            <input
-              ref={searchInputRef}
-              type="search"
-              value={searchQuery}
-              placeholder="Find any tool…"
-              onChange={(event) => setSearchQuery(event.target.value)}
-            />
+            <span>
+              <strong>Quick Find</strong>
+              <small>Any page or tool</small>
+            </span>
             <kbd>Ctrl K</kbd>
-          </label>
+          </button>
         </div>
 
         <nav className="pwc-admin-nav pwc-studio-nav pwc-nav33-nav" aria-label={`${activeWorkspace.label} navigation`}>
@@ -696,24 +681,6 @@ function AdminFrame({ children }) {
               <span />
               <span />
             </div>
-          ) : searchQuery.trim() ? (
-            <section className="pwc-nav33-search-results" aria-label="Navigation search results" aria-live="polite">
-              <p>{filteredItems.length ? 'Matching destinations' : 'No matching destinations'}</p>
-
-              {filteredItems.map((item) => (
-                <Link
-                  className={routeMatches(location.pathname, item) ? 'is-active' : ''}
-                  key={`${item.groupLabel}-${item.to}`}
-                  to={item.to}
-                  aria-current={routeMatches(location.pathname, item) ? 'page' : undefined}
-                  {...preloadInteractionProps(item.to)}
-                  onClick={prepareForNavigation}
-                >
-                  <span>{item.label}</span>
-                  <small>{item.groupLabel}</small>
-                </Link>
-              ))}
-            </section>
           ) : (
             <>
               <div className="pwc-stream31-nav-heading">
@@ -737,7 +704,7 @@ function AdminFrame({ children }) {
               </section>
 
               {pinnedItems.length > 0 && (
-                <section className="pwc-nav33-pinned" aria-label="Pinned Studio destinations">
+                <section className="pwc-nav33-pinned" aria-label="Pinned destinations">
                   <div className="pwc-nav33-pinned-heading">
                     <span>✦</span>
                     <strong>Pinned</strong>
@@ -798,7 +765,7 @@ function AdminFrame({ children }) {
                   >
                     <span>
                       <strong>{allToolsOpen ? 'Hide all tools' : 'Browse all tools'}</strong>
-                      <small>{accessibleGroups.reduce((total, group) => total + group.items.length, 0)} focused workspaces</small>
+                      <small>{accessibleGroups.reduce((total, group) => total + group.items.length, 0)} tools available</small>
                     </span>
                     <svg viewBox="0 0 24 24" aria-hidden="true">
                       <path d="m9 6 6 6-6 6" />
@@ -874,11 +841,9 @@ function AdminFrame({ children }) {
             aria-live="polite"
           >
             <span aria-hidden="true" />
-            <strong>{isOnline ? 'Studio connected' : 'Connection interrupted'}</strong>
+            <strong>{isOnline ? 'Connected' : 'Connection interrupted'}</strong>
             <small>{isOnline ? 'Changes can be saved securely.' : 'Reconnect before saving new changes.'}</small>
           </div>
-
-          <NotificationCenter mode="admin" />
 
           <div className="pwc-nav33-account">
             <span className="pwc-nav33-avatar" aria-hidden="true">
@@ -891,16 +856,9 @@ function AdminFrame({ children }) {
             </span>
           </div>
 
-          <div className="pwc-nav33-utilities">
-            <button
-              className="pwc-nav33-quick-find"
-              type="button"
-              onClick={openCommandPalette}
-            >
-              <span>Quick Find</span>
-              <kbd>Ctrl K</kbd>
-            </button>
-            <Link to="/" onClick={prepareForNavigation}>View public site</Link>
+          <div className="pwc-nav33-utilities pwc-nav39-footer-actions">
+            <NotificationCenter mode="admin" />
+            <Link to="/" aria-label="View public website" onClick={prepareForNavigation}>Site</Link>
             <button type="button" disabled={signingOut} onClick={handleSignOut}>
               {signingOut ? 'Signing out…' : 'Sign out'}
             </button>
@@ -933,6 +891,7 @@ function AdminFrame({ children }) {
             navigate(to)
           }}
           onWarmRoute={warmRoute}
+          workspaceLabel={activeWorkspace.label}
           pinnedPaths={pinnedPaths}
           onTogglePinned={handleTogglePinned}
         />
