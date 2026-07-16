@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import AdminFrame from '../../components/admin/AdminFrame'
+import { useAdminConfirm } from '../../components/admin/AdminConfirmContext'
 import {
   archiveAdminEncouragement,
   createAdminEncouragement,
@@ -10,8 +11,6 @@ import {
   updateAdminEncouragement,
 } from '../../lib/nativeApi'
 
-import './Admin.css'
-import './EncouragementStudio.css'
 
 const BUSINESS_TIME_ZONE = 'America/New_York'
 
@@ -105,6 +104,7 @@ function metricValue(value) {
 }
 
 export default function AdminEncouragements() {
+  const confirmAction = useAdminConfirm()
   const composerRef = useRef(null)
   const [clients, setClients] = useState([])
   const [encouragements, setEncouragements] = useState([])
@@ -279,7 +279,12 @@ export default function AdminEncouragements() {
   }
 
   async function publishNow(post) {
-    if (!window.confirm('Publish this encouragement to the Client Portal now?')) return
+    if (!(await confirmAction({
+      title: 'Publish this encouragement?',
+      message: 'Publish this encouragement to the Client Portal now?',
+      confirmLabel: 'Publish now',
+      tone: 'warning',
+    }))) return
 
     setBusyId(post.id)
     setNotice('')
@@ -301,7 +306,12 @@ export default function AdminEncouragements() {
   }
 
   async function archivePost(post) {
-    if (!window.confirm('Archive this encouragement and remove it from client view?')) return
+    if (!(await confirmAction({
+      title: 'Archive this encouragement?',
+      message: 'This encouragement will be removed from client view.',
+      confirmLabel: 'Archive encouragement',
+      tone: 'warning',
+    }))) return
 
     setBusyId(post.id)
     setNotice('')
@@ -319,7 +329,12 @@ export default function AdminEncouragements() {
   }
 
   async function deletePost(post) {
-    if (!window.confirm('Permanently delete this draft or archived encouragement?')) return
+    if (!(await confirmAction({
+      title: 'Delete this encouragement permanently?',
+      message: 'This draft or archived encouragement cannot be restored after deletion.',
+      confirmLabel: 'Delete permanently',
+      tone: 'danger',
+    }))) return
 
     setBusyId(post.id)
     setNotice('')

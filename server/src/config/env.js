@@ -1,6 +1,10 @@
 require('dotenv').config()
 
-const DEFAULT_DEV_CLIENT_ORIGIN = 'http://localhost:5173'
+const DEFAULT_DEV_CLIENT_ORIGINS = [
+  'http://localhost:5173',
+  'http://localhost:5174',
+]
+const DEFAULT_DEV_CLIENT_ORIGIN = DEFAULT_DEV_CLIENT_ORIGINS[0]
 const DEFAULT_DEV_JWT_SECRET = 'change-this-dev-secret-before-production'
 
 function parseCsv(value, fallback = []) {
@@ -23,6 +27,11 @@ function parseBoolean(value, fallback = false) {
   return fallback
 }
 
+function parseBoundedNumber(value, fallback, minimum, maximum) {
+  const parsed = Number(value)
+  return Number.isFinite(parsed) ? Math.min(Math.max(parsed, minimum), maximum) : fallback
+}
+
 function normalizeSameSite(value, fallback) {
   const normalized = String(value || fallback || 'lax').trim().toLowerCase()
   const allowed = new Set(['lax', 'strict', 'none'])
@@ -33,10 +42,13 @@ function normalizeSameSite(value, fallback) {
 const nodeEnv = process.env.NODE_ENV || 'development'
 const isProduction = nodeEnv === 'production'
 
-const clientOrigins = parseCsv(
+const configuredClientOrigins = parseCsv(
   process.env.CLIENT_ORIGINS || process.env.CLIENT_ORIGIN,
   [DEFAULT_DEV_CLIENT_ORIGIN],
 )
+const clientOrigins = isProduction
+  ? configuredClientOrigins
+  : [...new Set([...DEFAULT_DEV_CLIENT_ORIGINS, ...configuredClientOrigins])]
 
 const jwtSecret = process.env.JWT_SECRET || DEFAULT_DEV_JWT_SECRET
 
@@ -83,6 +95,32 @@ const env = {
 
   resendApiKey: process.env.RESEND_API_KEY || '',
   portalEmailFrom: process.env.PORTAL_EMAIL_FROM || '',
+  newsletterEmailFrom: process.env.NEWSLETTER_EMAIL_FROM || process.env.RESEND_FROM_EMAIL || process.env.PORTAL_EMAIL_FROM || '',
+  newsletterReplyTo: process.env.NEWSLETTER_REPLY_TO || '',
+  resendWebhookSecret: process.env.RESEND_WEBHOOK_SECRET || '',
+  publicApiUrl: process.env.PUBLIC_API_URL || process.env.PUBLIC_SITE_URL || clientOrigins[0] || DEFAULT_DEV_CLIENT_ORIGIN,
+  letterSigningSecret: process.env.LETTER_SIGNING_SECRET || jwtSecret,
+  letterSendConcurrency: parseBoundedNumber(process.env.LETTER_SEND_CONCURRENCY, 1, 1, 5),
+  letterSendBatchDelayMs: parseBoundedNumber(process.env.LETTER_SEND_BATCH_DELAY_MS, 550, 0, 5000),
+
+  assetStorageDriver: String(process.env.ASSET_STORAGE_DRIVER || 'local').trim().toLowerCase() === 's3' ? 's3' : 'local',
+  assetStorageDir: process.env.ASSET_STORAGE_DIR || require('path').resolve(__dirname, '..', '..', 'storage', 'assets'),
+  assetMaxUploadBytes: Number(process.env.ASSET_MAX_UPLOAD_BYTES || 50 * 1024 * 1024),
+  assetS3Endpoint: process.env.ASSET_S3_ENDPOINT || '',
+  assetS3Region: process.env.ASSET_S3_REGION || 'us-east-1',
+  assetS3Bucket: process.env.ASSET_S3_BUCKET || '',
+  assetS3AccessKeyId: process.env.ASSET_S3_ACCESS_KEY_ID || '',
+  assetS3SecretAccessKey: process.env.ASSET_S3_SECRET_ACCESS_KEY || '',
+  assetS3ForcePathStyle: parseBoolean(process.env.ASSET_S3_FORCE_PATH_STYLE, true),
+  assetAccessGrantSecret: process.env.ASSET_ACCESS_GRANT_SECRET || jwtSecret,
+  assetAccessGrantTtlSeconds: Math.min(Math.max(Number(process.env.ASSET_ACCESS_GRANT_TTL_SECONDS || 300), 30), 900),
+  assetMalwareScanner: String(process.env.ASSET_MALWARE_SCANNER || 'disabled').trim().toLowerCase(),
+
+  founderTranscriptionProvider: String(process.env.FOUNDER_TRANSCRIPTION_PROVIDER || 'disabled').trim().toLowerCase(),
+  founderTranscriptionApiUrl: process.env.FOUNDER_TRANSCRIPTION_API_URL || '',
+  founderTranscriptionApiKey: process.env.FOUNDER_TRANSCRIPTION_API_KEY || '',
+  founderTranscriptionModel: process.env.FOUNDER_TRANSCRIPTION_MODEL || '',
+  founderTranscriptionTimeoutMs: parseBoundedNumber(process.env.FOUNDER_TRANSCRIPTION_TIMEOUT_MS, 120000, 5000, 600000),
 
   canonicalDeveloperEmail:
     process.env.CANONICAL_DEVELOPER_EMAIL || 'darelle.grande.mva@gmail.com',

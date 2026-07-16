@@ -9,8 +9,6 @@ import {
   updateAdminAutomationWorkflow,
 } from '../../lib/nativeApi'
 
-import './Admin.css'
-import './AutomationStudio.css'
 
 const triggerLabels = {
   manual: 'Manual enrollment',
@@ -347,8 +345,8 @@ export default function AdminAutomationStudio() {
           </div>
         </header>
 
-        {error && <div className="automation-studio-alert is-error">{error}</div>}
-        {notice && <div className="automation-studio-alert is-success">{notice}</div>}
+        {error && <div className="automation-studio-alert is-error" role="alert">{error}</div>}
+        {notice && <div className="automation-studio-alert is-success" role="status">{notice}</div>}
 
         <section className="automation-studio-metrics" aria-label="Automation metrics">
           <article><span>Workflows</span><strong>{metrics.totalWorkflows || 0}</strong></article>
@@ -359,7 +357,7 @@ export default function AdminAutomationStudio() {
         </section>
 
         {isLoading ? (
-          <section className="automation-studio-empty">Preparing Automation Studio…</section>
+          <section className="automation-studio-empty" aria-live="polite" aria-busy="true">Preparing Automation Studio…</section>
         ) : (
           <div className="automation-studio-layout">
             <aside className="automation-workflow-list">

@@ -222,6 +222,11 @@ export default function NotificationCenter({ mode = 'admin' }) {
     }
   }
 
+  function openFullActivity() {
+    setOpen(false)
+    navigate('/admin/activity')
+  }
+
   async function markAllRead() {
     setSaving(true)
     setError('')
@@ -383,6 +388,7 @@ export default function NotificationCenter({ mode = 'admin' }) {
                 </div>
 
                 <div className="pwc-notification-actions">
+                  {!isClient && <button type="button" onClick={openFullActivity}>Open activity center</button>}
                   <button type="button" onClick={markAllRead} disabled={saving || !summary.unread}>Mark all read</button>
                   <button type="button" onClick={clearRead} disabled={saving}>Clear read</button>
                 </div>

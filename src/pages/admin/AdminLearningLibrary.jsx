@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import AdminFrame from '../../components/admin/AdminFrame'
+import { useAdminConfirm } from '../../components/admin/AdminConfirmContext'
 import {
   archiveAdminLearningCourse,
   createAdminLearningCourse,
@@ -17,8 +18,6 @@ import {
   updateAdminLearningModule,
 } from '../../lib/nativeApi'
 
-import './Admin.css'
-import './LearningLibrary.css'
 
 const emptyCourseForm = {
   title: '',
@@ -199,6 +198,7 @@ function ModuleEditor({ module, onSave, onDelete, onAddLesson, onEditLesson }) {
 }
 
 export default function AdminLearningLibrary() {
+  const confirmAction = useAdminConfirm()
   const [courses, setCourses] = useState([])
   const [clients, setClients] = useState([])
   const [featureEnabled, setFeatureEnabled] = useState(true)
@@ -381,7 +381,12 @@ export default function AdminLearningLibrary() {
   }
 
   async function handleArchive() {
-    if (!window.confirm('Archive this learning program and remove it from client view?')) return
+    if (!(await confirmAction({
+      title: 'Archive this learning program?',
+      message: 'The program will be removed from client view.',
+      confirmLabel: 'Archive program',
+      tone: 'warning',
+    }))) return
 
     await runAction(
       () => archiveAdminLearningCourse(selectedCourseId),
@@ -390,7 +395,12 @@ export default function AdminLearningLibrary() {
   }
 
   async function handleDeleteCourse() {
-    if (!window.confirm('Permanently delete this learning program and all of its lessons?')) return
+    if (!(await confirmAction({
+      title: 'Delete this learning program permanently?',
+      message: 'The program and every lesson inside it will be permanently deleted.',
+      confirmLabel: 'Delete program',
+      tone: 'danger',
+    }))) return
 
     const response = await runAction(
       () => deleteAdminLearningCourse(selectedCourseId),
@@ -425,7 +435,12 @@ export default function AdminLearningLibrary() {
   }
 
   async function handleDeleteModule(moduleId) {
-    if (!window.confirm('Delete this module and every lesson inside it?')) return
+    if (!(await confirmAction({
+      title: 'Delete this module?',
+      message: 'This module and every lesson inside it will be permanently deleted.',
+      confirmLabel: 'Delete module',
+      tone: 'danger',
+    }))) return
 
     await runAction(() => deleteAdminLearningModule(moduleId), 'Module deleted.')
   }
@@ -477,7 +492,12 @@ export default function AdminLearningLibrary() {
 
   async function handleDeleteLesson() {
     if (!lessonEditor?.lessonId) return
-    if (!window.confirm('Permanently delete this lesson?')) return
+    if (!(await confirmAction({
+      title: 'Delete this lesson permanently?',
+      message: 'This lesson cannot be restored after deletion.',
+      confirmLabel: 'Delete lesson',
+      tone: 'danger',
+    }))) return
 
     const response = await runAction(
       () => deleteAdminLearningLesson(lessonEditor.lessonId),
@@ -524,20 +544,20 @@ export default function AdminLearningLibrary() {
         </header>
 
         {!featureEnabled && (
-          <div className="learning-library-alert is-warning">
+          <div className="learning-library-alert is-warning" role="status">
             The Courses feature flag is off. You can continue building, but clients will not see the library until it is enabled.
           </div>
         )}
 
-        {error && <div className="learning-library-alert is-error">{error}</div>}
-        {notice && <div className="learning-library-alert is-success">{notice}</div>}
+        {error && <div className="learning-library-alert is-error" role="alert">{error}</div>}
+        {notice && <div className="learning-library-alert is-success" role="status">{notice}</div>}
 
-        <div className="learning-library-metrics">
+        <section className="learning-library-metrics" aria-label="Learning Library summary">
           <article><span>Live programs</span><strong>{metrics.live}</strong></article>
           <article><span>Drafts</span><strong>{metrics.draft}</strong></article>
           <article><span>Total lessons</span><strong>{metrics.lessons}</strong></article>
           <article><span>Client assignments</span><strong>{metrics.learners}</strong></article>
-        </div>
+        </section>
 
         <div className="learning-library-layout">
           <aside className="learning-library-sidebar">

@@ -10,10 +10,20 @@ const healthRoutes = require('./routes/health.routes')
 const systemRoutes = require('./routes/system.routes')
 const authRoutes = require('./routes/auth.routes')
 const adminRoutes = require('./routes/admin.routes')
+const assetVaultRoutes = require('./routes/assetVault.routes')
+const newsletterAudienceRoutes = require('./routes/newsletterAudience.routes')
+const letterBuilderRoutes = require('./routes/letterBuilder.routes')
+const letterPublicRoutes = require('./routes/letterPublic.routes')
+const founderToolsRoutes = require('./routes/founderTools.routes')
+const releaseReadinessRoutes = require('./routes/releaseReadiness.routes')
 const publicRoutes = require('./routes/public.routes')
 const frontendErrorRoutes = require('./routes/frontendError.routes')
 const developerErrorRoutes = require('./routes/developerErrors.routes')
 const { requestErrorContext } = require('./middleware/errorMonitoring.middleware')
+const {
+  enforceTrustedMutation,
+  sensitiveResponseHeaders,
+} = require('./middleware/securityIntegrity.middleware')
 const { notFound, errorHandler } = require('./middleware/error.middleware')
 
 const app = express()
@@ -45,7 +55,12 @@ app.use(
   }),
 )
 
-app.use(express.json({ limit: '1mb' }))
+app.use(express.json({
+  limit: '1mb',
+  verify(req, _res, buffer) {
+    req.rawBody = Buffer.from(buffer)
+  },
+}))
 app.use(express.urlencoded({ extended: true }))
 app.use(cookieParser())
 app.use(requestErrorContext)
@@ -61,10 +76,22 @@ app.get('/api', (req, res) => {
 
 app.use('/api/health', healthRoutes)
 app.use('/api/system', systemRoutes)
-app.use('/api/auth', authRoutes)
-app.use('/api/admin/developer/errors', developerErrorRoutes)
-app.use('/api/admin', adminRoutes)
+app.use('/api/auth', sensitiveResponseHeaders, enforceTrustedMutation, authRoutes)
+app.use(
+  '/api/admin/developer/errors',
+  sensitiveResponseHeaders,
+  enforceTrustedMutation,
+  developerErrorRoutes,
+)
+app.use('/api/admin/assets', sensitiveResponseHeaders, enforceTrustedMutation, assetVaultRoutes)
+app.use('/api/admin/audience', sensitiveResponseHeaders, enforceTrustedMutation, newsletterAudienceRoutes)
+app.use('/api/admin/letters', sensitiveResponseHeaders, enforceTrustedMutation, letterBuilderRoutes)
+app.use('/api/admin/founder-tools', sensitiveResponseHeaders, enforceTrustedMutation, founderToolsRoutes)
+app.use('/api/admin/developer/release-readiness', sensitiveResponseHeaders, releaseReadinessRoutes)
+app.use('/api/admin', sensitiveResponseHeaders, enforceTrustedMutation, adminRoutes)
 app.use('/api/public/error-reports', frontendErrorRoutes)
+app.use('/api/public/letters', letterPublicRoutes)
+app.use('/api/public/client-portal', sensitiveResponseHeaders, enforceTrustedMutation)
 app.use('/api/public', publicRoutes)
 
 app.use(notFound)

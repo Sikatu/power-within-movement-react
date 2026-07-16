@@ -70,3 +70,13 @@ test('admin login relies on the HTTP-only cookie instead of returning the JWT', 
 
   assert.doesNotMatch(authSource, /user:\s*publicUser\(refreshedUser\),\s*token\s*[,}]/)
 })
+
+test('Developer Error Center migration repairs legacy fingerprint uniqueness', () => {
+  const migrationSource = fs.readFileSync(
+    path.join(__dirname, '..', 'scripts', 'ensure-developer-error-center.cjs'),
+    'utf8',
+  )
+
+  assert.match(migrationSource, /pwc_application_error_fingerprint_repair/)
+  assert.match(migrationSource, /UNIQUE \(fingerprint\)/)
+})

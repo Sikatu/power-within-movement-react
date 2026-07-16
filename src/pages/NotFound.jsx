@@ -1,17 +1,21 @@
 import { Link } from 'react-router-dom'
+import './NotFound.css'
 
 function NotFound() {
   return (
-    <main>
-      <section className="section not-found-section">
-        <div className="section-header">
+    <main id="main-content" className="not-found-page">
+      <section className="not-found-card">
+        <span className="not-found-number" aria-hidden="true">404</span>
+        <div className="not-found-copy">
           <p className="eyebrow">Page Not Found</p>
-          <h2>This page may have moved, but you can still return to what matters.</h2>
-          <p>Use the links below to continue exploring Power Within Collective.</p>
-
-          <div className="hero-actions">
-            <Link to="/" className="btn primary">Return Home</Link>
-            <Link to="/experiences" className="btn secondary">Explore Experiences</Link>
+          <h1>This page has stepped out of view.</h1>
+          <p>
+            The address may have changed, or the page may no longer be available.
+            You can return to the main experience or contact Power Within for help.
+          </p>
+          <div className="not-found-actions">
+            <Link className="button button-primary" to="/">Return Home</Link>
+            <Link className="button button-secondary" to="/contact">Contact Power Within</Link>
           </div>
         </div>
       </section>

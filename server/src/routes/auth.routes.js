@@ -161,7 +161,10 @@ function readPasswordChangeToken(req) {
     throw error
   }
 
-  const payload = jwt.verify(token, env.jwtSecret)
+  const payload = jwt.verify(token, env.jwtSecret, {
+    algorithms: ['HS256'],
+    clockTolerance: 5,
+  })
 
   if (payload.purpose !== 'password_change') {
     const error = new Error('Invalid password-change session.')
@@ -255,7 +258,7 @@ router.post('/login', authenticationRateLimit, async (req, res, next) => {
         created_at,
         updated_at
       FROM system_users
-      WHERE email = $1
+      WHERE lower(email) = lower($1)
       LIMIT 1
       `,
       [email],

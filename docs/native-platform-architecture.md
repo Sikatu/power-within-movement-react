@@ -47,13 +47,17 @@ This project is moving toward a fully custom backend system.
    - Track admin changes
    - Track important system actions
 
+8. Founder Command Center
+   - DST-aware Founder and comparison clocks
+   - Scheduling timezone shown separately from clock preferences
+   - Private Asset Vault voice recordings
+   - Server-only transcription queue and editable transcripts
+   - Explicit client sharing and Letter draft reuse
+   - Retention, archive, permanent deletion, and recording audit events
+
 ## Current phase
 
-Phase 2.0 creates:
-- Express backend API
-- PostgreSQL schema draft
-- Health endpoint
-- Platform blueprint endpoint
+Phase 29 adds the Founder Command Center on the protected admin-foundation branch. Phase 30 remains responsible for migration rehearsal, complete release QA, production merge, and deployment.
 
 ## Local backend URLs
 
@@ -63,9 +67,8 @@ Phase 2.0 creates:
 
 ## Next phase
 
-Phase 2.1:
-- Install or connect PostgreSQL
-- Create local database
-- Apply 001_initial_schema.sql
-- Create first owner/admin user
-- Add real authentication
+Phase 30:
+- Run the full ordered migration against the intended environment
+- Verify storage, email, transcription, consent, privacy, and deletion configuration
+- Complete production release QA
+- Merge and deploy only after the release decision

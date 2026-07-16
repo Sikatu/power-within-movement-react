@@ -1,187 +1,122 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { getClientPortalMe, loginClientPortal } from '../lib/nativeApi'
+import logo from '../assets/images/logo.webp'
+import { getClientPortalMe, loginClientPortal } from '../lib/nativeApi.js'
+import './PortalEntry.css'
 
-import './ClientPortal.css'
 function getFriendlyLoginError(message) {
-  const normalizedMessage = String(message || '').toLowerCase()
+  const normalized = String(message || '').toLowerCase()
 
-  if (
-    normalizedMessage.includes('failed to fetch') ||
-    normalizedMessage.includes('network') ||
-    normalizedMessage.includes('load failed')
-  ) {
+  if (normalized.includes('failed to fetch') || normalized.includes('network') || normalized.includes('load failed')) {
     return 'We could not connect to the private portal for a moment. Please check your connection and try again.'
   }
 
-  if (
-    normalizedMessage.includes('invalid') ||
-    normalizedMessage.includes('incorrect') ||
-    normalizedMessage.includes('unauthorized') ||
-    normalizedMessage.includes('401')
-  ) {
+  if (normalized.includes('invalid') || normalized.includes('incorrect') || normalized.includes('unauthorized') || normalized.includes('401')) {
     return 'The email or password did not match an active client portal account.'
   }
 
   return message || 'We could not sign you in yet. Please try again shortly.'
 }
 
-export default function ClientPortalLogin() {
+function ClientPortalLogin() {
   const navigate = useNavigate()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [isSaving, setIsSaving] = useState(false)
-  const [error, setError] = useState('')
-  const [notice, setNotice] = useState('')
+  const [status, setStatus] = useState({ state: 'idle', message: '' })
 
   useEffect(() => {
-    document.body.classList.add('client-portal-mode')
-
-    return () => {
-      document.body.classList.remove('client-portal-mode')
-    }
+    document.body.classList.add('portal-entry-mode')
+    return () => document.body.classList.remove('portal-entry-mode')
   }, [])
 
   useEffect(() => {
-    let isMounted = true
+    let active = true
 
-    async function redirectClientIfAlreadyLoggedIn() {
-      try {
-        await getClientPortalMe()
-
-        if (isMounted) {
-          navigate('/client-portal/home', { replace: true })
-        }
-      } catch {
-        // Not logged in yet. Stay on the login page.
-      }
-    }
-
-    redirectClientIfAlreadyLoggedIn()
+    getClientPortalMe()
+      .then(() => {
+        if (active) navigate('/client-portal/home', { replace: true })
+      })
+      .catch(() => {})
 
     return () => {
-      isMounted = false
+      active = false
     }
   }, [navigate])
 
-  async function handleSubmit(event) {
+  const handleSubmit = async (event) => {
     event.preventDefault()
-
-    setIsSaving(true)
-    setError('')
-    setNotice('')
+    setStatus({ state: 'loading', message: '' })
 
     try {
-      await loginClientPortal({
-        email: email.trim().toLowerCase(),
-        password,
-      })
-
+      await loginClientPortal({ email: email.trim().toLowerCase(), password })
       navigate('/client-portal/home')
-    } catch (loginError) {
-      setError(
-        loginError.message ||
-          'We could not sign you in. Please check your email and password.',
-      )
-    } finally {
-      setIsSaving(false)
+    } catch (error) {
+      setStatus({ state: 'error', message: getFriendlyLoginError(error.message) })
     }
   }
 
-  function handleForgotPassword() {
-    setError('')
-    setNotice(
-      'Password reset is not automated yet. Please contact Power Within so your portal access can be safely restored.',
-    )
+  const handleForgotPassword = () => {
+    setStatus({
+      state: 'notice',
+      message: 'Password recovery is handled personally for your privacy. Contact Power Within and the team will help restore your access safely.',
+    })
   }
 
-  const displayError = getFriendlyLoginError(error)
-
   return (
-    <main className="client-portal-login-page-v1">
-      <section className="client-portal-login-shell-v1">
-        <div className="client-portal-invite-copy-v1">
+    <main id="main-content" className="portal-entry-page">
+      <section className="portal-entry-shell">
+        <div className="portal-entry-intro">
+          <Link className="portal-entry-logo" to="/" aria-label="Return to Power Within Collective">
+            <img src={logo} alt="" />
+          </Link>
           <p className="eyebrow">Power Within Client Portal</p>
           <h1>Your private space for care.</h1>
-          <p>
-            Sign in to return to your private notes, resources, session history,
-            reminders, and client care prepared for your Power Within journey.
-          </p>
-
-          <div className="client-portal-login-privacy-v2">
+          <p>Sign in to return to your private notes, resources, session history, reminders, and client care prepared for your Power Within journey.</p>
+          <div className="portal-entry-trust" aria-label="Portal privacy features">
             <span>Private by design</span>
             <span>Client-only access</span>
             <span>Guided by Power Within</span>
           </div>
         </div>
 
-        <div className="client-portal-invite-card-v1 client-portal-login-card-v2">
-          <div className="client-portal-card-heading-v1">
-            <span>Client Login</span>
+        <article className="portal-entry-card">
+          <header>
+            <p className="eyebrow">Client Login</p>
             <h2>Welcome back</h2>
-            <p>
-              Use the email and password you created when you first accepted
-              your private portal invitation.
-            </p>
-          </div>
+            <p>Use the email and password you created when you first accepted your private portal invitation.</p>
+          </header>
 
-          {error && <div className="client-portal-alert-v1">{displayError}</div>}
-
-          {notice && (
-            <div className="client-portal-alert-v1 is-success">{notice}</div>
+          {status.message && (
+            <div className={`portal-entry-alert ${status.state === 'error' ? 'is-error' : 'is-notice'}`} role={status.state === 'error' ? 'alert' : 'status'}>
+              {status.message}
+            </div>
           )}
 
-          <form className="client-portal-form-v1" onSubmit={handleSubmit}>
+          <form className="portal-entry-form" onSubmit={handleSubmit}>
             <label>
               <span>Email</span>
-              <input
-                type="email"
-                value={email}
-                onChange={(event) => setEmail(event.target.value)}
-                autoComplete="email"
-                placeholder="you@email.com"
-                required
-              />
+              <input type="email" value={email} onChange={(event) => setEmail(event.target.value)} autoComplete="email" placeholder="you@email.com" required />
             </label>
-
             <label>
               <span>Password</span>
-              <input
-                type="password"
-                value={password}
-                onChange={(event) => setPassword(event.target.value)}
-                autoComplete="current-password"
-                placeholder="Your private password"
-                required
-              />
+              <input type="password" value={password} onChange={(event) => setPassword(event.target.value)} autoComplete="current-password" placeholder="Your private password" required />
             </label>
-
-            <button type="submit" disabled={isSaving}>
-              {isSaving ? 'Signing In...' : 'Enter My Portal'}
+            <button type="submit" disabled={status.state === 'loading'}>
+              {status.state === 'loading' ? 'Signing In…' : 'Enter My Portal'}
             </button>
           </form>
 
-          <div className="client-portal-login-support-v2">
-            <button type="button" onClick={handleForgotPassword}>
-              Forgot password?
-            </button>
-
+          <div className="portal-entry-support">
+            <button type="button" onClick={handleForgotPassword}>Forgot password?</button>
             <Link to="/contact">Need help accessing your portal?</Link>
           </div>
 
-          <div className="client-portal-login-meta-v2">
-            <p>
-              New here? Your portal begins through a private invitation link
-              from Power Within.
-            </p>
-          </div>
-
-          <Link className="client-portal-return-link-v1" to="/">
-            Return to Power Within
-          </Link>
-        </div>
+          <p className="portal-entry-new-client">New here? Your portal begins through a private invitation link from Power Within.</p>
+          <Link className="portal-entry-return" to="/">← Return to Power Within</Link>
+        </article>
       </section>
     </main>
   )
 }
 
+export default ClientPortalLogin

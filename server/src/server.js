@@ -3,6 +3,9 @@ const { env } = require('./config/env')
 const { startNotificationEmailDispatcher } = require('./services/notificationCenter.service')
 const { startAutomationDispatcher } = require('./services/automationStudio.service')
 const { startBookingCommunicationDispatcher } = require('./services/bookingOnboarding.service')
+const { pool } = require('./db/pool')
+const { startLetterBroadcastDispatcher } = require('./services/letterBroadcast.service')
+const { startFounderTranscriptionDispatcher } = require('./services/founderTranscription.service')
 const {
   installProcessErrorHandlers,
   startDeveloperErrorMonitor,
@@ -15,5 +18,7 @@ app.listen(env.port, () => {
   startNotificationEmailDispatcher()
   startAutomationDispatcher()
   startBookingCommunicationDispatcher()
+  startLetterBroadcastDispatcher(pool)
+  startFounderTranscriptionDispatcher(pool)
   startDeveloperErrorMonitor()
 })

@@ -1,0 +1,200 @@
+.portal-chrome-header {
+  align-items: center;
+  background: #fffdfa;
+  border-bottom: 1px solid rgba(84, 31, 48, 0.13);
+  display: flex;
+  justify-content: space-between;
+  min-height: 88px;
+  padding: 16px clamp(24px, 5vw, 76px);
+}
+
+.portal-chrome-brand {
+  align-items: center;
+  color: #471225;
+  display: inline-flex;
+  gap: 13px;
+  text-decoration: none;
+}
+
+.portal-chrome-brand img {
+  height: 53px;
+  object-fit: contain;
+  width: 53px;
+}
+
+.portal-chrome-brand span {
+  display: grid;
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  line-height: 1.45;
+  text-transform: uppercase;
+}
+
+.portal-chrome-brand strong {
+  font-family: var(--font-display);
+  font-size: 1.12rem;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: none;
+}
+
+.portal-chrome-account {
+  align-items: center;
+  display: flex;
+  gap: 21px;
+}
+
+.portal-chrome-account > a,
+.portal-chrome-account > button {
+  background: none;
+  border: 0;
+  color: #5b2638;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  padding: 9px 0;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+.portal-chrome-account > button {
+  border-left: 1px solid rgba(84, 31, 48, 0.18);
+  padding-left: 21px;
+}
+
+.portal-chrome-account > button:disabled {
+  cursor: wait;
+  opacity: 0.58;
+}
+
+.portal-chrome-signed-in {
+  display: grid;
+  line-height: 1.35;
+  max-width: 220px;
+  text-align: right;
+}
+
+.portal-chrome-signed-in small {
+  color: #996f7d;
+  font-size: 0.67rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.portal-chrome-signed-in strong {
+  color: #421426;
+  font-size: 0.88rem;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.portal-chrome-nav {
+  align-items: stretch;
+  background: #55182e;
+  display: flex;
+  min-height: 56px;
+  overflow-x: auto;
+  padding: 0 clamp(24px, 5vw, 76px);
+  scrollbar-width: none;
+}
+
+.portal-chrome-nav::-webkit-scrollbar {
+  display: none;
+}
+
+.portal-chrome-nav a {
+  align-items: center;
+  border-bottom: 3px solid transparent;
+  color: rgba(255, 248, 242, 0.72);
+  display: inline-flex;
+  flex: 0 0 auto;
+  font-size: 0.75rem;
+  gap: 8px;
+  letter-spacing: 0.11em;
+  padding: 0 26px;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+.portal-chrome-nav a:first-child {
+  padding-left: 0;
+}
+
+.portal-chrome-nav a:hover,
+.portal-chrome-nav a.is-active {
+  border-bottom-color: #d8aa78;
+  color: #fffaf5;
+}
+
+.portal-chrome-nav a span {
+  align-items: center;
+  background: #d8aa78;
+  border-radius: 99px;
+  color: #481126;
+  display: inline-flex;
+  font-size: 0.66rem;
+  font-weight: 700;
+  height: 21px;
+  justify-content: center;
+  min-width: 21px;
+  padding: 0 6px;
+}
+
+body.client-workspace-mode > #root > .site-header,
+body.client-workspace-mode > #root > .site-footer,
+body.client-workspace-mode #root > .site-header,
+body.client-workspace-mode #root > .site-footer {
+  display: none;
+}
+
+@media (max-width: 720px) {
+  .portal-chrome-header {
+    align-items: flex-start;
+    min-height: 0;
+    padding: 14px 18px;
+  }
+
+  .portal-chrome-brand img {
+    height: 43px;
+    width: 43px;
+  }
+
+  .portal-chrome-brand span {
+    display: none;
+  }
+
+  .portal-chrome-account {
+    gap: 14px;
+  }
+
+  .portal-chrome-signed-in {
+    display: none;
+  }
+
+  .portal-chrome-account > a,
+  .portal-chrome-account > button {
+    font-size: 0.69rem;
+  }
+
+  .portal-chrome-account > button {
+    padding-left: 14px;
+  }
+
+  .portal-chrome-nav {
+    min-height: 52px;
+    padding: 0 18px;
+  }
+
+  .portal-chrome-nav a,
+  .portal-chrome-nav a:first-child {
+    padding: 0 18px;
+  }
+
+  .portal-chrome-nav a:first-child {
+    padding-left: 2px;
+    padding-right: 20px;
+  }
+}

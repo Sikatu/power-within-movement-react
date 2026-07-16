@@ -1,25 +1,26 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import FounderDeveloperBanner from '../../components/admin/FounderDeveloperBanner'
+import FounderLiveClocks from '../../components/admin/FounderLiveClocks.jsx'
+import FounderVoiceRecorder from '../../components/admin/FounderVoiceRecorder.jsx'
 import {
+  getFounderCommandCenter,
   getAdminFoundersViewOverview,
   updateAdminFounderDateAvailability,
   logoutAdmin,
   updateAdminFounderAvailabilityException,
 } from '../../lib/nativeApi'
 
-import './Admin.css'
-import './FounderView.css'
+import './AdminFreshUI.css'
 
 const FOUNDER_TIME_ZONE = 'America/New_York'
-const FOUNDER_TIME_ZONE_LABEL = 'Eastern Time'
 
-function formatDate(value, options = {}) {
+function formatDate(value, options = {}, timeZone = FOUNDER_TIME_ZONE) {
   if (!value) return 'Not recorded'
 
   try {
     return new Intl.DateTimeFormat('en-US', {
-      timeZone: FOUNDER_TIME_ZONE,
+      timeZone,
       month: 'short',
       day: 'numeric',
       year: options.includeYear === false ? undefined : 'numeric',
@@ -29,10 +30,10 @@ function formatDate(value, options = {}) {
   }
 }
 
-function formatLongDate(value = new Date()) {
+function formatLongDate(value = new Date(), timeZone = FOUNDER_TIME_ZONE) {
   try {
     return new Intl.DateTimeFormat('en-US', {
-      timeZone: FOUNDER_TIME_ZONE,
+      timeZone,
       weekday: 'long',
       month: 'long',
       day: 'numeric',
@@ -42,12 +43,12 @@ function formatLongDate(value = new Date()) {
   }
 }
 
-function formatTime(value) {
+function formatTime(value, timeZone = FOUNDER_TIME_ZONE) {
   if (!value) return '-'
 
   try {
     return new Intl.DateTimeFormat('en-US', {
-      timeZone: FOUNDER_TIME_ZONE,
+      timeZone,
       hour: 'numeric',
       minute: '2-digit',
     }).format(new Date(value))
@@ -56,11 +57,11 @@ function formatTime(value) {
   }
 }
 
-function getBusinessHour(value = new Date()) {
+function getBusinessHour(value = new Date(), timeZone = FOUNDER_TIME_ZONE) {
   try {
     return Number(
       new Intl.DateTimeFormat('en-US', {
-        timeZone: FOUNDER_TIME_ZONE,
+        timeZone,
         hour: '2-digit',
         hourCycle: 'h23',
       }).format(new Date(value)),
@@ -70,8 +71,8 @@ function getBusinessHour(value = new Date()) {
   }
 }
 
-function getGreeting(value = new Date()) {
-  const hour = getBusinessHour(value)
+function getGreeting(value = new Date(), timeZone = FOUNDER_TIME_ZONE) {
+  const hour = getBusinessHour(value, timeZone)
 
   if (hour < 12) return 'Good morning'
   if (hour < 17) return 'Good afternoon'
@@ -99,9 +100,9 @@ function getInitials(name) {
   )
 }
 
-function getBusinessDateOffset(offsetDays = 0) {
+function getBusinessDateOffset(offsetDays = 0, timeZone = FOUNDER_TIME_ZONE) {
   const parts = new Intl.DateTimeFormat('en-US', {
-    timeZone: FOUNDER_TIME_ZONE,
+    timeZone,
     year: 'numeric',
     month: '2-digit',
     day: '2-digit',
@@ -130,8 +131,9 @@ function getAttentionDate(item) {
 export default function AdminFoundersView() {
   const navigate = useNavigate()
   const [overview, setOverview] = useState(null)
+  const [founderTools, setFounderTools] = useState(null)
   const [currentTime, setCurrentTime] = useState(() => new Date())
-  const [blockDate, setBlockDate] = useState(getBusinessDateOffset(0))
+  const [blockDate, setBlockDate] = useState('')
   const [blockNotes, setBlockNotes] = useState('')
   const [isLoading, setIsLoading] = useState(true)
   const [isBlocking, setIsBlocking] = useState(false)
@@ -218,19 +220,23 @@ export default function AdminFoundersView() {
     return 'Nothing urgent is waiting. Your day has room to breathe.'
   }, [followUps.length, pendingRequests.length, todaySessions.length])
 
-  async function loadFoundersView() {
+  const loadFoundersView = useCallback(async (filters = {}) => {
     setIsLoading(true)
     setError('')
 
     try {
-      const response = await getAdminFoundersViewOverview()
+      const [response, toolsResponse] = await Promise.all([
+        getAdminFoundersViewOverview(),
+        getFounderCommandCenter(filters),
+      ])
       setOverview(response)
+      setFounderTools(toolsResponse)
     } catch (loadError) {
       setError(loadError.message || 'Unable to load Founder’s View.')
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [])
 
   useEffect(() => {
     document.body.classList.add('admin-app-mode')
@@ -241,7 +247,7 @@ export default function AdminFoundersView() {
     }, 0)
     const clockTimer = window.setInterval(() => {
       setCurrentTime(new Date())
-    }, 60_000)
+    }, 1_000)
 
     return () => {
       window.clearTimeout(loadTimer)
@@ -249,7 +255,7 @@ export default function AdminFoundersView() {
       document.body.classList.remove('founders-view-standalone-mode')
       document.body.classList.remove('admin-app-mode')
     }
-  }, [])
+  }, [loadFoundersView])
 
   async function handleBlockDay(dateValue, notes) {
     setIsBlocking(true)
@@ -264,7 +270,7 @@ export default function AdminFoundersView() {
       })
       await loadFoundersView()
       setBlockNotes('')
-      setNotice(`${formatDate(`${dateValue}T12:00:00Z`)} is now protected.`)
+      setNotice(`${formatDate(`${dateValue}T12:00:00Z`, {}, schedulingTimezone)} is now protected.`)
     } catch (blockError) {
       setError(blockError.message || 'Unable to protect this date.')
     } finally {
@@ -298,6 +304,20 @@ export default function AdminFoundersView() {
       setError(logoutError.message || 'Unable to sign out right now.')
       setIsSigningOut(false)
     }
+  }
+
+  const primaryTimezone = founderTools?.preferences?.primaryTimezone || 'America/Chicago'
+  const schedulingTimezone = founderTools?.scheduling?.timezone || FOUNDER_TIME_ZONE
+  const effectiveBlockDate = blockDate || getBusinessDateOffset(0, schedulingTimezone)
+
+  function showFounderNotice(message) {
+    setError('')
+    setNotice(message || '')
+  }
+
+  function showFounderError(message) {
+    setNotice('')
+    setError(message || 'That Founder action could not be completed.')
   }
 
   return (
@@ -336,8 +356,8 @@ export default function AdminFoundersView() {
       <div className="founder-home__shell">
         <section className="founder-home__intro">
           <div>
-            <p className="founder-home__eyebrow">{formatLongDate(currentTime)}</p>
-            <h1>{getGreeting(currentTime)}, Kim.</h1>
+            <p className="founder-home__eyebrow">{formatLongDate(currentTime, primaryTimezone)}</p>
+            <h1>{getGreeting(currentTime, primaryTimezone)}, Kim.</h1>
             <p className="founder-home__focus">{dailyFocus}</p>
           </div>
 
@@ -346,7 +366,7 @@ export default function AdminFoundersView() {
               <span aria-hidden="true" />
               <div>
                 <small>Schedule shown in</small>
-                <strong>{FOUNDER_TIME_ZONE_LABEL}</strong>
+                <strong>{schedulingTimezone}</strong>
               </div>
             </div>
 
@@ -369,6 +389,22 @@ export default function AdminFoundersView() {
           {notice && <div className="admin-notice is-success">{notice}</div>}
           {error && <div className="admin-notice is-error">{error}</div>}
         </div>
+
+        {founderTools && <FounderLiveClocks
+          currentTime={currentTime}
+          preferences={founderTools.preferences}
+          scheduling={founderTools.scheduling}
+          onSaved={(preferences) => setFounderTools((current) => ({ ...current, preferences }))}
+          onNotice={showFounderNotice}
+          onError={showFounderError}
+        />}
+
+        {founderTools && <FounderVoiceRecorder
+          workspace={founderTools}
+          onRefresh={loadFoundersView}
+          onNotice={showFounderNotice}
+          onError={showFounderError}
+        />}
 
         <section className="founder-home__pulse" aria-label="Today at a glance">
           <article>
@@ -427,11 +463,11 @@ export default function AdminFoundersView() {
                 {scheduleItems.map((session, index) => (
                   <div className="founder-home__session" key={session.id}>
                     <div className="founder-home__session-time">
-                      <strong>{formatTime(session.starts_at)}</strong>
+                      <strong>{formatTime(session.starts_at, schedulingTimezone)}</strong>
                       <small>
                         {todaySessions.length > 0
-                          ? FOUNDER_TIME_ZONE_LABEL
-                          : formatDate(session.starts_at, { includeYear: false })}
+                          ? schedulingTimezone
+                          : formatDate(session.starts_at, { includeYear: false }, schedulingTimezone)}
                       </small>
                     </div>
 
@@ -501,7 +537,7 @@ export default function AdminFoundersView() {
             </p>
 
             <Link
-              to={`/admin/founders-availability?date=${blockDate}`}
+              to={`/admin/founders-availability?date=${effectiveBlockDate}`}
               className="founder-home__availability-link"
             >
               Customize weekly hours or this date
@@ -512,7 +548,7 @@ export default function AdminFoundersView() {
                 type="button"
                 onClick={() =>
                   handleBlockDay(
-                    getBusinessDateOffset(0),
+                    getBusinessDateOffset(0, schedulingTimezone),
                     'Protected from Founder’s View.',
                   )
                 }
@@ -524,7 +560,7 @@ export default function AdminFoundersView() {
                 type="button"
                 onClick={() =>
                   handleBlockDay(
-                    getBusinessDateOffset(1),
+                    getBusinessDateOffset(1, schedulingTimezone),
                     'Protected from Founder’s View.',
                   )
                 }
@@ -539,8 +575,8 @@ export default function AdminFoundersView() {
                 <span>Choose a date</span>
                 <input
                   type="date"
-                  value={blockDate}
-                  min={getBusinessDateOffset(0)}
+                  value={effectiveBlockDate}
+                  min={getBusinessDateOffset(0, schedulingTimezone)}
                   onChange={(event) => setBlockDate(event.target.value)}
                 />
               </label>
@@ -557,8 +593,8 @@ export default function AdminFoundersView() {
               <button
                 type="button"
                 className="founder-home__protect-button"
-                onClick={() => handleBlockDay(blockDate, blockNotes)}
-                disabled={isBlocking || !blockDate}
+                onClick={() => handleBlockDay(effectiveBlockDate, blockNotes)}
+                disabled={isBlocking || !effectiveBlockDate}
               >
                 {isBlocking ? 'Protecting…' : 'Protect all day'}
               </button>
@@ -586,7 +622,7 @@ export default function AdminFoundersView() {
                   <div key={block.id}>
                     <span aria-hidden="true" />
                     <div>
-                      <strong>{formatDate(block.starts_at)}</strong>
+                      <strong>{formatDate(block.starts_at, {}, schedulingTimezone)}</strong>
                       <small>{block.notes || 'Unavailable'}</small>
                     </div>
                     <button

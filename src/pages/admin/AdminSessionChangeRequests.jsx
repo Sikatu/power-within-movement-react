@@ -1,13 +1,12 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import AdminFrame from '../../components/admin/AdminFrame'
+import { useAdminConfirm } from '../../components/admin/AdminConfirmContext'
 import {
   getAdminSessionChangeRequests,
   reviewAdminSessionChangeRequest,
 } from '../../lib/nativeApi'
 
-import './Admin.css'
-import './SessionChangeRequests.css'
 
 const businessTimeZone = 'America/New_York'
 
@@ -36,6 +35,7 @@ function clientName(request) {
 }
 
 export default function AdminSessionChangeRequests() {
+  const confirmAction = useAdminConfirm()
   const [requests, setRequests] = useState([])
   const [activeView, setActiveView] = useState('pending')
   const [notes, setNotes] = useState({})
@@ -93,9 +93,12 @@ export default function AdminSessionChangeRequests() {
 
   async function reviewRequest(request, decision) {
     const action = decision === 'approved' ? 'approve' : 'decline'
-    const confirmed = window.confirm(
-      `Are you sure you want to ${action} this ${request.request_type} request?`,
-    )
+    const confirmed = await confirmAction({
+      title: `${action === 'approve' ? 'Approve' : 'Decline'} this request?`,
+      message: `Are you sure you want to ${action} this ${request.request_type} request?`,
+      confirmLabel: action === 'approve' ? 'Approve request' : 'Decline request',
+      tone: action === 'approve' ? 'warning' : 'danger',
+    })
 
     if (!confirmed) return
 
@@ -151,30 +154,48 @@ export default function AdminSessionChangeRequests() {
         </section>
 
         {(status.error || status.message) && (
-          <div className={`session-change-admin__notice${status.error ? ' is-error' : ''}`} role="status">
+          <div
+            className={`session-change-admin__notice${status.error ? ' is-error' : ''}`}
+            role={status.error ? 'alert' : 'status'}
+          >
             {status.error || status.message}
           </div>
         )}
 
         <div className="session-change-admin__tabs" role="tablist" aria-label="Change request status">
           <button
+            id="session-change-tab-pending"
             type="button"
             className={activeView === 'pending' ? 'is-active' : ''}
+            role="tab"
+            aria-controls="session-change-panel-pending"
+            aria-selected={activeView === 'pending'}
             onClick={() => setActiveView('pending')}
           >
             Needs Review <span>{pendingRequests.length}</span>
           </button>
           <button
+            id="session-change-tab-history"
             type="button"
             className={activeView === 'history' ? 'is-active' : ''}
+            role="tab"
+            aria-controls="session-change-panel-history"
+            aria-selected={activeView === 'history'}
             onClick={() => setActiveView('history')}
           >
             History <span>{historyRequests.length}</span>
           </button>
         </div>
 
-        {status.loading ? (
-          <div className="session-change-admin__empty">Loading session changes…</div>
+        <section
+          className="session-change-admin__tabpanel"
+          id={`session-change-panel-${activeView}`}
+          role="tabpanel"
+          aria-labelledby={`session-change-tab-${activeView}`}
+          tabIndex={0}
+        >
+          {status.loading ? (
+            <div className="session-change-admin__empty">Loading session changes…</div>
         ) : visibleRequests.length === 0 ? (
           <div className="session-change-admin__empty">
             <strong>{activeView === 'pending' ? 'No requests need attention.' : 'No reviewed requests yet.'}</strong>
@@ -275,7 +296,8 @@ export default function AdminSessionChangeRequests() {
               </article>
             ))}
           </div>
-        )}
+          )}
+        </section>
       </div>
     </AdminFrame>
   )

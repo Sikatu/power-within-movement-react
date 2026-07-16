@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import AdminFrame from '../../components/admin/AdminFrame'
+import { acquireAdminScrollLock } from '../../components/admin/adminScrollLock.js'
+import { useAdminConfirm } from '../../components/admin/AdminConfirmContext'
 import {
   applyDeveloperAccountCleanup,
   createDeveloperManagedUser,
@@ -23,8 +25,6 @@ import {
   updateDeveloperUserStatus,
 } from '../../lib/nativeApi'
 
-import './Admin.css'
-import './DeveloperPanel.css'
 
 const tabs = [
   { id: 'overview', label: 'Overview' },
@@ -103,9 +103,14 @@ function HealthBadge({ state, children }) {
   )
 }
 
-export default function AdminDeveloperPanel() {
+export default function AdminDeveloperPanel({ embedded = false, mode = 'all' }) {
+  const confirmAction = useAdminConfirm()
   const navigate = useNavigate()
-  const [activeTab, setActiveTab] = useState('overview')
+  const [activeTab, setActiveTab] = useState(() => {
+    if (mode === 'access') return 'accounts'
+    if (mode === 'configuration') return 'controls'
+    return 'overview'
+  })
   const [overview, setOverview] = useState(null)
   const [users, setUsers] = useState([])
   const [clients, setClients] = useState([])
@@ -125,6 +130,7 @@ export default function AdminDeveloperPanel() {
   const [accountSearch, setAccountSearch] = useState('')
   const [accountRoleFilter, setAccountRoleFilter] = useState('all')
   const [clientSearch, setClientSearch] = useState('')
+  const [clientPage, setClientPage] = useState(1)
   const [preview, setPreview] = useState(null)
   const [previewLoadingKey, setPreviewLoadingKey] = useState('')
   const [isClientPreviewPickerOpen, setIsClientPreviewPickerOpen] = useState(false)
@@ -134,6 +140,13 @@ export default function AdminDeveloperPanel() {
     role: 'admin',
     expirationHours: 48,
   })
+
+  const availableTabs = useMemo(() => {
+    if (mode === 'access') return tabs.filter((tab) => ['accounts', 'clients', 'security'].includes(tab.id))
+    if (mode === 'configuration') return tabs.filter((tab) => tab.id === 'controls')
+    if (mode === 'overview' || mode === 'health') return tabs.filter((tab) => tab.id === 'overview')
+    return tabs
+  }, [mode])
 
   const loadPanel = useCallback(async () => {
     setIsLoading(true)
@@ -211,6 +224,14 @@ export default function AdminDeveloperPanel() {
     })
   }, [clients, clientSearch])
 
+  const clientPageSize = 6
+  const clientPageCount = Math.max(1, Math.ceil(filteredClients.length / clientPageSize))
+  const safeClientPage = Math.min(clientPage, clientPageCount)
+  const visibleClients = useMemo(() => {
+    const start = (safeClientPage - 1) * clientPageSize
+    return filteredClients.slice(start, start + clientPageSize)
+  }, [filteredClients, safeClientPage])
+
   const filteredPreviewClients = useMemo(() => {
     const query = previewClientSearch.trim().toLowerCase()
 
@@ -250,7 +271,12 @@ export default function AdminDeveloperPanel() {
   }
 
   const handleReconcileGovernance = async () => {
-    if (!window.confirm('Repair the canonical Developer and Owner roles and transfer Founder availability to the Owner account?')) return
+    if (!(await confirmAction({
+      title: 'Repair account governance?',
+      message: 'Repair the canonical Developer and Owner roles and transfer Founder availability to the Owner account?',
+      confirmLabel: 'Repair governance',
+      tone: 'warning',
+    }))) return
 
     setIsGovernanceBusy(true)
     setError('')
@@ -310,7 +336,13 @@ export default function AdminDeveloperPanel() {
       return
     }
 
-    if (!window.confirm('Archive every listed duplicate/test system account and revoke its sessions? Client and member accounts will remain untouched.')) return
+    if (!(await confirmAction({
+      title: 'Archive duplicate system accounts?',
+      message: 'Every listed duplicate or test system account will be archived and its sessions revoked.',
+      detail: 'Client and member accounts will remain untouched.',
+      confirmLabel: 'Archive accounts',
+      tone: 'danger',
+    }))) return
 
     setIsGovernanceBusy(true)
     setError('')
@@ -333,7 +365,13 @@ export default function AdminDeveloperPanel() {
   }
 
   const handleTemporaryPassword = async (user) => {
-    if (!window.confirm(`Create a new 48-hour temporary password for ${user.email}? Their current sessions will stop working.`)) return
+    if (!(await confirmAction({
+      title: 'Issue temporary access?',
+      message: `Create a new 48-hour temporary password for ${user.email}?`,
+      detail: 'Their current sessions will stop working.',
+      confirmLabel: 'Create temporary password',
+      tone: 'warning',
+    }))) return
 
     setBusyUserId(user.id)
     setError('')
@@ -357,7 +395,13 @@ export default function AdminDeveloperPanel() {
   }
 
   const handleStatus = async (user, nextStatus) => {
-    if (!window.confirm(`Change ${user.email} from ${user.status} to ${nextStatus}? Existing sessions will be revoked.`)) return
+    if (!(await confirmAction({
+      title: 'Change account status?',
+      message: `Change ${user.email} from ${user.status} to ${nextStatus}?`,
+      detail: 'Existing sessions will be revoked.',
+      confirmLabel: `Change to ${nextStatus}`,
+      tone: nextStatus === 'archived' ? 'danger' : 'warning',
+    }))) return
 
     setBusyUserId(user.id)
     setError('')
@@ -374,7 +418,13 @@ export default function AdminDeveloperPanel() {
 
   const handleRole = async (user, role) => {
     if (role === user.role) return
-    if (!window.confirm(`Change ${user.email} from ${readable(user.role)} to ${readable(role)}? Existing sessions will be revoked.`)) return
+    if (!(await confirmAction({
+      title: 'Change account role?',
+      message: `Change ${user.email} from ${readable(user.role)} to ${readable(role)}?`,
+      detail: 'Existing sessions will be revoked.',
+      confirmLabel: 'Change role',
+      tone: 'warning',
+    }))) return
 
     setBusyUserId(user.id)
     setError('')
@@ -390,7 +440,13 @@ export default function AdminDeveloperPanel() {
   }
 
   const handleRevokeSessions = async (user) => {
-    if (!window.confirm(`Sign ${user.email} out everywhere? They will need to log in again.`)) return
+    if (!(await confirmAction({
+      title: 'Revoke every active session?',
+      message: `Sign ${user.email} out everywhere?`,
+      detail: 'They will need to log in again.',
+      confirmLabel: 'Sign out everywhere',
+      tone: 'danger',
+    }))) return
 
     setBusyUserId(user.id)
     setError('')
@@ -505,8 +561,7 @@ export default function AdminDeveloperPanel() {
   useEffect(() => {
     if (!preview && !isClientPreviewPickerOpen) return undefined
 
-    const previousOverflow = document.body.style.overflow
-    document.body.style.overflow = 'hidden'
+    const releaseScrollLock = acquireAdminScrollLock()
 
     const handleKeyDown = (event) => {
       if (event.key !== 'Escape') return
@@ -521,7 +576,7 @@ export default function AdminDeveloperPanel() {
     window.addEventListener('keydown', handleKeyDown)
 
     return () => {
-      document.body.style.overflow = previousOverflow
+      releaseScrollLock()
       window.removeEventListener('keydown', handleKeyDown)
     }
   }, [preview, isClientPreviewPickerOpen])
@@ -530,9 +585,8 @@ export default function AdminDeveloperPanel() {
     if (event.target === event.currentTarget) close()
   }
 
-  return (
-    <AdminFrame>
-      <div className="developer-control-center">
+  const content = (
+      <div className={`developer-control-center developer-mode-${mode}${embedded ? ' is-embedded' : ''}`}>
         <header className="developer-control-hero">
           <div>
             <p className="admin-eyebrow">Developer Operations</p>
@@ -548,19 +602,27 @@ export default function AdminDeveloperPanel() {
           </div>
         </header>
 
-        <nav className="developer-tab-bar" aria-label="Developer Control Center sections">
-          {tabs.map((tab) => (
+        {availableTabs.length > 1 && (
+        <nav className="developer-tab-bar" aria-label="Developer Control Center sections" role="tablist">
+          {availableTabs.map((tab) => (
             <button
               className={activeTab === tab.id ? 'is-active' : ''}
               key={tab.id}
               type="button"
+              role="tab"
+              aria-selected={activeTab === tab.id}
               onClick={() => setActiveTab(tab.id)}
             >
-              {tab.label}
-              {tab.id === 'clients' && clientAttentionCount > 0 && <span>{clientAttentionCount}</span>}
+              <span className="developer-tab-label">{tab.label}</span>
+              {tab.id === 'clients' && clientAttentionCount > 0 && (
+                <span className="developer-tab-count" aria-label={`${clientAttentionCount} clients need attention`}>
+                  {clientAttentionCount}
+                </span>
+              )}
             </button>
           ))}
         </nav>
+        )}
 
         {error && <div className="developer-alert is-error" role="alert">{error}</div>}
         {notice && <div className="developer-alert is-success" role="status">{notice}</div>}
@@ -820,11 +882,20 @@ export default function AdminDeveloperPanel() {
             </div>
 
             <div className="developer-filter-row single">
-              <label><span>Search clients</span><input type="search" placeholder="Name, email, or access issue" value={clientSearch} onChange={(event) => setClientSearch(event.target.value)} /></label>
+              <label><span>Search clients</span><input type="search" placeholder="Name, email, or access issue" value={clientSearch} onChange={(event) => { setClientSearch(event.target.value); setClientPage(1) }} /></label>
+            </div>
+
+            <div className="developer-results-bar">
+              <span>Showing {filteredClients.length ? (safeClientPage - 1) * clientPageSize + 1 : 0}–{Math.min(safeClientPage * clientPageSize, filteredClients.length)} of {filteredClients.length} clients</span>
+              <div className="developer-pagination" aria-label="Client access pages">
+                <button type="button" className="btn secondary" disabled={safeClientPage === 1} onClick={() => setClientPage((current) => Math.max(1, current - 1))}>Previous</button>
+                <span>Page {safeClientPage} of {clientPageCount}</span>
+                <button type="button" className="btn secondary" disabled={safeClientPage === clientPageCount} onClick={() => setClientPage((current) => Math.min(clientPageCount, current + 1))}>Next</button>
+              </div>
             </div>
 
             <div className="developer-client-grid">
-              {filteredClients.map((client) => (
+              {visibleClients.map((client) => (
                 <article className="developer-client-card" key={client.client_profile_id}>
                   <div className="developer-client-card-top">
                     <div><h3>{clientName(client)}</h3><p>{client.email || client.public_contact_email || 'No email connected'}</p></div>
@@ -1113,6 +1184,7 @@ export default function AdminDeveloperPanel() {
           </div>
         )}
       </div>
-    </AdminFrame>
   )
+
+  return embedded ? content : <AdminFrame>{content}</AdminFrame>
 }

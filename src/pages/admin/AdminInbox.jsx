@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import AdminFrame from '../../components/admin/AdminFrame'
 import {
@@ -9,8 +9,6 @@ import {
   updateAdminInboxConversation,
 } from '../../lib/nativeApi'
 
-import './Admin.css'
-import './AdminInbox.css'
 
 const emptyNewConversation = {
   clientProfileId: '',
@@ -64,6 +62,7 @@ export default function AdminInbox() {
   const [teamUsers, setTeamUsers] = useState([])
   const [metrics, setMetrics] = useState({})
   const [selectedId, setSelectedId] = useState(requestedConversationId)
+  const selectedIdRef = useRef(requestedConversationId)
   const [selectedConversation, setSelectedConversation] = useState(null)
   const [filters, setFilters] = useState({ status: 'all', priority: 'all', search: '' })
   const [showNew, setShowNew] = useState(false)
@@ -92,16 +91,18 @@ export default function AdminInbox() {
     setTeamUsers(result.teamUsers || [])
     setMetrics(result.metrics || {})
 
+    const currentSelectedId = selectedIdRef.current
     const nextId =
       preferredId && nextConversations.some((item) => item.id === preferredId)
         ? preferredId
-        : selectedId && nextConversations.some((item) => item.id === selectedId)
-          ? selectedId
+        : currentSelectedId && nextConversations.some((item) => item.id === currentSelectedId)
+          ? currentSelectedId
           : nextConversations[0]?.id || ''
 
+    selectedIdRef.current = nextId
     setSelectedId(nextId)
     await loadConversation(nextId)
-  }, [filters, loadConversation, selectedId])
+  }, [filters, loadConversation])
 
   useEffect(() => {
     let mounted = true
@@ -149,6 +150,7 @@ export default function AdminInbox() {
   }
 
   async function openConversation(conversationId) {
+    selectedIdRef.current = conversationId
     setSelectedId(conversationId)
     setError('')
     setNotice('')
@@ -178,9 +180,9 @@ export default function AdminInbox() {
     if (result?.conversation) {
       setNewConversation(emptyNewConversation)
       setShowNew(false)
+      selectedIdRef.current = result.conversation.id
       setSelectedId(result.conversation.id)
       setSelectedConversation(result.conversation)
-      await loadInbox(result.conversation.id)
     }
   }
 
@@ -236,7 +238,10 @@ export default function AdminInbox() {
         </section>
 
         {(error || notice) && (
-          <div className={`admin-inbox__notice${error ? ' is-error' : ''}`} role="status">
+          <div
+            className={`admin-inbox__notice${error ? ' is-error' : ''}`}
+            role={error ? 'alert' : 'status'}
+          >
             {error || notice}
           </div>
         )}
@@ -277,7 +282,7 @@ export default function AdminInbox() {
 
         <p className="admin-inbox__count">{filteredCountLabel}</p>
 
-        <div className="admin-inbox__workspace">
+        <div className="admin-inbox__workspace" aria-busy={loading}>
           <aside className="admin-inbox__list" aria-label="Client conversations">
             {loading ? (
               <div className="admin-inbox__empty">Loading private conversations…</div>
@@ -292,6 +297,7 @@ export default function AdminInbox() {
                   type="button"
                   key={conversation.id}
                   className={`admin-inbox-list-item${selectedId === conversation.id ? ' is-active' : ''}`}
+                  aria-pressed={selectedId === conversation.id}
                   onClick={() => openConversation(conversation.id)}
                 >
                   <div className="admin-inbox-list-item__top">
@@ -390,6 +396,7 @@ export default function AdminInbox() {
                     <button
                       type="button"
                       className={!reply.isInternalNote ? 'is-active' : ''}
+                      aria-pressed={!reply.isInternalNote}
                       onClick={() => setReply((current) => ({ ...current, isInternalNote: false }))}
                     >
                       Reply to Client
@@ -397,6 +404,7 @@ export default function AdminInbox() {
                     <button
                       type="button"
                       className={reply.isInternalNote ? 'is-active' : ''}
+                      aria-pressed={reply.isInternalNote}
                       onClick={() => setReply((current) => ({ ...current, isInternalNote: true }))}
                     >
                       Internal Note

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import AdminFrame from '../../components/admin/AdminFrame'
+import { useAdminConfirm } from '../../components/admin/AdminConfirmContext'
 import {
   archiveAdminCirclePost,
   createAdminCirclePost,
@@ -12,8 +13,6 @@ import {
   updateAdminCirclePost,
 } from '../../lib/nativeApi'
 
-import './Admin.css'
-import './CircleCommunity.css'
 
 const emptyComposer = {
   membershipId: '',
@@ -72,6 +71,7 @@ function statusTone(status) {
 }
 
 export default function AdminCircleCommunity() {
+  const confirmAction = useAdminConfirm()
   const [posts, setPosts] = useState([])
   const [memberships, setMemberships] = useState([])
   const [metrics, setMetrics] = useState({})
@@ -253,12 +253,22 @@ export default function AdminCircleCommunity() {
   }
 
   async function handleArchive() {
-    if (!selectedPost || !window.confirm('Archive this post and remove it from member view?')) return
+    if (!selectedPost || !(await confirmAction({
+      title: 'Archive this Circle post?',
+      message: 'The post will be removed from member view.',
+      confirmLabel: 'Archive post',
+      tone: 'warning',
+    }))) return
     await perform(() => archiveAdminCirclePost(selectedPost.id), 'Post archived.', selectedPost.id)
   }
 
   async function handleDelete() {
-    if (!selectedPost || !window.confirm('Permanently delete this draft or archived post?')) return
+    if (!selectedPost || !(await confirmAction({
+      title: 'Delete this Circle post permanently?',
+      message: 'This draft or archived post cannot be restored after deletion.',
+      confirmLabel: 'Delete post',
+      tone: 'danger',
+    }))) return
     const result = await perform(() => deleteAdminCirclePost(selectedPost.id), 'Post deleted.', '')
     if (result) {
       setSelectedPostId('')
@@ -304,15 +314,15 @@ export default function AdminCircleCommunity() {
         </header>
 
         {!featureEnabled && (
-          <div className="circle-alert is-warning">
+          <div className="circle-alert is-warning" role="status">
             The Circle feature is disabled in Developer Control Center. Admins can prepare drafts,
             but clients cannot open the community until it is enabled.
           </div>
         )}
-        {error && <div className="circle-alert is-error">{error}</div>}
-        {notice && <div className="circle-alert is-success">{notice}</div>}
+        {error && <div className="circle-alert is-error" role="alert">{error}</div>}
+        {notice && <div className="circle-alert is-success" role="status">{notice}</div>}
 
-        <section className="circle-admin-metrics">
+        <section className="circle-admin-metrics" aria-label="Circle summary">
           <article><span>Published</span><strong>{metrics.published || 0}</strong></article>
           <article><span>Drafts</span><strong>{metrics.drafts || 0}</strong></article>
           <article><span>Member comments</span><strong>{metrics.comments || 0}</strong></article>
@@ -323,6 +333,14 @@ export default function AdminCircleCommunity() {
 
         <div className="circle-admin-layout">
           <aside className="circle-admin-sidebar">
+            <div className="circle-admin-sidebar-heading">
+              <div>
+                <span>Post library</span>
+                <strong>{filteredPosts.length} post{filteredPosts.length === 1 ? '' : 's'} in view</strong>
+              </div>
+              <button type="button" onClick={startNewPost}>New</button>
+            </div>
+
             <div className="circle-admin-filters">
               <input
                 type="search"
@@ -346,8 +364,10 @@ export default function AdminCircleCommunity() {
                 <p>Loading The Circle...</p>
               ) : filteredPosts.length === 0 ? (
                 <div className="circle-empty-card">
+                  <span aria-hidden="true">✦</span>
                   <strong>No posts match this view.</strong>
                   <p>Create a new post or change the filter.</p>
+                  <button type="button" onClick={startNewPost}>Create a Circle post</button>
                 </div>
               ) : (
                 filteredPosts.map((post) => (
@@ -378,6 +398,7 @@ export default function AdminCircleCommunity() {
               <button
                 type="button"
                 className={activeTab === 'content' ? 'is-active' : ''}
+                aria-selected={activeTab === 'content'}
                 onClick={() => setActiveTab('content')}
               >
                 Content
@@ -385,6 +406,7 @@ export default function AdminCircleCommunity() {
               <button
                 type="button"
                 className={activeTab === 'moderation' ? 'is-active' : ''}
+                aria-selected={activeTab === 'moderation'}
                 onClick={() => setActiveTab('moderation')}
                 disabled={!selectedPost}
               >
@@ -409,6 +431,7 @@ export default function AdminCircleCommunity() {
                   )}
                 </div>
 
+                <div className="circle-composer-fields">
                 <div className="circle-form-grid two-columns">
                   <label>
                     <span>Post type</span>
@@ -437,7 +460,7 @@ export default function AdminCircleCommunity() {
                 </div>
 
                 <label className="circle-field">
-                  <span>Title</span>
+                  <span className="circle-field-label"><span>Title</span><small>{composer.title.length}/180</small></span>
                   <input
                     value={composer.title}
                     maxLength={180}
@@ -504,12 +527,14 @@ export default function AdminCircleCommunity() {
                   </label>
                 </div>
 
+                </div>
+
                 <div className="circle-action-bar">
-                  <div>
+                  <div className="circle-action-meta">
                     {selectedPost?.published_at && <span>Published {formatDateTime(selectedPost.published_at)} ET</span>}
                     <small>Community dates and times are displayed in Eastern Time.</small>
                   </div>
-                  <div>
+                  <div className="circle-action-buttons">
                     <button type="button" className="is-secondary" onClick={() => savePost('draft')} disabled={isSaving}>
                       {isSaving ? 'Saving...' : 'Save Draft'}
                     </button>

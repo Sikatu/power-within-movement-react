@@ -23,9 +23,8 @@ import {
   updateAdminClient,
   updateAdminServiceRecord,
 } from '../../lib/nativeApi'
-import './AdminClients.rework.css'
 
-import './Admin.css'
+
 const emptyClientForm = {
   firstName: '',
   lastName: '',
@@ -1728,8 +1727,16 @@ export default function AdminClients() {
                         className={
                           selectedClient?.id === client.id ? 'is-selected' : ''
                         }
+                        aria-selected={selectedClient?.id === client.id}
+                        tabIndex={0}
                         onClick={(event) => {
                           if (event.target.closest('.client-action-menu-v1')) return
+                          handleViewClient(client)
+                        }}
+                        onKeyDown={(event) => {
+                          if (event.target.closest('.client-action-menu-v1')) return
+                          if (event.key !== 'Enter' && event.key !== ' ') return
+                          event.preventDefault()
                           handleViewClient(client)
                         }}
                       >

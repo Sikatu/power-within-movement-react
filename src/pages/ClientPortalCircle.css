@@ -1,0 +1,559 @@
+.circle-page-intro {
+  max-width: 870px;
+  padding-bottom: 41px;
+}
+
+.circle-layout {
+  align-items: start;
+  display: grid;
+  gap: 24px;
+  grid-template-columns: minmax(0, 1.45fr) minmax(280px, 0.72fr);
+}
+
+.circle-feed,
+.circle-sidebar {
+  display: grid;
+  gap: 18px;
+}
+
+.circle-sidebar {
+  position: sticky;
+  top: 20px;
+}
+
+.circle-share-card,
+.circle-post,
+.circle-guidelines-card,
+.circle-membership-card,
+.circle-access-card {
+  background: rgba(255, 253, 250, 0.9);
+  border: 1px solid rgba(83, 29, 47, 0.13);
+  border-radius: 22px;
+  box-shadow: 0 18px 48px rgba(77, 31, 45, 0.055);
+}
+
+.circle-share-card {
+  border-color: rgba(190, 142, 82, 0.35);
+  padding: clamp(23px, 3vw, 31px);
+}
+
+.circle-share-card form {
+  display: grid;
+  gap: 11px;
+}
+
+.circle-share-card label {
+  display: grid;
+  gap: 9px;
+}
+
+.circle-share-card label span,
+.circle-guidelines-card > p,
+.circle-membership-card > p {
+  color: #a96b42;
+  font-size: 0.67rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.circle-share-card textarea,
+.circle-comment-composer textarea {
+  background: #fffefa;
+  border: 1px solid rgba(83, 29, 47, 0.18);
+  border-radius: 14px;
+  color: #451627;
+  font: inherit;
+  line-height: 1.6;
+  outline: none;
+  padding: 13px 15px;
+  resize: vertical;
+  width: 100%;
+}
+
+.circle-share-card textarea:focus,
+.circle-comment-composer textarea:focus {
+  border-color: #aa7047;
+  box-shadow: 0 0 0 3px rgba(170, 112, 71, 0.11);
+}
+
+.circle-share-card small {
+  color: #9a7a85;
+  font-size: 0.73rem;
+}
+
+.circle-share-card button,
+.circle-comment-composer button {
+  background: #55182e;
+  border: 0;
+  border-radius: 999px;
+  color: #fffaf5;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.68rem;
+  font-weight: 600;
+  justify-self: end;
+  letter-spacing: 0.09em;
+  min-height: 43px;
+  padding: 0 20px;
+  text-transform: uppercase;
+}
+
+.circle-share-card button:disabled,
+.circle-comment-composer button:disabled {
+  cursor: wait;
+  opacity: 0.5;
+}
+
+.circle-post {
+  padding: clamp(23px, 3vw, 31px);
+}
+
+.circle-post.is-pinned {
+  border-color: rgba(190, 142, 82, 0.4);
+  box-shadow: 0 22px 55px rgba(155, 104, 57, 0.1);
+}
+
+.circle-post-author {
+  align-items: center;
+  display: flex;
+  gap: 12px;
+}
+
+.circle-post-author > span,
+.circle-comment-author > span {
+  align-items: center;
+  background: rgba(196, 154, 90, 0.15);
+  border: 1px solid rgba(196, 154, 90, 0.34);
+  border-radius: 999px;
+  color: #9d713a;
+  display: inline-flex;
+  flex: 0 0 auto;
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 600;
+  height: 42px;
+  justify-content: center;
+  letter-spacing: 0.04em;
+  width: 42px;
+}
+
+.circle-post-author > div {
+  display: grid;
+  flex: 1;
+  gap: 3px;
+  min-width: 0;
+}
+
+.circle-post-author strong {
+  color: #3f1727;
+  font-size: 0.86rem;
+}
+
+.circle-post-author small {
+  color: #a1848e;
+  font-size: 0.7rem;
+  line-height: 1.4;
+}
+
+.circle-post-author > button,
+.circle-comments article > button {
+  background: none;
+  border: 0;
+  color: #9a7b86;
+  cursor: pointer;
+  flex: 0 0 auto;
+  font: inherit;
+  font-size: 0.65rem;
+  letter-spacing: 0.07em;
+  padding: 7px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-transform: uppercase;
+}
+
+.circle-post-labels {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 19px;
+}
+
+.circle-post-labels span {
+  background: #f3e8dc;
+  border-radius: 99px;
+  color: #8b5738;
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  padding: 6px 9px;
+  text-transform: uppercase;
+}
+
+.circle-post h2,
+.circle-reflection-card h2,
+.circle-access-card h2 {
+  font-family: var(--font-display);
+  font-weight: 500;
+}
+
+.circle-post h2 {
+  color: #411529;
+  font-size: clamp(1.7rem, 3vw, 2.4rem);
+  line-height: 1.04;
+  margin: 12px 0 0;
+}
+
+.circle-post-body {
+  color: #735864;
+  font-size: 0.92rem;
+  line-height: 1.75;
+  margin: 13px 0 0;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+.circle-event-card {
+  background: #f7eee5;
+  border-left: 3px solid #ba8051;
+  border-radius: 5px 13px 13px 5px;
+  display: grid;
+  gap: 4px;
+  margin-top: 18px;
+  padding: 14px 16px;
+}
+
+.circle-event-card span {
+  color: #9a5d39;
+  font-size: 0.63rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.circle-event-card strong {
+  color: #501b2e;
+  font-size: 0.84rem;
+}
+
+.circle-event-card small {
+  color: #8b6d79;
+  font-size: 0.73rem;
+}
+
+.circle-post-actions {
+  align-items: center;
+  border-top: 1px solid rgba(83, 29, 47, 0.1);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 20px;
+  padding-top: 16px;
+}
+
+.circle-post-actions button {
+  align-items: center;
+  background: transparent;
+  border: 1px solid rgba(83, 29, 47, 0.15);
+  border-radius: 99px;
+  color: #6e4052;
+  cursor: pointer;
+  display: inline-flex;
+  font: inherit;
+  font-size: 0.68rem;
+  gap: 5px;
+  min-height: 34px;
+  padding: 0 10px;
+}
+
+.circle-post-actions button:hover,
+.circle-post-actions button.is-active {
+  background: #f2e3d5;
+  border-color: #c09563;
+  color: #56192f;
+}
+
+.circle-post-actions button:disabled {
+  cursor: wait;
+  opacity: 0.5;
+}
+
+.circle-post-actions button em {
+  color: #9c7b87;
+  font-size: 0.61rem;
+  font-style: normal;
+}
+
+.circle-post-actions .circle-reply-toggle {
+  border: 0;
+  margin-left: auto;
+}
+
+.circle-comments {
+  border-top: 1px solid rgba(83, 29, 47, 0.1);
+  margin-top: 16px;
+  padding-top: 18px;
+}
+
+.circle-comment-list {
+  display: grid;
+  gap: 10px;
+}
+
+.circle-comment-list > article {
+  background: #f8f1eb;
+  border-radius: 14px;
+  padding: 13px 14px 10px;
+}
+
+.circle-comment-author {
+  align-items: center;
+  display: flex;
+  gap: 9px;
+}
+
+.circle-comment-author > span {
+  font-size: 0.75rem;
+  height: 31px;
+  width: 31px;
+}
+
+.circle-comment-author > div {
+  display: grid;
+  gap: 1px;
+}
+
+.circle-comment-author strong {
+  color: #4d1b2d;
+  font-size: 0.76rem;
+}
+
+.circle-comment-author time {
+  color: #a1848d;
+  font-size: 0.63rem;
+}
+
+.circle-comment-list article > p {
+  color: #725864;
+  font-size: 0.8rem;
+  line-height: 1.6;
+  margin: 8px 0 0 40px;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+.circle-comment-list article > button {
+  display: block;
+  margin-left: auto;
+  padding-bottom: 0;
+}
+
+.circle-empty-note {
+  color: #987b87;
+  font-size: 0.8rem;
+  font-style: italic;
+  margin: 0;
+}
+
+.circle-comment-composer {
+  display: grid;
+  gap: 9px;
+  margin-top: 15px;
+}
+
+.circle-comment-composer label {
+  color: #865d6c;
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.circle-comment-composer button {
+  min-height: 39px;
+}
+
+.circle-reflection-card {
+  background:
+    radial-gradient(circle at 100% 0%, rgba(205, 157, 111, 0.18), transparent 17rem),
+    #51182c;
+  border-radius: 23px;
+  box-shadow: 0 28px 65px rgba(73, 23, 42, 0.17);
+  padding: clamp(25px, 3vw, 34px);
+}
+
+.circle-reflection-card > p {
+  color: #d3ac7a;
+  font-size: 0.65rem;
+  letter-spacing: 0.16em;
+  margin: 0 0 9px;
+  text-transform: uppercase;
+}
+
+.circle-reflection-card h2 {
+  color: #fffaf5;
+  font-size: clamp(1.65rem, 3vw, 2.15rem);
+  line-height: 1.15;
+  margin: 0 0 12px;
+}
+
+.circle-reflection-card > span {
+  color: rgba(255, 248, 242, 0.68);
+  display: -webkit-box;
+  font-size: 0.8rem;
+  line-height: 1.7;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 5;
+}
+
+.circle-guidelines-card,
+.circle-membership-card {
+  padding: 24px 26px;
+}
+
+.circle-guidelines-card > p,
+.circle-membership-card > p {
+  margin: 0 0 10px;
+}
+
+.circle-guidelines-card > div {
+  align-items: flex-start;
+  border-top: 1px solid rgba(83, 29, 47, 0.08);
+  display: flex;
+  gap: 10px;
+  padding: 10px 0;
+}
+
+.circle-guidelines-card > div > span {
+  background: #bd8c53;
+  border-radius: 99px;
+  flex: 0 0 auto;
+  height: 6px;
+  margin-top: 7px;
+  width: 6px;
+}
+
+.circle-guidelines-card > div > p {
+  color: #896f79;
+  font-size: 0.76rem;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.circle-membership-card > div {
+  border-top: 1px solid rgba(83, 29, 47, 0.08);
+  display: grid;
+  gap: 3px;
+  padding: 12px 0 5px;
+}
+
+.circle-membership-card strong {
+  color: #501a2e;
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 500;
+}
+
+.circle-membership-card span {
+  color: #947984;
+  font-size: 0.72rem;
+  line-height: 1.5;
+}
+
+.circle-access-card {
+  padding: clamp(31px, 5vw, 54px);
+}
+
+.circle-access-card .eyebrow {
+  color: #a96843;
+  margin: 0 0 9px;
+}
+
+.circle-access-card h2 {
+  color: #461628;
+  font-size: clamp(2.3rem, 5vw, 3.6rem);
+  line-height: 1;
+  margin: 0 0 15px;
+}
+
+.circle-access-card > p:not(.eyebrow) {
+  color: #826570;
+  line-height: 1.7;
+  margin: 0 0 23px;
+  max-width: 650px;
+}
+
+.circle-access-card > a {
+  align-items: center;
+  background: #55182e;
+  border-radius: 99px;
+  color: #fffaf5;
+  display: inline-flex;
+  font-size: 0.7rem;
+  letter-spacing: 0.09em;
+  min-height: 45px;
+  padding: 0 21px;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+.circle-report-modal {
+  gap: 21px;
+}
+
+.circle-report-modal .portal-modal-context {
+  margin-bottom: 2px;
+}
+
+@media (max-width: 920px) {
+  .circle-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .circle-sidebar {
+    grid-template-columns: 1fr 1fr;
+    position: static;
+  }
+
+  .circle-reflection-card {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 720px) {
+  .circle-sidebar {
+    grid-template-columns: 1fr;
+  }
+
+  .circle-reflection-card {
+    grid-column: auto;
+  }
+
+  .circle-share-card,
+  .circle-post {
+    padding: 22px 18px;
+  }
+
+  .circle-post-author {
+    align-items: flex-start;
+  }
+
+  .circle-post-author > button {
+    margin-left: auto;
+  }
+
+  .circle-post-actions .circle-reply-toggle {
+    flex-basis: 100%;
+    justify-content: flex-start;
+    margin-left: 0;
+    margin-top: 3px;
+  }
+
+  .circle-comment-list article > p {
+    margin-left: 0;
+  }
+
+  .circle-share-card button,
+  .circle-comment-composer button {
+    justify-self: stretch;
+    width: 100%;
+  }
+}

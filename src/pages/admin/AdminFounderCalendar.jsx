@@ -7,8 +7,7 @@ import {
   updateAdminFounderDateAvailability,
 } from '../../lib/nativeApi'
 
-import './Admin.css'
-import './FounderCalendar.css'
+import './AdminFreshUI.css'
 
 const FOUNDER_TIME_ZONE = 'America/New_York'
 const FOUNDER_TIME_ZONE_LABEL = 'Eastern Time'
@@ -226,6 +225,18 @@ export default function AdminFounderCalendar() {
   const selectedBlocks = blocksByDate.get(selectedDate) || []
   const selectedCustomHours = customHoursByDate.get(selectedDate) || []
   const todayKey = getDateKey()
+  const monthSessionCount = useMemo(
+    () => bookings.filter((booking) => getDateKey(booking.starts_at).startsWith(month)).length,
+    [bookings, month],
+  )
+  const protectedDateCount = useMemo(
+    () => [...blocksByDate.keys()].filter((dateKey) => dateKey.startsWith(month)).length,
+    [blocksByDate, month],
+  )
+  const customDateCount = useMemo(
+    () => [...customHoursByDate.keys()].filter((dateKey) => dateKey.startsWith(month)).length,
+    [customHoursByDate, month],
+  )
 
   const loadCalendar = useCallback(async (monthValue) => {
     setIsLoading(true)
@@ -342,6 +353,7 @@ export default function AdminFounderCalendar() {
 
         <nav className="founder-calendar__header-actions" aria-label="Founder navigation">
           <Link to="/admin/founders-view">Founder’s View</Link>
+          <Link to="/admin/founders-calendar" aria-current="page">Calendar</Link>
           <Link to="/admin/founders-availability">Availability</Link>
           <Link to="/admin/dashboard">Open The Studio</Link>
           <button type="button" onClick={handleLogout} disabled={isSigningOut}>
@@ -369,6 +381,24 @@ export default function AdminFounderCalendar() {
           <button type="button" className="founder-calendar__today" onClick={goToToday}>
             Today
           </button>
+        </section>
+
+        <section className="founder-calendar__summary" aria-label={`${formatMonthTitle(month)} overview`}>
+          <article>
+            <span>Sessions this month</span>
+            <strong>{monthSessionCount}</strong>
+            <small>{monthSessionCount === 1 ? 'One client session' : 'Client sessions on your calendar'}</small>
+          </article>
+          <article>
+            <span>Protected dates</span>
+            <strong>{protectedDateCount}</strong>
+            <small>Days held away from booking</small>
+          </article>
+          <article>
+            <span>Custom-hour dates</span>
+            <strong>{customDateCount}</strong>
+            <small>Days using a one-time schedule</small>
+          </article>
         </section>
 
         <div className="founder-calendar__feedback" aria-live="polite">
@@ -419,6 +449,11 @@ export default function AdminFounderCalendar() {
                     aria-label={`${formatSelectedDate(dateKey)}, ${dayBookings.length} sessions${dayBlocks.length ? ', protected' : ''}${dayCustomHours.length ? ', custom hours' : ''}`}
                   >
                     <span className="founder-calendar__day-number">{dayNumber}</span>
+                    {dayBookings.length > 0 && (
+                      <span className="founder-calendar__day-count" aria-hidden="true">
+                        {dayBookings.length}
+                      </span>
+                    )}
                     <span className="founder-calendar__day-events">
                       {dayCustomHours.length > 0 && <em>Custom hours</em>}
                       {dayBlocks.length > 0 && dayCustomHours.length === 0 && <em>Protected</em>}
@@ -494,32 +529,34 @@ export default function AdminFounderCalendar() {
               )}
             </div>
 
-            <Link
-              to={`/admin/founders-availability?date=${selectedDate}`}
-              className="founder-calendar__customize"
-            >
-              Customize hours for this date
-            </Link>
+            <div className="founder-calendar__day-actions">
+              <Link
+                to={`/admin/founders-availability?date=${selectedDate}`}
+                className="founder-calendar__customize"
+              >
+                Customize hours
+              </Link>
 
-            {selectedBlocks.length > 0 ? (
-              <button
-                type="button"
-                className="founder-calendar__reopen"
-                onClick={handleReopenDate}
-                disabled={isUpdating}
-              >
-                {isUpdating ? 'Reopening…' : 'Reopen this date'}
-              </button>
-            ) : (
-              <button
-                type="button"
-                className="founder-calendar__protect"
-                onClick={handleProtectDate}
-                disabled={isUpdating}
-              >
-                {isUpdating ? 'Protecting…' : 'Protect this date'}
-              </button>
-            )}
+              {selectedBlocks.length > 0 ? (
+                <button
+                  type="button"
+                  className="founder-calendar__reopen"
+                  onClick={handleReopenDate}
+                  disabled={isUpdating}
+                >
+                  {isUpdating ? 'Reopening…' : 'Reopen this date'}
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  className="founder-calendar__protect"
+                  onClick={handleProtectDate}
+                  disabled={isUpdating}
+                >
+                  {isUpdating ? 'Protecting…' : 'Protect this date'}
+                </button>
+              )}
+            </div>
           </aside>
         </section>
       </div>

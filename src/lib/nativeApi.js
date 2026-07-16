@@ -516,6 +516,76 @@ export async function updateAdminFounderAvailabilityException(exceptionId, paylo
   })
 }
 
+// phase-29-founder-command-center-api-start
+export async function getFounderCommandCenter(filters = {}) {
+  const search = new URLSearchParams()
+  if (filters.search) search.set('search', filters.search)
+  if (filters.status) search.set('status', filters.status)
+  const query = search.toString()
+  return apiRequest(`/api/admin/founder-tools/overview${query ? `?${query}` : ''}`)
+}
+
+export async function saveFounderToolPreferences(payload) {
+  return apiRequest('/api/admin/founder-tools/preferences', {
+    method: 'PATCH',
+    body: JSON.stringify(payload),
+  })
+}
+
+export async function getFounderRecording(recordingId) {
+  return apiRequest(`/api/admin/founder-tools/recordings/${recordingId}`)
+}
+
+export async function saveFounderRecording(recordingId, payload) {
+  return apiRequest(`/api/admin/founder-tools/recordings/${recordingId}`, {
+    method: 'PATCH',
+    body: JSON.stringify(payload),
+  })
+}
+
+export async function requestFounderTranscription(recordingId) {
+  return apiRequest(`/api/admin/founder-tools/recordings/${recordingId}/transcription`, { method: 'POST' })
+}
+
+export async function getFounderRecordingAccess(recordingId, purpose) {
+  const response = await apiRequest(`/api/admin/founder-tools/recordings/${recordingId}/access`, {
+    method: 'POST',
+    body: JSON.stringify({ purpose }),
+  })
+  return { ...response, url: `${API_BASE_URL}${response.path}` }
+}
+
+export async function assignFounderRecording(recordingId, clientProfileId) {
+  return apiRequest(`/api/admin/founder-tools/recordings/${recordingId}/assignments`, {
+    method: 'POST',
+    body: JSON.stringify({ clientProfileId }),
+  })
+}
+
+export async function unassignFounderRecording(recordingId, assignmentId) {
+  return apiRequest(`/api/admin/founder-tools/recordings/${recordingId}/assignments/${assignmentId}`, { method: 'DELETE' })
+}
+
+export async function reuseFounderTranscriptInLetter(recordingId) {
+  return apiRequest(`/api/admin/founder-tools/recordings/${recordingId}/reuse-letter`, { method: 'POST' })
+}
+
+export async function archiveFounderRecording(recordingId) {
+  return apiRequest(`/api/admin/founder-tools/recordings/${recordingId}/archive`, { method: 'POST' })
+}
+
+export async function restoreFounderRecording(recordingId) {
+  return apiRequest(`/api/admin/founder-tools/recordings/${recordingId}/restore`, { method: 'POST' })
+}
+
+export async function permanentlyDeleteFounderRecording(recordingId, confirmation) {
+  return apiRequest(`/api/admin/founder-tools/recordings/${recordingId}`, {
+    method: 'DELETE',
+    body: JSON.stringify({ confirmation }),
+  })
+}
+// phase-29-founder-command-center-api-end
+
 
 export async function getAdminFounderAvailability() {
   return apiRequest('/api/admin/founders-view/availability')
@@ -669,6 +739,10 @@ export async function getDeveloperSystemHealth() {
   return apiRequest('/api/admin/developer/system-health')
 }
 
+export async function getDeveloperSecurityIntegrity() {
+  return apiRequest('/api/admin/developer/security-integrity')
+}
+
 export async function getDeveloperSettings() {
   return apiRequest('/api/admin/developer/settings')
 }
@@ -690,6 +764,26 @@ export async function getDeveloperClientPreview(clientProfileId) {
 // developer-operations-phase-2-api-end
 
 // staff-team-management-pass-26-api-start
+export async function getAdminTeamWorkload() {
+  return apiRequest('/api/admin/team/workload')
+}
+
+export async function getAdminClientMomentum() {
+  return apiRequest('/api/admin/client-momentum')
+}
+
+export async function getAdminClientCoverage() {
+  return apiRequest('/api/admin/client-coverage')
+}
+
+export async function getAdminSessionReadiness(days = 14) {
+  return apiRequest(`/api/admin/session-readiness?days=${encodeURIComponent(days)}`)
+}
+
+export async function getAdminSessionFollowThrough(days = 30) {
+  return apiRequest(`/api/admin/session-follow-through?days=${encodeURIComponent(days)}`)
+}
+
 export async function getMyTeamAccess() {
   return apiRequest('/api/admin/team/my-access')
 }
@@ -739,6 +833,19 @@ export async function updateAdminClientCareAction(clientId, actionId, payload) {
   })
 }
 // client-360-pass-27-api-end
+
+// studio-attention-queue-phase-14-api-start
+export async function getAdminAttentionQueue() {
+  return apiRequest('/api/admin/attention-queue')
+}
+
+export async function updateAdminAttentionItem(sourceType, clientId, itemId, payload) {
+  return apiRequest(`/api/admin/attention-queue/${sourceType}/${clientId}/${itemId}`, {
+    method: 'PATCH',
+    body: JSON.stringify(payload),
+  })
+}
+// studio-attention-queue-phase-14-api-end
 
 // learning-library-pass-18-api-start
 export async function getAdminLearningLibrary() {
@@ -1347,3 +1454,381 @@ export async function createDeveloperErrorTest() {
     method: 'POST',
   })
 }
+
+// phase-26-asset-vault-api-start
+function encodeAssetHeader(value) {
+  return encodeURIComponent(String(value || ''))
+}
+
+function assetQuery(params = {}) {
+  const search = new URLSearchParams()
+  Object.entries(params).forEach(([key, value]) => {
+    if (value !== undefined && value !== null && value !== '') search.set(key, String(value))
+  })
+  const query = search.toString()
+  return query ? `?${query}` : ''
+}
+
+async function uploadAssetBinary(path, file, metadata = {}, options = {}) {
+  return new Promise((resolve, reject) => {
+    const request = new XMLHttpRequest()
+    request.open('POST', `${API_BASE_URL}${path}`)
+    request.withCredentials = true
+    request.setRequestHeader('Content-Type', file.type || 'application/octet-stream')
+    request.setRequestHeader('X-PWC-File-Name', encodeAssetHeader(file.name))
+    if (metadata.title) request.setRequestHeader('X-PWC-Asset-Title', encodeAssetHeader(metadata.title))
+    if (metadata.folderId) request.setRequestHeader('X-PWC-Folder-Id', metadata.folderId)
+    if (metadata.tags?.length) request.setRequestHeader('X-PWC-Tags', encodeAssetHeader(metadata.tags.join(',')))
+    if (metadata.notes) request.setRequestHeader('X-PWC-Version-Notes', encodeAssetHeader(metadata.notes))
+
+    request.upload.addEventListener('progress', (event) => {
+      if (!event.lengthComputable || typeof options.onProgress !== 'function') return
+      options.onProgress({ loaded: event.loaded, total: event.total, percent: Math.round((event.loaded / event.total) * 100) })
+    })
+    request.addEventListener('load', () => {
+      let data = null
+      try { data = request.responseText ? JSON.parse(request.responseText) : null } catch { /* non-JSON upload error */ }
+      if (request.status >= 200 && request.status < 300) {
+        options.onProgress?.({ loaded: file.size, total: file.size, percent: 100 })
+        resolve(data)
+        return
+      }
+      reject(new Error(data?.error || data?.message || `Upload failed with status ${request.status}`))
+    })
+    request.addEventListener('error', () => reject(new Error('The upload connection was interrupted.')))
+    request.addEventListener('abort', () => reject(new DOMException('The upload was cancelled.', 'AbortError')))
+    options.signal?.addEventListener('abort', () => request.abort(), { once: true })
+    request.send(file)
+  })
+}
+
+export async function uploadFounderRecording(file, metadata = {}, options = {}) {
+  return new Promise((resolve, reject) => {
+    const request = new XMLHttpRequest()
+    request.open('POST', `${API_BASE_URL}/api/admin/founder-tools/recordings/upload`)
+    request.withCredentials = true
+    request.setRequestHeader('Content-Type', file.type || 'audio/webm')
+    request.setRequestHeader('X-PWC-File-Name', encodeAssetHeader(file.name))
+    request.setRequestHeader('X-PWC-Recording-Title', encodeAssetHeader(metadata.title || file.name))
+    if (metadata.notes) request.setRequestHeader('X-PWC-Recording-Notes', encodeAssetHeader(metadata.notes))
+    if (metadata.folderId) request.setRequestHeader('X-PWC-Folder-Id', metadata.folderId)
+    if (metadata.tags?.length) request.setRequestHeader('X-PWC-Tags', encodeAssetHeader(metadata.tags.join(',')))
+    request.setRequestHeader('X-PWC-Duration-Ms', String(Math.max(0, Number(metadata.durationMs || 0))))
+
+    request.upload.addEventListener('progress', (event) => {
+      if (!event.lengthComputable || typeof options.onProgress !== 'function') return
+      options.onProgress({ loaded: event.loaded, total: event.total, percent: Math.round((event.loaded / event.total) * 100) })
+    })
+    request.addEventListener('load', () => {
+      let data = null
+      try { data = request.responseText ? JSON.parse(request.responseText) : null } catch { /* non-JSON upload error */ }
+      if (request.status >= 200 && request.status < 300) {
+        options.onProgress?.({ loaded: file.size, total: file.size, percent: 100 })
+        resolve(data)
+        return
+      }
+      reject(new Error(data?.error || data?.message || `Upload failed with status ${request.status}`))
+    })
+    request.addEventListener('error', () => reject(new Error('The recording upload was interrupted.')))
+    request.addEventListener('abort', () => reject(new DOMException('The recording upload was cancelled.', 'AbortError')))
+    options.signal?.addEventListener('abort', () => request.abort(), { once: true })
+    request.send(file)
+  })
+}
+
+export async function getAssetVaultSummary() {
+  return apiRequest('/api/admin/assets/summary')
+}
+
+export async function getAssetVaultAssets(filters = {}) {
+  return apiRequest(`/api/admin/assets${assetQuery(filters)}`)
+}
+
+export async function getAssetVaultAsset(assetId) {
+  return apiRequest(`/api/admin/assets/${assetId}`)
+}
+
+export async function createAssetVaultFolder(payload) {
+  return apiRequest('/api/admin/assets/folders', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  })
+}
+
+export async function uploadAssetVaultFile(file, metadata = {}, options = {}) {
+  return uploadAssetBinary('/api/admin/assets/upload', file, metadata, options)
+}
+
+export async function uploadAssetVaultVersion(assetId, file, notes = '', options = {}) {
+  return uploadAssetBinary(`/api/admin/assets/${assetId}/versions`, file, { notes }, options)
+}
+
+export async function updateAssetVaultAsset(assetId, payload) {
+  return apiRequest(`/api/admin/assets/${assetId}`, {
+    method: 'PATCH',
+    body: JSON.stringify(payload),
+  })
+}
+
+export async function archiveAssetVaultAsset(assetId) {
+  return apiRequest(`/api/admin/assets/${assetId}/archive`, { method: 'POST' })
+}
+
+export async function restoreAssetVaultAsset(assetId) {
+  return apiRequest(`/api/admin/assets/${assetId}/restore`, { method: 'POST' })
+}
+
+export async function assignAssetVaultAsset(assetId, payload) {
+  return apiRequest(`/api/admin/assets/${assetId}/assignments`, {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  })
+}
+
+export async function assignAssetVaultAssetToAllClients(assetId, payload) {
+  return apiRequest(`/api/admin/assets/${assetId}/assignments/all`, {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  })
+}
+
+export async function assignAssetVaultAssetToClients(assetId, payload) {
+  return apiRequest(`/api/admin/assets/${assetId}/assignments/selected`, {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  })
+}
+
+export async function createAssetVaultAccessGrant(assetId, purpose = 'download') {
+  const response = await apiRequest(`/api/admin/assets/${assetId}/access-grants`, {
+    method: 'POST',
+    body: JSON.stringify({ purpose }),
+  })
+  return { ...response, url: `${API_BASE_URL}${response.path}` }
+}
+
+export async function getAssetVaultRelationships(assetId) {
+  return apiRequest(`/api/admin/assets/${assetId}/relationships`)
+}
+
+export async function createAssetVaultRelationship(assetId, payload) {
+  return apiRequest(`/api/admin/assets/${assetId}/relationships`, {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  })
+}
+
+export async function removeAssetVaultRelationship(assetId, relationshipId) {
+  return apiRequest(`/api/admin/assets/${assetId}/relationships/${relationshipId}`, { method: 'DELETE' })
+}
+
+export async function unassignAssetVaultAsset(assetId, assignmentId) {
+  return apiRequest(`/api/admin/assets/${assetId}/assignments/${assignmentId}`, {
+    method: 'DELETE',
+  })
+}
+
+export function getAssetVaultDownloadUrl(assetId) {
+  return `${API_BASE_URL}/api/admin/assets/${assetId}/download`
+}
+
+export function getAssetVaultPreviewUrl(assetId) {
+  return `${API_BASE_URL}/api/admin/assets/${assetId}/preview`
+}
+// phase-26-asset-vault-api-end
+
+// phase-27-newsletter-audience-api-start
+function audienceQuery(params = {}) {
+  const search = new URLSearchParams()
+  Object.entries(params).forEach(([key, value]) => {
+    if (value !== undefined && value !== null && value !== '') search.set(key, String(value))
+  })
+  const query = search.toString()
+  return query ? `?${query}` : ''
+}
+
+export async function subscribePublicNewsletter(payload) {
+  return apiRequest('/api/public/newsletter/subscribe', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  })
+}
+
+export async function getNewsletterAudienceSummary() {
+  return apiRequest('/api/admin/audience/summary')
+}
+
+export async function getNewsletterAudienceSubscribers(filters = {}) {
+  return apiRequest(`/api/admin/audience/subscribers${audienceQuery(filters)}`)
+}
+
+export async function getNewsletterAudienceSubscriber(subscriberId) {
+  return apiRequest(`/api/admin/audience/subscribers/${subscriberId}`)
+}
+
+export async function getNewsletterAudiencePreviewCount(filters = {}) {
+  return apiRequest(`/api/admin/audience/preview-count${audienceQuery(filters)}`)
+}
+
+export async function createNewsletterAudienceSubscriber(payload) {
+  return apiRequest('/api/admin/audience/subscribers', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  })
+}
+
+export async function createNewsletterAudienceBulk(payload) {
+  return apiRequest('/api/admin/audience/subscribers/bulk', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  })
+}
+
+export async function importNewsletterAudienceCsv(payload) {
+  return apiRequest('/api/admin/audience/imports/csv', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  })
+}
+
+export async function addClientToNewsletterAudience(clientProfileId, payload) {
+  return apiRequest(`/api/admin/audience/clients/${clientProfileId}`, {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  })
+}
+
+export async function updateNewsletterAudienceSubscriber(subscriberId, payload) {
+  return apiRequest(`/api/admin/audience/subscribers/${subscriberId}`, {
+    method: 'PATCH',
+    body: JSON.stringify(payload),
+  })
+}
+
+export async function updateNewsletterAudienceStatus(subscriberId, payload) {
+  return apiRequest(`/api/admin/audience/subscribers/${subscriberId}/status`, {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  })
+}
+
+export async function bulkUpdateNewsletterAudienceTags(payload) {
+  return apiRequest('/api/admin/audience/bulk/tags', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  })
+}
+
+export async function bulkUpdateNewsletterAudienceSegments(payload) {
+  return apiRequest('/api/admin/audience/bulk/segments', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  })
+}
+
+export async function createNewsletterAudienceSegment(payload) {
+  return apiRequest('/api/admin/audience/segments', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  })
+}
+// phase-27-newsletter-audience-api-end
+
+// phase-28-letter-builder-api-start
+function letterQuery(params = {}) {
+  const search = new URLSearchParams()
+  Object.entries(params).forEach(([key, value]) => {
+    if (value !== undefined && value !== null && value !== '') search.set(key, String(value))
+  })
+  const query = search.toString()
+  return query ? `?${query}` : ''
+}
+
+export async function getLetterBuilderOverview() {
+  return apiRequest('/api/admin/letters/overview')
+}
+
+export async function getLetters(filters = {}) {
+  return apiRequest(`/api/admin/letters/letters${letterQuery(filters)}`)
+}
+
+export async function getLetter(letterId) {
+  return apiRequest(`/api/admin/letters/letters/${letterId}`)
+}
+
+export async function createLetter(payload) {
+  return apiRequest('/api/admin/letters/letters', { method: 'POST', body: JSON.stringify(payload) })
+}
+
+export async function saveLetter(letterId, payload) {
+  return apiRequest(`/api/admin/letters/letters/${letterId}`, { method: 'PATCH', body: JSON.stringify(payload) })
+}
+
+export async function duplicateLetter(letterId) {
+  return apiRequest(`/api/admin/letters/letters/${letterId}/duplicate`, { method: 'POST' })
+}
+
+export async function previewLetter(letterId) {
+  return apiRequest(`/api/admin/letters/letters/${letterId}/preview`, { method: 'POST' })
+}
+
+export async function sendLetterTest(letterId, email) {
+  return apiRequest(`/api/admin/letters/letters/${letterId}/test-send`, { method: 'POST', body: JSON.stringify({ email }) })
+}
+
+export async function getLetterVersions(letterId) {
+  return apiRequest(`/api/admin/letters/letters/${letterId}/versions`)
+}
+
+export async function restoreLetterVersion(letterId, versionId) {
+  return apiRequest(`/api/admin/letters/letters/${letterId}/versions/${versionId}/restore`, { method: 'POST' })
+}
+
+export async function getLetterTemplates(status = 'active') {
+  return apiRequest(`/api/admin/letters/templates?status=${encodeURIComponent(status)}`)
+}
+
+export async function createLetterTemplate(payload) {
+  return apiRequest('/api/admin/letters/templates', { method: 'POST', body: JSON.stringify(payload) })
+}
+
+export async function saveLetterAsTemplate(letterId, payload) {
+  return apiRequest(`/api/admin/letters/letters/${letterId}/save-template`, { method: 'POST', body: JSON.stringify(payload) })
+}
+
+export async function previewLetterAudience(audienceFilter) {
+  return apiRequest('/api/admin/letters/audience-preview', { method: 'POST', body: JSON.stringify(audienceFilter) })
+}
+
+export async function prepareLetterBroadcast(letterId, audienceFilter) {
+  return apiRequest(`/api/admin/letters/letters/${letterId}/broadcasts/prepare`, { method: 'POST', body: JSON.stringify({ audienceFilter }) })
+}
+
+export async function getLetterBroadcasts(filters = {}) {
+  return apiRequest(`/api/admin/letters/broadcasts${letterQuery(filters)}`)
+}
+
+export async function getLetterBroadcast(broadcastId) {
+  return apiRequest(`/api/admin/letters/broadcasts/${broadcastId}`)
+}
+
+export async function scheduleLetterBroadcast(broadcastId, scheduledAt) {
+  return apiRequest(`/api/admin/letters/broadcasts/${broadcastId}/schedule`, { method: 'POST', body: JSON.stringify({ scheduledAt }) })
+}
+
+export async function sendLetterBroadcastNow(broadcastId) {
+  return apiRequest(`/api/admin/letters/broadcasts/${broadcastId}/send-now`, { method: 'POST' })
+}
+
+export async function cancelLetterBroadcast(broadcastId) {
+  return apiRequest(`/api/admin/letters/broadcasts/${broadcastId}/cancel`, { method: 'POST' })
+}
+
+export async function processDueLetterBroadcasts() {
+  return apiRequest('/api/admin/letters/process-due', { method: 'POST' })
+}
+
+export function getLetterBroadcastExportUrl(broadcastId) {
+  return `${API_BASE_URL}/api/admin/letters/broadcasts/${broadcastId}/export.csv`
+}
+// phase-28-letter-builder-api-end

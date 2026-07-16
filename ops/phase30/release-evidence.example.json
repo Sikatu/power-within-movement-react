@@ -1,0 +1,39 @@
+{
+  "phase": 30,
+  "release": {
+    "commit": "REPLACE_WITH_FULL_40_CHARACTER_GIT_SHA",
+    "tag": "phase30-production-YYYYMMDD",
+    "environment": "production",
+    "candidateUrl": "https://candidate.example.com",
+    "verifiedAt": "YYYY-MM-DDTHH:MM:SSZ"
+  },
+  "evidence": {
+    "postgres-backup": { "status": "pending", "checkedBy": "", "checkedAt": "", "notes": "", "artifact": "" },
+    "migration-rehearsal": { "status": "pending", "checkedBy": "", "checkedAt": "", "notes": "", "artifact": "" },
+    "object-storage-roundtrip": { "status": "pending", "checkedBy": "", "checkedAt": "", "notes": "", "artifact": "" },
+    "signed-private-link": { "status": "pending", "checkedBy": "", "checkedAt": "", "notes": "", "artifact": "" },
+    "client-resource-assignment": { "status": "pending", "checkedBy": "", "checkedAt": "", "notes": "", "artifact": "" },
+    "audience-import": { "status": "pending", "checkedBy": "", "checkedAt": "", "notes": "", "artifact": "" },
+    "duplicate-subscriber": { "status": "pending", "checkedBy": "", "checkedAt": "", "notes": "", "artifact": "" },
+    "unsubscribe-suppression": { "status": "pending", "checkedBy": "", "checkedAt": "", "notes": "", "artifact": "" },
+    "newsletter-test-send": { "status": "pending", "checkedBy": "", "checkedAt": "", "notes": "", "artifact": "" },
+    "founder-recording": { "status": "pending", "checkedBy": "", "checkedAt": "", "notes": "", "artifact": "" },
+    "founder-transcription": { "status": "pending", "checkedBy": "", "checkedAt": "", "notes": "", "artifact": "" },
+    "founder-timezone": { "status": "pending", "checkedBy": "", "checkedAt": "", "notes": "", "artifact": "" },
+    "complete-route-audit": { "status": "pending", "checkedBy": "", "checkedAt": "", "notes": "", "artifact": "" },
+    "four-viewport-review": { "status": "pending", "checkedBy": "", "checkedAt": "", "notes": "", "artifact": "" },
+    "interaction-review": { "status": "pending", "checkedBy": "", "checkedAt": "", "notes": "", "artifact": "" },
+    "accessibility-review": { "status": "pending", "checkedBy": "", "checkedAt": "", "notes": "", "artifact": "" },
+    "authentication-permissions": { "status": "pending", "checkedBy": "", "checkedAt": "", "notes": "", "artifact": "" },
+    "security-integrity-scan": { "status": "pending", "checkedBy": "", "checkedAt": "", "notes": "", "artifact": "" },
+    "build-lint-tests": { "status": "pending", "checkedBy": "", "checkedAt": "", "notes": "", "artifact": "" },
+    "rollback-checkpoint": { "status": "pending", "checkedBy": "", "checkedAt": "", "notes": "", "artifact": "" }
+  },
+  "openBlockers": [],
+  "deploymentApproval": {
+    "decision": "NO-GO",
+    "approvedBy": "",
+    "approvedAt": "",
+    "notes": ""
+  }
+}

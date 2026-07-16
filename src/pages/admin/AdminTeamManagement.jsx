@@ -7,8 +7,6 @@ import {
   updateDeveloperTeamMember,
 } from '../../lib/nativeApi'
 
-import './Admin.css'
-import './TeamManagement.css'
 
 const moduleLabels = {
   dashboard: ['Overview', 'Studio dashboard and operational summary'],

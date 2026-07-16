@@ -36,7 +36,15 @@
     "db:migrate-booking-onboarding": "node scripts/ensure-booking-onboarding.cjs",
     "db:migrate-developer-error-center": "node scripts/ensure-developer-error-center.cjs",
     "db:migrate-notification-center": "node scripts/ensure-notification-center.cjs",
-    "db:migrate:ordered": "node scripts/run-ordered-migrations.cjs"
+    "db:migrate:ordered": "node scripts/run-ordered-migrations.cjs",
+    "db:migrate-asset-vault": "node scripts/ensure-asset-vault.cjs",
+    "db:migrate-newsletter-audience": "node scripts/ensure-newsletter-audience.cjs",
+    "db:migrate-letter-builder": "node scripts/ensure-letter-builder.cjs",
+    "db:migrate-founder-command-center": "node scripts/ensure-founder-command-center.cjs",
+    "db:rehearse:phase30": "node scripts/run-phase30-migration-rehearsal.cjs",
+    "db:backup:phase30": "node scripts/create-phase30-postgres-backup.cjs",
+    "db:backup:verify:phase30": "node scripts/verify-phase30-postgres-backup.cjs",
+    "db:restore:phase30": "node scripts/restore-phase30-postgres-backup.cjs"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",

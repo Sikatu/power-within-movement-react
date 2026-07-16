@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
+import logoImage from '../../assets/images/logo.webp'
 import { loginAdmin } from '../../lib/nativeApi'
 
-import './Admin.css'
+import './AdminFreshUI.css'
+
 function AdminLogin() {
   const navigate = useNavigate()
   const location = useLocation()
@@ -95,11 +97,10 @@ function AdminLogin() {
   return (
     <main className="pwc-admin-auth-page">
       <section className="pwc-admin-auth-card">
-        <p className="eyebrow">Admin Access</p>
-        <h1>Power Within Admin</h1>
-        <p>
-          Sign in to manage the platform, sessions, clients, messages, resources, and private portal access.
-        </p>
+        <img className="pwc-admin-auth-logo" src={logoImage} alt="Power Within Collective" />
+        <p className="eyebrow">Power Within</p>
+        <h1>The Studio</h1>
+        <p>A private space for meaningful transformation.</p>
 
         <form className="pwc-admin-login-form" onSubmit={handleSubmit}>
           <label htmlFor="admin-email">Email address</label>
@@ -110,7 +111,7 @@ function AdminLogin() {
             autoComplete="email"
             value={form.email}
             onChange={handleChange}
-            placeholder="owner@email.com"
+            placeholder="kim@kimmittelstadt.com"
             required
           />
 
@@ -139,15 +140,15 @@ function AdminLogin() {
           )}
 
           <button className="btn primary" type="submit" disabled={status.loading}>
-            {status.loading ? 'Signing In...' : 'Sign In'}
+            {status.loading ? 'Opening The Studio…' : 'Enter The Studio'}
           </button>
         </form>
 
         <div className="pwc-admin-auth-actions">
-          <Link className="btn secondary" to="/">
-            Return to Website
-          </Link>
+          <Link to="/">View public site</Link>
         </div>
+
+        <p className="pwc-admin-auth-footer">Private access · Power Within Movement, LLC</p>
       </section>
     </main>
   )

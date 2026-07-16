@@ -10,8 +10,6 @@ import {
   updateAdminLeadFollowUp,
 } from '../../lib/nativeApi'
 
-import './Admin.css'
-import './LeadPipeline.css'
 
 const stageLabels = {
   new_inquiry: 'New inquiry',
@@ -79,6 +77,7 @@ function LeadCard({ lead, isSelected, onSelect }) {
   return (
     <button
       className={`lead-pipeline-card${isSelected ? ' is-selected' : ''}`}
+      aria-pressed={isSelected}
       onClick={() => onSelect(lead.id)}
       type="button"
     >

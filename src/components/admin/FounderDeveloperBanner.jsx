@@ -1,5 +1,4 @@
 import { Link } from 'react-router-dom'
-import './FounderDeveloperBanner.css'
 
 function readSessionValue(key) {
   if (typeof window === 'undefined') return null

@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import AdminFrame from '../../components/admin/AdminFrame'
 import { checkAdminAccess, getAdminAuditLogs } from '../../lib/nativeApi'
 
-import './Admin.css'
+
 function readableAction(value) {
   if (!value) return 'Unknown Action'
 
@@ -98,7 +98,8 @@ function AdminAuditLog() {
 
   return (
     <AdminFrame>
-      <div className="pwc-admin-page-header pwc-admin-page-header-balanced">
+      <div className="operations-audit-page">
+        <div className="pwc-admin-page-header pwc-admin-page-header-balanced">
         <div>
           <p className="eyebrow">Studio Memory</p>
           <h1>Activity Journal</h1>
@@ -191,6 +192,7 @@ function AdminAuditLog() {
           </div>
         </section>
       )}
+      </div>
     </AdminFrame>
   )
 }

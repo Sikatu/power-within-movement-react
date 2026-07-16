@@ -10,8 +10,6 @@ import {
   updateAdminIntakeTemplate,
 } from '../../lib/nativeApi'
 
-import './Admin.css'
-import './OnboardingStudio.css'
 
 const emptyField = (position = 1) => ({
   fieldKey: `field_${position}`,
@@ -333,7 +331,7 @@ export default function AdminOnboardingStudio() {
   }
 
   if (isLoading) {
-    return <AdminFrame><div className="onboarding-studio-loading">Opening Booking & Onboarding...</div></AdminFrame>
+    return <AdminFrame><div className="onboarding-studio-loading" aria-live="polite" aria-busy="true">Opening Booking & Onboarding...</div></AdminFrame>
   }
 
   return (
@@ -341,15 +339,15 @@ export default function AdminOnboardingStudio() {
       <div className="onboarding-studio-page">
         <header className="onboarding-studio-header">
           <div>
-            <p className="eyebrow">Pass 30</p>
+            <p className="eyebrow">Client Journey</p>
             <h1>Booking, Intake & Onboarding</h1>
             <p>Connect appointment requests, private intake forms, client preparation, portal onboarding, and reminder communication in one guided flow.</p>
           </div>
           <button type="button" onClick={runDueMessages} disabled={isSaving}>Process Due Messages</button>
         </header>
 
-        {error && <div className="onboarding-studio-alert is-error">{error}</div>}
-        {notice && <div className="onboarding-studio-alert is-success">{notice}</div>}
+        {error && <div className="onboarding-studio-alert is-error" role="alert">{error}</div>}
+        {notice && <div className="onboarding-studio-alert is-success" role="status">{notice}</div>}
 
         <section className="onboarding-studio-metrics">
           <article><span>Active onboarding</span><strong>{studio?.stats?.active || 0}</strong></article>

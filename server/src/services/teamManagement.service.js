@@ -95,9 +95,15 @@ function routePermissionModule(pathname = '') {
 
   if (path.startsWith('/notifications')) return null
   if (path === '/team/my-access') return null
+  if (path === '/team/workload') return 'dashboard'
+  if (path === '/client-momentum') return 'clients'
+  if (path === '/client-coverage') return 'clients'
+  if (path === '/session-readiness') return 'sessions'
+  if (path === '/session-follow-through') return 'sessions'
   if (path.startsWith('/overview')) return 'dashboard'
   if (
     path.startsWith('/clients') ||
+    path.startsWith('/attention-queue') ||
     path.startsWith('/onboarding-studio') ||
     path.startsWith('/lead-pipeline') ||
     path.startsWith('/follow-ups') ||
@@ -113,7 +119,7 @@ function routePermissionModule(pathname = '') {
     path.startsWith('/session-change-requests')
   ) return 'sessions'
   if (path.startsWith('/inbox')) return 'inbox'
-  if (path.startsWith('/mail-studio') || path.startsWith('/automation-studio')) return 'communications'
+  if (path.startsWith('/mail-studio') || path.startsWith('/automation-studio') || path.startsWith('/audience') || path.startsWith('/letters')) return 'communications'
   if (path.startsWith('/learning-library')) return 'learning'
   if (path.startsWith('/memberships')) return 'memberships'
   if (path.startsWith('/circle')) return 'circle'

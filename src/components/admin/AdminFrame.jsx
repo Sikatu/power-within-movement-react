@@ -12,13 +12,28 @@ import {
   useNavigate,
 } from 'react-router-dom'
 import NotificationCenter from '../NotificationCenter'
+import AdminCommandPalette from './AdminCommandPalette.jsx'
+import { rememberAdminDestination } from './adminRecentDestinations.js'
+import {
+  PINNED_STORAGE_KEY,
+  readPinnedDestinations,
+  togglePinnedDestination,
+} from './adminPinnedDestinations.js'
 import {
   checkAdminAccess,
   getMyTeamAccess,
   logoutAdmin,
 } from '../../lib/nativeApi'
+import {
+  preloadAdminRoute,
+  preloadAdminRoutes,
+} from './adminRoutePreloaders.js'
+import {
+  acquireAdminScrollLock,
+  mountAdminScrollRoot,
+} from './adminScrollLock.js'
 
-import './AdminFrame.css'
+import '../../pages/admin/AdminFreshUI.css'
 
 const primaryItems = [
   {
@@ -78,7 +93,7 @@ const groupedItems = [
   {
     id: 'client-experience',
     label: 'Client Experience',
-    description: 'Programs and community',
+    description: 'Programs, assets, and community',
     items: [
       {
         to: '/admin/encouragements',
@@ -89,6 +104,10 @@ const groupedItems = [
         to: '/admin/courses',
         label: 'Learning Library',
         module: 'learning',
+      },
+      {
+        to: '/admin/assets',
+        label: 'Asset Vault',
       },
       {
         to: '/admin/memberships',
@@ -108,8 +127,13 @@ const groupedItems = [
     description: 'Letters and session updates',
     items: [
       {
-        to: '/admin/email-studio',
+        to: '/admin/letters',
         label: 'Letters & Broadcasts',
+        module: 'communications',
+      },
+      {
+        to: '/admin/audience',
+        label: 'Newsletter Audience',
         module: 'communications',
       },
       {
@@ -124,6 +148,51 @@ const groupedItems = [
     label: 'Operations',
     description: 'People and accountability',
     items: [
+      {
+        to: '/admin/brief',
+        label: 'Today in The Studio',
+        module: 'dashboard',
+      },
+      {
+        to: '/admin/week',
+        label: 'Studio Week Planner',
+        module: 'dashboard',
+      },
+      {
+        to: '/admin/capacity',
+        label: 'Studio Capacity',
+        module: 'dashboard',
+      },
+      {
+        to: '/admin/momentum',
+        label: 'Client Momentum',
+        module: 'clients',
+      },
+      {
+        to: '/admin/coverage',
+        label: 'Coverage & Handoffs',
+        module: 'clients',
+      },
+      {
+        to: '/admin/readiness',
+        label: 'Session Readiness',
+        module: 'sessions',
+      },
+      {
+        to: '/admin/follow-through',
+        label: 'Session Follow-Through',
+        module: 'sessions',
+      },
+      {
+        to: '/admin/attention',
+        label: 'Attention Queue',
+        module: 'clients',
+      },
+      {
+        to: '/admin/activity',
+        label: 'Studio Activity',
+        module: 'dashboard',
+      },
       {
         to: '/admin/audit-log',
         label: 'Activity Journal',
@@ -144,13 +213,7 @@ const groupedItems = [
     items: [
       {
         to: '/admin/developer',
-        label: 'Developer Control Center',
-        developerOnly: true,
-        exact: true,
-      },
-      {
-        to: '/admin/developer/errors',
-        label: 'Developer Error Center',
+        label: 'Developer Operations',
         developerOnly: true,
       },
     ],
@@ -174,8 +237,8 @@ const workspaceDefinitions = [
   },
   {
     id: 'developer',
-    label: 'Developer Control Center',
-    description: 'System health and governance',
+    label: 'Developer Operations',
+    description: 'Health, security, access, and releases',
     to: '/admin/developer',
     roles: ['developer'],
   },
@@ -255,6 +318,10 @@ function AdminFrame({ children }) {
   const navigate = useNavigate()
   const searchInputRef = useRef(null)
   const workspaceRef = useRef(null)
+  const sidebarRef = useRef(null)
+  const mobileTriggerRef = useRef(null)
+  const mainContentRef = useRef(null)
+  const previousPathRef = useRef(location.pathname)
   const [adminUser, setAdminUser] = useState(readCachedUser)
   const [roleVerified, setRoleVerified] = useState(false)
   const [teamAccess, setTeamAccess] = useState(null)
@@ -262,11 +329,37 @@ function AdminFrame({ children }) {
   const [openGroupOverride, setOpenGroupOverride] = useState(undefined)
   const [workspaceOpen, setWorkspaceOpen] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
+  const [commandOpen, setCommandOpen] = useState(false)
+  const [pinnedPaths, setPinnedPaths] = useState(readPinnedDestinations)
   const [signingOut, setSigningOut] = useState(false)
+  const [isOnline, setIsOnline] = useState(() => (
+    typeof navigator === 'undefined' ? true : navigator.onLine
+  ))
 
   const role = roleVerified ? adminUser?.role : null
   const isDeveloper = role === 'developer'
   const isStaff = role === 'staff'
+
+  const warmRoute = useCallback((to) => {
+    preloadAdminRoute(to)?.catch(() => {
+      // A failed prefetch is retried by React.lazy during navigation.
+    })
+  }, [])
+
+  const openCommandPalette = useCallback(() => {
+    const restoreToMobileTrigger = mobileOpen
+
+    setWorkspaceOpen(false)
+    setMobileOpen(false)
+    setSearchQuery('')
+
+    window.requestAnimationFrame(() => {
+      if (restoreToMobileTrigger) {
+        mobileTriggerRef.current?.focus({ preventScroll: true })
+      }
+      setCommandOpen(true)
+    })
+  }, [mobileOpen])
 
   useEffect(() => {
     let active = true
@@ -335,6 +428,23 @@ function AdminFrame({ children }) {
     [canAccessItem],
   )
 
+  useEffect(() => {
+    if (!roleVerified || !accessiblePrimaryItems.length) return undefined
+
+    const paths = accessiblePrimaryItems.map((item) => item.to)
+    const preload = () => {
+      preloadAdminRoutes(paths)
+    }
+
+    if (typeof window.requestIdleCallback === 'function') {
+      const idleId = window.requestIdleCallback(preload, { timeout: 1800 })
+      return () => window.cancelIdleCallback(idleId)
+    }
+
+    const timeoutId = window.setTimeout(preload, 700)
+    return () => window.clearTimeout(timeoutId)
+  }, [accessiblePrimaryItems, roleVerified])
+
   const accessibleGroups = useMemo(
     () => groupedItems
       .filter((group) => !group.developerOnly || isDeveloper)
@@ -373,25 +483,68 @@ function AdminFrame({ children }) {
     : openGroupOverride
 
   useEffect(() => {
+    function syncPinnedDestinations(event) {
+      if (!event.key || event.key === PINNED_STORAGE_KEY) {
+        setPinnedPaths(readPinnedDestinations())
+      }
+    }
+
+    window.addEventListener('storage', syncPinnedDestinations)
+    return () => window.removeEventListener('storage', syncPinnedDestinations)
+  }, [])
+
+  useEffect(() => {
     document.body.classList.add('admin-app-mode')
+    const unmountScrollRoot = mountAdminScrollRoot()
 
     return () => {
+      unmountScrollRoot()
       document.body.classList.remove('admin-app-mode')
     }
   }, [])
 
   useEffect(() => {
     function handleKeyDown(event) {
+      if (mobileOpen && event.key === 'Tab' && sidebarRef.current) {
+        const focusable = Array.from(sidebarRef.current.querySelectorAll(
+          'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+        )).filter((element) => !element.closest('[hidden]') && element.getClientRects().length > 0)
+
+        if (focusable.length) {
+          const first = focusable[0]
+          const last = focusable.at(-1)
+
+          if (event.shiftKey && document.activeElement === first) {
+            event.preventDefault()
+            last.focus()
+          } else if (!event.shiftKey && document.activeElement === last) {
+            event.preventDefault()
+            first.focus()
+          }
+        }
+      }
+
       if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') {
         event.preventDefault()
-        setMobileOpen(true)
-        window.setTimeout(() => searchInputRef.current?.focus(), 0)
+        openCommandPalette()
+        return
+      }
+
+      if (event.key === 'Escape' && commandOpen) {
+        event.preventDefault()
+        setCommandOpen(false)
+        return
       }
 
       if (event.key === 'Escape') {
+        const shouldReturnFocus = mobileOpen
         setWorkspaceOpen(false)
         setMobileOpen(false)
         setSearchQuery('')
+
+        if (shouldReturnFocus) {
+          window.setTimeout(() => mobileTriggerRef.current?.focus(), 0)
+        }
       }
     }
 
@@ -412,18 +565,47 @@ function AdminFrame({ children }) {
       document.removeEventListener('keydown', handleKeyDown)
       document.removeEventListener('pointerdown', handlePointerDown)
     }
-  }, [workspaceOpen])
+  }, [commandOpen, mobileOpen, openCommandPalette, workspaceOpen])
+
+  useEffect(() => {
+    function updateConnectionStatus() {
+      setIsOnline(navigator.onLine)
+    }
+
+    window.addEventListener('online', updateConnectionStatus)
+    window.addEventListener('offline', updateConnectionStatus)
+
+    return () => {
+      window.removeEventListener('online', updateConnectionStatus)
+      window.removeEventListener('offline', updateConnectionStatus)
+    }
+  }, [])
 
   useEffect(() => {
     if (!mobileOpen) return undefined
-
-    const previousOverflow = document.body.style.overflow
-    document.body.style.overflow = 'hidden'
-
-    return () => {
-      document.body.style.overflow = previousOverflow
-    }
+    return acquireAdminScrollLock()
   }, [mobileOpen])
+
+  useEffect(() => {
+    const previousPath = previousPathRef.current
+    previousPathRef.current = location.pathname
+    rememberAdminDestination(location.pathname)
+
+    const frame = window.requestAnimationFrame(() => {
+      setWorkspaceOpen(false)
+      setMobileOpen(false)
+      setCommandOpen(false)
+      setSearchQuery('')
+      setOpenGroupOverride(undefined)
+
+      if (previousPath !== location.pathname) {
+        window.scrollTo({ top: 0, left: 0, behavior: 'auto' })
+        mainContentRef.current?.focus({ preventScroll: true })
+      }
+    })
+
+    return () => window.cancelAnimationFrame(frame)
+  }, [location.pathname])
 
   const searchableItems = useMemo(
     () => [
@@ -448,6 +630,36 @@ function AdminFrame({ children }) {
     ))
   }, [searchQuery, searchableItems])
 
+  const commandItems = useMemo(() => [
+    ...accessibleWorkspaces.map((workspace) => ({
+      ...workspace,
+      groupLabel: 'Workspaces',
+      icon: 'workspace',
+      keywords: ['workspace', workspace.id],
+    })),
+    ...accessiblePrimaryItems.map((item) => ({
+      ...item,
+      groupLabel: 'Core Studio',
+      description: `Open the ${item.label} workspace.`,
+      keywords: ['primary', 'studio'],
+    })),
+    ...accessibleGroups.flatMap((group) => group.items.map((item) => ({
+      ...item,
+      groupLabel: group.label,
+      description: group.description,
+      icon: item.icon || 'overview',
+      keywords: [group.id, group.label],
+    }))),
+  ], [accessibleGroups, accessiblePrimaryItems, accessibleWorkspaces])
+
+  const pinnedItems = useMemo(() => {
+    const uniqueItems = new Map(commandItems.map((item) => [item.to, item]))
+
+    return pinnedPaths
+      .map((path) => uniqueItems.get(path))
+      .filter(Boolean)
+  }, [commandItems, pinnedPaths])
+
   const currentNavigationItem = useMemo(
     () => searchableItems.find((item) => routeMatches(location.pathname, item)),
     [location.pathname, searchableItems],
@@ -456,6 +668,18 @@ function AdminFrame({ children }) {
   const currentTeamAccessLevel = isStaff && currentNavigationItem?.module
     ? teamAccess?.permissions?.[currentNavigationItem.module] || 'none'
     : null
+
+  function handleTogglePinned(pathname) {
+    setPinnedPaths(togglePinnedDestination(pathname))
+  }
+
+  function closeMobileNavigation({ returnFocus = true } = {}) {
+    setMobileOpen(false)
+
+    if (returnFocus) {
+      window.setTimeout(() => mobileTriggerRef.current?.focus(), 0)
+    }
+  }
 
   async function handleSignOut() {
     if (signingOut) return
@@ -476,6 +700,7 @@ function AdminFrame({ children }) {
   function prepareForNavigation() {
     setMobileOpen(false)
     setWorkspaceOpen(false)
+    setCommandOpen(false)
     setSearchQuery('')
     setOpenGroupOverride(undefined)
   }
@@ -485,17 +710,29 @@ function AdminFrame({ children }) {
     navigate(workspace.to)
   }
 
+  function preloadInteractionProps(to) {
+    return {
+      onFocus: () => warmRoute(to),
+      onMouseEnter: () => warmRoute(to),
+      onPointerDown: () => warmRoute(to),
+    }
+  }
+
   return (
-    <main className="pwc-admin-shell pwc-studio-shell pwc-nav33-shell">
+    <div className="pwc-admin-shell pwc-studio-shell pwc-nav33-shell">
       <button
+        ref={mobileTriggerRef}
         className="pwc-nav33-mobile-trigger"
         type="button"
         aria-label="Open Studio navigation"
         aria-expanded={mobileOpen}
-        onClick={() => setMobileOpen(true)}
+        onClick={() => {
+          setMobileOpen(true)
+          window.setTimeout(() => searchInputRef.current?.focus(), 0)
+        }}
       >
-        <span aria-hidden="true">â˜°</span>
-        <strong>{activeWorkspace.label}</strong>
+        <span aria-hidden="true">☰</span>
+        <strong>{currentNavigationItem?.label || activeWorkspace.label}</strong>
       </button>
 
       {mobileOpen && (
@@ -503,13 +740,16 @@ function AdminFrame({ children }) {
           className="pwc-nav33-mobile-backdrop"
           type="button"
           aria-label="Close Studio navigation"
-          onClick={() => setMobileOpen(false)}
+          onClick={() => closeMobileNavigation()}
         />
       )}
 
       <aside
+        ref={sidebarRef}
         className={`pwc-admin-sidebar pwc-studio-sidebar pwc-nav33-sidebar${mobileOpen ? ' is-open' : ''}`}
         aria-label="Studio sidebar"
+        role={mobileOpen ? 'dialog' : undefined}
+        aria-modal={mobileOpen || undefined}
       >
         <div className="pwc-nav33-header" role="banner">
           <div className="pwc-nav33-brand-row">
@@ -517,10 +757,11 @@ function AdminFrame({ children }) {
               className="pwc-nav33-brand-link"
               to="/admin/dashboard"
               aria-label="Power Within Collective — The Studio home"
+              {...preloadInteractionProps('/admin/dashboard')}
               onClick={prepareForNavigation}
             >
               <span className="pwc-nav33-logo-mark" aria-hidden="true">
-                <img src="/favicon.svg" alt="" />
+                <img src="/favicon.webp" alt="" />
               </span>
               <span className="pwc-nav33-brand-copy">
                 <small>Power Within Collective</small>
@@ -532,7 +773,7 @@ function AdminFrame({ children }) {
               className="pwc-nav33-mobile-close"
               type="button"
               aria-label="Close Studio navigation"
-              onClick={() => setMobileOpen(false)}
+              onClick={() => closeMobileNavigation()}
             >
               ×
             </button>
@@ -565,7 +806,9 @@ function AdminFrame({ children }) {
                     className={workspace.id === activeWorkspace.id ? 'is-active' : ''}
                     key={workspace.id}
                     type="button"
-                    role="menuitem"
+                    role="menuitemradio"
+                    aria-checked={workspace.id === activeWorkspace.id}
+                    {...preloadInteractionProps(workspace.to)}
                     onClick={() => chooseWorkspace(workspace)}
                   >
                     <span>{workspace.label}</span>
@@ -601,7 +844,7 @@ function AdminFrame({ children }) {
               <span />
             </div>
           ) : searchQuery.trim() ? (
-            <section className="pwc-nav33-search-results" aria-label="Navigation search results">
+            <section className="pwc-nav33-search-results" aria-label="Navigation search results" aria-live="polite">
               <p>{filteredItems.length ? 'Matching destinations' : 'No matching destinations'}</p>
 
               {filteredItems.map((item) => (
@@ -609,6 +852,8 @@ function AdminFrame({ children }) {
                   className={routeMatches(location.pathname, item) ? 'is-active' : ''}
                   key={`${item.groupLabel}-${item.to}`}
                   to={item.to}
+                  aria-current={routeMatches(location.pathname, item) ? 'page' : undefined}
+                  {...preloadInteractionProps(item.to)}
                   onClick={prepareForNavigation}
                 >
                   <span>{item.label}</span>
@@ -624,6 +869,8 @@ function AdminFrame({ children }) {
                     className={routeMatches(location.pathname, item) ? 'is-active' : undefined}
                     key={item.to}
                     to={item.to}
+                    aria-current={routeMatches(location.pathname, item) ? 'page' : undefined}
+                    {...preloadInteractionProps(item.to)}
                     onClick={prepareForNavigation}
                   >
                     <NavIcon name={item.icon} />
@@ -631,6 +878,39 @@ function AdminFrame({ children }) {
                   </NavLink>
                 ))}
               </section>
+
+              {pinnedItems.length > 0 && (
+                <section className="pwc-nav33-pinned" aria-label="Pinned Studio destinations">
+                  <div className="pwc-nav33-pinned-heading">
+                    <span>✦</span>
+                    <strong>Pinned</strong>
+                    <small>{pinnedItems.length}</small>
+                  </div>
+                  <div className="pwc-nav33-pinned-links">
+                    {pinnedItems.map((item) => (
+                      <div className="pwc-nav33-pinned-row" key={`pinned-${item.to}`}>
+                        <NavLink
+                          className={routeMatches(location.pathname, item) ? 'is-active' : undefined}
+                          to={item.to}
+                          aria-current={routeMatches(location.pathname, item) ? 'page' : undefined}
+                          {...preloadInteractionProps(item.to)}
+                          onClick={prepareForNavigation}
+                        >
+                          <span>{item.label}</span>
+                        </NavLink>
+                        <button
+                          type="button"
+                          aria-label={`Unpin ${item.label}`}
+                          title={`Unpin ${item.label}`}
+                          onClick={() => handleTogglePinned(item.to)}
+                        >
+                          ×
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </section>
+              )}
 
               <div className="pwc-nav33-divider" />
 
@@ -673,6 +953,8 @@ function AdminFrame({ children }) {
                             className={routeMatches(location.pathname, item) ? 'is-active' : undefined}
                             key={item.to}
                             to={item.to}
+                            aria-current={routeMatches(location.pathname, item) ? 'page' : undefined}
+                            {...preloadInteractionProps(item.to)}
                             onClick={prepareForNavigation}
                           >
                             {item.label}
@@ -688,6 +970,16 @@ function AdminFrame({ children }) {
         </nav>
 
         <div className="pwc-nav33-footer" role="contentinfo">
+          <div
+            className={`pwc-nav33-connection${isOnline ? ' is-online' : ' is-offline'}`}
+            role="status"
+            aria-live="polite"
+          >
+            <span aria-hidden="true" />
+            <strong>{isOnline ? 'Studio connected' : 'Connection interrupted'}</strong>
+            <small>{isOnline ? 'Changes can be saved securely.' : 'Reconnect before saving new changes.'}</small>
+          </div>
+
           <NotificationCenter mode="admin" />
 
           <div className="pwc-nav33-account">
@@ -702,6 +994,14 @@ function AdminFrame({ children }) {
           </div>
 
           <div className="pwc-nav33-utilities">
+            <button
+              className="pwc-nav33-quick-find"
+              type="button"
+              onClick={openCommandPalette}
+            >
+              <span>Quick Find</span>
+              <kbd>Ctrl K</kbd>
+            </button>
             <Link to="/" onClick={prepareForNavigation}>View public site</Link>
             <button type="button" disabled={signingOut} onClick={handleSignOut}>
               {signingOut ? 'Signing out…' : 'Sign out'}
@@ -710,7 +1010,12 @@ function AdminFrame({ children }) {
         </div>
       </aside>
 
-      <section className="pwc-admin-main pwc-studio-main pwc-nav33-main">
+      <main
+        ref={mainContentRef}
+        id="main-content"
+        className="pwc-admin-main pwc-studio-main pwc-nav33-main"
+        tabIndex={-1}
+      >
         {currentTeamAccessLevel === 'view' && (
           <div className="pwc-studio-view-only-banner" role="status">
             <strong>View-only team access</strong>
@@ -718,8 +1023,23 @@ function AdminFrame({ children }) {
           </div>
         )}
         {children}
-      </section>
-    </main>
+      </main>
+
+      {commandOpen && (
+        <AdminCommandPalette
+          currentPath={location.pathname}
+          items={commandItems}
+          onClose={() => setCommandOpen(false)}
+          onNavigate={(to) => {
+            prepareForNavigation()
+            navigate(to)
+          }}
+          onWarmRoute={warmRoute}
+          pinnedPaths={pinnedPaths}
+          onTogglePinned={handleTogglePinned}
+        />
+      )}
+    </div>
   )
 }
 

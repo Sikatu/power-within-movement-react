@@ -12,7 +12,7 @@ import {
   updateAdminMailStudioTemplate,
 } from '../../lib/nativeApi'
 
-import './Admin.css'
+
 const emptyTemplateForm = {
   name: '',
   category: 'general',
@@ -336,10 +336,18 @@ export default function AdminMailStudio() {
           </p>
         </div>
 
-        {notice && <div className="admin-notice is-success">{notice}</div>}
-        {error && <div className="admin-notice is-error">{error}</div>}
+        {notice && (
+          <div className="admin-notice is-success" role="status">
+            {notice}
+          </div>
+        )}
+        {error && (
+          <div className="admin-notice is-error" role="alert">
+            {error}
+          </div>
+        )}
 
-        <div className="mail-studio-metrics-v1">
+        <div className="mail-studio-metrics-v1" aria-label="Mail Studio summary">
           <article>
             <span>Templates</span>
             <strong>{metrics.total_templates || 0}</strong>
@@ -367,7 +375,7 @@ export default function AdminMailStudio() {
           </article>
         </div>
 
-        <section className="mail-studio-composer-v1">
+        <section className="mail-studio-composer-v1" aria-label="Client email composer">
           <div className="mail-studio-panel-header-v1">
             <div>
               <p className="admin-eyebrow">Composer</p>
@@ -390,10 +398,11 @@ export default function AdminMailStudio() {
                   value={composer.clientProfileId}
                   onChange={handleComposerChange}
                 >
+                  {clients.length === 0 && <option value="">No clients available</option>}
                   {clients.map((client) => (
                     <option key={client.id} value={client.id}>
                       {getClientName(client)}
-                      {client.email ? `  ${client.email}` : ''}
+                      {client.email ? ` — ${client.email}` : ''}
                     </option>
                   ))}
                 </select>
@@ -406,9 +415,10 @@ export default function AdminMailStudio() {
                   value={composer.templateId}
                   onChange={handleComposerChange}
                 >
+                  {templates.length === 0 && <option value="">No templates available</option>}
                   {templates.map((template) => (
                     <option key={template.id} value={template.id}>
-                      {template.name}  {formatCategory(template.category)}
+                      {template.name} — {formatCategory(template.category)}
                     </option>
                   ))}
                 </select>
@@ -574,6 +584,7 @@ export default function AdminMailStudio() {
                     className={
                       selectedTemplateId === template.id ? 'is-selected' : ''
                     }
+                    aria-pressed={selectedTemplateId === template.id}
                     onClick={() => handleSelectTemplate(template)}
                   >
                     <span>{formatCategory(template.category)}</span>
@@ -697,12 +708,15 @@ export default function AdminMailStudio() {
           ) : (
             <div className="mail-studio-log-list-v1">
               {emailLogs.slice(0, 12).map((log) => (
-                <article key={log.id}>
+                <article
+                  key={log.id}
+                  className={`is-${String(log.status || 'unknown').replaceAll('_', '-')}`}
+                >
                   <div>
                     <span>{formatStatus(log.status)}</span>
                     <strong>{log.subject}</strong>
                     <p>
-                      {getLogClientName(log)}  {log.email_to}
+                      {getLogClientName(log)} · {log.email_to}
                     </p>
                   </div>
 

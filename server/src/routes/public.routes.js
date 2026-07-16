@@ -1,5 +1,6 @@
 const express = require('express')
 const { z } = require('zod')
+const { pipeline } = require('stream/promises')
 
 const { pool } = require('../db/pool')
 const { env } = require('../config/env')
@@ -14,6 +15,8 @@ const {
   addDateKey: addFounderDateKey,
 } = require('../services/founderAvailability.service')
 const { getPlatformSettings } = require('../services/platformSettings.service')
+const { getObjectStream, safeSegment } = require('../services/assetStorage.service')
+const { assertAssetUsable } = require('../services/assetScan.service')
 const { publishDueEncouragements } = require('../services/encouragements.service')
 const {
   clientCanAccessCourse,
@@ -47,9 +50,55 @@ const {
   startClientOnboarding: startBookingClientOnboarding,
   validateBookingIntake,
 } = require('../services/bookingOnboarding.service')
+const { upsertSubscriber } = require('../services/newsletterAudience.service')
 
 const router = express.Router()
 const contactDbModule = require('../db/pool')
+
+const publicNewsletterSchema = z.object({
+  email: z.string().trim().email().max(320),
+  firstName: z.string().trim().max(120).optional().default(''),
+  lastName: z.string().trim().max(120).optional().default(''),
+  consent: z.literal(true),
+  website: z.string().max(0).optional().default(''),
+})
+
+router.post('/newsletter/subscribe', publicSubmissionRateLimit, async (req, res, next) => {
+  if (!pool) return res.status(503).json({ ok: false, error: 'Newsletter signup is temporarily unavailable.' })
+
+  const parsed = publicNewsletterSchema.safeParse(req.body)
+  if (!parsed.success) {
+    return res.status(400).json({
+      ok: false,
+      error: parsed.error.issues[0]?.message || 'A valid email and newsletter consent are required.',
+    })
+  }
+
+  const db = await pool.connect()
+  try {
+    await db.query('BEGIN')
+    await upsertSubscriber(db, {
+      email: parsed.data.email,
+      firstName: parsed.data.firstName,
+      lastName: parsed.data.lastName,
+      status: 'subscribed',
+      consentStatus: 'granted',
+      explicitConsent: true,
+      source: 'website_home',
+      tags: ['Website newsletter'],
+    }, { source: 'website_home' })
+    await db.query('COMMIT')
+    return res.status(201).json({
+      ok: true,
+      message: 'Thank you — your newsletter preference has been recorded.',
+    })
+  } catch (error) {
+    await db.query('ROLLBACK')
+    return next(error)
+  } finally {
+    db.release()
+  }
+})
 
 
 // phase-3-12d-smart-time-slot-protection-start
@@ -2044,6 +2093,61 @@ router.get('/client-portal/resources', requireClientPortalUser, async (req, res,
   }
 })
 // phase-3-9d-client-portal-resources-public-end
+
+// phase-26-asset-vault-client-delivery-start
+router.get('/client-portal/assets/:assetId/download', requireClientPortalUser, async (req, res, next) => {
+  try {
+    const result = await pool.query(
+      `
+      SELECT
+        asset.*,
+        assignment.id AS assignment_id
+      FROM asset_assignments assignment
+      JOIN assets asset ON asset.id = assignment.asset_id
+      WHERE assignment.asset_id = $1
+        AND assignment.client_profile_id = $2
+        AND assignment.status = 'active'
+        AND asset.status = 'active'
+      LIMIT 1
+      `,
+      [req.params.assetId, req.clientProfile.id],
+    )
+    const asset = result.rows[0]
+
+    if (!asset) {
+      return res.status(404).json({ ok: false, error: 'This resource is not available in your private library.' })
+    }
+
+    assertAssetUsable(asset)
+    const stream = await getObjectStream(asset)
+
+    await pool.query(
+      `
+      INSERT INTO asset_access_logs (
+        asset_id, assignment_id, actor_user_id, client_profile_id, action, metadata
+      )
+      VALUES ($1, $2, $3, $4, 'download', $5::jsonb)
+      `,
+      [asset.id, asset.assignment_id, req.clientPortalUser.id, req.clientProfile.id, JSON.stringify({ portal: 'client' })],
+    )
+
+    res.set({
+      'Content-Type': asset.mime_type,
+      'Content-Length': String(asset.size_bytes),
+      'Content-Disposition': `attachment; filename="${safeSegment(asset.original_filename)}"`,
+      'Cache-Control': 'private, no-store, max-age=0',
+    })
+    await pipeline(stream, res)
+    return undefined
+  } catch (error) {
+    if (res.headersSent) {
+      res.destroy(error)
+      return undefined
+    }
+    return next(error)
+  }
+})
+// phase-26-asset-vault-client-delivery-end
 
 
 // client-portal-foundation-pass-13-start
