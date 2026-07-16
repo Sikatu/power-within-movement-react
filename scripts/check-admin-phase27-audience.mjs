@@ -10,7 +10,8 @@ const sources = {
   home: read('src/pages/Home.jsx'),
   api: read('src/lib/nativeApi.js'),
   app: read('src/App.jsx'),
-  nav: read('src/components/admin/AdminFrame.jsx'),
+  nav: read('src/components/admin/AdminFrame.jsx')
+    + read('src/components/admin/adminNavigation.js'),
   tests: read('server/tests/newsletter-audience.test.cjs'),
   package: read('package.json'),
 }
