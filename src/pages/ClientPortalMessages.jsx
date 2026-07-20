@@ -66,6 +66,7 @@ function ClientPortalMessages() {
   const [encouragementUnread, setEncouragementUnread] = useState(0)
   const [inboxUnread, setInboxUnread] = useState(0)
   const [activeTab, setActiveTab] = useState('inbox')
+  const [conversationScope, setConversationScope] = useState('open')
   const [showNew, setShowNew] = useState(false)
   const [newMessage, setNewMessage] = useState(emptyMessage)
   const [reply, setReply] = useState(emptyReply)
@@ -104,7 +105,7 @@ function ClientPortalMessages() {
     setEncouragements(messageResult.messages || [])
     setEncouragementUnread(Number(messageResult.unreadCount || 0))
 
-    const preferredId = conversationId || conversationList[0]?.id || ''
+    const preferredId = conversationId || conversationList.find((item) => item.status !== 'closed')?.id || conversationList[0]?.id || ''
     if (preferredId) await loadConversation(preferredId)
     else setConversation(null)
   }, [conversationId, loadConversation])
@@ -135,6 +136,8 @@ function ClientPortalMessages() {
   const totalUnread = inboxUnread + encouragementUnread
   const openConversations = useMemo(() => conversations.filter((item) => item.status !== 'closed'), [conversations])
   const closedConversations = useMemo(() => conversations.filter((item) => item.status === 'closed'), [conversations])
+  const visibleConversations = conversationScope === 'closed' ? closedConversations : openConversations
+  const focusedConversation = visibleConversations.some((item) => item.id === conversation?.id) ? conversation : null
 
   async function perform(action, successMessage) {
     setBusy(true)
@@ -177,10 +180,17 @@ function ClientPortalMessages() {
   async function changeStatus() {
     if (!conversation) return
     const nextStatus = conversation.status === 'closed' ? 'open' : 'closed'
-    await perform(
+    const result = await perform(
       () => updateClientPortalInboxConversation(conversation.id, nextStatus),
       nextStatus === 'closed' ? 'Conversation closed.' : 'Conversation reopened.',
     )
+    if (result) setConversationScope(nextStatus === 'closed' ? 'closed' : 'open')
+  }
+
+  function chooseConversationScope(scope) {
+    setConversationScope(scope)
+    const nextConversation = (scope === 'closed' ? closedConversations : openConversations)[0]
+    if (nextConversation) navigate(`/client-portal/messages/${nextConversation.id}`)
   }
 
   async function markEncouragementRead(messageId) {
@@ -212,7 +222,7 @@ function ClientPortalMessages() {
         <header className="portal-page-intro portal-message-intro">
           <p className="eyebrow">Private Communication</p>
           <h1>Messages</h1>
-          <p>Send Power Within a private question, continue a conversation, or return to encouragements shared for your journey.</p>
+          <p>Continue a private conversation or return to an encouragement shared for your journey.</p>
         </header>
 
         {(error || notice) && <div className={`portal-notice${error ? ' is-error' : ''}`} role="status">{error || notice}</div>}
@@ -243,15 +253,18 @@ function ClientPortalMessages() {
         ) : (
           <>
             <div className="message-toolbar">
-              <div><strong>{openConversations.length} open</strong><span>{closedConversations.length} closed</span></div>
+              <div className="message-scope-switcher" role="group" aria-label="Conversation status">
+                <button type="button" aria-pressed={conversationScope === 'open'} className={conversationScope === 'open' ? 'is-active' : ''} onClick={() => chooseConversationScope('open')}>Open <span>{openConversations.length}</span></button>
+                <button type="button" aria-pressed={conversationScope === 'closed'} className={conversationScope === 'closed' ? 'is-active' : ''} onClick={() => chooseConversationScope('closed')}>Closed <span>{closedConversations.length}</span></button>
+              </div>
               <button type="button" onClick={() => setShowNew(true)}>New Private Message</button>
             </div>
 
             <div className="message-workspace">
               <aside className="message-conversation-list" aria-label="Private conversations">
-                {conversations.length === 0 ? (
-                  <div className="portal-empty"><strong>No private conversations yet.</strong><p>Start a private message whenever you need support.</p></div>
-                ) : conversations.map((item) => (
+                {visibleConversations.length === 0 ? (
+                  <div className="portal-empty"><strong>No {conversationScope} conversations.</strong><p>{conversationScope === 'open' ? 'Start a private message whenever you need support.' : 'Closed conversations will remain available here.'}</p></div>
+                ) : visibleConversations.map((item) => (
                   <button type="button" key={item.id} className={conversation?.id === item.id ? 'is-active' : ''} onClick={() => { setError(''); setNotice(''); navigate(`/client-portal/messages/${item.id}`) }}>
                     <span><strong>{item.subject}</strong>{Number(item.unread_client_count || 0) > 0 && <em>{item.unread_client_count}</em>}</span>
                     <p>{item.latest_message || 'Conversation started.'}</p>
@@ -261,7 +274,7 @@ function ClientPortalMessages() {
               </aside>
 
               <section className="message-thread">
-                {!conversation ? (
+                {!focusedConversation ? (
                   <div className="portal-empty is-large"><strong>Select a conversation.</strong><p>Your private messages with Power Within will appear here.</p></div>
                 ) : (
                   <>

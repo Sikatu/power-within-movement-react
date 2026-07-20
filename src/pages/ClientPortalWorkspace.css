@@ -964,3 +964,269 @@
     width: 100%;
   }
 }
+
+/* phase-41-client-workflow-streamlining-start */
+
+.portal-page-intro {
+  max-width: 720px;
+  padding-bottom: 34px;
+}
+
+.portal-page-intro h1 {
+  font-size: clamp(2.45rem, 4.5vw, 3.85rem);
+  margin-bottom: 15px;
+}
+
+.portal-progressive-section {
+  background: rgba(255, 253, 250, 0.92);
+  border: 1px solid rgba(83, 29, 47, 0.13);
+  border-radius: 20px;
+  box-shadow: 0 18px 45px rgba(77, 31, 45, 0.05);
+  overflow: hidden;
+}
+
+.portal-progressive-section > summary {
+  align-items: center;
+  cursor: pointer;
+  display: flex;
+  gap: 22px;
+  justify-content: space-between;
+  list-style: none;
+  padding: 22px 25px;
+}
+
+.portal-progressive-section > summary::-webkit-details-marker {
+  display: none;
+}
+
+.portal-progressive-section > summary > span {
+  display: grid;
+  gap: 4px;
+}
+
+.portal-progressive-section > summary strong {
+  color: #4d1a2d;
+  font-family: var(--font-display);
+  font-size: 1.28rem;
+  font-weight: 500;
+}
+
+.portal-progressive-section > summary small,
+.portal-progressive-section > summary em {
+  color: #8e707c;
+  font-size: 0.72rem;
+  font-style: normal;
+  line-height: 1.45;
+}
+
+.portal-progressive-section > summary em {
+  flex: 0 0 auto;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.portal-progressive-section[open] > summary {
+  border-bottom: 1px solid rgba(83, 29, 47, 0.1);
+}
+
+.portal-progressive-section[open] > summary em::after {
+  content: ' −';
+}
+
+.portal-task-switcher {
+  background: rgba(255, 253, 250, 0.72);
+  border: 1px solid rgba(83, 29, 47, 0.13);
+  border-radius: 999px;
+  display: inline-flex;
+  gap: 4px;
+  margin-bottom: 18px;
+  padding: 5px;
+}
+
+.portal-task-switcher button {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  border-radius: 999px;
+  color: #75515f;
+  cursor: pointer;
+  display: inline-flex;
+  font: inherit;
+  font-size: 0.76rem;
+  font-weight: 600;
+  gap: 8px;
+  min-height: 40px;
+  padding: 0 17px;
+}
+
+.portal-task-switcher button.is-active {
+  background: #57172f;
+  color: #fffaf5;
+}
+
+.portal-task-switcher button span {
+  align-items: center;
+  background: rgba(87, 23, 47, 0.09);
+  border-radius: 999px;
+  display: inline-flex;
+  font-size: 0.66rem;
+  justify-content: center;
+  min-height: 21px;
+  min-width: 21px;
+  padding: 0 6px;
+}
+
+.portal-task-switcher button.is-active span {
+  background: rgba(255, 250, 245, 0.16);
+}
+
+.session-workspace-focused {
+  margin: 0 auto;
+  max-width: 980px;
+}
+
+.session-focus-panel {
+  padding: clamp(27px, 4vw, 42px);
+}
+
+.session-booking-form {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.session-booking-form .session-slots,
+.session-booking-form label:nth-of-type(3),
+.session-booking-form > button {
+  grid-column: 1 / -1;
+}
+
+.session-upcoming-card {
+  border-radius: 24px;
+  box-shadow: 0 25px 60px rgba(73, 23, 42, 0.14);
+}
+
+.session-upcoming-card .portal-empty > button {
+  background: #fffaf5;
+  border: 0;
+  border-radius: 999px;
+  color: #57172f;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.72rem;
+  font-weight: 600;
+  margin-top: 20px;
+  min-height: 43px;
+  padding: 0 20px;
+}
+
+.session-history-disclosure {
+  margin-top: 18px;
+}
+
+.session-history-disclosure .session-history-card {
+  padding: 8px 25px 25px;
+}
+
+.message-toolbar {
+  align-items: center;
+  gap: 18px;
+}
+
+.message-scope-switcher {
+  background: #f3e9e4;
+  border-radius: 999px;
+  display: inline-flex;
+  gap: 3px;
+  padding: 4px;
+}
+
+.message-scope-switcher button {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  border-radius: 999px;
+  color: #76525f;
+  cursor: pointer;
+  display: inline-flex;
+  font: inherit;
+  font-size: 0.72rem;
+  font-weight: 600;
+  gap: 7px;
+  min-height: 36px;
+  padding: 0 14px;
+}
+
+.message-scope-switcher button.is-active {
+  background: #fffdfa;
+  box-shadow: 0 5px 16px rgba(77, 31, 45, 0.09);
+  color: #57172f;
+}
+
+.message-scope-switcher button span {
+  color: #a36f82;
+  font-size: 0.65rem;
+}
+
+.message-workspace {
+  min-height: 560px;
+}
+
+@media (max-width: 720px) {
+  .portal-page-intro {
+    padding-bottom: 26px;
+  }
+
+  .portal-page-intro h1 {
+    font-size: 2.55rem;
+  }
+
+  .portal-progressive-section > summary {
+    align-items: flex-start;
+    padding: 19px 18px;
+  }
+
+  .portal-progressive-section > summary small {
+    max-width: 230px;
+  }
+
+  .portal-task-switcher {
+    display: flex;
+    width: 100%;
+  }
+
+  .portal-task-switcher button {
+    flex: 1;
+    justify-content: center;
+    padding: 0 11px;
+  }
+
+  .session-booking-form {
+    grid-template-columns: 1fr;
+  }
+
+  .session-booking-form .session-slots,
+  .session-booking-form label:nth-of-type(3),
+  .session-booking-form > button {
+    grid-column: auto;
+  }
+
+  .session-history-disclosure .session-history-card {
+    padding: 4px 18px 20px;
+  }
+
+  .message-toolbar {
+    align-items: stretch;
+  }
+
+  .message-scope-switcher {
+    align-self: flex-start;
+  }
+
+  .message-toolbar > button {
+    justify-self: stretch;
+    text-align: center;
+    width: 100%;
+  }
+}
+
+/* phase-41-client-workflow-streamlining-end */

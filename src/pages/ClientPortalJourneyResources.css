@@ -825,3 +825,140 @@
     min-height: 0;
   }
 }
+
+/* phase-41-journey-library-streamlining-start */
+
+.journey-overview {
+  display: block;
+  margin-bottom: 18px;
+  padding: clamp(28px, 4vw, 42px);
+}
+
+.journey-overview-copy {
+  max-width: 760px;
+}
+
+.journey-primary-grid {
+  gap: 18px;
+}
+
+.journey-reflections,
+.journey-session-card,
+.journey-followup-list {
+  box-shadow: 0 16px 40px rgba(77, 31, 45, 0.045);
+}
+
+.journey-history-disclosure {
+  margin-top: 18px;
+}
+
+.journey-history-content {
+  display: grid;
+  gap: 18px;
+  padding: 20px;
+}
+
+.journey-history-content .journey-stats {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.journey-history-content .journey-stats article {
+  background: #f7efea;
+  border-color: rgba(83, 29, 47, 0.1);
+}
+
+.journey-history-content .journey-stats article > span {
+  color: #a76542;
+}
+
+.journey-history-content .journey-stats strong {
+  color: #4b182b;
+}
+
+.journey-history-content .journey-stats p {
+  color: #866773;
+}
+
+.journey-history-content .journey-timeline-section {
+  box-shadow: none;
+  padding: clamp(22px, 3vw, 32px);
+}
+
+.resource-feature {
+  margin-bottom: 18px;
+  padding: clamp(28px, 4vw, 40px);
+}
+
+.resource-library-section {
+  padding: clamp(24px, 3vw, 34px);
+}
+
+.resource-library-heading {
+  margin-bottom: 14px;
+}
+
+.resource-filter-disclosure {
+  border-bottom: 1px solid rgba(83, 29, 47, 0.1);
+  border-top: 1px solid rgba(83, 29, 47, 0.1);
+  margin: 0 0 22px;
+}
+
+.resource-filter-disclosure > summary {
+  align-items: center;
+  color: #76545f;
+  cursor: pointer;
+  display: flex;
+  font-size: 0.72rem;
+  justify-content: space-between;
+  list-style: none;
+  min-height: 48px;
+}
+
+.resource-filter-disclosure > summary::-webkit-details-marker {
+  display: none;
+}
+
+.resource-filter-disclosure > summary > span {
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.resource-filter-disclosure > summary strong {
+  color: #57172f;
+  font-size: 0.75rem;
+}
+
+.resource-filter-disclosure .resource-filter-row {
+  border-top: 1px solid rgba(83, 29, 47, 0.08);
+  padding: 14px 0;
+}
+
+.resource-card {
+  min-height: 285px;
+  padding: 23px;
+}
+
+@media (max-width: 720px) {
+  .journey-history-content {
+    padding: 14px;
+  }
+
+  .journey-history-content .journey-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .journey-history-content .journey-stats article {
+    display: grid;
+  }
+
+  .resource-library-section {
+    padding: 22px 18px;
+  }
+
+  .resource-filter-disclosure > summary {
+    min-height: 52px;
+  }
+}
+
+/* phase-41-journey-library-streamlining-end */
