@@ -1,8 +1,8 @@
 {
-  "phase": 30,
+  "phase": 50,
   "release": {
     "commit": "REPLACE_WITH_FULL_40_CHARACTER_GIT_SHA",
-    "tag": "phase30-production-YYYYMMDD",
+    "tag": "phase50-production-YYYYMMDD",
     "environment": "production",
     "candidateUrl": "https://candidate.example.com",
     "verifiedAt": "YYYY-MM-DDTHH:MM:SSZ"
@@ -13,6 +13,10 @@
     "object-storage-roundtrip": { "status": "pending", "checkedBy": "", "checkedAt": "", "notes": "", "artifact": "" },
     "signed-private-link": { "status": "pending", "checkedBy": "", "checkedAt": "", "notes": "", "artifact": "" },
     "client-resource-assignment": { "status": "pending", "checkedBy": "", "checkedAt": "", "notes": "", "artifact": "" },
+    "notification-delivery": { "status": "pending", "checkedBy": "", "checkedAt": "", "notes": "", "artifact": "" },
+    "client-messaging": { "status": "pending", "checkedBy": "", "checkedAt": "", "notes": "", "artifact": "" },
+    "studio-identity": { "status": "pending", "checkedBy": "", "checkedAt": "", "notes": "", "artifact": "" },
+    "incident-triage": { "status": "pending", "checkedBy": "", "checkedAt": "", "notes": "", "artifact": "" },
     "audience-import": { "status": "pending", "checkedBy": "", "checkedAt": "", "notes": "", "artifact": "" },
     "duplicate-subscriber": { "status": "pending", "checkedBy": "", "checkedAt": "", "notes": "", "artifact": "" },
     "unsubscribe-suppression": { "status": "pending", "checkedBy": "", "checkedAt": "", "notes": "", "artifact": "" },

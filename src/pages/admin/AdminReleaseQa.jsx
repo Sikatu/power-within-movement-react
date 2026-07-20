@@ -36,11 +36,11 @@ function statusClass(status) {
   }[status] || 'watch'
 }
 
-const PHASE30_EVIDENCE_STORAGE_KEY = 'pwc.phase30.release-evidence.v1'
+const PHASE50_EVIDENCE_STORAGE_KEY = 'pwc.phase50.release-evidence.v1'
 
 function loadEvidence() {
   try {
-    const value = JSON.parse(window.localStorage.getItem(PHASE30_EVIDENCE_STORAGE_KEY) || '{}')
+    const value = JSON.parse(window.localStorage.getItem(PHASE50_EVIDENCE_STORAGE_KEY) || '{}')
     return value && typeof value === 'object' && !Array.isArray(value) ? value : {}
   } catch {
     return {}
@@ -208,14 +208,14 @@ export default function AdminReleaseQa({ embedded = false }) {
   function toggleEvidence(gateId) {
     setCompletedEvidence((current) => {
       const next = { ...current, [gateId]: !current[gateId] }
-      try { window.localStorage.setItem(PHASE30_EVIDENCE_STORAGE_KEY, JSON.stringify(next)) } catch { /* browser storage is optional */ }
+      try { window.localStorage.setItem(PHASE50_EVIDENCE_STORAGE_KEY, JSON.stringify(next)) } catch { /* browser storage is optional */ }
       return next
     })
   }
 
   function resetEvidence() {
     setCompletedEvidence({})
-    try { window.localStorage.removeItem(PHASE30_EVIDENCE_STORAGE_KEY) } catch { /* browser storage is optional */ }
+    try { window.localStorage.removeItem(PHASE50_EVIDENCE_STORAGE_KEY) } catch { /* browser storage is optional */ }
     setNotice('Browser-local evidence marks were reset. No server evidence was changed.')
   }
 
@@ -224,8 +224,8 @@ export default function AdminReleaseQa({ embedded = false }) {
         {!embedded && (
         <header className="pwc-week16-hero pwc-capacity17-hero">
           <div>
-            <p className="admin-eyebrow">Phase 30 · Integrated Release QA</p>
-            <h1>Prove the complete system before the signed production gate.</h1>
+            <p className="admin-eyebrow">Phase 50 · Final Release Candidate</p>
+            <h1>Prove the finished system before production.</h1>
             <p>
               Run read-only contracts and production-shaped configuration checks, then retain
               external evidence for provider, migration, accessibility, and rollback verification.
