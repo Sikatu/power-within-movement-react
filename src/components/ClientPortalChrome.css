@@ -355,3 +355,15 @@ body.client-workspace-mode #root > .site-footer {
   }
 }
 /* phase-43-client-account-link-end */
+
+/* phase-44-client-notification-link-start */
+@media (max-width: 520px) {
+  .portal-chrome-account .portal-chrome-website-link {
+    display: none;
+  }
+
+  .portal-chrome-account {
+    gap: 9px;
+  }
+}
+/* phase-44-client-notification-link-end */

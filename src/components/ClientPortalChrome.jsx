@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, NavLink, useLocation } from 'react-router-dom'
 import logo from '../assets/images/logo.webp'
+import NotificationCenter from './NotificationCenter'
 import './ClientPortalChrome.css'
 
 const primaryPortalLinks = [
@@ -62,8 +63,9 @@ function ClientPortalChrome({ client, loggingOut, messageCount = 0, onLogout }) 
             <small>Signed in as</small>
             <strong>{client?.name || client?.email || 'Client'}</strong>
           </span>
+          <NotificationCenter mode="client" />
           <NavLink to="/client-portal/account">Account</NavLink>
-          <Link to="/">Website</Link>
+          <Link className="portal-chrome-website-link" to="/">Website</Link>
           <button type="button" onClick={onLogout} disabled={loggingOut}>
             {loggingOut ? 'Signing out…' : 'Sign Out'}
           </button>
