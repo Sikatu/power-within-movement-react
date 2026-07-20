@@ -581,26 +581,19 @@ body.admin-app-mode .pwc-admin-auth-card,
 body.admin-app-mode .pwc-admin-password-card,
 body.admin-app-mode .pwc-admin-locked-card {
   position: relative;
+  isolation: isolate;
   z-index: 1;
   width: min(100%, 420px);
-  border: 1px solid rgba(200, 169, 106, 0.28);
+  overflow: hidden;
+  border: 1px solid rgba(200, 169, 106, 0.34);
   border-radius: 26px;
-  background: rgba(255, 252, 249, 0.72);
+  background: linear-gradient(155deg, rgba(255, 253, 250, 0.96), rgba(255, 250, 246, 0.88));
   padding: clamp(30px, 5vw, 46px);
   text-align: center;
-  box-shadow: 0 40px 80px -58px rgba(58, 37, 40, 0.62);
+  box-shadow:
+    0 34px 72px -46px rgba(58, 37, 40, 0.48),
+    inset 0 1px 0 rgba(255, 255, 255, 0.74);
   backdrop-filter: blur(18px);
-}
-
-body.admin-app-mode .pwc-admin-auth-card::after,
-body.admin-app-mode .pwc-admin-password-card::after {
-  position: absolute;
-  z-index: -1;
-  inset: 16px -16px -16px 16px;
-  content: '';
-  border: 1px solid rgba(200, 169, 106, 0.24);
-  border-radius: 26px;
-  pointer-events: none;
 }
 
 body.admin-app-mode .pwc-admin-auth-logo {
@@ -1867,11 +1860,6 @@ body.admin-app-mode [class*='overlay'] {
     padding: 18px 4px;
     box-shadow: none;
     backdrop-filter: none;
-  }
-
-  body.admin-app-mode .pwc-admin-auth-card::after,
-  body.admin-app-mode .pwc-admin-password-card::after {
-    display: none;
   }
 
   body.admin-app-mode .pwc-admin-main,
