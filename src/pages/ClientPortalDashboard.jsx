@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import ClientPortalChrome from '../components/ClientPortalChrome.jsx'
 import logo from '../assets/images/logo.webp'
-import { getClientPortalDashboard, getClientPortalResources, logoutClientPortal } from '../lib/nativeApi.js'
+import { getClientPortalDashboard, getClientPortalResources, getClientPortalStudioIdentity, logoutClientPortal } from '../lib/nativeApi.js'
 import './ClientPortalDashboard.css'
 
 const businessTimeZone = 'America/New_York'
@@ -109,10 +109,11 @@ function ClientPortalDashboard() {
     Promise.all([
       getClientPortalDashboard(),
       getClientPortalResources().catch(() => ({ resources: [] })),
+      getClientPortalStudioIdentity().catch(() => ({ identity: null })),
     ])
-      .then(([dashboardResponse, resourcesResponse]) => {
+      .then(([dashboardResponse, resourcesResponse, identityResponse]) => {
         if (!active) return
-        setDashboard(dashboardResponse)
+        setDashboard({ ...dashboardResponse, studioIdentity: identityResponse.identity || null })
         setResources(resourcesResponse.resources || [])
         setStatus({ state: 'ready', message: '' })
       })
@@ -164,6 +165,7 @@ function ClientPortalDashboard() {
   }, {}), [resources])
 
   const client = dashboard?.client
+  const studioIdentity = dashboard?.studioIdentity
   const firstName = client?.firstName || client?.name?.split(' ')[0] || 'there'
   const featuredResource = resources[0]
   const featuredResourceUrl = getSafeResourceUrl(featuredResource?.resource_url)
@@ -275,7 +277,8 @@ function ClientPortalDashboard() {
         <header className="client-dashboard-welcome">
           <p className="eyebrow">Today in Your Portal</p>
           <h1>Good to see you, {firstName}.</h1>
-          <p>Start with what matters now. Everything else remains close when you need it.</p>
+          <p>{studioIdentity?.welcomeMessage || 'Start with what matters now. Everything else remains close when you need it.'}</p>
+          {studioIdentity?.signatureLine && <small className="client-dashboard-welcome-signature">{studioIdentity.signatureLine}</small>}
         </header>
 
         <section className="client-dashboard-overview">
@@ -456,7 +459,11 @@ function ClientPortalDashboard() {
           </div>
         </details>
 
-        <p className="client-dashboard-private-note">Private access · Power Within Movement, LLC</p>
+        <p className="client-dashboard-private-note">
+          Private access · Power Within Movement, LLC
+          {studioIdentity?.publicEmail && <> · <a href={`mailto:${studioIdentity.publicEmail}`}>{studioIdentity.publicEmail}</a></>}
+          {studioIdentity?.publicPhone && <> · <a href={`tel:${studioIdentity.publicPhone}`}>{studioIdentity.publicPhone}</a></>}
+        </p>
       </main>
     </div>
   )

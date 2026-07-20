@@ -6,6 +6,7 @@ import FounderVoiceRecorder from '../../components/admin/FounderVoiceRecorder.js
 import {
   getFounderCommandCenter,
   getAdminFoundersViewOverview,
+  getStudioProfile,
   updateAdminFounderDateAvailability,
   logoutAdmin,
   updateAdminFounderAvailabilityException,
@@ -140,6 +141,7 @@ export default function AdminFoundersView() {
   const [searchParams, setSearchParams] = useSearchParams()
   const [overview, setOverview] = useState(null)
   const [founderTools, setFounderTools] = useState(null)
+  const [studioProfile, setStudioProfile] = useState(null)
   const [currentTime, setCurrentTime] = useState(() => new Date())
   const [blockDate, setBlockDate] = useState('')
   const [blockNotes, setBlockNotes] = useState('')
@@ -235,12 +237,14 @@ export default function AdminFoundersView() {
     setError('')
 
     try {
-      const [response, toolsResponse] = await Promise.all([
+      const [response, toolsResponse, profileResponse] = await Promise.all([
         getAdminFoundersViewOverview(),
         getFounderCommandCenter(filters),
+        getStudioProfile().catch(() => ({ profile: null })),
       ])
       setOverview(response)
       setFounderTools(toolsResponse)
+      setStudioProfile(profileResponse.profile || null)
     } catch (loadError) {
       setError(loadError.message || 'Unable to load Founder’s View.')
     } finally {
@@ -319,6 +323,7 @@ export default function AdminFoundersView() {
   const primaryTimezone = founderTools?.preferences?.primaryTimezone || 'America/Chicago'
   const schedulingTimezone = founderTools?.scheduling?.timezone || FOUNDER_TIME_ZONE
   const effectiveBlockDate = blockDate || getBusinessDateOffset(0, schedulingTimezone)
+  const founderFirstName = studioProfile?.displayName?.split(/\s+/).filter(Boolean)[0] || 'Kim'
 
   function showFounderNotice(message) {
     setError('')
@@ -375,7 +380,7 @@ export default function AdminFoundersView() {
         <section className="founder-home__intro">
           <div>
             <p className="founder-home__eyebrow">{formatLongDate(currentTime, primaryTimezone)}</p>
-            <h1>{getGreeting(currentTime, primaryTimezone)}, Kim.</h1>
+            <h1>{getGreeting(currentTime, primaryTimezone)}, {founderFirstName}.</h1>
             <p className="founder-home__focus">{dailyFocus}</p>
           </div>
 

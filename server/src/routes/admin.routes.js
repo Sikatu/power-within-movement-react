@@ -118,6 +118,8 @@ const studioProfileSchema = z.object({
   publicEmail: z.union([z.string().trim().email('Enter a valid public email.'), z.literal('')]).optional().default(''),
   publicPhone: z.string().trim().max(80).optional().default(''),
   profileAssetId: z.string().uuid().nullable().optional().default(null),
+  clientPortalEnabled: z.boolean().optional().default(false),
+  clientPortalContactEnabled: z.boolean().optional().default(false),
 })
 
 const automationStepSchema = z.object({
@@ -241,9 +243,11 @@ router.patch('/studio-profile', requireAdmin, async (req, res, next) => {
     const savedResult = await dbClient.query(`
       INSERT INTO studio_profiles (
         profile_key, display_name, welcome_message, bio, signature_line,
-        public_email, public_phone, profile_asset_id, created_by, updated_by
+        public_email, public_phone, profile_asset_id,
+        client_portal_enabled, client_portal_contact_enabled,
+        created_by, updated_by
       )
-      VALUES ('primary', $1, $2, $3, $4, $5, $6, $7, $8, $8)
+      VALUES ('primary', $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $10)
       ON CONFLICT (profile_key) DO UPDATE SET
         display_name = EXCLUDED.display_name,
         welcome_message = EXCLUDED.welcome_message,
@@ -252,6 +256,8 @@ router.patch('/studio-profile', requireAdmin, async (req, res, next) => {
         public_email = EXCLUDED.public_email,
         public_phone = EXCLUDED.public_phone,
         profile_asset_id = EXCLUDED.profile_asset_id,
+        client_portal_enabled = EXCLUDED.client_portal_enabled,
+        client_portal_contact_enabled = EXCLUDED.client_portal_contact_enabled,
         updated_by = EXCLUDED.updated_by,
         updated_at = now()
       RETURNING *
@@ -263,6 +269,8 @@ router.patch('/studio-profile', requireAdmin, async (req, res, next) => {
       profile.publicEmail,
       profile.publicPhone,
       profile.profileAssetId,
+      profile.clientPortalEnabled,
+      profile.clientPortalContactEnabled,
       req.user.id,
     ])
     const saved = savedResult.rows[0]

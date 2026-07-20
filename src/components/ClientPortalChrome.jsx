@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, NavLink, useLocation } from 'react-router-dom'
 import logo from '../assets/images/logo.webp'
+import { getClientPortalStudioIdentity } from '../lib/nativeApi.js'
 import NotificationCenter from './NotificationCenter'
 import './ClientPortalChrome.css'
 
@@ -22,6 +23,8 @@ function ClientPortalChrome({ client, loggingOut, messageCount = 0, onLogout }) 
   const location = useLocation()
   const exploreRef = useRef(null)
   const [exploreOpen, setExploreOpen] = useState(false)
+  const [studioIdentity, setStudioIdentity] = useState(null)
+  const [profileImageFailed, setProfileImageFailed] = useState(false)
   const exploreActive = explorePortalLinks.some(([path]) => location.pathname.startsWith(path))
 
   useEffect(() => {
@@ -41,6 +44,18 @@ function ClientPortalChrome({ client, loggingOut, messageCount = 0, onLogout }) 
     }
   }, [exploreOpen])
 
+  useEffect(() => {
+    let active = true
+    getClientPortalStudioIdentity()
+      .then((response) => {
+        if (active) setStudioIdentity(response.identity || null)
+      })
+      .catch(() => {
+        if (active) setStudioIdentity(null)
+      })
+    return () => { active = false }
+  }, [])
+
   function portalLink([path, label]) {
     return (
       <NavLink key={path} to={path} className={({ isActive }) => (isActive ? 'is-active' : '')} onClick={() => setExploreOpen(false)}>
@@ -54,8 +69,13 @@ function ClientPortalChrome({ client, loggingOut, messageCount = 0, onLogout }) 
     <>
       <header className="portal-chrome-header">
         <Link className="portal-chrome-brand" to="/client-portal/home" aria-label="Power Within client portal home">
-          <img src={logo} alt="" />
-          <span><strong>Power Within</strong>Client Portal</span>
+          <img
+            className={studioIdentity?.profileImageUrl && !profileImageFailed ? 'is-profile' : ''}
+            src={studioIdentity?.profileImageUrl && !profileImageFailed ? studioIdentity.profileImageUrl : logo}
+            alt=""
+            onError={() => setProfileImageFailed(true)}
+          />
+          <span><strong>{studioIdentity?.displayName || 'Power Within'}</strong>{studioIdentity ? 'Private Studio' : 'Client Portal'}</span>
         </Link>
 
         <div className="portal-chrome-account">

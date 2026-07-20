@@ -47,6 +47,15 @@ body.client-dashboard-mode {
   line-height: 1.7;
 }
 
+.client-dashboard-welcome-signature {
+  display: block;
+  margin-top: 9px;
+  color: var(--color-gold-label);
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 600;
+}
+
 .client-dashboard-overview {
   display: grid;
   grid-template-columns: 1.2fr 1fr;
@@ -410,6 +419,12 @@ body.client-dashboard-mode {
   color: #b3a49b;
   font-size: 10.5px;
   text-align: center;
+}
+
+.client-dashboard-private-note a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
 .client-dashboard-state {

@@ -21,6 +21,8 @@ async function main() {
         public_email TEXT NOT NULL DEFAULT '',
         public_phone TEXT NOT NULL DEFAULT '',
         profile_asset_id UUID REFERENCES assets(id) ON DELETE SET NULL,
+        client_portal_enabled BOOLEAN NOT NULL DEFAULT false,
+        client_portal_contact_enabled BOOLEAN NOT NULL DEFAULT false,
         created_by UUID REFERENCES system_users(id) ON DELETE SET NULL,
         updated_by UUID REFERENCES system_users(id) ON DELETE SET NULL,
         created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
@@ -31,6 +33,12 @@ async function main() {
       INSERT INTO studio_profiles (profile_key)
       VALUES ('primary')
       ON CONFLICT (profile_key) DO NOTHING;
+
+      ALTER TABLE studio_profiles
+        ADD COLUMN IF NOT EXISTS client_portal_enabled BOOLEAN NOT NULL DEFAULT false;
+
+      ALTER TABLE studio_profiles
+        ADD COLUMN IF NOT EXISTS client_portal_contact_enabled BOOLEAN NOT NULL DEFAULT false;
 
       CREATE INDEX IF NOT EXISTS idx_studio_profiles_profile_asset
         ON studio_profiles(profile_asset_id);

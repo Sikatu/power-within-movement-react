@@ -1650,6 +1650,14 @@ export async function saveStudioProfile(payload) {
     body: JSON.stringify(payload),
   })
 }
+
+export async function getClientPortalStudioIdentity() {
+  const response = await apiRequest('/api/public/client-portal/studio-identity')
+  if (response.identity?.profileImageUrl) {
+    response.identity.profileImageUrl = `${API_BASE_URL}${response.identity.profileImageUrl}`
+  }
+  return response
+}
 // phase-46-studio-profile-api-end
 // phase-26-asset-vault-api-end
 

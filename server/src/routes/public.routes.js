@@ -17,6 +17,7 @@ const {
 const { getPlatformSettings } = require('../services/platformSettings.service')
 const { getObjectStream, safeSegment } = require('../services/assetStorage.service')
 const { assertAssetUsable } = require('../services/assetScan.service')
+const { buildClientStudioIdentity } = require('../services/studioProfile.service')
 const { publishDueEncouragements } = require('../services/encouragements.service')
 const {
   clientCanAccessCourse,
@@ -1317,6 +1318,22 @@ function sanitizeClientProfile(user, profile) {
   }
 }
 
+async function readClientStudioIdentity() {
+  const result = await pool.query(`
+    SELECT
+      profile.*,
+      asset.status AS profile_asset_status,
+      asset.scan_status AS profile_asset_scan_status,
+      asset.mime_type AS profile_asset_mime_type
+    FROM studio_profiles profile
+    LEFT JOIN assets asset ON asset.id = profile.profile_asset_id
+    WHERE profile.profile_key = 'primary'
+    LIMIT 1
+  `)
+
+  return buildClientStudioIdentity(result.rows[0] || {})
+}
+
 const clientPortalProfileSchema = z.object({
   firstName: z.string().trim().min(1, 'First name is required.').max(80),
   lastName: z.string().trim().max(80).default(''),
@@ -1521,6 +1538,53 @@ router.get('/client-portal/me', requireClientPortalUser, async (req, res) => {
     client: sanitizeClientProfile(req.clientPortalUser, req.clientProfile),
   })
 })
+
+// phase-47-private-studio-identity-start
+router.get('/client-portal/studio-identity', requireClientPortalUser, async (_req, res, next) => {
+  try {
+    return res.json({ ok: true, identity: await readClientStudioIdentity() })
+  } catch (error) {
+    return next(error)
+  }
+})
+
+router.get('/client-portal/studio-identity/image', requireClientPortalUser, async (_req, res, next) => {
+  try {
+    const result = await pool.query(`
+      SELECT asset.*
+      FROM studio_profiles profile
+      JOIN assets asset ON asset.id = profile.profile_asset_id
+      WHERE profile.profile_key = 'primary'
+        AND profile.client_portal_enabled = true
+      LIMIT 1
+    `)
+    const asset = result.rows[0]
+    assertAssetUsable(asset)
+
+    if (!String(asset.mime_type || '').toLowerCase().startsWith('image/')) {
+      return res.status(415).json({ ok: false, error: 'The Studio Profile image is not previewable.' })
+    }
+
+    const stream = await getObjectStream(asset)
+    res.set({
+      'Content-Type': asset.mime_type,
+      'Content-Length': String(asset.size_bytes),
+      'Content-Disposition': `inline; filename="${safeSegment(asset.original_filename)}"`,
+      'Cache-Control': 'private, max-age=300',
+      'X-Content-Type-Options': 'nosniff',
+      Vary: 'Cookie',
+    })
+    await pipeline(stream, res)
+    return undefined
+  } catch (error) {
+    if (res.headersSent) {
+      res.destroy(error)
+      return undefined
+    }
+    return next(error)
+  }
+})
+// phase-47-private-studio-identity-end
 
 // booking-intake-onboarding-pass-30-client-start
 const clientPortalOnboardingSchema = z.object({

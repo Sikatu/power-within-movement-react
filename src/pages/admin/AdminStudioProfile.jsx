@@ -17,6 +17,8 @@ const emptyProfile = {
   publicEmail: '',
   publicPhone: '',
   profileAssetId: null,
+  clientPortalEnabled: false,
+  clientPortalContactEnabled: false,
 }
 
 function AdminStudioProfile() {
@@ -63,8 +65,14 @@ function AdminStudioProfile() {
   }, [])
 
   function updateField(event) {
-    const { name, value } = event.target
-    setProfile((current) => ({ ...current, [name]: value }))
+    const { checked, name, type, value } = event.target
+    setProfile((current) => ({
+      ...current,
+      [name]: type === 'checkbox' ? checked : value,
+      ...(name === 'clientPortalEnabled' && !checked
+        ? { clientPortalContactEnabled: false }
+        : {}),
+    }))
     setNotice('')
   }
 
@@ -173,6 +181,20 @@ function AdminStudioProfile() {
                 </div>
               </section>
 
+              <section>
+                <div className="studio-profile46__section-heading"><span>04</span><div><h2>Private portal sharing</h2><p>Choose exactly what authenticated clients can see. Nothing here changes the public website.</p></div></div>
+                <div className="studio-profile46__visibility">
+                  <label>
+                    <input name="clientPortalEnabled" type="checkbox" checked={profile.clientPortalEnabled} onChange={updateField} />
+                    <span><strong>Use this identity in the Client Portal</strong><small>Shows the saved name, welcome message, signature, and approved profile image only after a client signs in.</small></span>
+                  </label>
+                  <label className={!profile.clientPortalEnabled ? 'is-disabled' : ''}>
+                    <input name="clientPortalContactEnabled" type="checkbox" checked={profile.clientPortalContactEnabled} onChange={updateField} disabled={!profile.clientPortalEnabled} />
+                    <span><strong>Also show the saved contact details</strong><small>Email and phone stay hidden unless this separate option is turned on.</small></span>
+                  </label>
+                </div>
+              </section>
+
               <footer><p>{hasChanges ? 'You have unsaved changes.' : 'No unsaved changes.'}</p><button type="submit" className="btn primary" disabled={Boolean(busy) || !hasChanges}>{busy === 'save' ? 'Saving…' : 'Save Studio Profile'}</button></footer>
             </form>
 
@@ -184,7 +206,7 @@ function AdminStudioProfile() {
               {profile.bio && <p>{profile.bio}</p>}
               <strong>{profile.signatureLine || 'Your signature'}</strong>
               {(profile.publicEmail || profile.publicPhone) && <address>{profile.publicEmail && <span>{profile.publicEmail}</span>}{profile.publicPhone && <span>{profile.publicPhone}</span>}</address>}
-              <small>Private preview · nothing is published by this screen.</small>
+              <small>{profile.clientPortalEnabled ? 'Approved for authenticated clients · nothing is published by this screen to the public website.' : 'Private preview · nothing is published by this screen and client sharing is off.'}</small>
             </aside>
           </div>
         )}
