@@ -14,6 +14,11 @@ import {
 import NotificationCenter from '../NotificationCenter'
 import AdminCommandPalette from './AdminCommandPalette.jsx'
 import AdminHelpCenter from './AdminHelpCenter.jsx'
+import {
+  ADMIN_COMFORT_STORAGE_KEY,
+  readAdminComfortView,
+  writeAdminComfortView,
+} from './adminDisplayPreferences.js'
 import { rememberAdminDestination } from './adminRecentDestinations.js'
 import {
   PINNED_STORAGE_KEY,
@@ -154,6 +159,7 @@ function AdminFrame({ children }) {
   const [mobileOpen, setMobileOpen] = useState(false)
   const [commandOpen, setCommandOpen] = useState(false)
   const [helpOpen, setHelpOpen] = useState(false)
+  const [comfortView, setComfortView] = useState(readAdminComfortView)
   const [pinnedPaths, setPinnedPaths] = useState(readPinnedDestinations)
   const [signingOut, setSigningOut] = useState(false)
   const [isOnline, setIsOnline] = useState(() => (
@@ -345,6 +351,24 @@ function AdminFrame({ children }) {
       unmountScrollRoot()
       document.body.classList.remove('admin-app-mode')
     }
+  }, [])
+
+  useEffect(() => {
+    document.body.classList.toggle('admin-comfort-view', comfortView)
+    writeAdminComfortView(comfortView)
+
+    return () => document.body.classList.remove('admin-comfort-view')
+  }, [comfortView])
+
+  useEffect(() => {
+    function syncDisplayPreference(event) {
+      if (event.key === ADMIN_COMFORT_STORAGE_KEY) {
+        setComfortView(event.newValue === 'true')
+      }
+    }
+
+    window.addEventListener('storage', syncDisplayPreference)
+    return () => window.removeEventListener('storage', syncDisplayPreference)
   }, [])
 
   useEffect(() => {
@@ -945,10 +969,12 @@ function AdminFrame({ children }) {
       {helpOpen && (
         <AdminHelpCenter
           currentPath={location.pathname}
+          comfortView={comfortView}
           pageDescription={currentPageDescription}
           pageLabel={currentPageLabel}
           workspaceLabel={activeWorkspace.label}
           onClose={() => setHelpOpen(false)}
+          onToggleComfortView={() => setComfortView((current) => !current)}
           onOpenQuickFind={() => {
             setHelpOpen(false)
             window.requestAnimationFrame(() => setCommandOpen(true))

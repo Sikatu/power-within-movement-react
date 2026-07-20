@@ -10,7 +10,7 @@ Phase 50R1 is a focused release-candidate repair for the admin and Founder inter
 - Added progressive disclosure to Circle creation, client onboarding, and Asset Vault bulk delivery. Common actions remain visible; advanced or infrequent work appears only when requested.
 - Compacted Team, Inbox, Automations, Letters, and Founder layouts while preserving their existing actions, data, permissions, and safety boundaries.
 - Kept one authoritative admin stylesheet and added a scoped final repair layer for predictable rollback and auditability.
-- Retained an explicit source-size ceiling, adjusted once from 540 KiB to 560 KiB for the shared 12-route responsive repair.
+- Retained an explicit source-size ceiling. Phase 52 later extends that ceiling to 565 KiB for its single shared Comfort View layer.
 
 ## Usability principles
 

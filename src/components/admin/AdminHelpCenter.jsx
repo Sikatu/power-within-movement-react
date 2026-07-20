@@ -13,11 +13,13 @@ function visibleFocusableElements(container) {
 
 function AdminHelpCenter({
   currentPath,
+  comfortView,
   pageDescription,
   pageLabel,
   workspaceLabel,
   onClose,
   onOpenQuickFind,
+  onToggleComfortView,
 }) {
   const dialogRef = useRef(null)
   const closeRef = useRef(null)
@@ -106,6 +108,22 @@ function AdminHelpCenter({
           <strong>Before you save</strong>
           <p>{guide.safety}</p>
         </aside>
+
+        <section className="pwc-comfort52-control" aria-labelledby="pwc-comfort52-title">
+          <div>
+            <strong id="pwc-comfort52-title">Comfort View</strong>
+            <p>Use larger text and touch targets while keeping every admin tool available.</p>
+          </div>
+          <button
+            type="button"
+            role="switch"
+            aria-checked={comfortView}
+            onClick={onToggleComfortView}
+          >
+            <span aria-hidden="true"><i /></span>
+            <em>{comfortView ? 'On' : 'Off'}</em>
+          </button>
+        </section>
 
         <footer className="pwc-help51-footer">
           <p><kbd>Ctrl K</kbd> opens Quick Find from anywhere. Press <kbd>?</kbd> to reopen this guide.</p>

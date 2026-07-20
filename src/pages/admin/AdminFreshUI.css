@@ -13379,3 +13379,194 @@ body.admin-app-mode .pwc-nav39-footer-actions {
   }
 }
 /* phase-51-guided-accessibility-end */
+
+/* phase-52-comfort-view-start */
+.pwc-comfort52-control {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  margin: 0 20px 20px;
+  border: 1px solid var(--admin-border);
+  border-radius: 14px;
+  background: #fff;
+  padding: 13px 14px;
+}
+
+.pwc-comfort52-control > div {
+  display: grid;
+  gap: 3px;
+}
+
+.pwc-comfort52-control strong {
+  color: var(--admin-ink);
+  font-size: 11px;
+}
+
+.pwc-comfort52-control p {
+  margin: 0;
+  color: var(--admin-muted);
+  font-size: 9px;
+  line-height: 1.5;
+}
+
+.pwc-comfort52-control > button {
+  display: inline-flex;
+  min-width: 84px;
+  min-height: 38px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px solid var(--admin-border);
+  border-radius: 999px;
+  background: rgba(247, 242, 236, 0.82);
+  color: var(--admin-muted);
+  padding: 7px 10px;
+  font-size: 9px;
+  font-weight: 800;
+}
+
+.pwc-comfort52-control > button > span {
+  position: relative;
+  width: 30px;
+  height: 18px;
+  border-radius: 999px;
+  background: #c9bdb7;
+  transition: background-color 160ms ease;
+}
+
+.pwc-comfort52-control > button i {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 2px 5px rgba(42, 25, 30, 0.22);
+  transition: transform 160ms ease;
+}
+
+.pwc-comfort52-control > button[aria-checked='true'] {
+  border-color: rgba(85, 113, 93, 0.28);
+  background: rgba(85, 113, 93, 0.09);
+  color: #486151;
+}
+
+.pwc-comfort52-control > button[aria-checked='true'] > span {
+  background: var(--admin-success);
+}
+
+.pwc-comfort52-control > button[aria-checked='true'] i {
+  transform: translateX(12px);
+}
+
+.pwc-comfort52-control em {
+  min-width: 20px;
+  font-style: normal;
+}
+
+body.admin-app-mode.admin-comfort-view .pwc-admin-main :where(
+  p:not(.admin-eyebrow):not(.eyebrow):not([class*='eyebrow']),
+  li
+) {
+  font-size: max(12px, 0.75rem);
+  line-height: 1.65;
+}
+
+body.admin-app-mode.admin-comfort-view .pwc-admin-main :where(label, legend) {
+  font-size: max(11.5px, 0.72rem);
+  line-height: 1.5;
+}
+
+body.admin-app-mode.admin-comfort-view .pwc-admin-main :where(small, time) {
+  font-size: max(10.5px, 0.66rem);
+  line-height: 1.5;
+}
+
+body.admin-app-mode.admin-comfort-view .pwc-admin-main :where(
+  input:not([type='checkbox']):not([type='radio']),
+  select,
+  textarea
+) {
+  min-height: 46px;
+  font-size: max(12px, 0.75rem);
+  line-height: 1.5;
+}
+
+body.admin-app-mode.admin-comfort-view .pwc-admin-main button {
+  min-height: 42px;
+  font-size: max(11px, 0.69rem);
+  line-height: 1.35;
+}
+
+body.admin-app-mode.admin-comfort-view .pwc-admin-main :where(th, dt) {
+  font-size: max(10px, 0.625rem);
+  line-height: 1.45;
+}
+
+body.admin-app-mode.admin-comfort-view .pwc-admin-main :where(td, dd) {
+  font-size: max(11.5px, 0.72rem);
+  line-height: 1.55;
+}
+
+body.admin-app-mode.admin-comfort-view .pwc-admin-main :where(
+  .admin-eyebrow,
+  .eyebrow,
+  [class*='eyebrow']
+) {
+  font-size: max(9px, 0.56rem);
+}
+
+body.admin-app-mode.admin-comfort-view :where(
+  .pwc-nav33-primary a,
+  .pwc-nav33-group-links a,
+  .pwc-stream31-current a,
+  .pwc-stream31-tools-toggle
+) {
+  min-height: 44px;
+  font-size: 11px;
+}
+
+body.admin-app-mode.admin-comfort-view :where(
+  .pwc-nav33-primary a span,
+  .pwc-nav33-group-links a,
+  .pwc-stream31-current strong,
+  .pwc-stream31-tools-toggle strong
+) {
+  font-size: 11px;
+}
+
+body.admin-app-mode.admin-comfort-view :where(
+  .pwc-nav33-primary small,
+  .pwc-stream31-current small,
+  .pwc-stream31-tools-toggle small
+) {
+  font-size: 9px;
+}
+
+@media (max-width: 560px) {
+  .pwc-comfort52-control {
+    align-items: stretch;
+    flex-direction: column;
+    margin-inline: 16px;
+  }
+
+  .pwc-comfort52-control > button {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pwc-comfort52-control > button :where(span, i) {
+    transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .pwc-comfort52-control,
+  .pwc-comfort52-control > button {
+    border: 1px solid CanvasText;
+  }
+}
+/* phase-52-comfort-view-end */
