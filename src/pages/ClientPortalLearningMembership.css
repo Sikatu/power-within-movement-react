@@ -1028,3 +1028,237 @@
     padding: 26px 22px;
   }
 }
+
+/* phase-42-learning-membership-streamlining-start */
+.learning-summary > div:first-child > p:last-of-type {
+  color: #816570;
+  font-size: 0.82rem;
+  line-height: 1.55;
+  margin: 0;
+}
+
+.learning-summary > div:first-child > a,
+.membership-disclosure-link {
+  align-items: center;
+  background: #57192f;
+  border-radius: 999px;
+  color: #fffaf5;
+  display: inline-flex;
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  margin-top: 15px;
+  min-height: 39px;
+  padding: 0 17px;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+.learning-program-picker {
+  background: rgba(255, 253, 250, 0.88);
+  border: 1px solid rgba(83, 29, 47, 0.13);
+  border-radius: 18px;
+  margin-bottom: 20px;
+  overflow: hidden;
+}
+
+.learning-program-picker > summary {
+  align-items: center;
+  cursor: pointer;
+  display: flex;
+  gap: 20px;
+  justify-content: space-between;
+  list-style: none;
+  min-height: 68px;
+  padding: 13px 19px;
+}
+
+.learning-program-picker > summary::-webkit-details-marker,
+.membership-disclosure > summary::-webkit-details-marker,
+.membership-switcher::-webkit-scrollbar {
+  display: none;
+}
+
+.learning-program-picker > summary > div {
+  display: grid;
+  gap: 3px;
+}
+
+.learning-program-picker > summary span,
+.learning-program-picker > summary em {
+  color: #9e6949;
+  font-size: 0.61rem;
+  font-style: normal;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.learning-program-picker > summary strong {
+  color: #4d1a2d;
+  font-family: var(--font-display);
+  font-size: 1.22rem;
+  font-weight: 500;
+}
+
+.learning-program-picker > summary em::after,
+.membership-disclosure > summary > span::after {
+  content: ' +';
+}
+
+.learning-program-picker[open] > summary em::after,
+.membership-disclosure[open] > summary > span::after {
+  content: ' −';
+}
+
+.learning-program-picker .learning-course-tabs {
+  border-top: 1px solid rgba(83, 29, 47, 0.1);
+  margin: 0;
+  padding: 14px 17px 18px;
+}
+
+.learning-course-hero {
+  min-height: 240px;
+}
+
+.learning-course-hero > img {
+  min-height: 240px;
+}
+
+.learning-course-hero h2 {
+  font-size: clamp(2.15rem, 4vw, 3.35rem);
+}
+
+.membership-switcher {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding: 2px 2px 5px;
+  scrollbar-width: none;
+}
+
+.membership-switcher button {
+  background: rgba(255, 253, 250, 0.9);
+  border: 1px solid rgba(83, 29, 47, 0.13);
+  border-radius: 16px;
+  color: #4d1a2d;
+  cursor: pointer;
+  display: grid;
+  flex: 0 0 min(280px, 75vw);
+  font: inherit;
+  gap: 4px;
+  padding: 14px 17px;
+  text-align: left;
+}
+
+.membership-switcher button.is-active {
+  background: #57192f;
+  border-color: #57192f;
+  color: #fffaf5;
+}
+
+.membership-switcher button span {
+  color: #ad7048;
+  font-size: 0.58rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.membership-switcher button.is-active span {
+  color: #d8af82;
+}
+
+.membership-switcher button strong {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 500;
+}
+
+.membership-hero {
+  grid-template-columns: minmax(0, 1fr) 215px;
+  padding: clamp(29px, 4vw, 44px);
+}
+
+.membership-hero h2 {
+  font-size: clamp(2.45rem, 5vw, 4rem);
+}
+
+.membership-disclosure {
+  padding: 0;
+}
+
+.membership-disclosure > summary {
+  align-items: center;
+  cursor: pointer;
+  display: flex;
+  gap: 20px;
+  justify-content: space-between;
+  list-style: none;
+  padding: 23px 27px;
+}
+
+.membership-disclosure > summary .eyebrow {
+  margin-bottom: 5px;
+}
+
+.membership-disclosure > summary h3 {
+  color: #4b182b;
+  font-size: clamp(1.45rem, 2.5vw, 1.9rem);
+  line-height: 1;
+  margin: 0;
+}
+
+.membership-disclosure > summary > span {
+  color: #8f6f7b;
+  flex: 0 0 auto;
+  font-size: 0.63rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.membership-disclosure-body {
+  border-top: 1px solid rgba(83, 29, 47, 0.1);
+  padding: 0 27px 27px;
+}
+
+.membership-disclosure-body > .membership-disclosure-link {
+  margin-bottom: 18px;
+}
+
+.membership-disclosure-body.membership-resource-grid {
+  padding-top: 22px;
+}
+
+.membership-disclosure-body > .membership-benefits {
+  padding-top: 8px;
+}
+
+.membership-disclosure-body > .membership-course-grid,
+.membership-disclosure-body > .membership-updates {
+  margin-top: 0;
+}
+
+@media (max-width: 880px) {
+  .membership-hero {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 720px) {
+  .learning-program-picker > summary,
+  .membership-disclosure > summary {
+    align-items: flex-start;
+    padding-left: 19px;
+    padding-right: 19px;
+  }
+
+  .membership-disclosure-body {
+    padding-left: 19px;
+    padding-right: 19px;
+  }
+
+  .learning-course-hero,
+  .learning-course-hero > img {
+    min-height: 0;
+  }
+}
+/* phase-42-learning-membership-streamlining-end */

@@ -191,8 +191,8 @@ function ClientPortalLearning() {
       <div className="portal-workspace-inner">
         <header className="portal-page-intro learning-page-intro">
           <p className="eyebrow">Learning Library</p>
-          <h1>Guided experiences for your next season.</h1>
-          <p>Move through private lessons, reflections, videos, and downloads selected for your personal growth.</p>
+          <h1>Keep learning at your pace.</h1>
+          <p>Continue your current lesson or choose another private program.</p>
         </header>
 
         {(error || notice) && <div className={`portal-notice${error ? ' is-error' : ''}`} role="status">{error || notice}</div>}
@@ -206,17 +206,22 @@ function ClientPortalLearning() {
         ) : (
           <>
             <section className="learning-summary">
-              <div><p className="eyebrow">Your Learning Path</p><h2>{courses.length} program{courses.length === 1 ? '' : 's'} selected for you.</h2><p>Return at your own pace. Your notes and completion progress stay connected to your private portal.</p></div>
+              <div><p className="eyebrow">Continue Learning</p><h2>{activeLesson?.title || activeCourse?.title}</h2><p>{activeCourse?.title}{activeLesson ? ` · ${lessonLabel(activeLesson.lesson_type)} · ${activeLesson.estimated_minutes || 5} min` : ''}</p><a href="#current-learning-lesson">Continue</a></div>
               <div className="learning-summary-progress"><strong>{averageProgress}%</strong><span>Overall completion</span><small>{totalCompleted} of {allLessons.length} lessons complete</small></div>
             </section>
 
-            <div className="learning-course-tabs" aria-label="Learning programs">
-              {courses.map((course) => (
-                <button type="button" key={course.id} className={course.id === activeCourse?.id ? 'is-active' : ''} onClick={() => { setActiveCourseId(course.id); setActiveLessonId(''); setError(''); setNotice('') }}>
-                  <span>{course.category || 'Personal Growth'}</span><strong>{course.title}</strong><small>{course.progressPercent || 0}% complete</small>
-                </button>
-              ))}
-            </div>
+            {courses.length > 1 && (
+              <details className="learning-program-picker">
+                <summary><div><span>Current program</span><strong>{activeCourse?.title}</strong></div><em>Choose program</em></summary>
+                <div className="learning-course-tabs" aria-label="Learning programs">
+                  {courses.map((course) => (
+                    <button type="button" key={course.id} className={course.id === activeCourse?.id ? 'is-active' : ''} onClick={() => { setActiveCourseId(course.id); setActiveLessonId(''); setError(''); setNotice('') }}>
+                      <span>{course.category || 'Personal Growth'}</span><strong>{course.title}</strong><small>{course.progressPercent || 0}% complete</small>
+                    </button>
+                  ))}
+                </div>
+              </details>
+            )}
 
             {activeCourse && (
               <>
@@ -243,7 +248,7 @@ function ClientPortalLearning() {
                     ))}
                   </aside>
 
-                  <article className="learning-lesson">
+                  <article className="learning-lesson" id="current-learning-lesson">
                     {activeLesson ? (
                       <>
                         <header><div><span>{lessonLabel(activeLesson.lesson_type)}</span><h2>{activeLesson.title}</h2><small>{activeLesson.estimated_minutes || 5} minutes</small></div><em className={activeLesson.completed_at ? 'is-complete' : ''}>{activeLesson.completed_at ? 'Complete' : 'In Progress'}</em></header>
