@@ -173,11 +173,6 @@ const requireDeveloper = [
   requireRole(['developer']),
 ]
 
-const requireStudioProfileManager = [
-  requireAuth,
-  requireRole(['developer', 'owner', 'admin']),
-]
-
 async function readStudioProfile() {
   const result = await pool.query(`
     SELECT
@@ -208,7 +203,7 @@ async function readStudioProfile() {
   }
 }
 
-router.get('/studio-profile', requireStudioProfileManager, async (_req, res, next) => {
+router.get('/studio-profile', requireAdmin, async (_req, res, next) => {
   try {
     return res.json({ ok: true, profile: await readStudioProfile() })
   } catch (error) {
@@ -216,7 +211,7 @@ router.get('/studio-profile', requireStudioProfileManager, async (_req, res, nex
   }
 })
 
-router.patch('/studio-profile', requireStudioProfileManager, async (req, res, next) => {
+router.patch('/studio-profile', requireAdmin, async (req, res, next) => {
   const parsed = studioProfileSchema.safeParse(req.body || {})
   if (!parsed.success) {
     return res.status(400).json({

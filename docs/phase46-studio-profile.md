@@ -4,7 +4,7 @@ Phase 46 turns the reserved Studio Profile roadmap into one simple, owner-friend
 
 ## Outcomes
 
-- Adds **Studio Profile** under Client Experience for developer, owner, and admin accounts.
+- Adds **Studio Profile** under Client Experience for developer, owner, and authorized admin accounts.
 - Keeps the daily editor compact: identity, welcome copy, short bio, signature, public contact details, and one profile image.
 - Reuses the private Asset Vault instead of creating a second upload system.
 - Supports direct image upload, searchable Vault selection, a protected preview, replacement, and removal.
