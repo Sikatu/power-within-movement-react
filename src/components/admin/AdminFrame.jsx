@@ -13,6 +13,7 @@ import {
 } from 'react-router-dom'
 import NotificationCenter from '../NotificationCenter'
 import AdminCommandPalette from './AdminCommandPalette.jsx'
+import AdminHelpCenter from './AdminHelpCenter.jsx'
 import { rememberAdminDestination } from './adminRecentDestinations.js'
 import {
   PINNED_STORAGE_KEY,
@@ -152,6 +153,7 @@ function AdminFrame({ children }) {
   const [workspaceOpen, setWorkspaceOpen] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
   const [commandOpen, setCommandOpen] = useState(false)
+  const [helpOpen, setHelpOpen] = useState(false)
   const [pinnedPaths, setPinnedPaths] = useState(readPinnedDestinations)
   const [signingOut, setSigningOut] = useState(false)
   const [isOnline, setIsOnline] = useState(() => (
@@ -173,6 +175,7 @@ function AdminFrame({ children }) {
 
     setWorkspaceOpen(false)
     setMobileOpen(false)
+    setHelpOpen(false)
 
     window.requestAnimationFrame(() => {
       if (restoreToMobileTrigger) {
@@ -181,6 +184,13 @@ function AdminFrame({ children }) {
       setCommandOpen(true)
     })
   }, [mobileOpen])
+
+  const openHelpCenter = useCallback(() => {
+    setWorkspaceOpen(false)
+    setMobileOpen(false)
+    setCommandOpen(false)
+    setHelpOpen(true)
+  }, [])
 
   useEffect(() => {
     let active = true
@@ -364,6 +374,23 @@ function AdminFrame({ children }) {
         return
       }
 
+      const target = event.target
+      const isTextEntry = target instanceof HTMLElement && (
+        target.matches('input, textarea, select') || target.isContentEditable
+      )
+
+      if (
+        event.key === '?'
+        && !event.ctrlKey
+        && !event.metaKey
+        && !event.altKey
+        && !isTextEntry
+      ) {
+        event.preventDefault()
+        openHelpCenter()
+        return
+      }
+
       if (event.key === 'Escape' && commandOpen) {
         event.preventDefault()
         setCommandOpen(false)
@@ -398,7 +425,7 @@ function AdminFrame({ children }) {
       document.removeEventListener('keydown', handleKeyDown)
       document.removeEventListener('pointerdown', handlePointerDown)
     }
-  }, [commandOpen, mobileOpen, openCommandPalette, workspaceOpen])
+  }, [commandOpen, mobileOpen, openCommandPalette, openHelpCenter, workspaceOpen])
 
   useEffect(() => {
     function updateConnectionStatus() {
@@ -428,6 +455,7 @@ function AdminFrame({ children }) {
       setWorkspaceOpen(false)
       setMobileOpen(false)
       setCommandOpen(false)
+      setHelpOpen(false)
       setOpenGroupOverride(undefined)
       setAllToolsOpen(false)
 
@@ -499,9 +527,16 @@ function AdminFrame({ children }) {
       .flatMap((group) => group.items.map((item) => ({
         ...item,
         groupLabel: group.label,
+        groupDescription: group.description,
       })))
       .find((item) => routeMatches(location.pathname, item)) || null
   }, [accessibleGroups, accessiblePrimaryItems, activeWorkspace.id, location.pathname])
+
+  const currentPageItem = currentNavigationItem || currentStudioTool
+  const currentPageLabel = currentPageItem?.label || activeWorkspace.label
+  const currentPageDescription = currentPageItem?.description
+    || currentStudioTool?.groupDescription
+    || activeWorkspace.description
 
   const currentTeamAccessLevel = isStaff && currentNavigationItem?.module
     ? teamAccess?.permissions?.[currentNavigationItem.module] || 'none'
@@ -539,6 +574,7 @@ function AdminFrame({ children }) {
     setMobileOpen(false)
     setWorkspaceOpen(false)
     setCommandOpen(false)
+    setHelpOpen(false)
     setOpenGroupOverride(undefined)
     setAllToolsOpen(false)
   }
@@ -660,6 +696,7 @@ function AdminFrame({ children }) {
           <button
             className="pwc-nav33-quick-find pwc-nav39-find-trigger"
             type="button"
+            aria-keyshortcuts="Control+K Meta+K"
             onClick={openCommandPalette}
           >
             <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -857,6 +894,14 @@ function AdminFrame({ children }) {
           </div>
 
           <div className="pwc-nav33-utilities pwc-nav39-footer-actions">
+            <button
+              type="button"
+              aria-keyshortcuts="?"
+              aria-label={`Help with ${currentPageLabel}`}
+              onClick={openHelpCenter}
+            >
+              Help
+            </button>
             <NotificationCenter mode="admin" />
             <Link to="/" aria-label="View public website" onClick={prepareForNavigation}>Site</Link>
             <button type="button" disabled={signingOut} onClick={handleSignOut}>
@@ -894,6 +939,20 @@ function AdminFrame({ children }) {
           workspaceLabel={activeWorkspace.label}
           pinnedPaths={pinnedPaths}
           onTogglePinned={handleTogglePinned}
+        />
+      )}
+
+      {helpOpen && (
+        <AdminHelpCenter
+          currentPath={location.pathname}
+          pageDescription={currentPageDescription}
+          pageLabel={currentPageLabel}
+          workspaceLabel={activeWorkspace.label}
+          onClose={() => setHelpOpen(false)}
+          onOpenQuickFind={() => {
+            setHelpOpen(false)
+            window.requestAnimationFrame(() => setCommandOpen(true))
+          }}
         />
       )}
     </div>
