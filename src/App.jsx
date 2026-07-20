@@ -309,8 +309,8 @@ const routeMetadata = {
     description: 'Create and moderate the private Power Within Collective community.',
   },
   '/admin/encouragements': {
-    title: 'Encouragement Studio | The Studio',
-    description: 'Draft, schedule, and publish thoughtful client encouragements.',
+    title: 'Client Messages | The Studio',
+    description: 'Draft, schedule, and publish encouragements and portal announcements.',
   },
   '/admin/operations': {
     title: 'Studio Operations Center | Power Within Collective',

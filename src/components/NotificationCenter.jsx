@@ -29,7 +29,7 @@ const categories = [
   ['resources', 'Resources'],
   ['learning', 'Learning'],
   ['memberships', 'Memberships'],
-  ['encouragements', 'Encouragements'],
+  ['encouragements', 'Notes & updates'],
   ['community', 'Community'],
   ['system', 'System'],
 ]

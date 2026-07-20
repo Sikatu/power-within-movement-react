@@ -25,6 +25,7 @@ const orderedMigrations = [
   'db:migrate-client-session-self-service',
   'db:migrate-secure-client-inbox',
   'db:migrate-notification-center',
+  'db:migrate-client-messages',
 ]
 
 function main() {

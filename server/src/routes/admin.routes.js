@@ -19,6 +19,7 @@ const {
   savePlatformSettings,
 } = require('../services/platformSettings.service')
 const { publishDueEncouragements } = require('../services/encouragements.service')
+const { CLIENT_MESSAGE_TYPES } = require('../services/clientMessages.service')
 const {
   createUniqueCourseSlug,
   getCourseTree,
@@ -6803,7 +6804,8 @@ const encouragementVisibilityModes = ['all_members', 'single_client']
 const encouragementPayloadSchema = z
   .object({
     title: z.string().trim().max(160, 'Keep the title under 160 characters.').optional().default(''),
-    body: z.string().trim().min(1, 'Write the encouragement before saving.').max(10000),
+    body: z.string().trim().min(1, 'Write the client message before saving.').max(10000),
+    messageType: z.enum(CLIENT_MESSAGE_TYPES).optional().default('encouragement'),
     visibility: z.enum(encouragementVisibilityModes).optional().default('all_members'),
     clientProfileId: z.string().uuid().nullable().optional(),
     deliveryMode: z.enum(encouragementDeliveryModes).optional().default('draft'),
@@ -6942,12 +6944,18 @@ router.get('/encouragements', requireAdmin, async (req, res, next) => {
 
     const status = String(req.query.status || 'all').trim().toLowerCase()
     const visibility = String(req.query.visibility || 'all').trim().toLowerCase()
+    const messageType = String(req.query.messageType || 'all').trim().toLowerCase()
     const search = String(req.query.search || '').trim()
 
     const allowedStatuses = new Set(['all', 'draft', 'scheduled', 'published', 'archived'])
     const allowedVisibilities = new Set(['all', ...encouragementVisibilityModes])
+    const allowedMessageTypes = new Set(['all', ...CLIENT_MESSAGE_TYPES])
 
-    if (!allowedStatuses.has(status) || !allowedVisibilities.has(visibility)) {
+    if (
+      !allowedStatuses.has(status) ||
+      !allowedVisibilities.has(visibility) ||
+      !allowedMessageTypes.has(messageType)
+    ) {
       return res.status(400).json({ ok: false, error: 'Invalid encouragement filter.' })
     }
 
@@ -6958,6 +6966,7 @@ router.get('/encouragements', requireAdmin, async (req, res, next) => {
           ep.id,
           ep.title,
           ep.body,
+          ep.message_type,
           ep.visibility,
           ep.status,
           ep.scheduled_at,
@@ -6994,13 +7003,14 @@ router.get('/encouragements', requireAdmin, async (req, res, next) => {
         LEFT JOIN system_users target_su ON target_su.id = target_cp.user_id
         WHERE ($1 = 'all' OR ep.status = $1)
           AND ($2 = 'all' OR ep.visibility = $2)
+          AND ($3 = 'all' OR ep.message_type = $3)
           AND (
-            $3 = ''
-            OR COALESCE(ep.title, '') ILIKE '%' || $3 || '%'
-            OR ep.body ILIKE '%' || $3 || '%'
-            OR COALESCE(target_cp.first_name, '') ILIKE '%' || $3 || '%'
-            OR COALESCE(target_cp.last_name, '') ILIKE '%' || $3 || '%'
-            OR COALESCE(target_su.email, target_cp.public_contact_email, '') ILIKE '%' || $3 || '%'
+            $4 = ''
+            OR COALESCE(ep.title, '') ILIKE '%' || $4 || '%'
+            OR ep.body ILIKE '%' || $4 || '%'
+            OR COALESCE(target_cp.first_name, '') ILIKE '%' || $4 || '%'
+            OR COALESCE(target_cp.last_name, '') ILIKE '%' || $4 || '%'
+            OR COALESCE(target_su.email, target_cp.public_contact_email, '') ILIKE '%' || $4 || '%'
           )
         ORDER BY
           CASE ep.status
@@ -7012,7 +7022,7 @@ router.get('/encouragements', requireAdmin, async (req, res, next) => {
           COALESCE(ep.scheduled_at, ep.published_at, ep.updated_at) DESC
         LIMIT 250
         `,
-        [status, visibility, search],
+        [status, visibility, messageType, search],
       ),
       pool.query(
         `
@@ -7021,6 +7031,8 @@ router.get('/encouragements', requireAdmin, async (req, res, next) => {
           COUNT(*) FILTER (WHERE status = 'scheduled')::int AS scheduled,
           COUNT(*) FILTER (WHERE status = 'published')::int AS published,
           COUNT(*) FILTER (WHERE status = 'archived')::int AS archived,
+          COUNT(*) FILTER (WHERE message_type = 'encouragement')::int AS encouragements,
+          COUNT(*) FILTER (WHERE message_type = 'announcement')::int AS announcements,
           COALESCE((
             SELECT COUNT(*)::int
             FROM encouragement_recipients
@@ -7073,18 +7085,20 @@ router.post('/encouragements', requireAdmin, async (req, res, next) => {
       INSERT INTO encouragement_posts (
         title,
         body,
+        message_type,
         visibility,
         status,
         scheduled_at,
         published_at,
         created_by
       )
-      VALUES ($1, $2, $3, $4, $5, $6, $7)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
       RETURNING *
       `,
       [
         payload.title || null,
         payload.body,
+        payload.messageType,
         payload.visibility,
         state.status,
         state.scheduledAt,
@@ -7194,10 +7208,11 @@ router.patch('/encouragements/:encouragementId', requireAdmin, async (req, res, 
       SET
         title = $2,
         body = $3,
-        visibility = $4,
-        status = $5,
-        scheduled_at = $6,
-        published_at = $7,
+        message_type = $4,
+        visibility = $5,
+        status = $6,
+        scheduled_at = $7,
+        published_at = $8,
         updated_at = now()
       WHERE id = $1
       RETURNING *
@@ -7206,6 +7221,7 @@ router.patch('/encouragements/:encouragementId', requireAdmin, async (req, res, 
         req.params.encouragementId,
         payload.title || null,
         payload.body,
+        payload.messageType,
         payload.visibility,
         state.status,
         state.scheduledAt,
@@ -7216,6 +7232,7 @@ router.patch('/encouragements/:encouragementId', requireAdmin, async (req, res, 
     const contentChanged =
       before.title !== (payload.title || null) ||
       before.body !== payload.body ||
+      before.message_type !== payload.messageType ||
       before.visibility !== payload.visibility ||
       String(before.existing_client_profile_id || '') !== String(payload.clientProfileId || '')
 

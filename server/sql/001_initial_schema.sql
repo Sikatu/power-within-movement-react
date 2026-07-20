@@ -829,6 +829,8 @@ CREATE TABLE IF NOT EXISTS encouragement_posts (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   title TEXT,
   body TEXT NOT NULL,
+  message_type TEXT NOT NULL DEFAULT 'encouragement'
+    CHECK (message_type IN ('encouragement', 'announcement')),
   visibility TEXT NOT NULL DEFAULT 'all_members'
     CHECK (visibility IN ('all_members', 'tagged_group', 'single_client', 'admin_only')),
   status TEXT NOT NULL DEFAULT 'draft'

@@ -12427,3 +12427,7 @@ body.admin-app-mode .pwc-nav39-footer-actions .pwc-notification-trigger em {
   }
 }
 /* phase-39-admin-shell-streamlining-end */
+
+/* phase-45-client-messages-start */
+body.admin-app-mode .encouragement-composer__types{grid-template-columns:repeat(2,minmax(0,1fr))}body.admin-app-mode .encouragement-composer__types legend{grid-column:1/-1}body.admin-app-mode .encouragement-library__filters{grid-template-columns:repeat(3,minmax(130px,.8fr)) minmax(210px,1.35fr)}body.admin-app-mode .encouragement-card__type.is-announcement{border-color:rgba(77,40,49,.18);background:rgba(77,40,49,.075);color:var(--admin-burgundy)}body.admin-app-mode .encouragement-card:has(.encouragement-card__type.is-announcement){border-left:3px solid rgba(77,40,49,.42)}@media(max-width:1080px){body.admin-app-mode .encouragement-library__filters{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:700px){body.admin-app-mode .encouragement-composer__types,body.admin-app-mode .encouragement-library__filters{grid-template-columns:1fr}}
+/* phase-45-client-messages-end */

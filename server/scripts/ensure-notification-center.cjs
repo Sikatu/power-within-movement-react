@@ -625,6 +625,9 @@ async function main() {
     `)
 
     await client.query(`
+      ALTER TABLE encouragement_posts
+        ADD COLUMN IF NOT EXISTS message_type TEXT NOT NULL DEFAULT 'encouragement';
+
       CREATE OR REPLACE FUNCTION pwc_notify_encouragement_publish()
       RETURNS TRIGGER AS $$
       DECLARE
@@ -636,22 +639,42 @@ async function main() {
         END IF;
 
         FOR recipient IN
+          SELECT cp.id AS client_profile_id
+          FROM client_profiles cp
+          JOIN system_users su ON su.id = cp.user_id
+          WHERE NEW.visibility = 'all_members'
+            AND su.role = 'client'
+            AND su.status = 'active'
+          UNION
           SELECT er.client_profile_id
           FROM encouragement_recipients er
-          WHERE er.encouragement_post_id = NEW.id
+          WHERE NEW.visibility = 'single_client'
+            AND er.encouragement_post_id = NEW.id
         LOOP
           PERFORM pwc_notify_client_profile(
             recipient.client_profile_id,
             NEW.created_by,
             'encouragements',
-            COALESCE(NULLIF(NEW.title, ''), 'A new encouragement is waiting'),
+            COALESCE(
+              NULLIF(NEW.title, ''),
+              CASE NEW.message_type
+                WHEN 'announcement' THEN 'A new portal announcement is ready'
+                ELSE 'A new encouragement is waiting'
+              END
+            ),
             left(NEW.body, 240),
-            '/client-portal/messages',
-            'Read Encouragement',
+            '/client-portal/messages?tab=updates',
+            CASE NEW.message_type
+              WHEN 'announcement' THEN 'Read Announcement'
+              ELSE 'Read Encouragement'
+            END,
             'encouragement_posts',
             NEW.id,
-            'normal',
-            'encouragement-published:' || NEW.id::text
+            CASE NEW.message_type
+              WHEN 'announcement' THEN 'high'
+              ELSE 'normal'
+            END,
+            'client-message-published:' || NEW.id::text
           );
         END LOOP;
 

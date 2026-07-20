@@ -450,6 +450,9 @@ export async function getAdminEncouragements(filters = {}) {
   if (filters.visibility && filters.visibility !== 'all') {
     params.set('visibility', filters.visibility)
   }
+  if (filters.messageType && filters.messageType !== 'all') {
+    params.set('messageType', filters.messageType)
+  }
   if (filters.search) params.set('search', filters.search)
 
   const query = params.toString()

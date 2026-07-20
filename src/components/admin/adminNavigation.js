@@ -152,7 +152,7 @@ export const studioGroups = [
     label: 'Client Experience',
     description: 'Programs, assets, and community',
     items: [
-      { to: '/admin/encouragements', label: 'Daily Encouragements', module: 'encouragements' },
+      { to: '/admin/encouragements', label: 'Client Messages', module: 'encouragements' },
       { to: '/admin/courses', label: 'Learning Library', module: 'learning' },
       { to: '/admin/assets', label: 'Asset Vault' },
       { to: '/admin/memberships', label: 'Membership Circle', module: 'memberships' },

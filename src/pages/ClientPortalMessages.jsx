@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import ClientPortalChrome from '../components/ClientPortalChrome.jsx'
 import {
   createClientPortalInboxConversation,
@@ -28,7 +28,6 @@ function formatDateTime(value) {
     return new Intl.DateTimeFormat('en-US', {
       dateStyle: 'medium',
       timeStyle: 'short',
-      timeZone: 'America/New_York',
     }).format(new Date(value))
   } catch {
     return ''
@@ -58,6 +57,7 @@ function friendlyError(error) {
 
 function ClientPortalMessages() {
   const navigate = useNavigate()
+  const [searchParams, setSearchParams] = useSearchParams()
   const { conversationId = '' } = useParams()
   const [client, setClient] = useState(null)
   const [conversations, setConversations] = useState([])
@@ -65,7 +65,10 @@ function ClientPortalMessages() {
   const [encouragements, setEncouragements] = useState([])
   const [encouragementUnread, setEncouragementUnread] = useState(0)
   const [inboxUnread, setInboxUnread] = useState(0)
-  const [activeTab, setActiveTab] = useState('inbox')
+  const [activeTab, setActiveTab] = useState(
+    searchParams.get('tab') === 'updates' ? 'encouragements' : 'inbox',
+  )
+  const [messageFilter, setMessageFilter] = useState('all')
   const [conversationScope, setConversationScope] = useState('open')
   const [showNew, setShowNew] = useState(false)
   const [newMessage, setNewMessage] = useState(emptyMessage)
@@ -134,6 +137,17 @@ function ClientPortalMessages() {
   }, [loadPage, navigate])
 
   const totalUnread = inboxUnread + encouragementUnread
+  const clientMessages = useMemo(
+    () => encouragements.filter((message) => (
+      messageFilter === 'all' || (message.message_type || 'encouragement') === messageFilter
+    )),
+    [encouragements, messageFilter],
+  )
+  const messageCounts = useMemo(() => ({
+    all: encouragements.length,
+    encouragement: encouragements.filter((message) => (message.message_type || 'encouragement') === 'encouragement').length,
+    announcement: encouragements.filter((message) => message.message_type === 'announcement').length,
+  }), [encouragements])
   const openConversations = useMemo(() => conversations.filter((item) => item.status !== 'closed'), [conversations])
   const closedConversations = useMemo(() => conversations.filter((item) => item.status === 'closed'), [conversations])
   const visibleConversations = conversationScope === 'closed' ? closedConversations : openConversations
@@ -193,6 +207,11 @@ function ClientPortalMessages() {
     if (nextConversation) navigate(`/client-portal/messages/${nextConversation.id}`)
   }
 
+  function chooseMessageArea(area) {
+    setActiveTab(area)
+    setSearchParams(area === 'encouragements' ? { tab: 'updates' } : {})
+  }
+
   async function markEncouragementRead(messageId) {
     const current = encouragements.find((item) => item.id === messageId)
     if (!current || current.read_at) return
@@ -222,33 +241,58 @@ function ClientPortalMessages() {
         <header className="portal-page-intro portal-message-intro">
           <p className="eyebrow">Private Communication</p>
           <h1>Messages</h1>
-          <p>Continue a private conversation or return to an encouragement shared for your journey.</p>
+          <p>Continue a private conversation or read a note shared by Power Within.</p>
         </header>
 
         {(error || notice) && <div className={`portal-notice${error ? ' is-error' : ''}`} role="status">{error || notice}</div>}
 
         <div className="message-tabs" role="tablist" aria-label="Message areas">
-          <button type="button" role="tab" aria-selected={activeTab === 'inbox'} className={activeTab === 'inbox' ? 'is-active' : ''} onClick={() => setActiveTab('inbox')}>
+          <button type="button" role="tab" aria-selected={activeTab === 'inbox'} className={activeTab === 'inbox' ? 'is-active' : ''} onClick={() => chooseMessageArea('inbox')}>
             Private Inbox {inboxUnread > 0 && <span>{inboxUnread}</span>}
           </button>
-          <button type="button" role="tab" aria-selected={activeTab === 'encouragements'} className={activeTab === 'encouragements' ? 'is-active' : ''} onClick={() => setActiveTab('encouragements')}>
-            Encouragements {encouragementUnread > 0 && <span>{encouragementUnread}</span>}
+          <button type="button" role="tab" aria-selected={activeTab === 'encouragements'} className={activeTab === 'encouragements' ? 'is-active' : ''} onClick={() => chooseMessageArea('encouragements')}>
+            Notes &amp; Updates {encouragementUnread > 0 && <span>{encouragementUnread}</span>}
           </button>
         </div>
 
         {loading ? (
           <div className="portal-loading" role="status">Opening your messages…</div>
         ) : activeTab === 'encouragements' ? (
-          <section className="encouragement-list" aria-label="Encouragements">
+          <section className="client-message-feed" aria-label="Notes and updates">
+            <div className="client-message-filter" role="group" aria-label="Filter notes and updates">
+              {[
+                ['all', 'All'],
+                ['encouragement', 'Encouragements'],
+                ['announcement', 'Announcements'],
+              ].map(([value, label]) => (
+                <button
+                  type="button"
+                  key={value}
+                  className={messageFilter === value ? 'is-active' : ''}
+                  aria-pressed={messageFilter === value}
+                  onClick={() => setMessageFilter(value)}
+                >
+                  {label} <span>{messageCounts[value]}</span>
+                </button>
+              ))}
+            </div>
+
+            <div className="encouragement-list">
             {encouragements.length === 0 ? (
-              <div className="portal-empty portal-card"><strong>No encouragements yet.</strong><p>Published notes from Power Within will appear here.</p></div>
-            ) : encouragements.map((message) => (
-              <button type="button" key={message.id} className={`encouragement-card${message.read_at ? '' : ' is-unread'}`} onClick={() => markEncouragementRead(message.id)}>
-                <span className="encouragement-meta"><em>{message.read_at ? 'Read' : 'New'}</em><time>{formatDateTime(message.published_at || message.created_at)}</time></span>
+              <div className="portal-empty portal-card"><strong>No notes or updates yet.</strong><p>Messages shared by Power Within will appear here.</p></div>
+            ) : clientMessages.length === 0 ? (
+              <div className="portal-empty portal-card"><strong>Nothing in this view yet.</strong><p>Choose another filter to see your other messages.</p></div>
+            ) : clientMessages.map((message) => (
+              <button type="button" key={message.id} className={`encouragement-card is-${message.message_type || 'encouragement'}${message.read_at ? '' : ' is-unread'}`} onClick={() => markEncouragementRead(message.id)}>
+                <span className="encouragement-meta">
+                  <span><em>{message.read_at ? 'Read' : 'New'}</em><b>{message.message_type === 'announcement' ? 'Announcement' : 'Encouragement'}</b></span>
+                  <time>{formatDateTime(message.published_at || message.created_at)}</time>
+                </span>
                 {message.title && <strong>{message.title}</strong>}
                 <span>{message.body}</span>
               </button>
             ))}
+            </div>
           </section>
         ) : (
           <>

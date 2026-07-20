@@ -357,6 +357,9 @@ export default function AdminFoundersView() {
           <Link to="/admin/dashboard" className="founder-home__studio-link">
             Open The Studio
           </Link>
+          <Link to="/admin/encouragements?view=compose&type=encouragement" className="founder-home__calendar-link">
+            Share a message
+          </Link>
           <button
             type="button"
             className="founder-home__signout"
@@ -389,6 +392,7 @@ export default function AdminFoundersView() {
               <Link to="/admin/founders-calendar">Open calendar</Link>
               <Link to="/admin/founders-availability">Availability</Link>
               <Link to="/admin/dashboard">Open The Studio</Link>
+              <Link to="/admin/encouragements?view=compose&type=encouragement">Share a message</Link>
               <button
                 type="button"
                 onClick={handleLogout}
