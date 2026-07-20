@@ -79,6 +79,7 @@ export default function AdminCircleCommunity() {
   const [selectedPostId, setSelectedPostId] = useState('')
   const [selectedPost, setSelectedPost] = useState(null)
   const [composer, setComposer] = useState(emptyComposer)
+  const [isComposerOpen, setIsComposerOpen] = useState(false)
   const [activeTab, setActiveTab] = useState('content')
   const [filter, setFilter] = useState('all')
   const [search, setSearch] = useState('')
@@ -129,6 +130,7 @@ export default function AdminCircleCommunity() {
 
     setSelectedPostId(nextId)
     const post = await loadPost(nextId)
+    setIsComposerOpen(Boolean(post))
     setActiveTab(post?.reports?.some((report) => report.status === 'open') ? 'moderation' : 'content')
   }, [loadPost, selectedPostId])
 
@@ -186,6 +188,7 @@ export default function AdminCircleCommunity() {
 
   async function selectPost(postId) {
     setSelectedPostId(postId)
+    setIsComposerOpen(true)
     setError('')
     setNotice('')
     try {
@@ -200,6 +203,7 @@ export default function AdminCircleCommunity() {
     setSelectedPostId('')
     setSelectedPost(null)
     setComposer(emptyComposer)
+    setIsComposerOpen(true)
     setActiveTab('content')
     setNotice('Start with a clear title and a warm, useful message.')
   }
@@ -277,6 +281,7 @@ export default function AdminCircleCommunity() {
       setSelectedPostId('')
       setSelectedPost(null)
       setComposer(emptyComposer)
+      setIsComposerOpen(false)
       await loadWorkspace('')
     }
   }
@@ -414,7 +419,19 @@ export default function AdminCircleCommunity() {
               </button>
             </div>
 
-            {activeTab === 'content' && (
+            {activeTab === 'content' && !isComposerOpen && !selectedPost && (
+              <div className="circle-composer-welcome">
+                <span aria-hidden="true">✦</span>
+                <div>
+                  <p className="admin-eyebrow">Ready when you are</p>
+                  <h2>Start with one clear message.</h2>
+                  <p>Create an update, announcement, event, or challenge only when your community needs it.</p>
+                </div>
+                <button type="button" onClick={startNewPost}>Create a Circle post</button>
+              </div>
+            )}
+
+            {activeTab === 'content' && isComposerOpen && (
               <div className="circle-composer-card">
                 <div className="circle-workspace-heading">
                   <div>

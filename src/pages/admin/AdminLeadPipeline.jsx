@@ -388,11 +388,12 @@ export default function AdminLeadPipeline() {
           ))}
         </nav>
 
-        <section
-          className="lead-pipeline-board"
-          aria-busy={isLoading}
-          style={pipelineStageView === 'all' ? undefined : { gridAutoColumns: 'minmax(280px, 520px)' }}
-        >
+        <div className="lead-pipeline-workbench">
+          <section
+            className="lead-pipeline-board"
+            aria-busy={isLoading}
+            style={pipelineStageView === 'all' ? undefined : { gridAutoColumns: 'minmax(280px, 520px)' }}
+          >
           {(pipelineStageView === 'all'
             ? pipeline?.stages || Object.keys(stageLabels)
             : [pipelineStageView]
@@ -419,9 +420,9 @@ export default function AdminLeadPipeline() {
               </div>
             </article>
           ))}
-        </section>
+          </section>
 
-        <section className="lead-pipeline-workspace">
+          <section className="lead-pipeline-workspace">
           {!selectedLeadId && (
             <div className="lead-pipeline-placeholder">
               <h2>Select a lead</h2>
@@ -734,7 +735,8 @@ export default function AdminLeadPipeline() {
               )}
             </>
           )}
-        </section>
+          </section>
+        </div>
       </div>
     </AdminFrame>
   )

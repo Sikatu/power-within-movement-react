@@ -12419,3 +12419,673 @@ body.admin-app-mode .pwc-nav39-footer-actions .pwc-notification-trigger em {
 /* phase-45-client-messages-start */
 body.admin-app-mode .encouragement-composer__types{grid-template-columns:repeat(2,minmax(0,1fr))}body.admin-app-mode .encouragement-composer__types legend{grid-column:1/-1}body.admin-app-mode .encouragement-library__filters{grid-template-columns:repeat(3,minmax(130px,.8fr)) minmax(210px,1.35fr)}body.admin-app-mode .encouragement-card__type.is-announcement{border-color:rgba(77,40,49,.18);background:rgba(77,40,49,.075);color:var(--admin-burgundy)}body.admin-app-mode .encouragement-card:has(.encouragement-card__type.is-announcement){border-left:3px solid rgba(77,40,49,.42)}@media(max-width:1080px){body.admin-app-mode .encouragement-library__filters{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:700px){body.admin-app-mode .encouragement-composer__types,body.admin-app-mode .encouragement-library__filters{grid-template-columns:1fr}}
 /* phase-45-client-messages-end */
+
+/* phase-50r1-final-usability-repair-start */
+/* Shared hierarchy: keep every workspace readable, compact, and action-led. */
+body.admin-app-mode :where(
+  .learning-library-header,
+  .membership-circle-header,
+  .circle-admin-header,
+  .automation-studio-header,
+  .onboarding-studio-header
+) :where(h1, h2) {
+  margin: 4px 0 8px;
+  color: #fff9f3;
+}
+
+body.admin-app-mode :where(
+  .learning-library-admin,
+  .membership-circle-admin,
+  .circle-admin-page,
+  .automation-studio-page,
+  .onboarding-studio-page
+) {
+  padding-top: 22px;
+  padding-bottom: 52px;
+}
+
+body.admin-app-mode :where(
+  .learning-library-header,
+  .membership-circle-header,
+  .circle-admin-header,
+  .automation-studio-header,
+  .onboarding-studio-header,
+  .pwc-assets26-hero,
+  .pwc-letters28-hero,
+  .admin-inbox__header,
+  .lead-pipeline-header
+) {
+  min-height: 0;
+  margin-bottom: 14px;
+  border-radius: 20px;
+  padding: clamp(20px, 2.6vw, 30px);
+}
+
+body.admin-app-mode :where(
+  .learning-library-header,
+  .membership-circle-header,
+  .circle-admin-header,
+  .automation-studio-header,
+  .onboarding-studio-header,
+  .pwc-assets26-hero,
+  .pwc-letters28-hero,
+  .admin-inbox__header,
+  .lead-pipeline-header
+) h1 {
+  font-size: clamp(2.25rem, 4vw, 3.4rem);
+  line-height: 0.96;
+}
+
+body.admin-app-mode :where(
+  .learning-library-header,
+  .membership-circle-header,
+  .circle-admin-header,
+  .automation-studio-header,
+  .onboarding-studio-header,
+  .pwc-assets26-hero,
+  .pwc-letters28-hero,
+  .admin-inbox__header,
+  .lead-pipeline-header
+) p:not(.eyebrow):not(.admin-eyebrow):not(.pwc-assets26-eyebrow) {
+  max-width: 680px;
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+body.admin-app-mode :where(
+  .learning-library-header__status,
+  .membership-circle-header__status
+) {
+  min-width: 190px;
+  border-radius: 14px;
+  padding: 12px 14px;
+}
+
+body.admin-app-mode :where(
+  .learning-library-metrics,
+  .membership-metrics,
+  .circle-admin-metrics,
+  .automation-studio-metrics,
+  .onboarding-studio-metrics,
+  .pwc-assets26-metrics,
+  .admin-inbox__metrics,
+  .lead-pipeline-metrics,
+  .pwc-scheduler-metrics,
+  .team-management-stats
+) {
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+body.admin-app-mode :where(
+  .learning-library-metrics,
+  .membership-metrics,
+  .circle-admin-metrics,
+  .automation-studio-metrics,
+  .onboarding-studio-metrics,
+  .pwc-assets26-metrics,
+  .admin-inbox__metrics,
+  .lead-pipeline-metrics,
+  .pwc-scheduler-metrics,
+  .team-management-stats
+) > :where(article, button) {
+  min-height: 78px;
+  border-radius: 15px;
+  padding: 13px 15px;
+}
+
+body.admin-app-mode :where(
+  .learning-library-metrics,
+  .membership-metrics,
+  .circle-admin-metrics,
+  .automation-studio-metrics,
+  .onboarding-studio-metrics,
+  .pwc-assets26-metrics,
+  .admin-inbox__metrics,
+  .lead-pipeline-metrics,
+  .pwc-scheduler-metrics,
+  .team-management-stats
+) > :where(article, button) > span {
+  margin-bottom: 5px;
+  font-size: 8px;
+}
+
+body.admin-app-mode :where(
+  .learning-library-metrics,
+  .membership-metrics,
+  .circle-admin-metrics,
+  .automation-studio-metrics,
+  .onboarding-studio-metrics,
+  .pwc-assets26-metrics,
+  .admin-inbox__metrics,
+  .lead-pipeline-metrics,
+  .pwc-scheduler-metrics,
+  .team-management-stats
+) > :where(article, button) > strong {
+  font-size: clamp(1.55rem, 2.2vw, 2rem);
+}
+
+body.admin-app-mode :where(
+  .pwc-assets26-metrics,
+  .pwc-scheduler-metrics,
+  .team-management-stats
+) small {
+  margin-top: 4px;
+  font-size: 8.5px;
+  line-height: 1.35;
+}
+
+/* Content directories remain visible; editors appear beside them only when useful. */
+body.admin-app-mode :where(
+  .learning-library-layout,
+  .membership-circle-layout,
+  .circle-admin-layout,
+  .automation-studio-layout,
+  .onboarding-studio-layout
+) {
+  grid-template-columns: minmax(235px, 285px) minmax(0, 1fr);
+  gap: 14px;
+}
+
+body.admin-app-mode :where(
+  .learning-library-sidebar,
+  .membership-sidebar,
+  .circle-admin-sidebar,
+  .automation-workflow-list,
+  .onboarding-studio-list,
+  .learning-library-workspace,
+  .membership-workspace,
+  .circle-admin-workspace,
+  .automation-studio-workspace,
+  .onboarding-template-editor
+) {
+  border-radius: 17px;
+}
+
+body.admin-app-mode :where(
+  .learning-library-course-list,
+  .membership-plan-list,
+  .circle-admin-post-list,
+  .automation-workflow-list-body
+) {
+  max-height: min(56vh, 560px);
+}
+
+body.admin-app-mode :where(
+  .learning-library-empty,
+  .learning-library-empty.is-small,
+  .membership-empty-state,
+  .membership-empty-state.is-large,
+  .membership-empty-state.is-small,
+  .circle-empty-card,
+  .automation-studio-empty,
+  .onboarding-empty
+) {
+  min-height: 132px;
+  padding: 24px 18px;
+}
+
+body.admin-app-mode :where(
+  .learning-course-form,
+  .learning-curriculum,
+  .learning-access-panel,
+  .membership-plan-form,
+  .membership-members-panel,
+  .membership-content-grid,
+  .membership-updates-layout,
+  .circle-composer-card,
+  .circle-moderation-layout,
+  .automation-workflow-editor,
+  .automation-enrollment-panel
+) {
+  padding: clamp(16px, 2vw, 22px);
+}
+
+body.admin-app-mode :where(
+  .circle-composer-card,
+  .automation-workflow-editor,
+  .onboarding-template-editor,
+  .lead-pipeline-panel
+) textarea {
+  min-height: 96px;
+}
+
+body.admin-app-mode .circle-composer-card textarea[rows='10'] {
+  min-height: 170px;
+}
+
+body.admin-app-mode .circle-composer-welcome,
+body.admin-app-mode .onboarding-start-card {
+  min-height: 250px;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 14px;
+  padding: 36px;
+  color: var(--admin-muted);
+  text-align: center;
+}
+
+body.admin-app-mode :where(.circle-composer-welcome, .onboarding-start-card) > span {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  place-items: center;
+  border-radius: 50%;
+  background: rgba(200, 169, 106, 0.14);
+  color: var(--admin-gold-deep);
+}
+
+body.admin-app-mode :where(.circle-composer-welcome, .onboarding-start-card) h2 {
+  margin: 4px 0 6px;
+  color: var(--admin-ink);
+  font-size: clamp(1.65rem, 2.4vw, 2.2rem);
+}
+
+body.admin-app-mode :where(.circle-composer-welcome, .onboarding-start-card) p:last-child {
+  max-width: 520px;
+  margin: 0;
+}
+
+body.admin-app-mode :where(.circle-composer-welcome, .onboarding-start-card) > button {
+  border-color: transparent;
+  background: var(--admin-burgundy);
+  color: #fff9f3;
+}
+
+/* Asset delivery keeps common single-client work visible and reveals bulk tools on request. */
+body.admin-app-mode .pwc-assets26-page {
+  padding-top: 22px;
+  padding-bottom: 52px;
+}
+
+body.admin-app-mode .pwc-assets26-workspace {
+  grid-template-columns: minmax(280px, 0.7fr) minmax(0, 1.3fr);
+  gap: 14px;
+}
+
+body.admin-app-mode .pwc-assets26-detail,
+body.admin-app-mode .pwc-assets26-library {
+  border-radius: 17px;
+}
+
+body.admin-app-mode .pwc-assets26-facts {
+  gap: 7px;
+  padding: 12px 14px;
+}
+
+body.admin-app-mode .pwc-assets26-panel {
+  padding: 16px;
+}
+
+body.admin-app-mode .pwc-assets26-bulk-disclosure {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 12px;
+  border-top: 1px solid var(--admin-border);
+  padding-top: 12px;
+}
+
+body.admin-app-mode .pwc-assets26-bulk-disclosure span {
+  color: var(--admin-muted);
+  font-size: 9px;
+}
+
+body.admin-app-mode .pwc-assets26-bulk-workspace {
+  display: grid;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+body.admin-app-mode .pwc-assets26-client-options {
+  max-height: 260px;
+}
+
+/* Leads and Sessions become genuine master/detail workspaces on larger screens. */
+body.admin-app-mode .lead-pipeline-workbench {
+  display: grid;
+  grid-template-columns: minmax(290px, 0.42fr) minmax(0, 1.58fr);
+  align-items: start;
+  gap: 14px;
+}
+
+body.admin-app-mode .lead-pipeline-workbench .lead-pipeline-board {
+  position: sticky;
+  top: 18px;
+  display: block;
+  overflow-x: visible;
+  margin: 0;
+  padding: 0;
+}
+
+body.admin-app-mode .lead-pipeline-workbench .lead-pipeline-column {
+  width: 100%;
+}
+
+body.admin-app-mode .lead-pipeline-workbench .lead-pipeline-column-body {
+  max-height: min(64vh, 660px);
+}
+
+body.admin-app-mode .lead-pipeline-workspace {
+  margin-top: 0;
+  border-radius: 18px;
+}
+
+body.admin-app-mode .lead-pipeline-detail-heading,
+body.admin-app-mode .lead-pipeline-panel {
+  padding: 18px;
+}
+
+body.admin-app-mode .lead-pipeline-placeholder {
+  min-height: 280px;
+}
+
+body.admin-app-mode .pwc-scheduler-page {
+  padding-bottom: 52px;
+}
+
+body.admin-app-mode .pwc-scheduler-hero {
+  min-height: 0;
+  border-radius: 20px;
+  padding: 24px 28px;
+}
+
+body.admin-app-mode .pwc-scheduler-section-heading h2 {
+  font-size: clamp(2rem, 3vw, 2.8rem);
+}
+
+body.admin-app-mode .pwc-scheduler-inbox-layout {
+  grid-template-columns: minmax(320px, 0.7fr) minmax(0, 1.3fr);
+  gap: 14px;
+}
+
+body.admin-app-mode .pwc-scheduler-panel {
+  border-radius: 18px;
+}
+
+body.admin-app-mode .pwc-scheduler-request-panel {
+  position: sticky;
+  top: 18px;
+}
+
+body.admin-app-mode .pwc-scheduler-panel-header {
+  min-height: 68px;
+  padding: 16px 18px;
+}
+
+body.admin-app-mode .pwc-scheduler-request-list {
+  max-height: min(65vh, 680px);
+  padding: 10px;
+}
+
+body.admin-app-mode .pwc-scheduler-request-card {
+  grid-template-columns: 40px minmax(0, 1fr);
+  min-height: 72px;
+  gap: 10px;
+  padding: 11px 12px;
+}
+
+body.admin-app-mode .pwc-scheduler-request-meta {
+  grid-column: 2;
+  align-items: center;
+  grid-auto-flow: column;
+  justify-content: start;
+}
+
+body.admin-app-mode .pwc-scheduler-review-body {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  padding: 18px;
+}
+
+body.admin-app-mode .pwc-scheduler-review-intro,
+body.admin-app-mode .pwc-scheduler-detail-grid,
+body.admin-app-mode .pwc-scheduler-notes-form {
+  grid-column: 1 / -1;
+}
+
+/* Inbox no longer creates a full-screen blank canvas when it is empty. */
+body.admin-app-mode .admin-inbox {
+  padding-bottom: 52px;
+}
+
+body.admin-app-mode .admin-inbox__workspace {
+  min-height: 390px;
+  height: min(620px, calc(100vh - 190px));
+  border-radius: 18px;
+}
+
+body.admin-app-mode .admin-inbox__metrics > button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-width: 0;
+  border: 1px solid var(--admin-border);
+  background: rgba(255, 252, 249, 0.82);
+  color: inherit;
+  text-align: left;
+  box-shadow: var(--admin-shadow);
+}
+
+body.admin-app-mode .admin-inbox__metrics > button:hover,
+body.admin-app-mode .admin-inbox__metrics > button.is-attention {
+  border-color: rgba(168, 121, 57, 0.28);
+  background: rgba(200, 169, 106, 0.1);
+  transform: none;
+}
+
+body.admin-app-mode .admin-inbox__workspace:has(.admin-inbox__list .admin-inbox__empty) {
+  height: 390px;
+}
+
+body.admin-app-mode .admin-inbox__empty.is-large {
+  min-height: 260px;
+}
+
+/* Team and automation pages prioritize the selected task over decorative height. */
+body.admin-app-mode .team-management-page {
+  padding-top: 22px;
+  padding-bottom: 52px;
+}
+
+body.admin-app-mode .team-management-hero {
+  min-height: 0;
+  border-radius: 20px;
+  padding: 24px 28px;
+}
+
+body.admin-app-mode .team-management-layout {
+  grid-template-columns: minmax(270px, 0.65fr) minmax(0, 1.35fr);
+  gap: 14px;
+}
+
+body.admin-app-mode :where(.team-directory-panel, .team-workspace-panel) {
+  border-radius: 18px;
+}
+
+body.admin-app-mode .team-directory-list {
+  max-height: min(60vh, 620px);
+}
+
+body.admin-app-mode .team-member-header,
+body.admin-app-mode .team-member-form,
+body.admin-app-mode .team-workspace-panel > form {
+  padding: 18px;
+}
+
+body.admin-app-mode .automation-step-card {
+  padding: 14px;
+}
+
+body.admin-app-mode .automation-step-card textarea {
+  min-height: 82px;
+}
+
+/* Letter creation aligns with the library instead of floating over unused space. */
+body.admin-app-mode .pwc-letters28-page {
+  padding-top: 22px;
+  padding-bottom: 52px;
+}
+
+body.admin-app-mode .pwc-phase35-letter-library {
+  gap: 10px;
+}
+
+body.admin-app-mode .pwc-phase35-create-panel {
+  justify-self: stretch;
+  width: 100%;
+}
+
+body.admin-app-mode .pwc-letters28-empty {
+  min-height: 90px;
+}
+
+/* Founder keeps the calm tone while reducing travel and repeated chrome. */
+body.admin-app-mode .founder-home__topbar {
+  min-height: 62px;
+  padding-block: 9px;
+}
+
+body.admin-app-mode .founder-home__shell {
+  padding-top: 32px;
+  padding-bottom: 58px;
+}
+
+body.admin-app-mode .founder-home__intro {
+  margin-bottom: 20px;
+}
+
+body.admin-app-mode .founder-home__intro h1 {
+  font-size: clamp(2.5rem, 4.4vw, 3.55rem);
+}
+
+body.admin-app-mode .founder-home__task-nav {
+  margin-bottom: 12px;
+}
+
+body.admin-app-mode .founder-home__pulse > article {
+  border-radius: 16px;
+  padding: 15px 17px;
+}
+
+body.admin-app-mode .founder-home__panel {
+  border-radius: 18px;
+  padding: 22px;
+}
+
+@media (max-width: 1180px) {
+  body.admin-app-mode .lead-pipeline-workbench,
+  body.admin-app-mode .pwc-scheduler-inbox-layout,
+  body.admin-app-mode .team-management-layout,
+  body.admin-app-mode .pwc-assets26-workspace {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  body.admin-app-mode .lead-pipeline-workbench .lead-pipeline-board,
+  body.admin-app-mode .pwc-scheduler-request-panel {
+    position: relative;
+    top: auto;
+  }
+
+  body.admin-app-mode .lead-pipeline-workbench .lead-pipeline-board {
+    display: grid;
+    grid-auto-columns: minmax(250px, 0.8fr);
+    grid-auto-flow: column;
+    overflow-x: auto;
+    padding-bottom: 8px;
+  }
+}
+
+@media (max-width: 820px) {
+  body.admin-app-mode :where(
+    .learning-library-header,
+    .membership-circle-header,
+    .circle-admin-header,
+    .automation-studio-header,
+    .onboarding-studio-header,
+    .pwc-assets26-hero,
+    .pwc-letters28-hero,
+    .admin-inbox__header,
+    .lead-pipeline-header
+  ) {
+    grid-template-columns: 1fr;
+    align-items: start;
+    gap: 16px;
+  }
+
+  body.admin-app-mode :where(
+    .learning-library-metrics,
+    .membership-metrics,
+    .circle-admin-metrics,
+    .automation-studio-metrics,
+    .onboarding-studio-metrics,
+    .pwc-assets26-metrics,
+    .admin-inbox__metrics,
+    .lead-pipeline-metrics,
+    .pwc-scheduler-metrics,
+    .team-management-stats
+  ) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  body.admin-app-mode :where(
+    .learning-library-layout,
+    .membership-circle-layout,
+    .circle-admin-layout,
+    .automation-studio-layout,
+    .onboarding-studio-layout
+  ) {
+    grid-template-columns: 1fr;
+  }
+
+  body.admin-app-mode :where(
+    .learning-library-sidebar,
+    .membership-sidebar,
+    .circle-admin-sidebar,
+    .automation-workflow-list,
+    .onboarding-studio-list
+  ) {
+    position: relative;
+    top: auto;
+  }
+
+  body.admin-app-mode .admin-inbox__workspace {
+    height: auto;
+    min-height: 0;
+    grid-template-columns: 1fr;
+  }
+
+  body.admin-app-mode .admin-inbox__list {
+    max-height: 320px;
+    border-right: 0;
+    border-bottom: 1px solid var(--admin-border);
+  }
+
+  body.admin-app-mode .pwc-scheduler-review-body {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 560px) {
+  body.admin-app-mode :where(
+    .learning-library-metrics,
+    .membership-metrics,
+    .circle-admin-metrics,
+    .automation-studio-metrics,
+    .onboarding-studio-metrics,
+    .pwc-assets26-metrics,
+    .admin-inbox__metrics,
+    .lead-pipeline-metrics,
+    .pwc-scheduler-metrics,
+    .team-management-stats
+  ) {
+    grid-template-columns: 1fr;
+  }
+
+  body.admin-app-mode .founder-home__shell {
+    width: min(100% - 24px, 1180px);
+  }
+}
+/* phase-50r1-final-usability-repair-end */

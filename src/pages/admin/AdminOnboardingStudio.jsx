@@ -103,6 +103,7 @@ export default function AdminOnboardingStudio() {
   const [templateForm, setTemplateForm] = useState({ ...emptyTemplate, fields: [emptyField(1)] })
   const [selectedRecordId, setSelectedRecordId] = useState('')
   const [onboardingForm, setOnboardingForm] = useState({ ...emptyOnboarding })
+  const [isOnboardingEditorOpen, setIsOnboardingEditorOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
   const [notice, setNotice] = useState('')
@@ -155,11 +156,6 @@ export default function AdminOnboardingStudio() {
         if (firstTemplate) {
           setSelectedTemplateId(firstTemplate.id)
           setTemplateForm(templateToForm(firstTemplate))
-        }
-        const firstRecord = response.onboardingRecords?.[0]
-        if (firstRecord) {
-          setSelectedRecordId(firstRecord.id)
-          setOnboardingForm(onboardingToForm(firstRecord))
         }
       })
       .catch((loadError) => {
@@ -271,6 +267,7 @@ export default function AdminOnboardingStudio() {
   function selectRecord(record) {
     setSelectedRecordId(record.id)
     setOnboardingForm(onboardingToForm(record))
+    setIsOnboardingEditorOpen(true)
     setError('')
     setNotice('')
   }
@@ -283,6 +280,7 @@ export default function AdminOnboardingStudio() {
       templateId: activeOnboardingTemplates[0]?.id || '',
       assignedToUserId: studio?.team?.[0]?.id || '',
     })
+    setIsOnboardingEditorOpen(true)
   }
 
   async function saveOnboarding(event) {
@@ -433,6 +431,17 @@ export default function AdminOnboardingStudio() {
               {(studio?.onboardingRecords || []).length === 0 && <p className="onboarding-empty">No client onboarding records yet.</p>}
             </aside>
 
+            {!isOnboardingEditorOpen ? (
+              <section className="onboarding-start-card">
+                <span aria-hidden="true">✦</span>
+                <div>
+                  <p className="eyebrow">Client journey</p>
+                  <h2>Start onboarding when a client is ready.</h2>
+                  <p>Choose an existing journey from the left, or begin a focused welcome flow for a new client.</p>
+                </div>
+                <button type="button" onClick={startNewOnboarding}>Start client onboarding</button>
+              </section>
+            ) : (
             <form className="onboarding-template-editor" onSubmit={saveOnboarding}>
               <header><div><p className="eyebrow">Client Journey</p><h2>{selectedRecord?.clientName || 'Start client onboarding'}</h2></div><button type="submit" disabled={isSaving || !onboardingForm.clientId}>{isSaving ? 'Saving...' : 'Save Onboarding'}</button></header>
               <div className="onboarding-form-grid">
@@ -453,6 +462,7 @@ export default function AdminOnboardingStudio() {
                 </section>
               )}
             </form>
+            )}
           </section>
         )}
       </div>

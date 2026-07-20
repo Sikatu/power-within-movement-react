@@ -104,6 +104,7 @@ function AdminAssetVault() {
   const [uploadQueue, setUploadQueue] = useState([])
   const [selectedClientIds, setSelectedClientIds] = useState([])
   const [clientSearch, setClientSearch] = useState('')
+  const [showBulkAssignment, setShowBulkAssignment] = useState(false)
   const [previewUrl, setPreviewUrl] = useState('')
   const [relationships, setRelationships] = useState([])
   const [relatedAssetId, setRelatedAssetId] = useState('')
@@ -146,6 +147,7 @@ function AdminAssetVault() {
     setRelationships(relationshipResponse.relationships || [])
     setPreviewUrl('')
     setSelectedClientIds([])
+    setShowBulkAssignment(false)
     const asset = response.asset || {}
     setMetadataDraft({
       title: asset.title || '',
@@ -374,6 +376,7 @@ function AdminAssetVault() {
       })
       setNotice(response.message || 'Asset assigned to the selected clients.')
       setSelectedClientIds([])
+      setShowBulkAssignment(false)
       await Promise.all([loadSummary(), loadAssets(), loadDetail(selectedAsset.id)])
     } catch (assignError) {
       setError(assignError.message || 'The selected client assignments could not be completed.')
@@ -626,13 +629,28 @@ function AdminAssetVault() {
                 <section className="pwc-assets26-panel">
                   <header><div><p className="pwc-assets26-eyebrow">Client delivery</p><h3>Assignments</h3></div><span>{activeAssignments.length} active</span></header>
                   <div className="pwc-assets26-assignment-form"><select value={assignmentDraft.clientProfileId} onChange={(event) => setAssignmentDraft((current) => ({ ...current, clientProfileId: event.target.value }))}><option value="">Choose a client</option>{clients.map((client) => <option key={client.id} value={client.id}>{clientName(client)}</option>)}</select><input value={assignmentDraft.title} onChange={(event) => setAssignmentDraft((current) => ({ ...current, title: event.target.value }))} placeholder="Client-facing title" /><button type="button" onClick={handleAssign} disabled={!assetUsable || !assignmentDraft.clientProfileId || busy === 'assign'}>{busy === 'assign' ? 'Assigning…' : 'Assign to portal'}</button></div>
-                  <div className="pwc-assets26-client-multi">
-                    <header><div><strong>Choose multiple clients</strong><span>Select only the portals that should receive this resource.</span></div><em>{selectedClientIds.length} selected</em></header>
-                    <div className="pwc-assets26-client-multi-tools"><input type="search" value={clientSearch} onChange={(event) => setClientSearch(event.target.value)} placeholder="Search eligible clients" aria-label="Search eligible clients" /><button type="button" onClick={() => setSelectedClientIds(selectableClients.map((client) => client.id))}>Select shown</button><button type="button" onClick={() => setSelectedClientIds([])}>Clear</button></div>
-                    <div className="pwc-assets26-client-options">{selectableClients.length === 0 ? <p>No unassigned clients match this search.</p> : selectableClients.map((client) => <label key={client.id}><input type="checkbox" checked={selectedClientIds.includes(client.id)} onChange={(event) => setSelectedClientIds((current) => event.target.checked ? [...new Set([...current, client.id])] : current.filter((id) => id !== client.id))} /><span><strong>{clientName(client)}</strong><small>{client.email || 'Private client profile'}</small></span></label>)}</div>
-                    <button type="button" onClick={handleAssignSelected} disabled={!assetUsable || selectedClientIds.length === 0 || busy === 'assign-selected'}>{busy === 'assign-selected' ? 'Assigning selected…' : `Assign ${selectedClientIds.length || ''} selected client${selectedClientIds.length === 1 ? '' : 's'}`}</button>
+                  <div className="pwc-assets26-bulk-disclosure">
+                    <button
+                      type="button"
+                      className="is-secondary"
+                      aria-expanded={showBulkAssignment}
+                      onClick={() => setShowBulkAssignment((current) => !current)}
+                    >
+                      {showBulkAssignment ? 'Hide bulk delivery' : 'Assign multiple clients'}
+                    </button>
+                    <span>{bulkAssignableCount} client{bulkAssignableCount === 1 ? '' : 's'} available</span>
                   </div>
-                  <div className="pwc-assets26-assignment-bulk"><div><strong>Share with every client</strong><span>{bulkAssignableCount > 0 ? `${bulkAssignableCount} of ${eligibleBulkClients.length} eligible clients do not have this resource yet.` : eligibleBulkClients.length > 0 ? 'Every eligible client already has this resource.' : 'No eligible client profiles are available.'}</span><small>Archived profiles and non-client system accounts are excluded.</small></div><button type="button" onClick={handleAssignAll} disabled={!assetUsable || busy === 'assign-all' || eligibleBulkClients.length === 0}>{busy === 'assign-all' ? 'Assigning to all…' : 'Assign to all clients'}</button></div>
+                  {showBulkAssignment && (
+                    <div className="pwc-assets26-bulk-workspace">
+                      <div className="pwc-assets26-client-multi">
+                        <header><div><strong>Choose multiple clients</strong><span>Select only the portals that should receive this resource.</span></div><em>{selectedClientIds.length} selected</em></header>
+                        <div className="pwc-assets26-client-multi-tools"><input type="search" value={clientSearch} onChange={(event) => setClientSearch(event.target.value)} placeholder="Search eligible clients" aria-label="Search eligible clients" /><button type="button" onClick={() => setSelectedClientIds(selectableClients.map((client) => client.id))}>Select shown</button><button type="button" onClick={() => setSelectedClientIds([])}>Clear</button></div>
+                        <div className="pwc-assets26-client-options">{selectableClients.length === 0 ? <p>No unassigned clients match this search.</p> : selectableClients.map((client) => <label key={client.id}><input type="checkbox" checked={selectedClientIds.includes(client.id)} onChange={(event) => setSelectedClientIds((current) => event.target.checked ? [...new Set([...current, client.id])] : current.filter((id) => id !== client.id))} /><span><strong>{clientName(client)}</strong><small>{client.email || 'Private client profile'}</small></span></label>)}</div>
+                        <button type="button" onClick={handleAssignSelected} disabled={!assetUsable || selectedClientIds.length === 0 || busy === 'assign-selected'}>{busy === 'assign-selected' ? 'Assigning selected…' : `Assign ${selectedClientIds.length || ''} selected client${selectedClientIds.length === 1 ? '' : 's'}`}</button>
+                      </div>
+                      <div className="pwc-assets26-assignment-bulk"><div><strong>Share with every client</strong><span>{bulkAssignableCount > 0 ? `${bulkAssignableCount} of ${eligibleBulkClients.length} eligible clients do not have this resource yet.` : eligibleBulkClients.length > 0 ? 'Every eligible client already has this resource.' : 'No eligible client profiles are available.'}</span><small>Archived profiles and non-client system accounts are excluded.</small></div><button type="button" onClick={handleAssignAll} disabled={!assetUsable || busy === 'assign-all' || eligibleBulkClients.length === 0}>{busy === 'assign-all' ? 'Assigning to all…' : 'Assign to all clients'}</button></div>
+                    </div>
+                  )}
                   <div className="pwc-assets26-assignment-list">{activeAssignments.length === 0 ? <p>No active client assignments.</p> : activeAssignments.map((assignment) => <article key={assignment.id}><div><strong>{[assignment.first_name, assignment.last_name].filter(Boolean).join(' ') || assignment.email || 'Client'}</strong><span>{assignment.email || 'Private client profile'}</span><small>Assigned {formatDate(assignment.assigned_at)}</small></div><button type="button" onClick={() => handleUnassign(assignment)} disabled={busy === `unassign-${assignment.id}`}>Remove</button></article>)}</div>
                 </section>
                 )}
