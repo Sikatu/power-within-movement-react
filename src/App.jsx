@@ -42,6 +42,7 @@ import {
   loadAdminOperationsCenter,
   loadAdminScheduler,
   loadAdminSessionChangeRequests,
+  loadAdminStudioProfile,
   loadAdminTeamManagement,
 } from './components/admin/adminRoutePreloaders.js'
 import { signatureExperiences } from './data/signatureExperiences.js'
@@ -105,6 +106,7 @@ const AdminOnboardingStudio = lazy(loadAdminOnboardingStudio)
 const AdminOperationsCenter = lazy(loadAdminOperationsCenter)
 const AdminScheduler = lazy(loadAdminScheduler)
 const AdminSessionChangeRequests = lazy(loadAdminSessionChangeRequests)
+const AdminStudioProfile = lazy(loadAdminStudioProfile)
 const AdminTeamManagement = lazy(loadAdminTeamManagement)
 
 const routeMetadata = {
@@ -555,6 +557,7 @@ function AppShell() {
         <Route path="/admin/clients/:clientId/:section" element={<AdminRouteGuard><AdminClients /></AdminRouteGuard>} />
         <Route path="/admin/scheduler" element={<AdminRouteGuard><AdminScheduler /></AdminRouteGuard>} />
         <Route path="/admin/session-changes" element={<AdminRouteGuard><AdminSessionChangeRequests /></AdminRouteGuard>} />
+        <Route path="/admin/studio-profile" element={<AdminRouteGuard><AdminStudioProfile /></AdminRouteGuard>} />
         <Route path="/admin/inbox" element={<AdminRouteGuard><AdminInbox /></AdminRouteGuard>} />
         <Route path="/admin/email-studio" element={<AdminRouteGuard><AdminMailStudio /></AdminRouteGuard>} />
         <Route path="/admin/letters" element={<AdminRouteGuard><AdminLetters /></AdminRouteGuard>} />

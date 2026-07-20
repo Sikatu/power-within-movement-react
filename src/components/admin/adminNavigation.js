@@ -153,6 +153,7 @@ export const studioGroups = [
     description: 'Programs, assets, and community',
     items: [
       { to: '/admin/encouragements', label: 'Client Messages', module: 'encouragements' },
+      { to: '/admin/studio-profile', label: 'Studio Profile', roles: ['developer', 'owner', 'admin'] },
       { to: '/admin/courses', label: 'Learning Library', module: 'learning' },
       { to: '/admin/assets', label: 'Asset Vault' },
       { to: '/admin/memberships', label: 'Membership Circle', module: 'memberships' },

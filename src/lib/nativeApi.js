@@ -1638,6 +1638,19 @@ export function getAssetVaultDownloadUrl(assetId) {
 export function getAssetVaultPreviewUrl(assetId) {
   return `${API_BASE_URL}/api/admin/assets/${assetId}/preview`
 }
+
+// phase-46-studio-profile-api-start
+export async function getStudioProfile() {
+  return apiRequest('/api/admin/studio-profile')
+}
+
+export async function saveStudioProfile(payload) {
+  return apiRequest('/api/admin/studio-profile', {
+    method: 'PATCH',
+    body: JSON.stringify(payload),
+  })
+}
+// phase-46-studio-profile-api-end
 // phase-26-asset-vault-api-end
 
 // phase-27-newsletter-audience-api-start

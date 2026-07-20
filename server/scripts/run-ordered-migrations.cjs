@@ -26,6 +26,7 @@ const orderedMigrations = [
   'db:migrate-secure-client-inbox',
   'db:migrate-notification-center',
   'db:migrate-client-messages',
+  'db:migrate-studio-profile',
 ]
 
 function main() {

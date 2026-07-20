@@ -51,6 +51,7 @@ export const loadAdminOnboardingStudio = cached(() => import('../../pages/admin/
 export const loadAdminOperationsCenter = cached(() => import('../../pages/admin/AdminOperationsCenter.jsx'))
 export const loadAdminScheduler = cached(() => import('../../pages/admin/AdminScheduler.jsx'))
 export const loadAdminSessionChangeRequests = cached(() => import('../../pages/admin/AdminSessionChangeRequests.jsx'))
+export const loadAdminStudioProfile = cached(() => import('../../pages/admin/AdminStudioProfile.jsx'))
 export const loadAdminTeamManagement = cached(() => import('../../pages/admin/AdminTeamManagement.jsx'))
 
 const routePreloaders = [
@@ -72,6 +73,7 @@ const routePreloaders = [
   { match: (path) => path === '/admin/clients' || path.startsWith('/admin/clients/'), load: loadAdminClients },
   { match: (path) => path === '/admin/scheduler', load: loadAdminScheduler },
   { match: (path) => path === '/admin/session-changes', load: loadAdminSessionChangeRequests },
+  { match: (path) => path === '/admin/studio-profile', load: loadAdminStudioProfile },
   { match: (path) => path === '/admin/inbox', load: loadAdminInbox },
   { match: (path) => path === '/admin/email-studio', load: loadAdminMailStudio },
   { match: (path) => path === '/admin/letters', load: loadAdminLetters },
