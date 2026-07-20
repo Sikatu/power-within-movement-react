@@ -173,7 +173,9 @@ async function notifyDevelopers(errorRow, settings, db = pool) {
       )
       VALUES ($1, 'system', $2, $3, '/admin/developer/errors', 'Review error',
               'application_errors', $4, $5, $6)
-      ON CONFLICT (dedupe_key) DO NOTHING
+      ON CONFLICT (dedupe_key)
+        WHERE dedupe_key IS NOT NULL
+      DO NOTHING
       `,
       [
         developer.id,
@@ -286,7 +288,16 @@ async function captureApplicationError(input = {}, db = pool) {
     )
 
     const row = result.rows[0]
-    await notifyDevelopers(row, settings, db)
+
+    try {
+      await notifyDevelopers(row, settings, db)
+    } catch (notificationError) {
+      console.error(
+        'Developer Error Center persisted an error but could not notify developers:',
+        notificationError.message,
+      )
+    }
+
     return row
   } catch (captureError) {
     console.error('Developer Error Center could not persist an error:', captureError.message)
