@@ -74,6 +74,18 @@ test('short-lived asset grants verify scope, signature, and expiry', () => {
   assert.throws(() => verifySignedGrant(grant.token, { secret: 'phase-26r2-test-secret', now: new Date('2026-07-16T00:01:01.000Z') }), /expired/i)
 })
 
+test('asset grant redemption query avoids PostgreSQL reserved aliases', async () => {
+  const routeSource = await fs.readFile(
+    path.join(__dirname, '..', 'src', 'routes', 'assetVault.routes.js'),
+    'utf8',
+  )
+
+  assert.match(routeSource, /FROM asset_access_grants AS access_grant/)
+  assert.match(routeSource, /FOR UPDATE OF access_grant/)
+  assert.doesNotMatch(routeSource, /asset_access_grants\s+grant\b/)
+  assert.doesNotMatch(routeSource, /\bgrant\.\*/)
+})
+
 test('asset scan abstraction is truthful and gates unsafe states', () => {
   const disabled = getInitialScanState('disabled')
   const configured = getInitialScanState('clamav')

@@ -266,20 +266,20 @@ router.get('/access/:token', async (req, res, next) => {
     const result = await dbClient.query(
       `
       SELECT
-        grant.*,
-        asset.title,
-        asset.original_filename,
-        asset.mime_type,
-        asset.size_bytes,
-        asset.storage_driver,
-        asset.storage_key,
-        asset.status AS asset_status,
-        asset.scan_status
-      FROM asset_access_grants grant
-      JOIN assets asset ON asset.id = grant.asset_id
-      WHERE grant.id = $1 AND grant.asset_id = $2
+        access_grant.*,
+        stored_asset.title,
+        stored_asset.original_filename,
+        stored_asset.mime_type,
+        stored_asset.size_bytes,
+        stored_asset.storage_driver,
+        stored_asset.storage_key,
+        stored_asset.status AS asset_status,
+        stored_asset.scan_status
+      FROM asset_access_grants AS access_grant
+      JOIN assets AS stored_asset ON stored_asset.id = access_grant.asset_id
+      WHERE access_grant.id = $1 AND access_grant.asset_id = $2
       LIMIT 1
-      FOR UPDATE OF grant
+      FOR UPDATE OF access_grant
       `,
       [payload.jti, payload.assetId],
     )
