@@ -2,9 +2,81 @@ const assert = require('node:assert/strict')
 const test = require('node:test')
 
 const {
+  buildErrorTriage,
   captureApplicationError,
   getErrorCenterPersistenceHealth,
+  ignoreSafeTestErrors,
+  listErrors,
 } = require('../src/services/developerErrorCenter.service')
+
+test('Developer Error Center triage prioritizes active incidents and isolates safe tests', () => {
+  const urgent = buildErrorTriage({
+    status: 'open',
+    severity: 'critical',
+    occurrence_count: 3,
+    metadata: {},
+  })
+  assert.equal(urgent.queue, 'urgent')
+  assert.equal(urgent.isUrgent, true)
+  assert.equal(urgent.isRecurring, true)
+  assert.equal(urgent.recommendedStatus, 'investigating')
+
+  const investigating = buildErrorTriage({
+    status: 'investigating',
+    severity: 'medium',
+    occurrence_count: 2,
+    metadata: {},
+  })
+  assert.equal(investigating.queue, 'recurring')
+  assert.equal(investigating.recommendedStatus, 'resolved')
+
+  const safeTest = buildErrorTriage({
+    status: 'open',
+    severity: 'low',
+    occurrence_count: 1,
+    metadata: { safeTest: true },
+  })
+  assert.equal(safeTest.queue, 'tests')
+  assert.equal(safeTest.isSafeTest, true)
+  assert.equal(safeTest.recommendedStatus, 'ignored')
+})
+
+test('Developer Error Center list queries use the requested triage queue', async () => {
+  let captured = null
+  const errors = await listErrors({ queue: 'urgent', limit: 25 }, {
+    async query(sql, params) {
+      captured = { sql, params }
+      return { rows: [] }
+    },
+  })
+
+  assert.deepEqual(errors, [])
+  assert.equal(captured.params[3], 'urgent')
+  assert.equal(captured.params[5], 25)
+  assert.match(captured.sql, /\$4 = 'attention'/)
+  assert.match(captured.sql, /\$4 = 'urgent'/)
+  assert.match(captured.sql, /\$4 = 'recurring'/)
+  assert.match(captured.sql, /\$4 = 'tests'/)
+  assert.match(captured.sql, /\$4 = 'history'/)
+})
+
+test('Developer Error Center safely removes active test noise from attention', async () => {
+  const queries = []
+  const ignoredCount = await ignoreSafeTestErrors('developer-1', {
+    async query(sql, params) {
+      queries.push({ sql, params })
+      if (sql.includes('UPDATE application_errors')) return { rows: [{ id: 'test-1' }], rowCount: 1 }
+      if (sql.includes('INSERT INTO audit_logs')) return { rows: [], rowCount: 1 }
+      throw new Error(`Unexpected query in safe-test cleanup: ${sql}`)
+    },
+  })
+
+  assert.equal(ignoredCount, 1)
+  assert.match(queries[0].sql, /status = 'ignored'/)
+  assert.match(queries[0].sql, /metadata ->> 'safeTest'/)
+  assert.equal(queries[0].params[0], 'developer-1')
+  assert.match(queries[1].sql, /developer_error_safe_tests_ignored/)
+})
 
 test('Developer Error Center writes use the named fingerprint constraint', async () => {
   const queries = []

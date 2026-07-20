@@ -7,6 +7,7 @@ const {
   getErrorCenterPersistenceHealth,
   getErrorCenterSettings,
   getErrorSummary,
+  ignoreSafeTestErrors,
   listErrors,
   runAllErrorChecks,
   saveErrorCenterSettings,
@@ -95,6 +96,21 @@ router.post('/test', async (req, res, next) => {
       metadata: { safeTest: true },
     })
     res.json({ ok: true, error: error ? { id: error.id } : null, message: 'Test error recorded.' })
+  } catch (error) {
+    next(error)
+  }
+})
+
+router.post('/safe-tests/ignore', async (req, res, next) => {
+  try {
+    const ignoredCount = await ignoreSafeTestErrors(req.user.id)
+    res.json({
+      ok: true,
+      ignoredCount,
+      message: ignoredCount === 1
+        ? 'One active safe test was removed from the attention queue.'
+        : `${ignoredCount} active safe tests were removed from the attention queue.`,
+    })
   } catch (error) {
     next(error)
   }

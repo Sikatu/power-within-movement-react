@@ -5,6 +5,7 @@ const { pool } = require('../db/pool')
 const SOURCES = ['backend', 'frontend', 'api', 'database', 'uptime', 'asset', 'schema', 'worker']
 const SEVERITIES = ['low', 'medium', 'high', 'critical']
 const STATUSES = ['open', 'investigating', 'resolved', 'ignored']
+const TRIAGE_QUEUES = ['attention', 'urgent', 'recurring', 'tests', 'history', 'all']
 
 const DEFAULT_SETTINGS = {
   enabled: true,
@@ -317,6 +318,73 @@ async function resolveDetectorError(detectorKey, db = pool) {
   )
 }
 
+function buildErrorTriage(row = {}) {
+  const metadata = row.metadata || {}
+  const status = STATUSES.includes(row.status) ? row.status : 'open'
+  const severity = SEVERITIES.includes(row.severity) ? row.severity : 'medium'
+  const occurrenceCount = Math.max(Number(row.occurrence_count ?? row.occurrenceCount) || 0, 0)
+  const isActive = ['open', 'investigating'].includes(status)
+  const isSafeTest = metadata.safeTest === true || metadata.safeTest === 'true'
+  const isUrgent = isActive && !isSafeTest && ['critical', 'high'].includes(severity)
+  const isRecurring = isActive && !isSafeTest && occurrenceCount > 1
+
+  if (isSafeTest) {
+    return {
+      queue: 'tests',
+      label: 'Safe test',
+      isActive,
+      isSafeTest,
+      isUrgent: false,
+      isRecurring: false,
+      recommendedStatus: isActive ? 'ignored' : null,
+      recommendedAction: isActive
+        ? 'Capture is working. Ignore this test event to remove it from the attention queue.'
+        : 'No action is needed. This test event is already out of the attention queue.',
+    }
+  }
+
+  if (!isActive) {
+    return {
+      queue: 'history',
+      label: 'History',
+      isActive: false,
+      isSafeTest: false,
+      isUrgent: false,
+      isRecurring: false,
+      recommendedStatus: null,
+      recommendedAction: 'No action is needed unless this issue appears again.',
+    }
+  }
+
+  if (status === 'investigating') {
+    return {
+      queue: isUrgent ? 'urgent' : isRecurring ? 'recurring' : 'attention',
+      label: isUrgent ? 'Urgent investigation' : isRecurring ? 'Recurring investigation' : 'Investigating',
+      isActive,
+      isSafeTest: false,
+      isUrgent,
+      isRecurring,
+      recommendedStatus: 'resolved',
+      recommendedAction: 'Confirm the fix and its verification, then mark this issue resolved.',
+    }
+  }
+
+  return {
+    queue: isUrgent ? 'urgent' : isRecurring ? 'recurring' : 'attention',
+    label: isUrgent ? 'Urgent' : isRecurring ? 'Recurring' : 'Needs attention',
+    isActive,
+    isSafeTest: false,
+    isUrgent,
+    isRecurring,
+    recommendedStatus: 'investigating',
+    recommendedAction: isUrgent
+      ? 'Start an investigation now and use the redacted summary for the incident record.'
+      : isRecurring
+        ? 'Review the repeated pattern and move this issue into investigation.'
+        : 'Review the newest occurrence and move this issue into investigation when work begins.',
+  }
+}
+
 function serializeError(row) {
   return {
     id: row.id,
@@ -344,6 +412,7 @@ function serializeError(row) {
     resolvedAt: row.resolved_at,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
+    triage: buildErrorTriage(row),
   }
 }
 
@@ -357,6 +426,24 @@ async function getErrorSummary(db = pool) {
       COUNT(*) FILTER (WHERE status = 'investigating')::int AS investigating,
       COUNT(*) FILTER (WHERE status = 'resolved')::int AS resolved,
       COUNT(*) FILTER (WHERE status = 'ignored')::int AS ignored,
+      COUNT(*) FILTER (
+        WHERE status IN ('open', 'investigating')
+          AND COALESCE(metadata ->> 'safeTest', 'false') <> 'true'
+      )::int AS active,
+      COUNT(*) FILTER (
+        WHERE severity IN ('critical', 'high')
+          AND status IN ('open', 'investigating')
+          AND COALESCE(metadata ->> 'safeTest', 'false') <> 'true'
+      )::int AS urgent,
+      COUNT(*) FILTER (
+        WHERE occurrence_count > 1
+          AND status IN ('open', 'investigating')
+          AND COALESCE(metadata ->> 'safeTest', 'false') <> 'true'
+      )::int AS recurring,
+      COUNT(*) FILTER (
+        WHERE status IN ('open', 'investigating')
+          AND COALESCE(metadata ->> 'safeTest', 'false') = 'true'
+      )::int AS safe_tests,
       COUNT(*) FILTER (
         WHERE severity = 'critical' AND status IN ('open', 'investigating')
       )::int AS critical,
@@ -426,6 +513,7 @@ async function listErrors(options = {}, db = pool) {
   const status = STATUSES.includes(options.status) ? options.status : null
   const severity = SEVERITIES.includes(options.severity) ? options.severity : null
   const source = SOURCES.includes(options.source) ? options.source : null
+  const queue = TRIAGE_QUEUES.includes(options.queue) ? options.queue : null
   const search = clampText(options.search || '', 200).trim() || null
   const limit = Math.min(Math.max(Number(options.limit) || 50, 1), 200)
   const offset = Math.max(Number(options.offset) || 0, 0)
@@ -439,9 +527,32 @@ async function listErrors(options = {}, db = pool) {
       AND ($3::text IS NULL OR source = $3)
       AND (
         $4::text IS NULL
-        OR title ILIKE '%' || $4 || '%'
-        OR message ILIKE '%' || $4 || '%'
-        OR COALESCE(route, '') ILIKE '%' || $4 || '%'
+        OR $4 = 'all'
+        OR (
+          $4 = 'attention'
+          AND status IN ('open', 'investigating')
+          AND COALESCE(metadata ->> 'safeTest', 'false') <> 'true'
+        )
+        OR (
+          $4 = 'urgent'
+          AND severity IN ('critical', 'high')
+          AND status IN ('open', 'investigating')
+          AND COALESCE(metadata ->> 'safeTest', 'false') <> 'true'
+        )
+        OR (
+          $4 = 'recurring'
+          AND occurrence_count > 1
+          AND status IN ('open', 'investigating')
+          AND COALESCE(metadata ->> 'safeTest', 'false') <> 'true'
+        )
+        OR ($4 = 'tests' AND COALESCE(metadata ->> 'safeTest', 'false') = 'true')
+        OR ($4 = 'history' AND status IN ('resolved', 'ignored'))
+      )
+      AND (
+        $5::text IS NULL
+        OR title ILIKE '%' || $5 || '%'
+        OR message ILIKE '%' || $5 || '%'
+        OR COALESCE(route, '') ILIKE '%' || $5 || '%'
       )
     ORDER BY
       CASE severity
@@ -457,9 +568,9 @@ async function listErrors(options = {}, db = pool) {
         ELSE 3
       END,
       last_seen_at DESC
-    LIMIT $5 OFFSET $6
+    LIMIT $6 OFFSET $7
     `,
-    [status, severity, source, search, limit, offset],
+    [status, severity, source, queue, search, limit, offset],
   )
 
   return result.rows.map(serializeError)
@@ -490,6 +601,39 @@ async function updateErrorStatus(errorId, status, actorUserId, db = pool) {
   )
 
   return result.rows[0] ? serializeError(result.rows[0]) : null
+}
+
+async function ignoreSafeTestErrors(actorUserId, db = pool) {
+  if (!db) throw new Error('Database is not configured.')
+
+  const result = await db.query(
+    `
+    UPDATE application_errors
+    SET
+      status = 'ignored',
+      status_updated_at = now(),
+      status_updated_by = $1,
+      resolved_at = NULL
+    WHERE status IN ('open', 'investigating')
+      AND COALESCE(metadata ->> 'safeTest', 'false') = 'true'
+    RETURNING id
+    `,
+    [actorUserId || null],
+  )
+
+  try {
+    await db.query(
+      `
+      INSERT INTO audit_logs (actor_user_id, action, entity_type, after_data)
+      VALUES ($1, 'developer_error_safe_tests_ignored', 'application_errors', $2::jsonb)
+      `,
+      [actorUserId || null, JSON.stringify({ ignoredCount: result.rowCount })],
+    )
+  } catch (auditError) {
+    console.error('Developer Error Center safe-test cleanup could not write its audit event:', auditError.message)
+  }
+
+  return result.rowCount
 }
 
 async function deleteError(errorId, db = pool) {
@@ -730,6 +874,8 @@ module.exports = {
   SEVERITIES,
   SOURCES,
   STATUSES,
+  TRIAGE_QUEUES,
+  buildErrorTriage,
   captureApplicationError,
   cleanupErrors,
   createFingerprint,
@@ -738,6 +884,7 @@ module.exports = {
   getErrorCenterPersistenceHealth,
   getErrorCenterSettings,
   getErrorSummary,
+  ignoreSafeTestErrors,
   installProcessErrorHandlers,
   listErrors,
   normalizeSettings,

@@ -1459,6 +1459,12 @@ export async function createDeveloperErrorTest() {
   })
 }
 
+export async function ignoreDeveloperSafeTestErrors() {
+  return apiRequest('/api/admin/developer/errors/safe-tests/ignore', {
+    method: 'POST',
+  })
+}
+
 // phase-26-asset-vault-api-start
 function encodeAssetHeader(value) {
   return encodeURIComponent(String(value || ''))
