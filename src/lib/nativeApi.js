@@ -1422,6 +1422,7 @@ export async function getDeveloperErrorCenter(query = '') {
   return {
     summary: summary.summary,
     settings: summary.settings,
+    persistence: summary.persistence,
     errors: errors.errors || [],
   }
 }

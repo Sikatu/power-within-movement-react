@@ -229,7 +229,7 @@ async function captureApplicationError(input = {}, db = pool) {
         $1, $2, $3, $4, 'open', $5, $6, $7, $8, $9, $10, $11,
         $12, $13, $14, $15, $16::jsonb
       )
-      ON CONFLICT (fingerprint)
+      ON CONFLICT ON CONSTRAINT application_errors_fingerprint_unique
       DO UPDATE SET
         detector_key = COALESCE(EXCLUDED.detector_key, application_errors.detector_key),
         source = EXCLUDED.source,
@@ -370,6 +370,42 @@ async function getErrorSummary(db = pool) {
   return {
     ...result.rows[0],
     bySource: sourceResult.rows,
+  }
+}
+
+async function getErrorCenterPersistenceHealth(db = pool) {
+  if (!db) throw new Error('Database is not configured.')
+
+  const result = await db.query(`
+    SELECT
+      EXISTS (
+        SELECT 1
+        FROM pg_constraint constraint_record
+        JOIN pg_class table_record
+          ON table_record.oid = constraint_record.conrelid
+        JOIN pg_namespace schema_record
+          ON schema_record.oid = table_record.relnamespace
+        JOIN pg_attribute attribute_record
+          ON attribute_record.attrelid = table_record.oid
+         AND attribute_record.attname = 'fingerprint'
+        WHERE schema_record.nspname = current_schema()
+          AND table_record.relname = 'application_errors'
+          AND constraint_record.conname = 'application_errors_fingerprint_unique'
+          AND constraint_record.contype = 'u'
+          AND constraint_record.convalidated
+          AND NOT constraint_record.condeferrable
+          AND constraint_record.conkey = ARRAY[attribute_record.attnum]::smallint[]
+      ) AS constraint_ready,
+      (SELECT MAX(last_seen_at) FROM application_errors) AS last_captured_at
+  `)
+
+  const row = result.rows[0] || {}
+  const constraintReady = Boolean(row.constraint_ready)
+
+  return {
+    status: constraintReady ? 'ready' : 'repair_required',
+    constraintReady,
+    lastCapturedAt: row.last_captured_at || null,
   }
 }
 
@@ -688,6 +724,7 @@ module.exports = {
   createFingerprint,
   deleteError,
   getErrorById,
+  getErrorCenterPersistenceHealth,
   getErrorCenterSettings,
   getErrorSummary,
   installProcessErrorHandlers,

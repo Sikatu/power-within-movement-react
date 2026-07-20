@@ -34,7 +34,7 @@ if (!migration.includes('application_errors_fingerprint_unique') || !migration.i
   failures.push('Developer Error Center migration does not repair the fingerprint uniqueness contract')
 }
 
-if (!service.includes('ON CONFLICT (fingerprint)')) {
+if (!service.includes('ON CONFLICT ON CONSTRAINT application_errors_fingerprint_unique')) {
   failures.push('Developer Error Center no longer deduplicates persisted reports by fingerprint')
 }
 

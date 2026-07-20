@@ -77,6 +77,7 @@ export default function AdminDeveloperErrors({ embedded = false }) {
   const errors = useMemo(() => snapshot?.errors || [], [snapshot])
   const selected = errors.find((item) => item.id === selectedId) || null
   const summary = snapshot?.summary || {}
+  const persistence = snapshot?.persistence || null
   const hasActiveFilters = Boolean(
     filters.status || filters.severity || filters.source || filters.search.trim(),
   )
@@ -139,14 +140,26 @@ export default function AdminDeveloperErrors({ embedded = false }) {
               </div>
             </div>
 
-            {monitoringSettings && (
+            {(monitoringSettings || persistence) && (
               <div className="error-center-health-strip" aria-label="Monitoring status">
-                <span className={monitoringSettings.enabled ? 'is-active' : 'is-paused'}>
-                  <i aria-hidden="true" />
-                  {monitoringSettings.enabled ? 'Monitoring active' : 'Monitoring paused'}
-                </span>
-                <span>Checks every {monitoringSettings.uptimeIntervalMinutes} min</span>
-                <span>{monitoringSettings.retentionDays}-day retention</span>
+                {persistence && (
+                  <span className={persistence.status === 'ready' ? 'is-active' : 'is-paused'}>
+                    <i aria-hidden="true" />
+                    {persistence.status === 'ready'
+                      ? 'Capture storage ready'
+                      : 'Capture storage needs repair'}
+                  </span>
+                )}
+                {monitoringSettings && (
+                  <>
+                    <span className={monitoringSettings.enabled ? 'is-active' : 'is-paused'}>
+                      <i aria-hidden="true" />
+                      {monitoringSettings.enabled ? 'Monitoring active' : 'Monitoring paused'}
+                    </span>
+                    <span>Checks every {monitoringSettings.uptimeIntervalMinutes} min</span>
+                    <span>{monitoringSettings.retentionDays}-day retention</span>
+                  </>
+                )}
               </div>
             )}
           </div>

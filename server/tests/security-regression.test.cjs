@@ -78,5 +78,13 @@ test('Developer Error Center migration repairs legacy fingerprint uniqueness', (
   )
 
   assert.match(migrationSource, /pwc_application_error_fingerprint_repair/)
-  assert.match(migrationSource, /UNIQUE \(fingerprint\)/)
+  assert.match(
+    migrationSource,
+    /ADD CONSTRAINT application_errors_fingerprint_unique[\s\S]*UNIQUE \(fingerprint\) NOT DEFERRABLE/,
+  )
+  assert.match(
+    migrationSource,
+    /ON CONFLICT ON CONSTRAINT application_errors_fingerprint_unique/,
+  )
+  assert.match(migrationSource, /Developer Error Center fingerprint deduplication probe failed/)
 })

@@ -4,6 +4,7 @@ const { requireAuth, requireRole } = require('../middleware/auth.middleware')
 const {
   deleteError,
   getErrorById,
+  getErrorCenterPersistenceHealth,
   getErrorCenterSettings,
   getErrorSummary,
   listErrors,
@@ -32,11 +33,12 @@ const settingsSchema = z.object({
 
 router.get('/summary', async (req, res, next) => {
   try {
-    const [summary, settings] = await Promise.all([
+    const [summary, settings, persistence] = await Promise.all([
       getErrorSummary(),
       getErrorCenterSettings(),
+      getErrorCenterPersistenceHealth(),
     ])
-    res.json({ ok: true, summary, settings })
+    res.json({ ok: true, summary, settings, persistence })
   } catch (error) {
     next(error)
   }
