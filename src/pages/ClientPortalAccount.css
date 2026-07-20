@@ -1,0 +1,366 @@
+/* phase-43-client-account-foundation-start */
+.account-workspace {
+  max-width: 1080px;
+}
+
+.account-page-intro {
+  padding-bottom: 30px;
+}
+
+.account-task-switcher {
+  margin-bottom: 20px;
+}
+
+.account-panel {
+  padding: clamp(25px, 4vw, 42px);
+}
+
+.account-panel-heading {
+  align-items: flex-start;
+  border-bottom: 1px solid rgba(83, 29, 47, 0.1);
+  display: flex;
+  gap: 28px;
+  justify-content: space-between;
+  margin-bottom: 28px;
+  padding-bottom: 24px;
+}
+
+.account-panel-heading .eyebrow,
+.account-empty .eyebrow {
+  color: #ae6b43;
+  font-size: 0.66rem;
+  letter-spacing: 0.17em;
+  margin: 0 0 7px;
+  text-transform: uppercase;
+}
+
+.account-panel-heading h2,
+.account-empty h2 {
+  color: #48172a;
+  font-family: var(--font-display);
+  font-size: clamp(1.9rem, 3.5vw, 2.65rem);
+  font-weight: 500;
+  line-height: 1;
+  margin: 0;
+}
+
+.account-panel-heading > div > p:last-child,
+.account-empty > p:last-child {
+  color: #7d606c;
+  line-height: 1.65;
+  margin: 10px 0 0;
+  max-width: 660px;
+}
+
+.account-panel-heading > span {
+  background: #f3e8dc;
+  border-radius: 999px;
+  color: #8c5838;
+  flex: 0 0 auto;
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  max-width: 230px;
+  padding: 8px 11px;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.account-form-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.account-form-grid label:first-child {
+  grid-column: 1 / -1;
+}
+
+.account-form-grid label > small,
+.account-field > small {
+  color: #987a85;
+  font-size: 0.7rem;
+  line-height: 1.45;
+}
+
+.account-form-grid > button {
+  grid-column: 1 / -1;
+}
+
+.account-onboarding-fields {
+  display: grid;
+  gap: 21px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.account-field {
+  align-content: start;
+  display: grid;
+  gap: 8px;
+}
+
+.account-field:has(textarea),
+.account-choice-field,
+.account-consent-field {
+  grid-column: 1 / -1;
+}
+
+.account-field > span,
+.account-choice-field legend {
+  color: #5f3343;
+  font-size: 0.73rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.account-field input,
+.account-field select,
+.account-field textarea {
+  background: #fffefa;
+  border: 1px solid rgba(82, 31, 48, 0.23);
+  border-radius: 12px;
+  color: #421426;
+  font: inherit;
+  line-height: 1.45;
+  outline: none;
+  padding: 13px 14px;
+  resize: vertical;
+  width: 100%;
+}
+
+.account-field input:focus,
+.account-field select:focus,
+.account-field textarea:focus {
+  border-color: #9e593c;
+  box-shadow: 0 0 0 3px rgba(158, 89, 60, 0.11);
+}
+
+.account-choice-field {
+  border: 0;
+  margin: 0;
+  padding: 0;
+}
+
+.account-choice-field > p {
+  color: #987a85;
+  font-size: 0.7rem;
+  line-height: 1.45;
+  margin: 5px 0 10px;
+}
+
+.account-choice-field > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+}
+
+.account-choice-field label,
+.account-consent-field {
+  align-items: flex-start;
+  background: #faf5f0;
+  border: 1px solid rgba(83, 29, 47, 0.12);
+  border-radius: 13px;
+  color: #684252;
+  cursor: pointer;
+  display: flex;
+  gap: 10px;
+  padding: 12px 14px;
+}
+
+.account-choice-field label input,
+.account-consent-field > input {
+  accent-color: #57172f;
+  flex: 0 0 auto;
+  margin-top: 3px;
+}
+
+.account-consent-field > span {
+  display: grid;
+  gap: 3px;
+}
+
+.account-consent-field strong {
+  color: #4d1a2d;
+  font-size: 0.82rem;
+}
+
+.account-consent-field small {
+  color: #8f717c;
+  font-size: 0.7rem;
+  line-height: 1.5;
+}
+
+.account-form-actions {
+  align-items: center;
+  border-top: 1px solid rgba(83, 29, 47, 0.1);
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 26px;
+  padding-top: 22px;
+}
+
+.account-form-actions > button:not(.portal-primary-button) {
+  background: transparent;
+  border: 1px solid rgba(83, 29, 47, 0.18);
+  border-radius: 999px;
+  color: #5b2638;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  min-height: 48px;
+  padding: 0 21px;
+  text-transform: uppercase;
+}
+
+.account-form-actions > button:disabled {
+  cursor: wait;
+  opacity: 0.48;
+}
+
+.account-private-note {
+  color: #987a85;
+  font-size: 0.7rem;
+  line-height: 1.55;
+  margin: 14px 0 0;
+  text-align: right;
+}
+
+.account-empty {
+  padding: 20px 4px;
+}
+
+.account-response-review {
+  display: grid;
+  gap: 0;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: 0;
+}
+
+.account-response-review > div {
+  border-top: 1px solid rgba(83, 29, 47, 0.09);
+  padding: 17px 15px 17px 0;
+}
+
+.account-response-review > div:nth-child(even) {
+  padding-left: 18px;
+}
+
+.account-response-review dt {
+  color: #a36a48;
+  font-size: 0.61rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.account-response-review dd {
+  color: #5d3b49;
+  line-height: 1.6;
+  margin: 6px 0 0;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+.account-password-form {
+  max-width: 680px;
+}
+
+.account-password-checks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.account-password-checks span {
+  background: #f7f0ea;
+  border: 1px solid rgba(83, 29, 47, 0.1);
+  border-radius: 999px;
+  color: #9a7b87;
+  font-size: 0.68rem;
+  padding: 7px 10px;
+}
+
+.account-password-checks span.is-complete {
+  background: rgba(72, 112, 83, 0.1);
+  border-color: rgba(72, 112, 83, 0.2);
+  color: #42664b;
+}
+
+.account-security-note {
+  background: #f6eee7;
+  border-left: 3px solid #bc8254;
+  border-radius: 5px 14px 14px 5px;
+  margin-top: 30px;
+  padding: 17px 19px;
+}
+
+.account-security-note strong {
+  color: #4d1a2d;
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  font-weight: 500;
+}
+
+.account-security-note p {
+  color: #7b5e69;
+  font-size: 0.76rem;
+  line-height: 1.6;
+  margin: 5px 0 0;
+}
+
+@media (max-width: 720px) {
+  .account-task-switcher {
+    overflow-x: auto;
+  }
+
+  .account-task-switcher button {
+    flex: 0 0 auto;
+  }
+
+  .account-panel {
+    padding: 24px 18px;
+  }
+
+  .account-panel-heading {
+    display: grid;
+    gap: 14px;
+  }
+
+  .account-panel-heading > span {
+    justify-self: start;
+  }
+
+  .account-form-grid,
+  .account-onboarding-fields,
+  .account-response-review {
+    grid-template-columns: 1fr;
+  }
+
+  .account-form-grid label:first-child,
+  .account-form-grid > button,
+  .account-field:has(textarea),
+  .account-choice-field,
+  .account-consent-field {
+    grid-column: auto;
+  }
+
+  .account-response-review > div:nth-child(even) {
+    padding-left: 0;
+  }
+
+  .account-form-actions {
+    align-items: stretch;
+    flex-direction: column-reverse;
+  }
+
+  .account-form-actions > button,
+  .account-password-form > button {
+    justify-content: center;
+    width: 100%;
+  }
+
+  .account-private-note {
+    text-align: left;
+  }
+}
+/* phase-43-client-account-foundation-end */

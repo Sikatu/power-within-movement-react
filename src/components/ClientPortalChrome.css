@@ -333,3 +333,25 @@ body.client-workspace-mode #root > .site-footer {
   }
 }
 /* phase-40-client-portal-streamlining-end */
+
+/* phase-43-client-account-link-start */
+.portal-chrome-account > a[aria-current='page'] {
+  color: #9d5f3c;
+  font-weight: 700;
+}
+
+@media (max-width: 720px) {
+  .portal-chrome-account {
+    gap: 10px;
+  }
+
+  .portal-chrome-account > a,
+  .portal-chrome-account > button {
+    font-size: 0.63rem;
+  }
+
+  .portal-chrome-account > button {
+    padding-left: 10px;
+  }
+}
+/* phase-43-client-account-link-end */

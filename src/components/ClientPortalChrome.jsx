@@ -62,6 +62,7 @@ function ClientPortalChrome({ client, loggingOut, messageCount = 0, onLogout }) 
             <small>Signed in as</small>
             <strong>{client?.name || client?.email || 'Client'}</strong>
           </span>
+          <NavLink to="/client-portal/account">Account</NavLink>
           <Link to="/">Website</Link>
           <button type="button" onClick={onLogout} disabled={loggingOut}>
             {loggingOut ? 'Signing out…' : 'Sign Out'}

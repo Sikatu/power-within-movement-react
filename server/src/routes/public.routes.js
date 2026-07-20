@@ -2341,6 +2341,7 @@ router.patch('/client-portal/profile', requireClientPortalUser, async (req, res,
 
 router.post(
   '/client-portal/change-password',
+  passwordChangeRateLimit,
   requireClientPortalUser,
   async (req, res, next) => {
     const bcrypt = require('bcryptjs')
