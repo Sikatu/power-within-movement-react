@@ -15,8 +15,8 @@ const requiredFiles = [
   'public/terms-and-conditions-2026.pdf',
 ]
 const requiredAppTokens = [
-  "import PrivacyPolicy from './pages/PrivacyPolicy.jsx'",
-  "import TermsAndConditions from './pages/TermsAndConditions.jsx'",
+  "const PrivacyPolicy = lazy(() => import('./pages/PrivacyPolicy.jsx'))",
+  "const TermsAndConditions = lazy(() => import('./pages/TermsAndConditions.jsx'))",
   "'/privacy-policy': {",
   "'/terms-and-conditions': {",
   '<Route path="/privacy-policy" element={<PrivacyPolicy />} />',

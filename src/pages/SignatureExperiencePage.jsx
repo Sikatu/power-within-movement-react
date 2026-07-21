@@ -1,8 +1,11 @@
 import { Link } from 'react-router-dom'
 import SignatureExperienceNav from '../components/SignatureExperienceNav.jsx'
+import { signatureExperiences } from '../data/signatureExperiences.js'
 import './SignatureExperiences.css'
 
-function SignatureExperiencePage({ experience, activePath }) {
+function SignatureExperiencePage({ experienceKey, activePath }) {
+  const experience = signatureExperiences[experienceKey]
+
   return (
     <main id="main-content" className="signature-page">
       <section className="signature-family-hero section-shell">
