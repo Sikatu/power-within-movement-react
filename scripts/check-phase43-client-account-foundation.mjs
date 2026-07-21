@@ -12,7 +12,7 @@ const packageSource = read('package.json')
 const failures = []
 
 const requiredTokens = [
-  [appSource, "import ClientPortalAccount from './pages/ClientPortalAccount.jsx'", 'Account page import'],
+  [appSource, "const ClientPortalAccount = lazy(() => import('./pages/ClientPortalAccount.jsx'))", 'deferred Account page import'],
   [appSource, "'/client-portal/account': {", 'private Account metadata'],
   [appSource, '<Route path="/client-portal/account" element={<ClientPortalAccount />} />', 'private Account route'],
   [chromeSource, '<NavLink to="/client-portal/account">Account</NavLink>', 'global Account access'],

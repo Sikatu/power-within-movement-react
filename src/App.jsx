@@ -45,32 +45,8 @@ import {
   loadAdminStudioProfile,
   loadAdminTeamManagement,
 } from './components/admin/adminRoutePreloaders.js'
-import { signatureExperiences } from './data/signatureExperiences.js'
-import About from './pages/About.jsx'
-import Contact from './pages/Contact.jsx'
-import ClientPortalInvite from './pages/ClientPortalInvite.jsx'
-import ClientPortalLogin from './pages/ClientPortalLogin.jsx'
-import ClientPortalAccount from './pages/ClientPortalAccount.jsx'
-import ClientPortalDashboard from './pages/ClientPortalDashboard.jsx'
-import ClientPortalCircle from './pages/ClientPortalCircle.jsx'
-import ClientPortalJourney from './pages/ClientPortalJourney.jsx'
-import ClientPortalLearning from './pages/ClientPortalLearning.jsx'
-import ClientPortalMembership from './pages/ClientPortalMembership.jsx'
-import ClientPortalMessages from './pages/ClientPortalMessages.jsx'
-import ClientPortalResources from './pages/ClientPortalResources.jsx'
-import ClientPortalSessions from './pages/ClientPortalSessions.jsx'
-import Experiences from './pages/Experiences.jsx'
 import Home from './pages/Home.jsx'
 import NotFound from './pages/NotFound.jsx'
-import Podcast from './pages/Podcast.jsx'
-import PrivacyPolicy from './pages/PrivacyPolicy.jsx'
-import Professionals from './pages/Professionals.jsx'
-import RadianceReclaimed from './pages/RadianceReclaimed.jsx'
-import ResourceArticle from './pages/ResourceArticle.jsx'
-import Resources from './pages/Resources.jsx'
-import SignatureExperiencePage from './pages/SignatureExperiencePage.jsx'
-import TeenPrograms from './pages/TeenPrograms.jsx'
-import TermsAndConditions from './pages/TermsAndConditions.jsx'
 
 const AdminAssetVault = lazy(loadAdminAssetVault)
 const AdminAudience = lazy(loadAdminAudience)
@@ -108,6 +84,33 @@ const AdminScheduler = lazy(loadAdminScheduler)
 const AdminSessionChangeRequests = lazy(loadAdminSessionChangeRequests)
 const AdminStudioProfile = lazy(loadAdminStudioProfile)
 const AdminTeamManagement = lazy(loadAdminTeamManagement)
+
+// Keep the home route instant, while loading secondary public and authenticated
+// portal experiences only when someone visits them. The shared Suspense boundary
+// already provides a branded, accessible loading state during route transitions.
+const About = lazy(() => import('./pages/About.jsx'))
+const Contact = lazy(() => import('./pages/Contact.jsx'))
+const ClientPortalInvite = lazy(() => import('./pages/ClientPortalInvite.jsx'))
+const ClientPortalLogin = lazy(() => import('./pages/ClientPortalLogin.jsx'))
+const ClientPortalAccount = lazy(() => import('./pages/ClientPortalAccount.jsx'))
+const ClientPortalDashboard = lazy(() => import('./pages/ClientPortalDashboard.jsx'))
+const ClientPortalCircle = lazy(() => import('./pages/ClientPortalCircle.jsx'))
+const ClientPortalJourney = lazy(() => import('./pages/ClientPortalJourney.jsx'))
+const ClientPortalLearning = lazy(() => import('./pages/ClientPortalLearning.jsx'))
+const ClientPortalMembership = lazy(() => import('./pages/ClientPortalMembership.jsx'))
+const ClientPortalMessages = lazy(() => import('./pages/ClientPortalMessages.jsx'))
+const ClientPortalResources = lazy(() => import('./pages/ClientPortalResources.jsx'))
+const ClientPortalSessions = lazy(() => import('./pages/ClientPortalSessions.jsx'))
+const Experiences = lazy(() => import('./pages/Experiences.jsx'))
+const Podcast = lazy(() => import('./pages/Podcast.jsx'))
+const PrivacyPolicy = lazy(() => import('./pages/PrivacyPolicy.jsx'))
+const Professionals = lazy(() => import('./pages/Professionals.jsx'))
+const RadianceReclaimed = lazy(() => import('./pages/RadianceReclaimed.jsx'))
+const ResourceArticle = lazy(() => import('./pages/ResourceArticle.jsx'))
+const Resources = lazy(() => import('./pages/Resources.jsx'))
+const SignatureExperiencePage = lazy(() => import('./pages/SignatureExperiencePage.jsx'))
+const TeenPrograms = lazy(() => import('./pages/TeenPrograms.jsx'))
+const TermsAndConditions = lazy(() => import('./pages/TermsAndConditions.jsx'))
 
 const routeMetadata = {
   '/': {
@@ -508,9 +511,9 @@ function AppShell() {
           <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/experiences" element={<Experiences />} />
-        <Route path="/color-analysis" element={<SignatureExperiencePage experience={signatureExperiences.color} activePath="/color-analysis" />} />
-        <Route path="/style-analysis" element={<SignatureExperiencePage experience={signatureExperiences.style} activePath="/style-analysis" />} />
-        <Route path="/blend-cosmetics" element={<SignatureExperiencePage experience={signatureExperiences.makeup} activePath="/blend-cosmetics" />} />
+        <Route path="/color-analysis" element={<SignatureExperiencePage experienceKey="color" activePath="/color-analysis" />} />
+        <Route path="/style-analysis" element={<SignatureExperiencePage experienceKey="style" activePath="/style-analysis" />} />
+        <Route path="/blend-cosmetics" element={<SignatureExperiencePage experienceKey="makeup" activePath="/blend-cosmetics" />} />
         <Route path="/radiance-reclaimed" element={<RadianceReclaimed />} />
         <Route path="/resources" element={<Resources />} />
         <Route path="/resources/:slug" element={<ResourceArticle />} />
