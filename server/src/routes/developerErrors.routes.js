@@ -4,8 +4,10 @@ const { requireAuth, requireRole } = require('../middleware/auth.middleware')
 const {
   deleteError,
   getErrorById,
+  getErrorCenterPersistenceHealth,
   getErrorCenterSettings,
   getErrorSummary,
+  ignoreSafeTestErrors,
   listErrors,
   runAllErrorChecks,
   saveErrorCenterSettings,
@@ -32,11 +34,12 @@ const settingsSchema = z.object({
 
 router.get('/summary', async (req, res, next) => {
   try {
-    const [summary, settings] = await Promise.all([
+    const [summary, settings, persistence] = await Promise.all([
       getErrorSummary(),
       getErrorCenterSettings(),
+      getErrorCenterPersistenceHealth(),
     ])
-    res.json({ ok: true, summary, settings })
+    res.json({ ok: true, summary, settings, persistence })
   } catch (error) {
     next(error)
   }
@@ -93,6 +96,21 @@ router.post('/test', async (req, res, next) => {
       metadata: { safeTest: true },
     })
     res.json({ ok: true, error: error ? { id: error.id } : null, message: 'Test error recorded.' })
+  } catch (error) {
+    next(error)
+  }
+})
+
+router.post('/safe-tests/ignore', async (req, res, next) => {
+  try {
+    const ignoredCount = await ignoreSafeTestErrors(req.user.id)
+    res.json({
+      ok: true,
+      ignoredCount,
+      message: ignoredCount === 1
+        ? 'One active safe test was removed from the attention queue.'
+        : `${ignoredCount} active safe tests were removed from the attention queue.`,
+    })
   } catch (error) {
     next(error)
   }

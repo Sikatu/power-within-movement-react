@@ -100,6 +100,7 @@ function ClientPortalSessions() {
   const [status, setStatus] = useState({ loading: true, saving: false, error: '', message: '' })
   const [loggingOut, setLoggingOut] = useState(false)
   const [portalNow] = useState(() => Date.now())
+  const [sessionView, setSessionView] = useState('manage')
 
   useEffect(() => {
     document.body.classList.add('client-workspace-mode')
@@ -275,8 +276,8 @@ function ClientPortalSessions() {
       <div className="portal-workspace-inner">
         <header className="portal-page-intro">
           <p className="eyebrow">Sessions</p>
-          <h1>Book and manage your time with Kim.</h1>
-          <p>Choose an available session, review what is coming up, or request a thoughtful change.</p>
+          <h1>Your time with Kim.</h1>
+          <p>Manage what is coming up or book a new session—one task at a time.</p>
         </header>
 
         {(status.error || status.message) && (
@@ -288,94 +289,105 @@ function ClientPortalSessions() {
         {status.loading ? (
           <div className="portal-loading" role="status">Preparing your sessions…</div>
         ) : (
-          <div className="session-grid">
-            <section className="portal-card session-booking-card">
-              <div className="portal-card-heading">
-                <div><p className="eyebrow">Book Time</p><h2>Request a new session</h2></div>
-                <span>Eastern Time</span>
-              </div>
+          <div className="session-workspace-focused">
+            <div className="portal-task-switcher" role="group" aria-label="Session tasks">
+              <button type="button" aria-pressed={sessionView === 'manage'} className={sessionView === 'manage' ? 'is-active' : ''} onClick={() => setSessionView('manage')}>Upcoming <span>{upcomingBookings.length}</span></button>
+              <button type="button" aria-pressed={sessionView === 'book'} className={sessionView === 'book' ? 'is-active' : ''} onClick={() => setSessionView('book')}>Book a session</button>
+            </div>
 
-              {appointmentTypes.length === 0 ? (
-                <div className="portal-empty"><strong>Booking will open soon.</strong><p>Kim has not published any appointment types yet.</p></div>
-              ) : (
-                <form className="portal-form" onSubmit={handleBook}>
-                  <label>
-                    <span>What would you like to book?</span>
-                    <select value={selectedTypeId} onChange={(event) => setSelectedTypeId(event.target.value)}>
-                      {appointmentTypes.map((type) => <option key={type.id} value={type.id}>{type.name} · {type.duration_minutes} min</option>)}
-                    </select>
-                  </label>
-                  <label>
-                    <span>Choose a day</span>
-                    <select value={selectedDate} onChange={(event) => { setSelectedDate(event.target.value); setSelectedSlot(null) }}>
-                      {availability.length === 0 && <option value="">No open dates currently</option>}
-                      {availability.map((day) => <option key={day.date} value={day.date}>{formatDate(day.date)}</option>)}
-                    </select>
-                  </label>
-                  <fieldset className="session-slots">
-                    <legend>Available times</legend>
-                    {selectedDay?.slots?.length ? selectedDay.slots.map((slot) => (
-                      <button key={slot.startsAt} type="button" className={selectedSlot?.startsAt === slot.startsAt ? 'is-selected' : ''} onClick={() => setSelectedSlot(slot)}>
-                        {formatTime(slot.startsAt)}
-                      </button>
-                    )) : <p>No times are open for this day.</p>}
-                  </fieldset>
-                  <label>
-                    <span>Anything Kim should know? <em>Optional</em></span>
-                    <textarea rows="4" value={bookingNote} onChange={(event) => setBookingNote(event.target.value)} placeholder="Share a short note about what you would like support with." />
-                  </label>
-                  <button className="portal-primary-button" type="submit" disabled={status.saving || !selectedSlot}>
-                    {status.saving ? 'Sending…' : 'Request This Session'}
-                  </button>
-                </form>
-              )}
-            </section>
+            {sessionView === 'book' ? (
+              <section className="portal-card session-booking-card session-focus-panel">
+                <div className="portal-card-heading">
+                  <div><p className="eyebrow">Book Time</p><h2>Request a new session</h2></div>
+                  <span>Eastern Time</span>
+                </div>
 
-            <section className="session-upcoming-card">
-              <div className="portal-card-heading">
-                <div><p className="eyebrow">Coming Up</p><h2>Your sessions</h2></div>
-                <span>{upcomingBookings.length} scheduled</span>
-              </div>
-              {upcomingBookings.length === 0 ? (
-                <div className="portal-empty is-dark"><strong>No upcoming sessions yet.</strong><p>Choose an available time whenever you are ready.</p></div>
-              ) : upcomingBookings.map((booking) => {
-                const pending = pendingRequestForBooking(booking.id)
-                return (
-                  <article className="session-upcoming-item" key={booking.id}>
-                    <span className="portal-status-pill">{readable(booking.status)}</span>
-                    <h3>{booking.appointment_type_name || 'Private Session'}</h3>
-                    <p>{formatDateTime(booking.starts_at)} Eastern Time</p>
-                    {pending ? (
-                      <div className="session-pending-request">
-                        <strong>{pending.request_type === 'cancel' ? 'Cancellation requested' : 'New time requested'}</strong>
-                        <p>{pending.request_type === 'reschedule' ? formatDateTime(pending.requested_starts_at) : 'Power Within will review this request.'}</p>
-                      </div>
+                {appointmentTypes.length === 0 ? (
+                  <div className="portal-empty"><strong>Booking will open soon.</strong><p>Kim has not published any appointment types yet.</p></div>
+                ) : (
+                  <form className="portal-form session-booking-form" onSubmit={handleBook}>
+                    <label>
+                      <span>What would you like to book?</span>
+                      <select value={selectedTypeId} onChange={(event) => setSelectedTypeId(event.target.value)}>
+                        {appointmentTypes.map((type) => <option key={type.id} value={type.id}>{type.name} · {type.duration_minutes} min</option>)}
+                      </select>
+                    </label>
+                    <label>
+                      <span>Choose a day</span>
+                      <select value={selectedDate} onChange={(event) => { setSelectedDate(event.target.value); setSelectedSlot(null) }}>
+                        {availability.length === 0 && <option value="">No open dates currently</option>}
+                        {availability.map((day) => <option key={day.date} value={day.date}>{formatDate(day.date)}</option>)}
+                      </select>
+                    </label>
+                    <fieldset className="session-slots">
+                      <legend>Available times</legend>
+                      {selectedDay?.slots?.length ? selectedDay.slots.map((slot) => (
+                        <button key={slot.startsAt} type="button" className={selectedSlot?.startsAt === slot.startsAt ? 'is-selected' : ''} onClick={() => setSelectedSlot(slot)}>
+                          {formatTime(slot.startsAt)}
+                        </button>
+                      )) : <p>No times are open for this day.</p>}
+                    </fieldset>
+                    <label>
+                      <span>Anything Kim should know? <em>Optional</em></span>
+                      <textarea rows="4" value={bookingNote} onChange={(event) => setBookingNote(event.target.value)} placeholder="Share a short note about what you would like support with." />
+                    </label>
+                    <button className="portal-primary-button" type="submit" disabled={status.saving || !selectedSlot}>
+                      {status.saving ? 'Sending…' : 'Request This Session'}
+                    </button>
+                  </form>
+                )}
+              </section>
+            ) : (
+              <>
+                <section className="session-upcoming-card session-focus-panel">
+                  <div className="portal-card-heading">
+                    <div><p className="eyebrow">Coming Up</p><h2>Your sessions</h2></div>
+                    <span>{upcomingBookings.length} scheduled</span>
+                  </div>
+                  {upcomingBookings.length === 0 ? (
+                    <div className="portal-empty is-dark"><strong>No upcoming sessions yet.</strong><p>Choose an available time whenever you are ready.</p><button type="button" onClick={() => setSessionView('book')}>Book a Session</button></div>
+                  ) : upcomingBookings.map((booking) => {
+                    const pending = pendingRequestForBooking(booking.id)
+                    return (
+                      <article className="session-upcoming-item" key={booking.id}>
+                        <span className="portal-status-pill">{readable(booking.status)}</span>
+                        <h3>{booking.appointment_type_name || 'Private Session'}</h3>
+                        <p>{formatDateTime(booking.starts_at)} Eastern Time</p>
+                        {pending ? (
+                          <div className="session-pending-request">
+                            <strong>{pending.request_type === 'cancel' ? 'Cancellation requested' : 'New time requested'}</strong>
+                            <p>{pending.request_type === 'reschedule' ? formatDateTime(pending.requested_starts_at) : 'Power Within will review this request.'}</p>
+                          </div>
+                        ) : (
+                          <div className="session-actions">
+                            <button type="button" onClick={() => openChange(booking, 'reschedule')}>Request New Time</button>
+                            <button type="button" onClick={() => openChange(booking, 'cancel')}>Cancel Session</button>
+                          </div>
+                        )}
+                      </article>
+                    )
+                  })}
+                </section>
+
+                <details className="portal-progressive-section session-history-disclosure">
+                  <summary><span><strong>Previous sessions</strong><small>Your completed, cancelled, and past appointments</small></span><em>{historyBookings.length} total</em></summary>
+                  <section className="session-history-card">
+                    {historyBookings.length === 0 ? (
+                      <div className="portal-empty"><p>Your completed and past sessions will appear here.</p></div>
                     ) : (
-                      <div className="session-actions">
-                        <button type="button" onClick={() => openChange(booking, 'reschedule')}>Request New Time</button>
-                        <button type="button" onClick={() => openChange(booking, 'cancel')}>Cancel Session</button>
+                      <div className="session-history-list">
+                        {historyBookings.map((booking) => (
+                          <article key={booking.id}>
+                            <div><h3>{booking.appointment_type_name || 'Private Session'}</h3><p>{formatDateTime(booking.starts_at)}</p></div>
+                            <span>{readable(booking.status)}</span>
+                          </article>
+                        ))}
                       </div>
                     )}
-                  </article>
-                )
-              })}
-            </section>
-
-            <section className="portal-card session-history-card">
-              <div className="portal-card-heading"><div><p className="eyebrow">History</p><h2>Previous sessions</h2></div></div>
-              {historyBookings.length === 0 ? (
-                <div className="portal-empty"><p>Your completed and past sessions will appear here.</p></div>
-              ) : (
-                <div className="session-history-list">
-                  {historyBookings.map((booking) => (
-                    <article key={booking.id}>
-                      <div><h3>{booking.appointment_type_name || 'Private Session'}</h3><p>{formatDateTime(booking.starts_at)}</p></div>
-                      <span>{readable(booking.status)}</span>
-                    </article>
-                  ))}
-                </div>
-              )}
-            </section>
+                  </section>
+                </details>
+              </>
+            )}
           </div>
         )}
       </div>

@@ -4,3 +4,4 @@ src/pages/admin/AdminSessionChangeRequests.jsx whitespace=cr-at-eol
 src/pages/admin/*.jsx whitespace=cr-at-eol
 src/components/NotificationCenter.jsx whitespace=cr-at-eol
 src/components/NotificationCenter.css whitespace=cr-at-eol
+src/components/admin/ClientProfileTabs.jsx whitespace=cr-at-eol

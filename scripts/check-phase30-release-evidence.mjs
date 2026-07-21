@@ -3,11 +3,16 @@ import { spawnSync } from 'node:child_process'
 import { resolve } from 'node:path'
 import { validatePhase30Evidence } from './lib/phase30ReleaseGate.mjs'
 
-const evidencePath = resolve(process.argv[2] || process.env.PWC_PHASE30_EVIDENCE_FILE || '')
+const evidencePath = resolve(
+  process.argv[2]
+    || process.env.PWC_RELEASE_EVIDENCE_FILE
+    || process.env.PWC_PHASE30_EVIDENCE_FILE
+    || '',
+)
 const expectedTag = String(process.env.PWC_RELEASE_TAG || '').trim()
 
-if (!process.argv[2] && !process.env.PWC_PHASE30_EVIDENCE_FILE) {
-  console.error('Set PWC_PHASE30_EVIDENCE_FILE or pass the signed evidence JSON path.')
+if (!process.argv[2] && !process.env.PWC_RELEASE_EVIDENCE_FILE && !process.env.PWC_PHASE30_EVIDENCE_FILE) {
+  console.error('Set PWC_RELEASE_EVIDENCE_FILE or pass the signed evidence JSON path.')
   process.exit(2)
 }
 
@@ -33,13 +38,13 @@ try {
   })
 
   if (!result.ok) {
-    console.error('\nPhase 30 signed release gate is BLOCKED:\n')
+    console.error('\nPhase 50 signed release-candidate gate is BLOCKED:\n')
     for (const failure of result.failures) console.error(`- ${failure}`)
     process.exit(1)
   }
 
-  console.log(`Phase 30 signed release gate passed (${result.passedEvidence}/${result.totalEvidence} evidence items).`)
+  console.log(`Phase 50 signed release-candidate gate passed (${result.passedEvidence}/${result.totalEvidence} evidence items).`)
 } catch (error) {
-  console.error(`Unable to validate Phase 30 evidence: ${error.message}`)
+  console.error(`Unable to validate Phase 50 evidence: ${error.message}`)
   process.exit(2)
 }

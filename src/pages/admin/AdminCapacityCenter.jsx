@@ -5,6 +5,7 @@ import {
   useState,
 } from 'react'
 import { useNavigate } from 'react-router-dom'
+import AdminAdvancedFilterToggle from '../../components/admin/AdminAdvancedFilterToggle.jsx'
 import AdminFrame from '../../components/admin/AdminFrame.jsx'
 import {
   getAdminTeamWorkload,
@@ -92,6 +93,7 @@ export default function AdminCapacityCenter() {
   const [band, setBand] = useState('all')
   const [availability, setAvailability] = useState('all')
   const [horizon, setHorizon] = useState(7)
+  const [filtersOpen, setFiltersOpen] = useState(false)
   const [loading, setLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false)
   const [savingKey, setSavingKey] = useState('')
@@ -300,7 +302,7 @@ export default function AdminCapacityCenter() {
           </article>
         </section>
 
-        <section className="pwc-week16-filters" aria-label="Capacity filters">
+        <section className={`pwc-week16-filters pwc-ops36-filters${filtersOpen ? ' is-open' : ''}`} aria-label="Capacity filters">
           <label className="pwc-week16-search">
             <span>Search team</span>
             <input
@@ -310,6 +312,12 @@ export default function AdminCapacityCenter() {
               onChange={(event) => setQuery(event.target.value)}
             />
           </label>
+
+          <AdminAdvancedFilterToggle
+            open={filtersOpen}
+            activeCount={[band !== 'all', availability !== 'all', horizon !== 7].filter(Boolean).length}
+            onToggle={() => setFiltersOpen((current) => !current)}
+          />
 
           <label>
             <span>Load signal</span>

@@ -1,11 +1,12 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import FounderDeveloperBanner from '../../components/admin/FounderDeveloperBanner'
 import FounderLiveClocks from '../../components/admin/FounderLiveClocks.jsx'
 import FounderVoiceRecorder from '../../components/admin/FounderVoiceRecorder.jsx'
 import {
   getFounderCommandCenter,
   getAdminFoundersViewOverview,
+  getStudioProfile,
   updateAdminFounderDateAvailability,
   logoutAdmin,
   updateAdminFounderAvailabilityException,
@@ -14,6 +15,13 @@ import {
 import './AdminFreshUI.css'
 
 const FOUNDER_TIME_ZONE = 'America/New_York'
+const FOUNDER_VIEWS = [
+  { id: 'today', label: 'Today', description: 'Schedule and decisions' },
+  { id: 'protect', label: 'Protect my time', description: 'Quick availability changes' },
+  { id: 'voice', label: 'Voice notes', description: 'Record and reuse ideas' },
+  { id: 'clocks', label: 'World clocks', description: 'Time zone reference' },
+]
+const FOUNDER_VIEW_IDS = new Set(FOUNDER_VIEWS.map((view) => view.id))
 
 function formatDate(value, options = {}, timeZone = FOUNDER_TIME_ZONE) {
   if (!value) return 'Not recorded'
@@ -130,8 +138,10 @@ function getAttentionDate(item) {
 
 export default function AdminFoundersView() {
   const navigate = useNavigate()
+  const [searchParams, setSearchParams] = useSearchParams()
   const [overview, setOverview] = useState(null)
   const [founderTools, setFounderTools] = useState(null)
+  const [studioProfile, setStudioProfile] = useState(null)
   const [currentTime, setCurrentTime] = useState(() => new Date())
   const [blockDate, setBlockDate] = useState('')
   const [blockNotes, setBlockNotes] = useState('')
@@ -140,6 +150,8 @@ export default function AdminFoundersView() {
   const [isSigningOut, setIsSigningOut] = useState(false)
   const [notice, setNotice] = useState('')
   const [error, setError] = useState('')
+  const requestedView = searchParams.get('view') || 'today'
+  const activeView = FOUNDER_VIEW_IDS.has(requestedView) ? requestedView : 'today'
 
   const metrics = overview?.metrics || {}
   const todaySessions = useMemo(
@@ -225,12 +237,14 @@ export default function AdminFoundersView() {
     setError('')
 
     try {
-      const [response, toolsResponse] = await Promise.all([
+      const [response, toolsResponse, profileResponse] = await Promise.all([
         getAdminFoundersViewOverview(),
         getFounderCommandCenter(filters),
+        getStudioProfile().catch(() => ({ profile: null })),
       ])
       setOverview(response)
       setFounderTools(toolsResponse)
+      setStudioProfile(profileResponse.profile || null)
     } catch (loadError) {
       setError(loadError.message || 'Unable to load Founder’s View.')
     } finally {
@@ -309,6 +323,7 @@ export default function AdminFoundersView() {
   const primaryTimezone = founderTools?.preferences?.primaryTimezone || 'America/Chicago'
   const schedulingTimezone = founderTools?.scheduling?.timezone || FOUNDER_TIME_ZONE
   const effectiveBlockDate = blockDate || getBusinessDateOffset(0, schedulingTimezone)
+  const founderFirstName = studioProfile?.displayName?.split(/\s+/).filter(Boolean)[0] || 'Kim'
 
   function showFounderNotice(message) {
     setError('')
@@ -318,6 +333,11 @@ export default function AdminFoundersView() {
   function showFounderError(message) {
     setNotice('')
     setError(message || 'That Founder action could not be completed.')
+  }
+
+  function openFounderView(view) {
+    setSearchParams(view === 'today' ? {} : { view })
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   return (
@@ -342,6 +362,9 @@ export default function AdminFoundersView() {
           <Link to="/admin/dashboard" className="founder-home__studio-link">
             Open The Studio
           </Link>
+          <Link to="/admin/encouragements?view=compose&type=encouragement" className="founder-home__calendar-link">
+            Share a message
+          </Link>
           <button
             type="button"
             className="founder-home__signout"
@@ -357,7 +380,7 @@ export default function AdminFoundersView() {
         <section className="founder-home__intro">
           <div>
             <p className="founder-home__eyebrow">{formatLongDate(currentTime, primaryTimezone)}</p>
-            <h1>{getGreeting(currentTime, primaryTimezone)}, Kim.</h1>
+            <h1>{getGreeting(currentTime, primaryTimezone)}, {founderFirstName}.</h1>
             <p className="founder-home__focus">{dailyFocus}</p>
           </div>
 
@@ -374,6 +397,7 @@ export default function AdminFoundersView() {
               <Link to="/admin/founders-calendar">Open calendar</Link>
               <Link to="/admin/founders-availability">Availability</Link>
               <Link to="/admin/dashboard">Open The Studio</Link>
+              <Link to="/admin/encouragements?view=compose&type=encouragement">Share a message</Link>
               <button
                 type="button"
                 onClick={handleLogout}
@@ -390,7 +414,23 @@ export default function AdminFoundersView() {
           {error && <div className="admin-notice is-error">{error}</div>}
         </div>
 
-        {founderTools && <FounderLiveClocks
+        <nav className="founder-home__task-nav" aria-label="Founder workspace" role="tablist">
+          {FOUNDER_VIEWS.map((view) => (
+            <button
+              type="button"
+              role="tab"
+              aria-selected={activeView === view.id}
+              className={activeView === view.id ? 'is-active' : ''}
+              onClick={() => openFounderView(view.id)}
+              key={view.id}
+            >
+              <strong>{view.label}</strong>
+              <small>{view.description}</small>
+            </button>
+          ))}
+        </nav>
+
+        {activeView === 'clocks' && founderTools && <FounderLiveClocks
           currentTime={currentTime}
           preferences={founderTools.preferences}
           scheduling={founderTools.scheduling}
@@ -399,14 +439,18 @@ export default function AdminFoundersView() {
           onError={showFounderError}
         />}
 
-        {founderTools && <FounderVoiceRecorder
+        {activeView === 'voice' && founderTools && <FounderVoiceRecorder
           workspace={founderTools}
           onRefresh={loadFoundersView}
           onNotice={showFounderNotice}
           onError={showFounderError}
         />}
 
-        <section className="founder-home__pulse" aria-label="Today at a glance">
+        {['voice', 'clocks'].includes(activeView) && !founderTools && (
+          <div className="founder-home__focus-loading">Opening your private Founder tools…</div>
+        )}
+
+        {activeView === 'today' && <section className="founder-home__pulse" aria-label="Today at a glance">
           <article>
             <span className="founder-home__pulse-icon is-calendar" aria-hidden="true" />
             <div>
@@ -433,10 +477,10 @@ export default function AdminFoundersView() {
               <p>{(metrics.followUps || 0) === 1 ? 'follow-up' : 'follow-ups'}</p>
             </div>
           </article>
-        </section>
+        </section>}
 
-        <section className="founder-home__grid">
-          <article className="founder-home__panel founder-home__panel--schedule">
+        {['today', 'protect'].includes(activeView) && <section className="founder-home__grid">
+          <article className="founder-home__panel founder-home__panel--schedule" hidden={activeView !== 'today'}>
             <div className="founder-home__panel-heading">
               <div>
                 <p className="founder-home__eyebrow">
@@ -487,7 +531,7 @@ export default function AdminFoundersView() {
             )}
           </article>
 
-          <article className="founder-home__panel founder-home__panel--attention">
+          <article className="founder-home__panel founder-home__panel--attention" hidden={activeView !== 'today'}>
             <div className="founder-home__panel-heading">
               <div>
                 <p className="founder-home__eyebrow">Needs your attention</p>
@@ -524,7 +568,7 @@ export default function AdminFoundersView() {
             )}
           </article>
 
-          <article className="founder-home__panel founder-home__panel--protect">
+          <article className="founder-home__panel founder-home__panel--protect" hidden={activeView !== 'protect'}>
             <div className="founder-home__panel-heading">
               <div>
                 <p className="founder-home__eyebrow">Shape your availability</p>
@@ -601,7 +645,7 @@ export default function AdminFoundersView() {
             </div>
           </article>
 
-          <article className="founder-home__panel founder-home__panel--blocks">
+          <article className="founder-home__panel founder-home__panel--blocks" hidden={activeView !== 'protect'}>
             <div className="founder-home__panel-heading">
               <div>
                 <p className="founder-home__eyebrow">Protected dates</p>
@@ -636,7 +680,7 @@ export default function AdminFoundersView() {
               </div>
             )}
           </article>
-        </section>
+        </section>}
       </div>
     </main>
   )

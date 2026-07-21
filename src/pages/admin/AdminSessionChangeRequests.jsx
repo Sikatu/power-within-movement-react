@@ -38,6 +38,7 @@ export default function AdminSessionChangeRequests() {
   const confirmAction = useAdminConfirm()
   const [requests, setRequests] = useState([])
   const [activeView, setActiveView] = useState('pending')
+  const [selectedRequestId, setSelectedRequestId] = useState('')
   const [notes, setNotes] = useState({})
   const [busyId, setBusyId] = useState('')
   const [status, setStatus] = useState({ loading: true, error: '', message: '' })
@@ -90,6 +91,7 @@ export default function AdminSessionChangeRequests() {
   )
 
   const visibleRequests = activeView === 'pending' ? pendingRequests : historyRequests
+  const selectedRequest = visibleRequests.find((request) => request.id === selectedRequestId) || visibleRequests[0] || null
 
   async function reviewRequest(request, decision) {
     const action = decision === 'approved' ? 'approve' : 'decline'
@@ -205,98 +207,60 @@ export default function AdminSessionChangeRequests() {
                 : 'Approved and declined requests will remain here for reference.'}
             </p>
           </div>
-        ) : (
-          <div className="session-change-admin__list">
-            {visibleRequests.map((request) => (
-              <article className="session-change-card" key={request.id}>
-                <div className="session-change-card__topline">
-                  <div>
-                    <span className={`session-change-card__type is-${request.request_type}`}>
-                      {request.request_type === 'cancel' ? 'Cancellation' : 'Reschedule'}
-                    </span>
-                    <span className={`session-change-card__status is-${request.status}`}>
-                      {formatLabel(request.status)}
-                    </span>
-                  </div>
-                  <time>{formatDateTime(request.created_at)}</time>
-                </div>
+        ) : selectedRequest && (
+          <div className="session-change-admin__workbench">
+            <aside className="session-change-admin__queue" aria-label={`${activeView === 'pending' ? 'Requests needing review' : 'Reviewed requests'}`}>
+              <header><strong>{activeView === 'pending' ? 'Review queue' : 'Request history'}</strong><span>{visibleRequests.length}</span></header>
+              <div>
+                {visibleRequests.map((request) => (
+                  <button key={request.id} type="button" className={selectedRequest.id === request.id ? 'is-selected' : ''} aria-pressed={selectedRequest.id === request.id} onClick={() => setSelectedRequestId(request.id)}>
+                    <span className={`session-change-card__type is-${request.request_type}`}>{request.request_type === 'cancel' ? 'Cancellation' : 'Reschedule'}</span>
+                    <strong>{clientName(request)}</strong>
+                    <small>{request.request_type === 'reschedule' ? formatDateTime(request.requested_starts_at) : formatDateTime(request.current_starts_at)}</small>
+                  </button>
+                ))}
+              </div>
+            </aside>
 
-                <div className="session-change-card__identity">
-                  <div>
-                    <p>Client</p>
-                    <h2>{clientName(request)}</h2>
-                    <span>{request.client_email}</span>
-                  </div>
-                  <Link to={`/admin/clients/${request.client_profile_id}/care`}>
-                    Open Client Record
-                  </Link>
+            <article className="session-change-card session-change-card--focused">
+              <div className="session-change-card__topline">
+                <div>
+                  <span className={`session-change-card__type is-${selectedRequest.request_type}`}>{selectedRequest.request_type === 'cancel' ? 'Cancellation' : 'Reschedule'}</span>
+                  <span className={`session-change-card__status is-${selectedRequest.status}`}>{formatLabel(selectedRequest.status)}</span>
                 </div>
+                <time>{formatDateTime(selectedRequest.created_at)}</time>
+              </div>
 
-                <div className="session-change-card__details">
+              <div className="session-change-card__identity">
+                <div><p>Client</p><h2>{clientName(selectedRequest)}</h2><span>{selectedRequest.client_email}</span></div>
+                <Link to={`/admin/clients/${selectedRequest.client_profile_id}/care`}>Open Client Record</Link>
+              </div>
+
+              <div className="session-change-card__details">
+                <div><span>Session</span><strong>{selectedRequest.appointment_type_name || 'Private Session'}</strong></div>
+                <div><span>Current time</span><strong>{formatDateTime(selectedRequest.current_starts_at)}</strong></div>
+                {selectedRequest.request_type === 'reschedule' && <div className="is-requested-time"><span>Requested new time</span><strong>{formatDateTime(selectedRequest.requested_starts_at)}</strong></div>}
+              </div>
+
+              <div className="session-change-card__reason"><span>Client’s reason</span><p>{selectedRequest.reason}</p></div>
+
+              {selectedRequest.status === 'pending' ? (
+                <div className="session-change-card__review">
+                  <label>
+                    <span>Private review note (optional)</span>
+                    <textarea rows="3" value={notes[selectedRequest.id] || ''} onChange={(event) => setNotes((current) => ({ ...current, [selectedRequest.id]: event.target.value }))} placeholder="Add a short internal note about the decision." />
+                  </label>
                   <div>
-                    <span>Session</span>
-                    <strong>{request.appointment_type_name || 'Private Session'}</strong>
+                    <button className="btn primary" type="button" disabled={busyId === selectedRequest.id} onClick={() => reviewRequest(selectedRequest, 'approved')}>{busyId === selectedRequest.id ? 'Saving…' : 'Approve Request'}</button>
+                    <button className="btn secondary" type="button" disabled={busyId === selectedRequest.id} onClick={() => reviewRequest(selectedRequest, 'declined')}>Decline</button>
                   </div>
-                  <div>
-                    <span>Current time</span>
-                    <strong>{formatDateTime(request.current_starts_at)}</strong>
-                  </div>
-                  {request.request_type === 'reschedule' && (
-                    <div className="is-requested-time">
-                      <span>Requested new time</span>
-                      <strong>{formatDateTime(request.requested_starts_at)}</strong>
-                    </div>
-                  )}
                 </div>
-
-                <div className="session-change-card__reason">
-                  <span>Client’s reason</span>
-                  <p>{request.reason}</p>
-                </div>
-
-                {request.status === 'pending' ? (
-                  <div className="session-change-card__review">
-                    <label>
-                      <span>Private review note (optional)</span>
-                      <textarea
-                        rows="3"
-                        value={notes[request.id] || ''}
-                        onChange={(event) => setNotes((current) => ({
-                          ...current,
-                          [request.id]: event.target.value,
-                        }))}
-                        placeholder="Add a short internal note about the decision."
-                      />
-                    </label>
-                    <div>
-                      <button
-                        className="btn primary"
-                        type="button"
-                        disabled={busyId === request.id}
-                        onClick={() => reviewRequest(request, 'approved')}
-                      >
-                        {busyId === request.id ? 'Saving…' : 'Approve Request'}
-                      </button>
-                      <button
-                        className="btn secondary"
-                        type="button"
-                        disabled={busyId === request.id}
-                        onClick={() => reviewRequest(request, 'declined')}
-                      >
-                        Decline
-                      </button>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="session-change-card__reviewed">
-                    <span>Reviewed by {request.reviewer_email || 'Studio team'}</span>
-                    {request.reviewer_notes && <p>{request.reviewer_notes}</p>}
-                  </div>
-                )}
-              </article>
-            ))}
+              ) : (
+                <div className="session-change-card__reviewed"><span>Reviewed by {selectedRequest.reviewer_email || 'Studio team'}</span>{selectedRequest.reviewer_notes && <p>{selectedRequest.reviewer_notes}</p>}</div>
+              )}
+            </article>
           </div>
-          )}
+        )}
         </section>
       </div>
     </AdminFrame>

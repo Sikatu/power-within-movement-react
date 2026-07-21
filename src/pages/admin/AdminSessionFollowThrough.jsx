@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import AdminAdvancedFilterToggle from '../../components/admin/AdminAdvancedFilterToggle.jsx'
 import AdminFrame from '../../components/admin/AdminFrame.jsx'
 import { getAdminSessionFollowThrough } from '../../lib/nativeApi.js'
 
@@ -86,6 +87,7 @@ function AdminSessionFollowThrough() {
   const [query, setQuery] = useState('')
   const [band, setBand] = useState('all')
   const [status, setStatus] = useState('all')
+  const [filtersOpen, setFiltersOpen] = useState(false)
   const [loading, setLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false)
   const [error, setError] = useState('')
@@ -229,7 +231,7 @@ function AdminSessionFollowThrough() {
           </article>
         </section>
 
-        <section className="pwc-week16-filters" aria-label="Session follow-through filters">
+        <section className={`pwc-week16-filters pwc-ops36-filters${filtersOpen ? ' is-open' : ''}`} aria-label="Session follow-through filters">
           <label className="pwc-week16-search">
             <span>Search sessions</span>
             <input
@@ -239,6 +241,11 @@ function AdminSessionFollowThrough() {
               onChange={(event) => setQuery(event.target.value)}
             />
           </label>
+          <AdminAdvancedFilterToggle
+            open={filtersOpen}
+            activeCount={[band !== 'all', status !== 'all'].filter(Boolean).length}
+            onToggle={() => setFiltersOpen((current) => !current)}
+          />
           <label>
             <span>Continuity signal</span>
             <select value={band} onChange={(event) => setBand(event.target.value)}>

@@ -122,8 +122,8 @@ function ClientPortalJourney() {
       <div className="portal-workspace-inner">
         <header className="portal-page-intro journey-page-intro">
           <p className="eyebrow">My Journey</p>
-          <h1>Your shared care record.</h1>
-          <p>Review the reflections, follow-ups, and service history that Power Within has thoughtfully prepared for you.</p>
+          <h1>Your care, clearly gathered.</h1>
+          <p>Start with your latest reflection and next step. Open your full history only when you need it.</p>
         </header>
 
         {error && <div className="portal-notice is-error" role="alert">{error}</div>}
@@ -137,9 +137,6 @@ function ClientPortalJourney() {
                 <p>Where You Are Now</p>
                 <h2>{client?.clientVisibleNotes ? `A note for ${firstName}.` : 'Your care story is unfolding here.'}</h2>
                 <span>{client?.clientVisibleNotes || 'As reflections, services, and next steps are prepared for you, this private record will grow alongside your journey.'}</span>
-              </div>
-              <div className="journey-stats">
-                {journeyStats.map((stat) => <article key={stat.label}><span>{stat.label}</span><strong>{stat.value}</strong><p>{stat.detail}</p></article>)}
               </div>
             </section>
 
@@ -188,22 +185,33 @@ function ClientPortalJourney() {
               </aside>
             </div>
 
-            <section className="journey-timeline-section">
-              <header className="journey-section-heading"><div><p className="eyebrow">Care History</p><h2>Your Service Record</h2></div><span>{serviceRecords.length} milestones</span></header>
-              {serviceRecords.length === 0 ? (
-                <JourneyEmpty title="Your care history will begin here.">Completed and planned services will appear as your client record grows.</JourneyEmpty>
-              ) : (
-                <div className="journey-timeline">
-                  {serviceRecords.map((record) => (
-                    <article key={record.id}>
-                      <div className="journey-timeline-date"><time>{formatDate(record.service_date || record.created_at)}</time><span>{readable(record.status)}</span></div>
-                      <div className="journey-timeline-marker"><span /></div>
-                      <div className="journey-timeline-content"><span>{readable(record.service_type)}</span><h3>{record.title || record.service_name || 'Care Milestone'}</h3>{record.summary && <p>{record.summary}</p>}</div>
-                    </article>
-                  ))}
+            <details className="portal-progressive-section journey-history-disclosure">
+              <summary>
+                <span><strong>Care history</strong><small>Totals and your complete service record</small></span>
+                <em>View details</em>
+              </summary>
+              <div className="journey-history-content">
+                <div className="journey-stats" aria-label="Journey totals">
+                  {journeyStats.map((stat) => <article key={stat.label}><span>{stat.label}</span><strong>{stat.value}</strong><p>{stat.detail}</p></article>)}
                 </div>
-              )}
-            </section>
+                <section className="journey-timeline-section">
+                  <header className="journey-section-heading"><div><p className="eyebrow">Care History</p><h2>Your Service Record</h2></div><span>{serviceRecords.length} milestones</span></header>
+                  {serviceRecords.length === 0 ? (
+                    <JourneyEmpty title="Your care history will begin here.">Completed and planned services will appear as your client record grows.</JourneyEmpty>
+                  ) : (
+                    <div className="journey-timeline">
+                      {serviceRecords.map((record) => (
+                        <article key={record.id}>
+                          <div className="journey-timeline-date"><time>{formatDate(record.service_date || record.created_at)}</time><span>{readable(record.status)}</span></div>
+                          <div className="journey-timeline-marker"><span /></div>
+                          <div className="journey-timeline-content"><span>{readable(record.service_type)}</span><h3>{record.title || record.service_name || 'Care Milestone'}</h3>{record.summary && <p>{record.summary}</p>}</div>
+                        </article>
+                      ))}
+                    </div>
+                  )}
+                </section>
+              </div>
+            </details>
 
             <p className="portal-private-footnote">Your journey record is private to you and the Power Within care team.</p>
           </>

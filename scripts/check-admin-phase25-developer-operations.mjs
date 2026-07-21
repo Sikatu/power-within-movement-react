@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs'
 
 const appSource = readFileSync('src/App.jsx', 'utf8')
 const frameSource = readFileSync('src/components/admin/AdminFrame.jsx', 'utf8')
+  + readFileSync('src/components/admin/adminNavigation.js', 'utf8')
 const operationsSource = readFileSync('src/pages/admin/AdminDeveloperOperations.jsx', 'utf8')
 const panelSource = readFileSync('src/pages/admin/AdminDeveloperPanel.jsx', 'utf8')
 const errorsSource = readFileSync('src/pages/admin/AdminDeveloperErrors.jsx', 'utf8')

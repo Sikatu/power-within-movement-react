@@ -22,6 +22,13 @@
   width: 53px;
 }
 
+.portal-chrome-brand img.is-profile {
+  border: 1px solid rgba(216, 170, 120, 0.55);
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: 0 9px 24px rgba(71, 18, 37, 0.14);
+}
+
 .portal-chrome-brand span {
   display: grid;
   font-size: 0.72rem;
@@ -198,3 +205,172 @@ body.client-workspace-mode #root > .site-footer {
     padding-right: 20px;
   }
 }
+
+/* phase-40-client-portal-streamlining-start */
+.portal-chrome-header {
+  min-height: 76px;
+  padding-block: 11px;
+}
+
+.portal-chrome-brand img {
+  width: 46px;
+  height: 46px;
+}
+
+.portal-chrome-account {
+  gap: 14px;
+}
+
+.portal-chrome-account > button {
+  padding-left: 14px;
+}
+
+.portal-chrome-nav {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  overflow: visible;
+  padding-right: clamp(18px, 4vw, 58px);
+}
+
+.portal-chrome-primary-links {
+  min-width: 0;
+  display: flex;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.portal-chrome-primary-links::-webkit-scrollbar {
+  display: none;
+}
+
+.portal-chrome-explore {
+  position: relative;
+  display: grid;
+  align-items: stretch;
+}
+
+.portal-chrome-explore > button {
+  min-height: 56px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  border: 0;
+  border-bottom: 3px solid transparent;
+  background: transparent;
+  color: rgba(255, 248, 242, 0.72);
+  padding: 0 12px 0 22px;
+  font: inherit;
+  font-size: 0.75rem;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.portal-chrome-explore > button:hover,
+.portal-chrome-explore > button.is-active,
+.portal-chrome-explore > button[aria-expanded='true'] {
+  border-bottom-color: #d8aa78;
+  color: #fffaf5;
+}
+
+.portal-chrome-explore > button svg {
+  width: 14px;
+  height: 14px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+}
+
+.portal-chrome-explore-menu {
+  position: absolute;
+  z-index: 40;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 190px;
+  display: grid;
+  gap: 3px;
+  padding: 8px;
+  border: 1px solid rgba(84, 31, 48, 0.15);
+  border-radius: 15px;
+  background: #fffdfa;
+  box-shadow: 0 20px 50px rgba(56, 19, 31, 0.2);
+}
+
+.portal-chrome-nav .portal-chrome-explore-menu a,
+.portal-chrome-nav .portal-chrome-explore-menu a:first-child {
+  min-height: 42px;
+  display: flex;
+  align-items: center;
+  border: 0;
+  border-radius: 10px;
+  color: #5b2638;
+  padding: 0 12px;
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+}
+
+.portal-chrome-nav .portal-chrome-explore-menu a:hover,
+.portal-chrome-nav .portal-chrome-explore-menu a.is-active {
+  border: 0;
+  background: #f3e8e1;
+  color: #471225;
+}
+
+@media (max-width: 720px) {
+  .portal-chrome-nav {
+    padding: 0 10px 0 16px;
+  }
+
+  .portal-chrome-primary-links a,
+  .portal-chrome-primary-links a:first-child {
+    padding: 0 14px;
+  }
+
+  .portal-chrome-explore > button {
+    min-height: 52px;
+    padding: 0 8px 0 14px;
+    font-size: 0.68rem;
+  }
+
+  .portal-chrome-explore-menu {
+    position: fixed;
+    top: 126px;
+    right: 12px;
+    width: min(230px, calc(100vw - 24px));
+  }
+}
+/* phase-40-client-portal-streamlining-end */
+
+/* phase-43-client-account-link-start */
+.portal-chrome-account > a[aria-current='page'] {
+  color: #9d5f3c;
+  font-weight: 700;
+}
+
+@media (max-width: 720px) {
+  .portal-chrome-account {
+    gap: 10px;
+  }
+
+  .portal-chrome-account > a,
+  .portal-chrome-account > button {
+    font-size: 0.63rem;
+  }
+
+  .portal-chrome-account > button {
+    padding-left: 10px;
+  }
+}
+/* phase-43-client-account-link-end */
+
+/* phase-44-client-notification-link-start */
+@media (max-width: 520px) {
+  .portal-chrome-account .portal-chrome-website-link {
+    display: none;
+  }
+
+  .portal-chrome-account {
+    gap: 9px;
+  }
+}
+/* phase-44-client-notification-link-end */

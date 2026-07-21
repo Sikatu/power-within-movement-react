@@ -17,7 +17,7 @@ const frameTokens = [
   "event.key.toLowerCase() === 'k'",
   'const commandItems = useMemo',
   '...accessibleWorkspaces.map',
-  '...accessiblePrimaryItems.map',
+  '...allAccessiblePrimaryItems.map',
   '...accessibleGroups.flatMap',
   '<AdminCommandPalette',
   'onWarmRoute={warmRoute}',

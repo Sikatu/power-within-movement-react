@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import AdminAdvancedFilterToggle from '../../components/admin/AdminAdvancedFilterToggle.jsx'
 import AdminFrame from '../../components/admin/AdminFrame.jsx'
 import { getAdminClientCoverage } from '../../lib/nativeApi.js'
 
@@ -94,6 +95,7 @@ function AdminClientCoverage() {
   const [signal, setSignal] = useState('all')
   const [availability, setAvailability] = useState('all')
   const [session, setSession] = useState('all')
+  const [filtersOpen, setFiltersOpen] = useState(false)
   const [loading, setLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false)
   const [error, setError] = useState('')
@@ -228,7 +230,7 @@ function AdminClientCoverage() {
           </article>
         </section>
 
-        <section className="pwc-week16-filters" aria-label="Coverage filters">
+        <section className={`pwc-week16-filters pwc-ops36-filters${filtersOpen ? ' is-open' : ''}`} aria-label="Coverage filters">
           <label className="pwc-week16-search">
             <span>Search coverage</span>
             <input
@@ -238,6 +240,11 @@ function AdminClientCoverage() {
               onChange={(event) => setQuery(event.target.value)}
             />
           </label>
+          <AdminAdvancedFilterToggle
+            open={filtersOpen}
+            activeCount={[signal !== 'all', availability !== 'all', session !== 'all'].filter(Boolean).length}
+            onToggle={() => setFiltersOpen((current) => !current)}
+          />
           <label>
             <span>Coverage signal</span>
             <select value={signal} onChange={(event) => setSignal(event.target.value)}>

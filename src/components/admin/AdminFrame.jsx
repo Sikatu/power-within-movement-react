@@ -13,6 +13,12 @@ import {
 } from 'react-router-dom'
 import NotificationCenter from '../NotificationCenter'
 import AdminCommandPalette from './AdminCommandPalette.jsx'
+import AdminHelpCenter from './AdminHelpCenter.jsx'
+import {
+  ADMIN_COMFORT_STORAGE_KEY,
+  readAdminComfortView,
+  writeAdminComfortView,
+} from './adminDisplayPreferences.js'
 import { rememberAdminDestination } from './adminRecentDestinations.js'
 import {
   PINNED_STORAGE_KEY,
@@ -32,217 +38,14 @@ import {
   acquireAdminScrollLock,
   mountAdminScrollRoot,
 } from './adminScrollLock.js'
+import {
+  studioGroups,
+  workspaceDefinitions,
+  workspaceForPath,
+  workspacePrimaryItems,
+} from './adminNavigation.js'
 
 import '../../pages/admin/AdminFreshUI.css'
-
-const primaryItems = [
-  {
-    id: 'overview',
-    to: '/admin/dashboard',
-    label: 'Overview',
-    module: 'dashboard',
-    icon: 'overview',
-  },
-  {
-    id: 'clients',
-    to: '/admin/clients',
-    label: 'Clients',
-    module: 'clients',
-    icon: 'clients',
-    match: ['/admin/clients', '/admin/client-360'],
-  },
-  {
-    id: 'sessions',
-    to: '/admin/scheduler',
-    label: 'Sessions',
-    module: 'sessions',
-    icon: 'sessions',
-  },
-  {
-    id: 'inbox',
-    to: '/admin/inbox',
-    label: 'Inbox',
-    module: 'inbox',
-    icon: 'inbox',
-  },
-]
-
-const groupedItems = [
-  {
-    id: 'growth',
-    label: 'Growth',
-    description: 'Leads, onboarding, and nurture',
-    items: [
-      {
-        to: '/admin/leads',
-        label: 'Leads & Intake',
-        module: 'clients',
-      },
-      {
-        to: '/admin/onboarding',
-        label: 'Booking & Onboarding',
-        module: 'clients',
-      },
-      {
-        to: '/admin/automations',
-        label: 'Automations',
-        module: 'communications',
-      },
-    ],
-  },
-  {
-    id: 'client-experience',
-    label: 'Client Experience',
-    description: 'Programs, assets, and community',
-    items: [
-      {
-        to: '/admin/encouragements',
-        label: 'Daily Encouragements',
-        module: 'encouragements',
-      },
-      {
-        to: '/admin/courses',
-        label: 'Learning Library',
-        module: 'learning',
-      },
-      {
-        to: '/admin/assets',
-        label: 'Asset Vault',
-      },
-      {
-        to: '/admin/memberships',
-        label: 'Membership Circle',
-        module: 'memberships',
-      },
-      {
-        to: '/admin/circle',
-        label: 'The Circle',
-        module: 'circle',
-      },
-    ],
-  },
-  {
-    id: 'communication',
-    label: 'Communication',
-    description: 'Letters and session updates',
-    items: [
-      {
-        to: '/admin/letters',
-        label: 'Letters & Broadcasts',
-        module: 'communications',
-      },
-      {
-        to: '/admin/audience',
-        label: 'Newsletter Audience',
-        module: 'communications',
-      },
-      {
-        to: '/admin/session-changes',
-        label: 'Session Changes',
-        module: 'sessions',
-      },
-    ],
-  },
-  {
-    id: 'operations',
-    label: 'Operations',
-    description: 'People and accountability',
-    items: [
-      {
-        to: '/admin/brief',
-        label: 'Today in The Studio',
-        module: 'dashboard',
-      },
-      {
-        to: '/admin/week',
-        label: 'Studio Week Planner',
-        module: 'dashboard',
-      },
-      {
-        to: '/admin/capacity',
-        label: 'Studio Capacity',
-        module: 'dashboard',
-      },
-      {
-        to: '/admin/momentum',
-        label: 'Client Momentum',
-        module: 'clients',
-      },
-      {
-        to: '/admin/coverage',
-        label: 'Coverage & Handoffs',
-        module: 'clients',
-      },
-      {
-        to: '/admin/readiness',
-        label: 'Session Readiness',
-        module: 'sessions',
-      },
-      {
-        to: '/admin/follow-through',
-        label: 'Session Follow-Through',
-        module: 'sessions',
-      },
-      {
-        to: '/admin/attention',
-        label: 'Attention Queue',
-        module: 'clients',
-      },
-      {
-        to: '/admin/activity',
-        label: 'Studio Activity',
-        module: 'dashboard',
-      },
-      {
-        to: '/admin/audit-log',
-        label: 'Activity Journal',
-        module: 'audit',
-      },
-      {
-        to: '/admin/team',
-        label: 'Staff & Team Management',
-        developerOnly: true,
-      },
-    ],
-  },
-  {
-    id: 'system',
-    label: 'System',
-    description: 'Developer-only controls',
-    developerOnly: true,
-    items: [
-      {
-        to: '/admin/developer',
-        label: 'Developer Operations',
-        developerOnly: true,
-      },
-    ],
-  },
-]
-
-const workspaceDefinitions = [
-  {
-    id: 'studio',
-    label: 'The Studio',
-    description: 'Business operations',
-    to: '/admin/dashboard',
-    roles: ['developer', 'owner', 'admin', 'staff'],
-  },
-  {
-    id: 'founder',
-    label: 'Founder’s View',
-    description: 'Owner clarity and approvals',
-    to: '/admin/founders-view',
-    roles: ['developer', 'owner'],
-  },
-  {
-    id: 'developer',
-    label: 'Developer Operations',
-    description: 'Health, security, access, and releases',
-    to: '/admin/developer',
-    roles: ['developer'],
-  },
-]
 
 function readCachedUser() {
   if (typeof window === 'undefined') return null
@@ -262,12 +65,6 @@ function routeMatches(pathname, item) {
   return matches.some(
     (route) => pathname === route || pathname.startsWith(`${route}/`),
   )
-}
-
-function currentWorkspaceId(pathname) {
-  if (pathname.startsWith('/admin/developer')) return 'developer'
-  if (pathname.startsWith('/admin/founders')) return 'founder'
-  return 'studio'
 }
 
 function roleLabel(role) {
@@ -306,9 +103,41 @@ function NavIcon({ name }) {
     )
   }
 
+  if (name === 'inbox') {
+    return (
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M4 5h16v14H4zM4 7l8 6 8-6" />
+      </svg>
+    )
+  }
+
+  if (name === 'founder') {
+    return (
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M12 3l2.2 4.8L19 10l-4.8 2.2L12 17l-2.2-4.8L5 10l4.8-2.2L12 3ZM18 16l.9 2.1L21 19l-2.1.9L18 22l-.9-2.1L15 19l2.1-.9L18 16Z" />
+      </svg>
+    )
+  }
+
+  if (name === 'calendar' || name === 'availability') {
+    return (
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M5 3v3M19 3v3M3 9h18M5 5h14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2ZM8 13h3M8 17h7" />
+      </svg>
+    )
+  }
+
+  if (['developer', 'errors', 'security', 'release', 'team'].includes(name)) {
+    return (
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M12 3l8 3v5c0 5-3.4 8.4-8 10-4.6-1.6-8-5-8-10V6l8-3ZM9 12l2 2 4-5" />
+      </svg>
+    )
+  }
+
   return (
     <svg viewBox="0 0 24 24" aria-hidden="true">
-      <path d="M4 5h16v14H4zM4 7l8 6 8-6" />
+      <path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z" />
     </svg>
   )
 }
@@ -316,7 +145,6 @@ function NavIcon({ name }) {
 function AdminFrame({ children }) {
   const location = useLocation()
   const navigate = useNavigate()
-  const searchInputRef = useRef(null)
   const workspaceRef = useRef(null)
   const sidebarRef = useRef(null)
   const mobileTriggerRef = useRef(null)
@@ -325,11 +153,13 @@ function AdminFrame({ children }) {
   const [adminUser, setAdminUser] = useState(readCachedUser)
   const [roleVerified, setRoleVerified] = useState(false)
   const [teamAccess, setTeamAccess] = useState(null)
-  const [searchQuery, setSearchQuery] = useState('')
   const [openGroupOverride, setOpenGroupOverride] = useState(undefined)
+  const [allToolsOpen, setAllToolsOpen] = useState(false)
   const [workspaceOpen, setWorkspaceOpen] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
   const [commandOpen, setCommandOpen] = useState(false)
+  const [helpOpen, setHelpOpen] = useState(false)
+  const [comfortView, setComfortView] = useState(readAdminComfortView)
   const [pinnedPaths, setPinnedPaths] = useState(readPinnedDestinations)
   const [signingOut, setSigningOut] = useState(false)
   const [isOnline, setIsOnline] = useState(() => (
@@ -351,7 +181,7 @@ function AdminFrame({ children }) {
 
     setWorkspaceOpen(false)
     setMobileOpen(false)
-    setSearchQuery('')
+    setHelpOpen(false)
 
     window.requestAnimationFrame(() => {
       if (restoreToMobileTrigger) {
@@ -360,6 +190,13 @@ function AdminFrame({ children }) {
       setCommandOpen(true)
     })
   }, [mobileOpen])
+
+  const openHelpCenter = useCallback(() => {
+    setWorkspaceOpen(false)
+    setMobileOpen(false)
+    setCommandOpen(false)
+    setHelpOpen(true)
+  }, [])
 
   useEffect(() => {
     let active = true
@@ -414,18 +251,47 @@ function AdminFrame({ children }) {
   const canAccessItem = useCallback(
     (item) => {
       if (!roleVerified) return false
+      if (item.roles && !item.roles.includes(role)) return false
       if (item.developerOnly) return isDeveloper
       if (!isStaff) return true
       if (!item.module) return false
 
       return (teamAccess?.permissions?.[item.module] || 'none') !== 'none'
     },
-    [isDeveloper, isStaff, roleVerified, teamAccess],
+    [isDeveloper, isStaff, role, roleVerified, teamAccess],
+  )
+
+  const accessibleWorkspaces = useMemo(
+    () => workspaceDefinitions.filter(
+      (workspace) => role && workspace.roles.includes(role),
+    ),
+    [role],
+  )
+
+  const activeWorkspace = useMemo(() => {
+    const workspaceId = workspaceForPath(location.pathname)
+
+    return accessibleWorkspaces.find((workspace) => workspace.id === workspaceId)
+      || accessibleWorkspaces[0]
+      || workspaceDefinitions[0]
+  }, [accessibleWorkspaces, location.pathname])
+
+  const allAccessiblePrimaryItems = useMemo(
+    () => Object.entries(workspacePrimaryItems).flatMap(([workspaceId, items]) => (
+      items.filter(canAccessItem).map((item) => ({
+        ...item,
+        workspaceId,
+        workspaceLabel: workspaceDefinitions.find((workspace) => workspace.id === workspaceId)?.label,
+      }))
+    )),
+    [canAccessItem],
   )
 
   const accessiblePrimaryItems = useMemo(
-    () => primaryItems.filter(canAccessItem),
-    [canAccessItem],
+    () => allAccessiblePrimaryItems.filter(
+      (item) => item.workspaceId === activeWorkspace.id,
+    ),
+    [activeWorkspace.id, allAccessiblePrimaryItems],
   )
 
   useEffect(() => {
@@ -446,30 +312,14 @@ function AdminFrame({ children }) {
   }, [accessiblePrimaryItems, roleVerified])
 
   const accessibleGroups = useMemo(
-    () => groupedItems
-      .filter((group) => !group.developerOnly || isDeveloper)
+    () => studioGroups
       .map((group) => ({
         ...group,
         items: group.items.filter(canAccessItem),
       }))
       .filter((group) => group.items.length > 0),
-    [canAccessItem, isDeveloper],
+    [canAccessItem],
   )
-
-  const accessibleWorkspaces = useMemo(
-    () => workspaceDefinitions.filter(
-      (workspace) => role && workspace.roles.includes(role),
-    ),
-    [role],
-  )
-
-  const activeWorkspace = useMemo(() => {
-    const workspaceId = currentWorkspaceId(location.pathname)
-
-    return accessibleWorkspaces.find((workspace) => workspace.id === workspaceId)
-      || accessibleWorkspaces[0]
-      || workspaceDefinitions[0]
-  }, [accessibleWorkspaces, location.pathname])
 
   const activeGroupId = useMemo(
     () => accessibleGroups.find((group) => (
@@ -504,6 +354,24 @@ function AdminFrame({ children }) {
   }, [])
 
   useEffect(() => {
+    document.body.classList.toggle('admin-comfort-view', comfortView)
+    writeAdminComfortView(comfortView)
+
+    return () => document.body.classList.remove('admin-comfort-view')
+  }, [comfortView])
+
+  useEffect(() => {
+    function syncDisplayPreference(event) {
+      if (event.key === ADMIN_COMFORT_STORAGE_KEY) {
+        setComfortView(event.newValue === 'true')
+      }
+    }
+
+    window.addEventListener('storage', syncDisplayPreference)
+    return () => window.removeEventListener('storage', syncDisplayPreference)
+  }, [])
+
+  useEffect(() => {
     function handleKeyDown(event) {
       if (mobileOpen && event.key === 'Tab' && sidebarRef.current) {
         const focusable = Array.from(sidebarRef.current.querySelectorAll(
@@ -530,6 +398,23 @@ function AdminFrame({ children }) {
         return
       }
 
+      const target = event.target
+      const isTextEntry = target instanceof HTMLElement && (
+        target.matches('input, textarea, select') || target.isContentEditable
+      )
+
+      if (
+        event.key === '?'
+        && !event.ctrlKey
+        && !event.metaKey
+        && !event.altKey
+        && !isTextEntry
+      ) {
+        event.preventDefault()
+        openHelpCenter()
+        return
+      }
+
       if (event.key === 'Escape' && commandOpen) {
         event.preventDefault()
         setCommandOpen(false)
@@ -540,7 +425,6 @@ function AdminFrame({ children }) {
         const shouldReturnFocus = mobileOpen
         setWorkspaceOpen(false)
         setMobileOpen(false)
-        setSearchQuery('')
 
         if (shouldReturnFocus) {
           window.setTimeout(() => mobileTriggerRef.current?.focus(), 0)
@@ -565,7 +449,7 @@ function AdminFrame({ children }) {
       document.removeEventListener('keydown', handleKeyDown)
       document.removeEventListener('pointerdown', handlePointerDown)
     }
-  }, [commandOpen, mobileOpen, openCommandPalette, workspaceOpen])
+  }, [commandOpen, mobileOpen, openCommandPalette, openHelpCenter, workspaceOpen])
 
   useEffect(() => {
     function updateConnectionStatus() {
@@ -595,8 +479,9 @@ function AdminFrame({ children }) {
       setWorkspaceOpen(false)
       setMobileOpen(false)
       setCommandOpen(false)
-      setSearchQuery('')
+      setHelpOpen(false)
       setOpenGroupOverride(undefined)
+      setAllToolsOpen(false)
 
       if (previousPath !== location.pathname) {
         window.scrollTo({ top: 0, left: 0, behavior: 'auto' })
@@ -609,26 +494,17 @@ function AdminFrame({ children }) {
 
   const searchableItems = useMemo(
     () => [
-      ...accessiblePrimaryItems.map((item) => ({
+      ...allAccessiblePrimaryItems.map((item) => ({
         ...item,
-        groupLabel: 'Primary',
+        groupLabel: item.workspaceLabel || 'Workspace',
       })),
       ...accessibleGroups.flatMap((group) => group.items.map((item) => ({
         ...item,
         groupLabel: group.label,
       }))),
     ],
-    [accessibleGroups, accessiblePrimaryItems],
+    [accessibleGroups, allAccessiblePrimaryItems],
   )
-
-  const filteredItems = useMemo(() => {
-    const normalizedQuery = searchQuery.trim().toLowerCase()
-    if (!normalizedQuery) return []
-
-    return searchableItems.filter((item) => (
-      `${item.label} ${item.groupLabel}`.toLowerCase().includes(normalizedQuery)
-    ))
-  }, [searchQuery, searchableItems])
 
   const commandItems = useMemo(() => [
     ...accessibleWorkspaces.map((workspace) => ({
@@ -637,11 +513,11 @@ function AdminFrame({ children }) {
       icon: 'workspace',
       keywords: ['workspace', workspace.id],
     })),
-    ...accessiblePrimaryItems.map((item) => ({
+    ...allAccessiblePrimaryItems.map((item) => ({
       ...item,
-      groupLabel: 'Core Studio',
-      description: `Open the ${item.label} workspace.`,
-      keywords: ['primary', 'studio'],
+      groupLabel: item.workspaceLabel || 'Workspace',
+      description: item.description || `Open the ${item.label} workspace.`,
+      keywords: ['primary', item.workspaceId, item.workspaceLabel],
     })),
     ...accessibleGroups.flatMap((group) => group.items.map((item) => ({
       ...item,
@@ -650,7 +526,7 @@ function AdminFrame({ children }) {
       icon: item.icon || 'overview',
       keywords: [group.id, group.label],
     }))),
-  ], [accessibleGroups, accessiblePrimaryItems, accessibleWorkspaces])
+  ], [accessibleGroups, allAccessiblePrimaryItems, accessibleWorkspaces])
 
   const pinnedItems = useMemo(() => {
     const uniqueItems = new Map(commandItems.map((item) => [item.to, item]))
@@ -664,6 +540,27 @@ function AdminFrame({ children }) {
     () => searchableItems.find((item) => routeMatches(location.pathname, item)),
     [location.pathname, searchableItems],
   )
+
+  const currentStudioTool = useMemo(() => {
+    if (activeWorkspace.id !== 'studio') return null
+    if (accessiblePrimaryItems.some((item) => routeMatches(location.pathname, item))) {
+      return null
+    }
+
+    return accessibleGroups
+      .flatMap((group) => group.items.map((item) => ({
+        ...item,
+        groupLabel: group.label,
+        groupDescription: group.description,
+      })))
+      .find((item) => routeMatches(location.pathname, item)) || null
+  }, [accessibleGroups, accessiblePrimaryItems, activeWorkspace.id, location.pathname])
+
+  const currentPageItem = currentNavigationItem || currentStudioTool
+  const currentPageLabel = currentPageItem?.label || activeWorkspace.label
+  const currentPageDescription = currentPageItem?.description
+    || currentStudioTool?.groupDescription
+    || activeWorkspace.description
 
   const currentTeamAccessLevel = isStaff && currentNavigationItem?.module
     ? teamAccess?.permissions?.[currentNavigationItem.module] || 'none'
@@ -701,8 +598,9 @@ function AdminFrame({ children }) {
     setMobileOpen(false)
     setWorkspaceOpen(false)
     setCommandOpen(false)
-    setSearchQuery('')
+    setHelpOpen(false)
     setOpenGroupOverride(undefined)
+    setAllToolsOpen(false)
   }
 
   function chooseWorkspace(workspace) {
@@ -724,11 +622,11 @@ function AdminFrame({ children }) {
         ref={mobileTriggerRef}
         className="pwc-nav33-mobile-trigger"
         type="button"
-        aria-label="Open Studio navigation"
+        aria-label={`Open ${activeWorkspace.label} navigation`}
         aria-expanded={mobileOpen}
         onClick={() => {
           setMobileOpen(true)
-          window.setTimeout(() => searchInputRef.current?.focus(), 0)
+          window.setTimeout(() => sidebarRef.current?.querySelector('.pwc-nav39-find-trigger')?.focus(), 0)
         }}
       >
         <span aria-hidden="true">☰</span>
@@ -739,7 +637,7 @@ function AdminFrame({ children }) {
         <button
           className="pwc-nav33-mobile-backdrop"
           type="button"
-          aria-label="Close Studio navigation"
+          aria-label={`Close ${activeWorkspace.label} navigation`}
           onClick={() => closeMobileNavigation()}
         />
       )}
@@ -747,7 +645,7 @@ function AdminFrame({ children }) {
       <aside
         ref={sidebarRef}
         className={`pwc-admin-sidebar pwc-studio-sidebar pwc-nav33-sidebar${mobileOpen ? ' is-open' : ''}`}
-        aria-label="Studio sidebar"
+        aria-label={`${activeWorkspace.label} sidebar`}
         role={mobileOpen ? 'dialog' : undefined}
         aria-modal={mobileOpen || undefined}
       >
@@ -755,9 +653,9 @@ function AdminFrame({ children }) {
           <div className="pwc-nav33-brand-row">
             <Link
               className="pwc-nav33-brand-link"
-              to="/admin/dashboard"
-              aria-label="Power Within Collective — The Studio home"
-              {...preloadInteractionProps('/admin/dashboard')}
+              to={activeWorkspace.to}
+              aria-label={`Power Within Collective — ${activeWorkspace.label} home`}
+              {...preloadInteractionProps(activeWorkspace.to)}
               onClick={prepareForNavigation}
             >
               <span className="pwc-nav33-logo-mark" aria-hidden="true">
@@ -765,14 +663,14 @@ function AdminFrame({ children }) {
               </span>
               <span className="pwc-nav33-brand-copy">
                 <small>Power Within Collective</small>
-                <strong>The Studio</strong>
+                <strong>{activeWorkspace.label}</strong>
               </span>
             </Link>
 
             <button
               className="pwc-nav33-mobile-close"
               type="button"
-              aria-label="Close Studio navigation"
+              aria-label={`Close ${activeWorkspace.label} navigation`}
               onClick={() => closeMobileNavigation()}
             >
               ×
@@ -789,7 +687,7 @@ function AdminFrame({ children }) {
               onClick={() => setWorkspaceOpen((current) => !current)}
             >
               <span>
-                <small>Current workspace</small>
+                <small>Switch workspace</small>
                 <strong>{activeWorkspace.label}</strong>
               </span>
               {accessibleWorkspaces.length > 1 && (
@@ -819,52 +717,39 @@ function AdminFrame({ children }) {
             )}
           </div>
 
-          <label className="pwc-nav33-search">
+          <button
+            className="pwc-nav33-quick-find pwc-nav39-find-trigger"
+            type="button"
+            aria-keyshortcuts="Control+K Meta+K"
+            onClick={openCommandPalette}
+          >
             <svg viewBox="0 0 24 24" aria-hidden="true">
               <circle cx="11" cy="11" r="7" />
               <path d="m20 20-4-4" />
             </svg>
-            <span className="sr-only">Search Studio navigation</span>
-            <input
-              ref={searchInputRef}
-              type="search"
-              value={searchQuery}
-              placeholder="Jump to…"
-              onChange={(event) => setSearchQuery(event.target.value)}
-            />
+            <span>
+              <strong>Quick Find</strong>
+              <small>Any page or tool</small>
+            </span>
             <kbd>Ctrl K</kbd>
-          </label>
+          </button>
         </div>
 
-        <nav className="pwc-admin-nav pwc-studio-nav pwc-nav33-nav" aria-label="Studio navigation">
+        <nav className="pwc-admin-nav pwc-studio-nav pwc-nav33-nav" aria-label={`${activeWorkspace.label} navigation`}>
           {!roleVerified || (isStaff && !teamAccess) ? (
             <div className="pwc-nav33-loading" aria-label="Loading navigation">
               <span />
               <span />
               <span />
             </div>
-          ) : searchQuery.trim() ? (
-            <section className="pwc-nav33-search-results" aria-label="Navigation search results" aria-live="polite">
-              <p>{filteredItems.length ? 'Matching destinations' : 'No matching destinations'}</p>
-
-              {filteredItems.map((item) => (
-                <Link
-                  className={routeMatches(location.pathname, item) ? 'is-active' : ''}
-                  key={`${item.groupLabel}-${item.to}`}
-                  to={item.to}
-                  aria-current={routeMatches(location.pathname, item) ? 'page' : undefined}
-                  {...preloadInteractionProps(item.to)}
-                  onClick={prepareForNavigation}
-                >
-                  <span>{item.label}</span>
-                  <small>{item.groupLabel}</small>
-                </Link>
-              ))}
-            </section>
           ) : (
             <>
-              <section className="pwc-nav33-primary" aria-label="Primary Studio destinations">
-                {accessiblePrimaryItems.map((item) => (
+              <div className="pwc-stream31-nav-heading">
+                {activeWorkspace.id === 'studio' ? 'Daily work' : 'Workspace tools'}
+              </div>
+
+              <section className="pwc-nav33-primary" aria-label={`${activeWorkspace.label} primary destinations`}>
+                {accessiblePrimaryItems.filter((item) => !item.hiddenInSidebar).map((item) => (
                   <NavLink
                     className={routeMatches(location.pathname, item) ? 'is-active' : undefined}
                     key={item.to}
@@ -880,7 +765,7 @@ function AdminFrame({ children }) {
               </section>
 
               {pinnedItems.length > 0 && (
-                <section className="pwc-nav33-pinned" aria-label="Pinned Studio destinations">
+                <section className="pwc-nav33-pinned" aria-label="Pinned destinations">
                   <div className="pwc-nav33-pinned-heading">
                     <span>✦</span>
                     <strong>Pinned</strong>
@@ -912,59 +797,100 @@ function AdminFrame({ children }) {
                 </section>
               )}
 
-              <div className="pwc-nav33-divider" />
-
-              <section className="pwc-nav33-groups" aria-label="More Studio destinations">
-                {accessibleGroups.map((group) => {
-                  const isOpen = openGroup === group.id
-                  const isActive = group.id === activeGroupId
-
-                  return (
-                    <div
-                      className={`pwc-nav33-group${isOpen ? ' is-open' : ''}${isActive ? ' is-active' : ''}`}
-                      key={group.id}
-                    >
-                      <button
-                        className="pwc-nav33-group-trigger"
-                        type="button"
-                        aria-expanded={isOpen}
-                        aria-controls={`pwc-nav33-group-${group.id}`}
-                        onClick={() => setOpenGroupOverride((current) => {
-                          const resolvedCurrent = current === undefined ? activeGroupId : current
-                          return resolvedCurrent === group.id ? null : group.id
-                        })}
+              {activeWorkspace.id === 'studio' && (
+                <>
+                  {currentStudioTool && !allToolsOpen && (
+                    <section className="pwc-stream31-current" aria-label="Current Studio tool">
+                      <span>Current tool</span>
+                      <NavLink
+                        className="is-active"
+                        to={currentStudioTool.to}
+                        aria-current="page"
+                        {...preloadInteractionProps(currentStudioTool.to)}
+                        onClick={prepareForNavigation}
                       >
-                        <span>
-                          <strong>{group.label}</strong>
-                          <small>{group.description}</small>
-                        </span>
-                        <svg viewBox="0 0 24 24" aria-hidden="true">
-                          <path d="m9 6 6 6-6 6" />
-                        </svg>
-                      </button>
+                        <strong>{currentStudioTool.label}</strong>
+                        <small>{currentStudioTool.groupLabel}</small>
+                      </NavLink>
+                    </section>
+                  )}
 
-                      <div
-                        className="pwc-nav33-group-links"
-                        id={`pwc-nav33-group-${group.id}`}
-                        hidden={!isOpen}
-                      >
-                        {group.items.map((item) => (
-                          <NavLink
-                            className={routeMatches(location.pathname, item) ? 'is-active' : undefined}
-                            key={item.to}
-                            to={item.to}
-                            aria-current={routeMatches(location.pathname, item) ? 'page' : undefined}
-                            {...preloadInteractionProps(item.to)}
-                            onClick={prepareForNavigation}
+                  <div className="pwc-nav33-divider" />
+
+                  <button
+                    className={`pwc-stream31-tools-toggle${allToolsOpen ? ' is-open' : ''}`}
+                    type="button"
+                    aria-expanded={allToolsOpen}
+                    aria-controls="pwc-stream31-all-tools"
+                    onClick={() => setAllToolsOpen((current) => !current)}
+                  >
+                    <span>
+                      <strong>{allToolsOpen ? 'Hide all tools' : 'Browse all tools'}</strong>
+                      <small>{accessibleGroups.reduce((total, group) => total + group.items.length, 0)} tools available</small>
+                    </span>
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                      <path d="m9 6 6 6-6 6" />
+                    </svg>
+                  </button>
+
+                  <section
+                    className="pwc-nav33-groups pwc-stream31-all-tools"
+                    id="pwc-stream31-all-tools"
+                    aria-label="All Studio tools"
+                    hidden={!allToolsOpen}
+                  >
+                    {accessibleGroups.map((group) => {
+                      const isOpen = openGroup === group.id
+                      const isActive = group.id === activeGroupId
+
+                      return (
+                        <div
+                          className={`pwc-nav33-group${isOpen ? ' is-open' : ''}${isActive ? ' is-active' : ''}`}
+                          key={group.id}
+                        >
+                          <button
+                            className="pwc-nav33-group-trigger"
+                            type="button"
+                            aria-expanded={isOpen}
+                            aria-controls={`pwc-nav33-group-${group.id}`}
+                            onClick={() => setOpenGroupOverride((current) => {
+                              const resolvedCurrent = current === undefined ? activeGroupId : current
+                              return resolvedCurrent === group.id ? null : group.id
+                            })}
                           >
-                            {item.label}
-                          </NavLink>
-                        ))}
-                      </div>
-                    </div>
-                  )
-                })}
-              </section>
+                            <span>
+                              <strong>{group.label}</strong>
+                              <small>{group.description}</small>
+                            </span>
+                            <svg viewBox="0 0 24 24" aria-hidden="true">
+                              <path d="m9 6 6 6-6 6" />
+                            </svg>
+                          </button>
+
+                          <div
+                            className="pwc-nav33-group-links"
+                            id={`pwc-nav33-group-${group.id}`}
+                            hidden={!isOpen}
+                          >
+                            {group.items.filter((item) => !item.hiddenInSidebar).map((item) => (
+                              <NavLink
+                                className={routeMatches(location.pathname, item) ? 'is-active' : undefined}
+                                key={item.to}
+                                to={item.to}
+                                aria-current={routeMatches(location.pathname, item) ? 'page' : undefined}
+                                {...preloadInteractionProps(item.to)}
+                                onClick={prepareForNavigation}
+                              >
+                                {item.label}
+                              </NavLink>
+                            ))}
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </section>
+                </>
+              )}
             </>
           )}
         </nav>
@@ -976,11 +902,9 @@ function AdminFrame({ children }) {
             aria-live="polite"
           >
             <span aria-hidden="true" />
-            <strong>{isOnline ? 'Studio connected' : 'Connection interrupted'}</strong>
+            <strong>{isOnline ? 'Connected' : 'Connection interrupted'}</strong>
             <small>{isOnline ? 'Changes can be saved securely.' : 'Reconnect before saving new changes.'}</small>
           </div>
-
-          <NotificationCenter mode="admin" />
 
           <div className="pwc-nav33-account">
             <span className="pwc-nav33-avatar" aria-hidden="true">
@@ -993,16 +917,17 @@ function AdminFrame({ children }) {
             </span>
           </div>
 
-          <div className="pwc-nav33-utilities">
+          <div className="pwc-nav33-utilities pwc-nav39-footer-actions">
             <button
-              className="pwc-nav33-quick-find"
               type="button"
-              onClick={openCommandPalette}
+              aria-keyshortcuts="?"
+              aria-label={`Help with ${currentPageLabel}`}
+              onClick={openHelpCenter}
             >
-              <span>Quick Find</span>
-              <kbd>Ctrl K</kbd>
+              Help
             </button>
-            <Link to="/" onClick={prepareForNavigation}>View public site</Link>
+            <NotificationCenter mode="admin" />
+            <Link to="/" aria-label="View public website" onClick={prepareForNavigation}>Site</Link>
             <button type="button" disabled={signingOut} onClick={handleSignOut}>
               {signingOut ? 'Signing out…' : 'Sign out'}
             </button>
@@ -1035,8 +960,25 @@ function AdminFrame({ children }) {
             navigate(to)
           }}
           onWarmRoute={warmRoute}
+          workspaceLabel={activeWorkspace.label}
           pinnedPaths={pinnedPaths}
           onTogglePinned={handleTogglePinned}
+        />
+      )}
+
+      {helpOpen && (
+        <AdminHelpCenter
+          currentPath={location.pathname}
+          comfortView={comfortView}
+          pageDescription={currentPageDescription}
+          pageLabel={currentPageLabel}
+          workspaceLabel={activeWorkspace.label}
+          onClose={() => setHelpOpen(false)}
+          onToggleComfortView={() => setComfortView((current) => !current)}
+          onOpenQuickFind={() => {
+            setHelpOpen(false)
+            window.requestAnimationFrame(() => setCommandOpen(true))
+          }}
         />
       )}
     </div>

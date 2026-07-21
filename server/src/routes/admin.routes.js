@@ -19,6 +19,11 @@ const {
   savePlatformSettings,
 } = require('../services/platformSettings.service')
 const { publishDueEncouragements } = require('../services/encouragements.service')
+const { CLIENT_MESSAGE_TYPES } = require('../services/clientMessages.service')
+const {
+  isUsableProfileImage,
+  normalizeStudioProfile,
+} = require('../services/studioProfile.service')
 const {
   createUniqueCourseSlug,
   getCourseTree,
@@ -105,6 +110,18 @@ const {
 
 const router = express.Router()
 
+const studioProfileSchema = z.object({
+  displayName: z.string().trim().min(1, 'Add a display name.').max(120),
+  welcomeMessage: z.string().trim().min(1, 'Add a short welcome message.').max(280),
+  bio: z.string().trim().max(3000).optional().default(''),
+  signatureLine: z.string().trim().min(1, 'Add a signature line.').max(160),
+  publicEmail: z.union([z.string().trim().email('Enter a valid public email.'), z.literal('')]).optional().default(''),
+  publicPhone: z.string().trim().max(80).optional().default(''),
+  profileAssetId: z.string().uuid().nullable().optional().default(null),
+  clientPortalEnabled: z.boolean().optional().default(false),
+  clientPortalContactEnabled: z.boolean().optional().default(false),
+})
+
 const automationStepSchema = z.object({
   stepType: z.enum(['email', 'follow_up_task', 'internal_notification']),
   delayMinutes: z.coerce.number().int().min(0).max(525600).optional().default(0),
@@ -157,6 +174,126 @@ const requireDeveloper = [
   requireAuth,
   requireRole(['developer']),
 ]
+
+async function readStudioProfile() {
+  const result = await pool.query(`
+    SELECT
+      profile.*,
+      asset.title AS profile_asset_title,
+      asset.original_filename AS profile_asset_filename,
+      asset.mime_type AS profile_asset_mime_type,
+      asset.status AS profile_asset_status,
+      asset.scan_status AS profile_asset_scan_status
+    FROM studio_profiles profile
+    LEFT JOIN assets asset ON asset.id = profile.profile_asset_id
+    WHERE profile.profile_key = 'primary'
+    LIMIT 1
+  `)
+  const row = result.rows[0] || {}
+  return {
+    ...normalizeStudioProfile(row),
+    id: row.id || null,
+    updatedAt: row.updated_at || null,
+    profileAsset: row.profile_asset_id ? {
+      id: row.profile_asset_id,
+      title: row.profile_asset_title,
+      originalFilename: row.profile_asset_filename,
+      mimeType: row.profile_asset_mime_type,
+      status: row.profile_asset_status,
+      scanStatus: row.profile_asset_scan_status,
+    } : null,
+  }
+}
+
+router.get('/studio-profile', requireAdmin, async (_req, res, next) => {
+  try {
+    return res.json({ ok: true, profile: await readStudioProfile() })
+  } catch (error) {
+    return next(error)
+  }
+})
+
+router.patch('/studio-profile', requireAdmin, async (req, res, next) => {
+  const parsed = studioProfileSchema.safeParse(req.body || {})
+  if (!parsed.success) {
+    return res.status(400).json({
+      ok: false,
+      error: parsed.error.issues[0]?.message || 'Please review the Studio Profile details.',
+    })
+  }
+
+  const profile = normalizeStudioProfile(parsed.data)
+  const dbClient = await pool.connect()
+  try {
+    await dbClient.query('BEGIN')
+    if (profile.profileAssetId) {
+      const assetResult = await dbClient.query(
+        'SELECT id, status, scan_status, mime_type FROM assets WHERE id = $1 LIMIT 1',
+        [profile.profileAssetId],
+      )
+      if (!isUsableProfileImage(assetResult.rows[0])) {
+        await dbClient.query('ROLLBACK')
+        return res.status(400).json({ ok: false, error: 'Choose an active image from the Asset Vault whose security state is ready.' })
+      }
+    }
+
+    const beforeResult = await dbClient.query(
+      "SELECT * FROM studio_profiles WHERE profile_key = 'primary' LIMIT 1",
+    )
+    const savedResult = await dbClient.query(`
+      INSERT INTO studio_profiles (
+        profile_key, display_name, welcome_message, bio, signature_line,
+        public_email, public_phone, profile_asset_id,
+        client_portal_enabled, client_portal_contact_enabled,
+        created_by, updated_by
+      )
+      VALUES ('primary', $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $10)
+      ON CONFLICT (profile_key) DO UPDATE SET
+        display_name = EXCLUDED.display_name,
+        welcome_message = EXCLUDED.welcome_message,
+        bio = EXCLUDED.bio,
+        signature_line = EXCLUDED.signature_line,
+        public_email = EXCLUDED.public_email,
+        public_phone = EXCLUDED.public_phone,
+        profile_asset_id = EXCLUDED.profile_asset_id,
+        client_portal_enabled = EXCLUDED.client_portal_enabled,
+        client_portal_contact_enabled = EXCLUDED.client_portal_contact_enabled,
+        updated_by = EXCLUDED.updated_by,
+        updated_at = now()
+      RETURNING *
+    `, [
+      profile.displayName,
+      profile.welcomeMessage,
+      profile.bio,
+      profile.signatureLine,
+      profile.publicEmail,
+      profile.publicPhone,
+      profile.profileAssetId,
+      profile.clientPortalEnabled,
+      profile.clientPortalContactEnabled,
+      req.user.id,
+    ])
+    const saved = savedResult.rows[0]
+    await dbClient.query(`
+      INSERT INTO audit_logs (
+        actor_user_id, action, entity_type, entity_id, before_data, after_data
+      )
+      VALUES ($1, 'studio_profile_updated', 'studio_profiles', $2, $3::jsonb, $4::jsonb)
+    `, [
+      req.user.id,
+      saved.id,
+      JSON.stringify(beforeResult.rows[0] || {}),
+      JSON.stringify(saved),
+    ])
+    await dbClient.query('COMMIT')
+    return res.json({ ok: true, profile: await readStudioProfile(), message: 'Studio Profile saved.' })
+  } catch (error) {
+    await dbClient.query('ROLLBACK')
+    return next(error)
+  } finally {
+    dbClient.release()
+  }
+})
 
 async function getActiveFounderOwner() {
   if (!pool) return null
@@ -6803,7 +6940,8 @@ const encouragementVisibilityModes = ['all_members', 'single_client']
 const encouragementPayloadSchema = z
   .object({
     title: z.string().trim().max(160, 'Keep the title under 160 characters.').optional().default(''),
-    body: z.string().trim().min(1, 'Write the encouragement before saving.').max(10000),
+    body: z.string().trim().min(1, 'Write the client message before saving.').max(10000),
+    messageType: z.enum(CLIENT_MESSAGE_TYPES).optional().default('encouragement'),
     visibility: z.enum(encouragementVisibilityModes).optional().default('all_members'),
     clientProfileId: z.string().uuid().nullable().optional(),
     deliveryMode: z.enum(encouragementDeliveryModes).optional().default('draft'),
@@ -6942,12 +7080,18 @@ router.get('/encouragements', requireAdmin, async (req, res, next) => {
 
     const status = String(req.query.status || 'all').trim().toLowerCase()
     const visibility = String(req.query.visibility || 'all').trim().toLowerCase()
+    const messageType = String(req.query.messageType || 'all').trim().toLowerCase()
     const search = String(req.query.search || '').trim()
 
     const allowedStatuses = new Set(['all', 'draft', 'scheduled', 'published', 'archived'])
     const allowedVisibilities = new Set(['all', ...encouragementVisibilityModes])
+    const allowedMessageTypes = new Set(['all', ...CLIENT_MESSAGE_TYPES])
 
-    if (!allowedStatuses.has(status) || !allowedVisibilities.has(visibility)) {
+    if (
+      !allowedStatuses.has(status) ||
+      !allowedVisibilities.has(visibility) ||
+      !allowedMessageTypes.has(messageType)
+    ) {
       return res.status(400).json({ ok: false, error: 'Invalid encouragement filter.' })
     }
 
@@ -6958,6 +7102,7 @@ router.get('/encouragements', requireAdmin, async (req, res, next) => {
           ep.id,
           ep.title,
           ep.body,
+          ep.message_type,
           ep.visibility,
           ep.status,
           ep.scheduled_at,
@@ -6994,13 +7139,14 @@ router.get('/encouragements', requireAdmin, async (req, res, next) => {
         LEFT JOIN system_users target_su ON target_su.id = target_cp.user_id
         WHERE ($1 = 'all' OR ep.status = $1)
           AND ($2 = 'all' OR ep.visibility = $2)
+          AND ($3 = 'all' OR ep.message_type = $3)
           AND (
-            $3 = ''
-            OR COALESCE(ep.title, '') ILIKE '%' || $3 || '%'
-            OR ep.body ILIKE '%' || $3 || '%'
-            OR COALESCE(target_cp.first_name, '') ILIKE '%' || $3 || '%'
-            OR COALESCE(target_cp.last_name, '') ILIKE '%' || $3 || '%'
-            OR COALESCE(target_su.email, target_cp.public_contact_email, '') ILIKE '%' || $3 || '%'
+            $4 = ''
+            OR COALESCE(ep.title, '') ILIKE '%' || $4 || '%'
+            OR ep.body ILIKE '%' || $4 || '%'
+            OR COALESCE(target_cp.first_name, '') ILIKE '%' || $4 || '%'
+            OR COALESCE(target_cp.last_name, '') ILIKE '%' || $4 || '%'
+            OR COALESCE(target_su.email, target_cp.public_contact_email, '') ILIKE '%' || $4 || '%'
           )
         ORDER BY
           CASE ep.status
@@ -7012,7 +7158,7 @@ router.get('/encouragements', requireAdmin, async (req, res, next) => {
           COALESCE(ep.scheduled_at, ep.published_at, ep.updated_at) DESC
         LIMIT 250
         `,
-        [status, visibility, search],
+        [status, visibility, messageType, search],
       ),
       pool.query(
         `
@@ -7021,6 +7167,8 @@ router.get('/encouragements', requireAdmin, async (req, res, next) => {
           COUNT(*) FILTER (WHERE status = 'scheduled')::int AS scheduled,
           COUNT(*) FILTER (WHERE status = 'published')::int AS published,
           COUNT(*) FILTER (WHERE status = 'archived')::int AS archived,
+          COUNT(*) FILTER (WHERE message_type = 'encouragement')::int AS encouragements,
+          COUNT(*) FILTER (WHERE message_type = 'announcement')::int AS announcements,
           COALESCE((
             SELECT COUNT(*)::int
             FROM encouragement_recipients
@@ -7073,18 +7221,20 @@ router.post('/encouragements', requireAdmin, async (req, res, next) => {
       INSERT INTO encouragement_posts (
         title,
         body,
+        message_type,
         visibility,
         status,
         scheduled_at,
         published_at,
         created_by
       )
-      VALUES ($1, $2, $3, $4, $5, $6, $7)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
       RETURNING *
       `,
       [
         payload.title || null,
         payload.body,
+        payload.messageType,
         payload.visibility,
         state.status,
         state.scheduledAt,
@@ -7194,10 +7344,11 @@ router.patch('/encouragements/:encouragementId', requireAdmin, async (req, res, 
       SET
         title = $2,
         body = $3,
-        visibility = $4,
-        status = $5,
-        scheduled_at = $6,
-        published_at = $7,
+        message_type = $4,
+        visibility = $5,
+        status = $6,
+        scheduled_at = $7,
+        published_at = $8,
         updated_at = now()
       WHERE id = $1
       RETURNING *
@@ -7206,6 +7357,7 @@ router.patch('/encouragements/:encouragementId', requireAdmin, async (req, res, 
         req.params.encouragementId,
         payload.title || null,
         payload.body,
+        payload.messageType,
         payload.visibility,
         state.status,
         state.scheduledAt,
@@ -7216,6 +7368,7 @@ router.patch('/encouragements/:encouragementId', requireAdmin, async (req, res, 
     const contentChanged =
       before.title !== (payload.title || null) ||
       before.body !== payload.body ||
+      before.message_type !== payload.messageType ||
       before.visibility !== payload.visibility ||
       String(before.existing_client_profile_id || '') !== String(payload.clientProfileId || '')
 

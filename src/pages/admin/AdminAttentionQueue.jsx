@@ -6,6 +6,7 @@ import {
   useState,
 } from 'react'
 import { useNavigate } from 'react-router-dom'
+import AdminAdvancedFilterToggle from '../../components/admin/AdminAdvancedFilterToggle.jsx'
 import AdminFrame from '../../components/admin/AdminFrame.jsx'
 import { useAdminConfirm } from '../../components/admin/AdminConfirmContext.js'
 import {
@@ -136,6 +137,7 @@ export default function AdminAttentionQueue() {
   const [ownership, setOwnership] = useState('all')
   const [timing, setTiming] = useState('all')
   const [priority, setPriority] = useState('all')
+  const [filtersOpen, setFiltersOpen] = useState(false)
   const [selectedKey, setSelectedKey] = useState('')
   const selectedKeyRef = useRef('')
   const [draft, setDraft] = useState(null)
@@ -430,7 +432,7 @@ export default function AdminAttentionQueue() {
             </button>
           </div>
 
-          <div className="pwc-attention14-controls">
+          <div className={`pwc-attention14-controls pwc-ops36-filters${filtersOpen ? ' is-open' : ''}`}>
             <label className="pwc-attention14-search">
               <span>Search attention</span>
               <input
@@ -440,6 +442,12 @@ export default function AdminAttentionQueue() {
                 onChange={(event) => setQuery(event.target.value)}
               />
             </label>
+
+            <AdminAdvancedFilterToggle
+              open={filtersOpen}
+              activeCount={[source !== 'all', ownership !== 'all', timing !== 'all', priority !== 'all'].filter(Boolean).length}
+              onToggle={() => setFiltersOpen((current) => !current)}
+            />
 
             <label>
               <span>Source</span>

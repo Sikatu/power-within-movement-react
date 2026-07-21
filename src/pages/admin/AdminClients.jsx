@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { useNavigate, useParams } from 'react-router-dom'
 import AdminFrame from '../../components/admin/AdminFrame'
 import ClientProfileTabs from '../../components/admin/ClientProfileTabs'
@@ -439,7 +440,9 @@ export default function AdminClients() {
   const [clientStatusFilter, setClientStatusFilter] = useState('all')
   const [clientInterestFilter, setClientInterestFilter] = useState('all')
   const [portalStatusFilter, setPortalStatusFilter] = useState('all')
+  const [showClientFilters, setShowClientFilters] = useState(false)
   const [selectedClient, setSelectedClient] = useState(null)
+  const [clientActionMenu, setClientActionMenu] = useState(null)
   const [editingClient, setEditingClient] = useState(null)
   const [isClientFormOpen, setIsClientFormOpen] = useState(false)
   const [clientDetailSection, setClientDetailSection] = useState(() =>
@@ -473,22 +476,51 @@ export default function AdminClients() {
   const [error, setError] = useState('')
 
   useEffect(() => {
-    function handleDocumentClientActionMenuClose(event) {
-      if (event.target.closest?.('.client-action-menu-v1')) return
+    if (!clientActionMenu) return undefined
 
+    const focusTimer = window.requestAnimationFrame(() => {
       document
-        .querySelectorAll('.client-action-menu-v1[open]')
-        .forEach((menu) => {
-          menu.removeAttribute('open')
-        })
+        .getElementById(clientActionMenu.menuId)
+        ?.querySelector('[role="menuitem"]')
+        ?.focus()
+    })
+
+    function handleDocumentClientActionMenuClose(event) {
+      if (
+        event.target.closest?.(
+          '.client-action-menu-button-v1, .client-action-menu-panel-v1',
+        )
+      ) {
+        return
+      }
+
+      setClientActionMenu(null)
+    }
+
+    function handleClientActionMenuEscape(event) {
+      if (event.key !== 'Escape') return
+
+      event.preventDefault()
+      const triggerId = clientActionMenu.triggerId
+      setClientActionMenu(null)
+      window.requestAnimationFrame(() => {
+        document.getElementById(triggerId)?.focus()
+      })
     }
 
     document.addEventListener('mousedown', handleDocumentClientActionMenuClose)
+    document.addEventListener('keydown', handleClientActionMenuEscape)
+    window.addEventListener('resize', handleDocumentClientActionMenuClose)
+    window.addEventListener('scroll', handleDocumentClientActionMenuClose, true)
 
     return () => {
+      window.cancelAnimationFrame(focusTimer)
       document.removeEventListener('mousedown', handleDocumentClientActionMenuClose)
+      document.removeEventListener('keydown', handleClientActionMenuEscape)
+      window.removeEventListener('resize', handleDocumentClientActionMenuClose)
+      window.removeEventListener('scroll', handleDocumentClientActionMenuClose, true)
     }
-  }, [])
+  }, [clientActionMenu])
 
   async function loadClients() {
     const response = await getAdminClients()
@@ -742,6 +774,12 @@ export default function AdminClients() {
     clientStatusFilter !== 'all' ||
     portalStatusFilter !== 'all'
 
+  const advancedClientFilterCount = [
+    clientInterestFilter !== 'all',
+    clientStatusFilter !== 'all',
+    portalStatusFilter !== 'all',
+  ].filter(Boolean).length
+
   const selectedClientIsHiddenByFilters =
     selectedClient &&
     filteredClients.length > 0 &&
@@ -811,6 +849,12 @@ export default function AdminClients() {
 
     setClientDetailSection(normalizedSection)
     navigate(`/admin/clients/${selectedClient.id}/${normalizedSection}`)
+    window.requestAnimationFrame(() => {
+      document.querySelector('.client-detail-card-v2')?.scrollTo({
+        top: 0,
+        behavior: 'smooth',
+      })
+    })
   }
 
   async function handleViewClient(client) {
@@ -822,6 +866,9 @@ export default function AdminClients() {
     setForm(emptyClientForm)
     setNotice('')
     setError('')
+    window.requestAnimationFrame(() => {
+      document.querySelector('.client-detail-card-v2')?.scrollTo({ top: 0 })
+    })
     await Promise.all([
       loadCareTimeline(client),
       loadPortalInvites(client),
@@ -847,18 +894,67 @@ export default function AdminClients() {
     ])
   }
 
-  function handleClientActionMenuToggle(event) {
-    const currentMenu = event.currentTarget
+  function handleClientActionMenuToggle(event, client) {
+    event.preventDefault()
+    event.stopPropagation()
 
-    if (!currentMenu.open) return
+    const trigger = event.currentTarget
+    const triggerRect = trigger.getBoundingClientRect()
+    const triggerId = `client-action-trigger-${client.id}`
+    const menuId = `client-action-menu-${client.id}`
+    const menuWidth = 208
+    const menuHeight = 176
+    const viewportPadding = 10
+    const menuGap = 7
 
-    document
-      .querySelectorAll('.client-action-menu-v1[open]')
-      .forEach((menu) => {
-        if (menu !== currentMenu) {
-          menu.removeAttribute('open')
-        }
-      })
+    setClientActionMenu((currentMenu) => {
+      if (String(currentMenu?.client?.id) === String(client.id)) return null
+
+      const hasRoomBelow =
+        window.innerHeight - triggerRect.bottom >= menuHeight + viewportPadding
+      const top = hasRoomBelow
+        ? triggerRect.bottom + menuGap
+        : Math.max(viewportPadding, triggerRect.top - menuHeight - menuGap)
+      const left = Math.min(
+        Math.max(viewportPadding, triggerRect.right - menuWidth),
+        window.innerWidth - menuWidth - viewportPadding,
+      )
+
+      return {
+        client,
+        left,
+        menuId,
+        top,
+        triggerId,
+      }
+    })
+  }
+
+  function handleClientActionMenuKeyDown(event) {
+    if (!['ArrowDown', 'ArrowUp', 'Home', 'End'].includes(event.key)) return
+
+    const menuItems = Array.from(
+      event.currentTarget.querySelectorAll('[role="menuitem"]'),
+    )
+    const currentIndex = menuItems.indexOf(document.activeElement)
+    let nextIndex = currentIndex
+
+    if (event.key === 'Home') nextIndex = 0
+    if (event.key === 'End') nextIndex = menuItems.length - 1
+    if (event.key === 'ArrowDown') {
+      nextIndex = currentIndex < menuItems.length - 1 ? currentIndex + 1 : 0
+    }
+    if (event.key === 'ArrowUp') {
+      nextIndex = currentIndex > 0 ? currentIndex - 1 : menuItems.length - 1
+    }
+
+    event.preventDefault()
+    menuItems[nextIndex]?.focus()
+  }
+
+  function runClientAction(action) {
+    setClientActionMenu(null)
+    action()
   }
 
   function handleBackToClientRecords() {
@@ -1438,6 +1534,23 @@ export default function AdminClients() {
           </div>
         )}
 
+        {(selectedClient || isClientFormOpen) && (
+          <button
+            type="button"
+            className="client-drawer-backdrop-v3"
+            aria-label={
+              isClientFormOpen
+                ? 'Close client editor'
+                : `Close ${selectedClient?.name || 'client'} quick profile`
+            }
+            onClick={
+              isClientFormOpen
+                ? handleCloseClientForm
+                : handleBackToClientRecords
+            }
+          />
+        )}
+
         <section className="client-circle-workspace-v2">
           {isClientFormOpen && (
           <article className="client-circle-card-v2 client-form-card-v2 client-form-drawer-v2">
@@ -1560,6 +1673,9 @@ export default function AdminClients() {
               <div>
                 <p className="admin-eyebrow">Client Records</p>
                 <h2>Private Client Records</h2>
+                <p className="client-record-instruction-v2">
+                  Choose any client row to open their complete care profile.
+                </p>
               </div>
 
               <div className="client-record-header-actions-v2">
@@ -1575,16 +1691,41 @@ export default function AdminClients() {
               </div>
             </div>
 
-            <div className="client-circle-filter-bar-v2">
+            <div className="client-directory-toolbar-v4">
               <label className="client-circle-search-v2">
-                <span>Search Client Circle</span>
+                <span className="sr-only">Search Client Circle</span>
                 <input
                   type="search"
                   value={clientSearchTerm}
                   onChange={(event) => setClientSearchTerm(event.target.value)}
-                  placeholder="Search name, email, phone, or status..."
+                  placeholder="Search clients"
                 />
               </label>
+
+              <div className="client-directory-toolbar-actions-v4">
+                <button
+                  type="button"
+                  className={showClientFilters ? 'is-active' : ''}
+                  aria-expanded={showClientFilters}
+                  aria-controls="client-advanced-filters"
+                  onClick={() => setShowClientFilters((current) => !current)}
+                >
+                  Filters{advancedClientFilterCount > 0 ? ` (${advancedClientFilterCount})` : ''}
+                </button>
+
+                {hasClientFilters && (
+                  <button type="button" onClick={handleClearClientFilters}>
+                    Reset
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {showClientFilters && (
+            <div
+              id="client-advanced-filters"
+              className="client-circle-filter-bar-v2 client-advanced-filters-v4"
+            >
 
               <label>
                 <span>Interest</span>
@@ -1633,13 +1774,8 @@ export default function AdminClients() {
                   ))}
                 </select>
               </label>
-
-              {hasClientFilters && (
-                                <button type="button" onClick={handleClearClientFilters}>
-                  Clear Filters
-                </button>
-              )}
             </div>
+            )}
 
             <div className="client-quick-filter-strip-v2" aria-label="Quick client filters">
               <button
@@ -1716,7 +1852,9 @@ export default function AdminClients() {
                       <th>Interest</th>
                       <th>Client Status</th>
                       <th>Portal Status</th>
-                      <th>Action</th>
+                      <th>
+                        <span className="client-action-column-label-v3">More</span>
+                      </th>
                     </tr>
                   </thead>
 
@@ -1730,11 +1868,11 @@ export default function AdminClients() {
                         aria-selected={selectedClient?.id === client.id}
                         tabIndex={0}
                         onClick={(event) => {
-                          if (event.target.closest('.client-action-menu-v1')) return
+                          if (event.target.closest('.client-action-menu-button-v1')) return
                           handleViewClient(client)
                         }}
                         onKeyDown={(event) => {
-                          if (event.target.closest('.client-action-menu-v1')) return
+                          if (event.target.closest('.client-action-menu-button-v1')) return
                           if (event.key !== 'Enter' && event.key !== ' ') return
                           event.preventDefault()
                           handleViewClient(client)
@@ -1762,44 +1900,26 @@ export default function AdminClients() {
                             {client.portalStatus}
                           </span>
                         </td>
-                        <td data-label="Action" className="client-action-cell-v1">
-                          <details className="client-action-menu-v1" onToggle={handleClientActionMenuToggle}>
-                            <summary className="client-action-menu-button-v1" aria-label="Open client menu">
-                              <span aria-hidden="true">⋯</span>
-                            </summary>
-
-                            <div className="client-action-menu-panel-v1">
-                              <button
-                                type="button"
-                                onClick={(event) => {
-                                  event.currentTarget.closest('details')?.removeAttribute('open')
-                                  handleViewClient(client)
-                                }}
-                              >
-                                View Profile
-                              </button>
-
-                              <button
-                                type="button"
-                                onClick={(event) => {
-                                  event.currentTarget.closest('details')?.removeAttribute('open')
-                                  navigate(`/admin/client-360/${client.id}`)
-                                }}
-                              >
-                                Open Client 360
-                              </button>
-
-                              <button
-                                type="button"
-                                onClick={(event) => {
-                                  event.currentTarget.closest('details')?.removeAttribute('open')
-                                  handleEditClient(client)
-                                }}
-                              >
-                                Edit Profile
-                              </button>
-                            </div>
-                          </details>
+                        <td data-label="More actions" className="client-action-cell-v1">
+                          <button
+                            id={`client-action-trigger-${client.id}`}
+                            type="button"
+                            className="client-action-menu-button-v1"
+                            aria-label={`Actions for ${client.name}`}
+                            aria-haspopup="menu"
+                            aria-expanded={
+                              String(clientActionMenu?.client?.id) === String(client.id)
+                            }
+                            aria-controls={
+                              String(clientActionMenu?.client?.id) === String(client.id)
+                                ? `client-action-menu-${client.id}`
+                                : undefined
+                            }
+                            title={`Actions for ${client.name}`}
+                            onClick={(event) => handleClientActionMenuToggle(event, client)}
+                          >
+                            <span aria-hidden="true">•••</span>
+                          </button>
                         </td>
                       </tr>
                     ))}
@@ -1810,12 +1930,79 @@ export default function AdminClients() {
           </article>
         </section>
 
+        {clientActionMenu &&
+          createPortal(
+            <div
+              id={clientActionMenu.menuId}
+              className="client-action-menu-panel-v1"
+              role="menu"
+              aria-label={`Actions for ${clientActionMenu.client.name}`}
+              style={{
+                left: `${clientActionMenu.left}px`,
+                top: `${clientActionMenu.top}px`,
+              }}
+              onKeyDown={handleClientActionMenuKeyDown}
+            >
+              <div className="client-action-menu-context-v3">
+                <span>Client actions</span>
+                <strong title={clientActionMenu.client.name}>
+                  {clientActionMenu.client.name}
+                </strong>
+              </div>
+
+              <button
+                type="button"
+                role="menuitem"
+                onClick={() =>
+                  runClientAction(() => handleViewClient(clientActionMenu.client))
+                }
+              >
+                <span className="client-action-menu-icon-v3" aria-hidden="true">↗</span>
+                <span>
+                  <strong>Quick profile</strong>
+                  <small>Care snapshot</small>
+                </span>
+              </button>
+
+              <button
+                type="button"
+                role="menuitem"
+                onClick={() =>
+                  runClientAction(() =>
+                    navigate(`/admin/client-360/${clientActionMenu.client.id}`),
+                  )
+                }
+              >
+                <span className="client-action-menu-icon-v3" aria-hidden="true">◎</span>
+                <span>
+                  <strong>Client 360</strong>
+                  <small>Full workspace</small>
+                </span>
+              </button>
+
+              <button
+                type="button"
+                role="menuitem"
+                onClick={() =>
+                  runClientAction(() => handleEditClient(clientActionMenu.client))
+                }
+              >
+                <span className="client-action-menu-icon-v3" aria-hidden="true">✎</span>
+                <span>
+                  <strong>Edit details</strong>
+                  <small>Update client record</small>
+                </span>
+              </button>
+            </div>,
+            document.body,
+          )}
+
         <section className="client-circle-detail-v2" aria-hidden={!selectedClient}>
           {selectedClient ? (
             <article className="client-circle-card-v2 client-detail-card-v2">
               <div className="client-card-header-v2 is-horizontal">
                 <div>
-                  <p className="admin-eyebrow">Care Timeline</p>
+                  <p className="admin-eyebrow">Quick Profile</p>
                   <h2>{selectedClient.name}</h2>
                 </div>
 
@@ -1836,8 +2023,14 @@ export default function AdminClients() {
                     Edit Profile
                   </button>
 
-                  <button type="button" onClick={handleBackToClientRecords}>
-                    Back to Client Directory
+                  <button
+                    type="button"
+                    className="client-detail-close-v3"
+                    aria-label="Close quick profile"
+                    title="Close quick profile"
+                    onClick={handleBackToClientRecords}
+                  >
+                    <span aria-hidden="true">×</span>
                   </button>
                 </div>
               </div>
@@ -1847,44 +2040,60 @@ export default function AdminClients() {
                 onSelect={handleClientSectionChange}
               />
 
-              <section className="client-communication-card-v3">
-                <div>
-                  <p className="admin-eyebrow">Direct Communication</p>
-                  <h3>Contact {selectedClient.name}</h3>
-                  <p>
-                    Keep direct contact details and portal email activity together
-                    without mixing them into the care record.
-                  </p>
-                </div>
-
-                <div className="client-communication-contact-grid-v3">
-                  <article>
-                    <span>Email</span>
-                    <strong>
-                      {getClientEmailDisplay(selectedClient) || 'No email saved'}
-                    </strong>
-                    <div className="client-profile-quick-actions-v2">
-                      <button type="button" onClick={handleCopySelectedClientEmail}>
-                        Copy Email
-                      </button>
-                      <button type="button" onClick={handleEmailSelectedClient}>
-                        Email Client
-                      </button>
+              {clientDetailSection === 'communication' && (
+                <section
+                  id="client-profile-panel-communication"
+                  className="client-detail-panel-v3"
+                  role="tabpanel"
+                  aria-labelledby="client-profile-tab-communication"
+                >
+                  <section className="client-communication-card-v3">
+                    <div>
+                      <p className="admin-eyebrow">Direct Communication</p>
+                      <h3>Contact {selectedClient.name}</h3>
+                      <p>
+                        Keep direct contact details and portal email activity together
+                        without mixing them into the care record.
+                      </p>
                     </div>
-                  </article>
 
-                  <article>
-                    <span>Phone</span>
-                    <strong>{selectedClient.phone || 'No phone saved'}</strong>
-                    <div className="client-profile-quick-actions-v2">
-                      <button type="button" onClick={handleCopySelectedClientPhone}>
-                        Copy Phone
-                      </button>
+                    <div className="client-communication-contact-grid-v3">
+                      <article>
+                        <span>Email</span>
+                        <strong>
+                          {getClientEmailDisplay(selectedClient) || 'No email saved'}
+                        </strong>
+                        <div className="client-profile-quick-actions-v2">
+                          <button type="button" onClick={handleCopySelectedClientEmail}>
+                            Copy Email
+                          </button>
+                          <button type="button" onClick={handleEmailSelectedClient}>
+                            Email Client
+                          </button>
+                        </div>
+                      </article>
+
+                      <article>
+                        <span>Phone</span>
+                        <strong>{selectedClient.phone || 'No phone saved'}</strong>
+                        <div className="client-profile-quick-actions-v2">
+                          <button type="button" onClick={handleCopySelectedClientPhone}>
+                            Copy Phone
+                          </button>
+                        </div>
+                      </article>
                     </div>
-                  </article>
-                </div>
-              </section>
+                  </section>
+                </section>
+              )}
 
+              {clientDetailSection === 'overview' && (
+                <section
+                  id="client-profile-panel-overview"
+                  className="client-detail-panel-v3"
+                  role="tabpanel"
+                  aria-labelledby="client-profile-tab-overview"
+                >
               <div className="client-detail-grid-v2">
                 <div>
                   <span>Email</span>
@@ -1989,9 +2198,15 @@ export default function AdminClients() {
                 </section>
               </div>
 
-
-
-              {/* phase-3-7-service-records-ui-start */}
+                </section>
+              )}
+              {clientDetailSection === 'portal-access' && (
+                <section
+                  id="client-profile-panel-portal-access"
+                  className="client-detail-panel-v3"
+                  role="tabpanel"
+                  aria-labelledby="client-profile-tab-portal-access"
+                >
               {/* phase-3-9a-portal-invite-ui-start */}
               <div className="client-portal-invite-v2">
                 <div>
@@ -2277,6 +2492,16 @@ export default function AdminClients() {
               </div>
               {/* phase-3-9i-portal-invite-email-ui-end */}
 
+                </section>
+              )}
+
+              {clientDetailSection === 'resources' && (
+                <section
+                  id="client-profile-panel-resources"
+                  className="client-detail-panel-v3"
+                  role="tabpanel"
+                  aria-labelledby="client-profile-tab-resources"
+                >
               {/* phase-3-9d-client-portal-resources-ui-start */}
               <div className="client-portal-resources-v2">
                 <div className="client-timeline-header-v2">
@@ -2445,6 +2670,17 @@ export default function AdminClients() {
               </div>
               {/* phase-3-9d-client-portal-resources-ui-end */}
 
+                </section>
+              )}
+
+              {clientDetailSection === 'care' && (
+                <section
+                  id="client-profile-panel-care"
+                  className="client-detail-panel-v3"
+                  role="tabpanel"
+                  aria-labelledby="client-profile-tab-care"
+                >
+              {/* phase-3-7-service-records-ui-start */}
               <div className="client-service-records-v2">
                 <div className="client-timeline-header-v2">
                   <div>
@@ -2710,6 +2946,16 @@ export default function AdminClients() {
               </div>
               {/* phase-3-7-service-records-ui-end */}
 
+                </section>
+              )}
+
+              {clientDetailSection === 'activity' && (
+                <section
+                  id="client-profile-panel-activity"
+                  className="client-detail-panel-v3"
+                  role="tabpanel"
+                  aria-labelledby="client-profile-tab-activity"
+                >
               <div className="client-timeline-v2">
                 <div className="client-timeline-header-v2">
                   <div>
@@ -2744,17 +2990,10 @@ export default function AdminClients() {
                   </ol>
                 )}
               </div>
+                </section>
+              )}
             </article>
-          ) : (
-            <article className="client-circle-card-v2 client-detail-card-v2">
-              <p className="admin-eyebrow">Care Notes</p>
-              <h2>Select someone from the Client Circle to view and care for their profile.</h2>
-              <p>
-                Private notes, portal-facing notes, profile details, booking
-                history, and activity timeline will appear here.
-              </p>
-            </article>
-          )}
+          ) : null}
         </section>
       </div>
     </AdminFrame>

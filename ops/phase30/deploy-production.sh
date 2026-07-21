@@ -5,7 +5,7 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 MODE="${1:-preview}"
 RELEASE_TAG="${PWC_RELEASE_TAG:-}"
 PM2_APP="${PWC_PM2_APP:-}"
-EVIDENCE_FILE="${PWC_PHASE30_EVIDENCE_FILE:-}"
+EVIDENCE_FILE="${PWC_RELEASE_EVIDENCE_FILE:-${PWC_PHASE30_EVIDENCE_FILE:-}}"
 BACKUP_MANIFEST="${PHASE30_BACKUP_MANIFEST:-}"
 HEALTH_URL="${PWC_API_HEALTH_URL:-}"
 CONFIG_SNAPSHOT_REF="${PWC_SECURE_CONFIG_SNAPSHOT_REF:-}"
@@ -13,7 +13,7 @@ STORAGE_SNAPSHOT_REF="${PWC_STORAGE_ROLLBACK_REF:-}"
 
 cd "$ROOT"
 
-echo "Phase 30 production deployment"
+echo "Phase 50 final release-candidate deployment"
 echo "Mode: $MODE"
 echo "Release tag: ${RELEASE_TAG:-not set}"
 echo "PM2 app: ${PM2_APP:-not set}"
@@ -71,7 +71,7 @@ node server/scripts/verify-phase30-postgres-backup.cjs "$BACKUP_MANIFEST"
 
 npm ci
 npm --prefix server ci
-npm run admin:qa:phase30
+npm run admin:qa:phase50
 npm --prefix server run db:migrate:ordered
 npm run build
 pm2 reload "$PM2_APP" --update-env
@@ -88,4 +88,4 @@ fi
 curl --fail --show-error --silent "$HEALTH_URL" > "$CHECKPOINT/health-after.json"
 git rev-parse HEAD > "$CHECKPOINT/deployed-commit.txt"
 pm2 jlist > "$CHECKPOINT/pm2-after.json"
-echo "Phase 30 deployment completed. Checkpoint: $CHECKPOINT"
+echo "Phase 50 deployment completed. Checkpoint: $CHECKPOINT"

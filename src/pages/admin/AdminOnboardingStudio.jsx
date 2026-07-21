@@ -98,11 +98,12 @@ function onboardingToForm(record) {
 
 export default function AdminOnboardingStudio() {
   const [studio, setStudio] = useState(null)
-  const [activeTab, setActiveTab] = useState('templates')
+  const [activeTab, setActiveTab] = useState('clients')
   const [selectedTemplateId, setSelectedTemplateId] = useState('')
   const [templateForm, setTemplateForm] = useState({ ...emptyTemplate, fields: [emptyField(1)] })
   const [selectedRecordId, setSelectedRecordId] = useState('')
   const [onboardingForm, setOnboardingForm] = useState({ ...emptyOnboarding })
+  const [isOnboardingEditorOpen, setIsOnboardingEditorOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
   const [notice, setNotice] = useState('')
@@ -155,11 +156,6 @@ export default function AdminOnboardingStudio() {
         if (firstTemplate) {
           setSelectedTemplateId(firstTemplate.id)
           setTemplateForm(templateToForm(firstTemplate))
-        }
-        const firstRecord = response.onboardingRecords?.[0]
-        if (firstRecord) {
-          setSelectedRecordId(firstRecord.id)
-          setOnboardingForm(onboardingToForm(firstRecord))
         }
       })
       .catch((loadError) => {
@@ -271,6 +267,7 @@ export default function AdminOnboardingStudio() {
   function selectRecord(record) {
     setSelectedRecordId(record.id)
     setOnboardingForm(onboardingToForm(record))
+    setIsOnboardingEditorOpen(true)
     setError('')
     setNotice('')
   }
@@ -283,6 +280,7 @@ export default function AdminOnboardingStudio() {
       templateId: activeOnboardingTemplates[0]?.id || '',
       assignedToUserId: studio?.team?.[0]?.id || '',
     })
+    setIsOnboardingEditorOpen(true)
   }
 
   async function saveOnboarding(event) {
@@ -340,16 +338,16 @@ export default function AdminOnboardingStudio() {
         <header className="onboarding-studio-header">
           <div>
             <p className="eyebrow">Client Journey</p>
-            <h1>Booking, Intake & Onboarding</h1>
-            <p>Connect appointment requests, private intake forms, client preparation, portal onboarding, and reminder communication in one guided flow.</p>
+            <h1>Onboarding</h1>
+            <p>Move each client from booking to a prepared, welcoming start.</p>
           </div>
-          <button type="button" onClick={runDueMessages} disabled={isSaving}>Process Due Messages</button>
+          <button type="button" onClick={runDueMessages} disabled={isSaving}>Send Due Messages</button>
         </header>
 
         {error && <div className="onboarding-studio-alert is-error" role="alert">{error}</div>}
         {notice && <div className="onboarding-studio-alert is-success" role="status">{notice}</div>}
 
-        <section className="onboarding-studio-metrics">
+        <section className="onboarding-studio-metrics" aria-label="Onboarding summary">
           <article><span>Active onboarding</span><strong>{studio?.stats?.active || 0}</strong></article>
           <article><span>Ready for review</span><strong>{studio?.stats?.submitted || 0}</strong></article>
           <article><span>Completed</span><strong>{studio?.stats?.completed || 0}</strong></article>
@@ -358,9 +356,9 @@ export default function AdminOnboardingStudio() {
         </section>
 
         <nav className="onboarding-studio-tabs" aria-label="Booking and onboarding sections">
-          <button className={activeTab === 'templates' ? 'is-active' : ''} type="button" onClick={() => setActiveTab('templates')}>Intake Templates</button>
-          <button className={activeTab === 'appointments' ? 'is-active' : ''} type="button" onClick={() => setActiveTab('appointments')}>Appointment Automation</button>
-          <button className={activeTab === 'clients' ? 'is-active' : ''} type="button" onClick={() => setActiveTab('clients')}>Client Onboarding</button>
+          <button className={activeTab === 'clients' ? 'is-active' : ''} type="button" onClick={() => setActiveTab('clients')}>Clients</button>
+          <button className={activeTab === 'appointments' ? 'is-active' : ''} type="button" onClick={() => setActiveTab('appointments')}>Booking Rules</button>
+          <button className={activeTab === 'templates' ? 'is-active' : ''} type="button" onClick={() => setActiveTab('templates')}>Forms</button>
         </nav>
 
         {activeTab === 'templates' && (
@@ -433,6 +431,17 @@ export default function AdminOnboardingStudio() {
               {(studio?.onboardingRecords || []).length === 0 && <p className="onboarding-empty">No client onboarding records yet.</p>}
             </aside>
 
+            {!isOnboardingEditorOpen ? (
+              <section className="onboarding-start-card">
+                <span aria-hidden="true">✦</span>
+                <div>
+                  <p className="eyebrow">Client journey</p>
+                  <h2>Start onboarding when a client is ready.</h2>
+                  <p>Choose an existing journey from the left, or begin a focused welcome flow for a new client.</p>
+                </div>
+                <button type="button" onClick={startNewOnboarding}>Start client onboarding</button>
+              </section>
+            ) : (
             <form className="onboarding-template-editor" onSubmit={saveOnboarding}>
               <header><div><p className="eyebrow">Client Journey</p><h2>{selectedRecord?.clientName || 'Start client onboarding'}</h2></div><button type="submit" disabled={isSaving || !onboardingForm.clientId}>{isSaving ? 'Saving...' : 'Save Onboarding'}</button></header>
               <div className="onboarding-form-grid">
@@ -453,6 +462,7 @@ export default function AdminOnboardingStudio() {
                 </section>
               )}
             </form>
+            )}
           </section>
         )}
       </div>

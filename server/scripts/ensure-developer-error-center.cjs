@@ -1,4 +1,5 @@
 const path = require('path')
+const crypto = require('crypto')
 
 require(path.resolve(__dirname, '..', 'node_modules', 'dotenv')).config({
   path: path.resolve(__dirname, '..', '.env'),
@@ -84,9 +85,9 @@ async function main() {
       )
     `)
 
-    // Older installations may already have this table without the unique
-    // fingerprint constraint required by ON CONFLICT (fingerprint). Preserve
-    // the newest record and its accumulated occurrence history before repair.
+    // Older installations may already have this table without the exact,
+    // non-deferrable constraint used by Error Center writes. Preserve the
+    // newest record and its accumulated occurrence history before repair.
     await client.query(`
       CREATE TEMP TABLE pwc_application_error_fingerprint_repair
       ON COMMIT DROP
@@ -133,32 +134,85 @@ async function main() {
 
     await client.query(`
       DO $$
+      DECLARE
+        constraint_is_ready BOOLEAN;
       BEGIN
-        IF NOT EXISTS (
+        SELECT EXISTS (
           SELECT 1
-          FROM pg_index index_record
+          FROM pg_constraint constraint_record
           JOIN pg_class table_record
-            ON table_record.oid = index_record.indrelid
+            ON table_record.oid = constraint_record.conrelid
           JOIN pg_namespace schema_record
             ON schema_record.oid = table_record.relnamespace
           JOIN pg_attribute attribute_record
             ON attribute_record.attrelid = table_record.oid
-           AND attribute_record.attnum = ANY(index_record.indkey::smallint[])
+           AND attribute_record.attname = 'fingerprint'
           WHERE schema_record.nspname = current_schema()
             AND table_record.relname = 'application_errors'
-            AND index_record.indisunique
-            AND index_record.indpred IS NULL
-            AND index_record.indexprs IS NULL
-            AND index_record.indnkeyatts = 1
-            AND attribute_record.attname = 'fingerprint'
-        ) THEN
+            AND constraint_record.conname = 'application_errors_fingerprint_unique'
+            AND constraint_record.contype = 'u'
+            AND constraint_record.convalidated
+            AND NOT constraint_record.condeferrable
+            AND constraint_record.conkey = ARRAY[attribute_record.attnum]::smallint[]
+        ) INTO constraint_is_ready;
+
+        IF NOT constraint_is_ready THEN
+          ALTER TABLE application_errors
+            DROP CONSTRAINT IF EXISTS application_errors_fingerprint_unique;
+
+          DROP INDEX IF EXISTS application_errors_fingerprint_unique;
+
           ALTER TABLE application_errors
             ADD CONSTRAINT application_errors_fingerprint_unique
-            UNIQUE (fingerprint);
+            UNIQUE (fingerprint) NOT DEFERRABLE;
         END IF;
       END
       $$
     `)
+
+    // Exercise the same named conflict arbiter used by production writes.
+    // The probe remains inside this transaction and is removed before commit.
+    const probeFingerprint = `phase48-error-center-probe-${crypto.randomUUID()}`
+    await client.query(`DELETE FROM application_errors WHERE fingerprint = $1`, [probeFingerprint])
+
+    const insertProbe = () => client.query(
+      `
+      INSERT INTO application_errors (
+        fingerprint,
+        source,
+        severity,
+        title,
+        message,
+        metadata
+      )
+      VALUES ($1, 'backend', 'low', 'Phase 48 persistence probe',
+              'This temporary event verifies Developer Error Center deduplication.',
+              '{"migrationProbe": true}'::jsonb)
+      ON CONFLICT ON CONSTRAINT application_errors_fingerprint_unique
+      DO UPDATE SET
+        occurrence_count = application_errors.occurrence_count + 1,
+        last_seen_at = now()
+      RETURNING id, occurrence_count
+      `,
+      [probeFingerprint],
+    )
+
+    const firstProbe = await insertProbe()
+    const secondProbe = await insertProbe()
+    const firstRow = firstProbe.rows[0]
+    const secondRow = secondProbe.rows[0]
+
+    if (
+      !firstRow
+      || !secondRow
+      || firstRow.id !== secondRow.id
+      || Number(firstRow.occurrence_count) !== 1
+      || Number(secondRow.occurrence_count) !== 2
+    ) {
+      throw new Error('Developer Error Center fingerprint deduplication probe failed.')
+    }
+
+    await client.query(`DELETE FROM application_errors WHERE fingerprint = $1`, [probeFingerprint])
 
     await client.query(`
       CREATE UNIQUE INDEX IF NOT EXISTS idx_application_errors_detector_key

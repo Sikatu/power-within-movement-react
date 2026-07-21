@@ -11,6 +11,10 @@ export const PHASE30_EVIDENCE_GATES = [
   { id: 'object-storage-roundtrip', category: 'Storage', title: 'Private upload, download, checksum, and cleanup passed' },
   { id: 'signed-private-link', category: 'Storage', title: 'Scoped link access, denial, and expiry passed' },
   { id: 'client-resource-assignment', category: 'Client portal', title: 'Asset assignment and client delivery passed' },
+  { id: 'notification-delivery', category: 'Client portal', title: 'Admin and client notification delivery passed' },
+  { id: 'client-messaging', category: 'Client portal', title: 'Private client messaging and reply flow passed' },
+  { id: 'studio-identity', category: 'Studio identity', title: 'Studio Profile and approved portal identity passed' },
+  { id: 'incident-triage', category: 'Developer tools', title: 'Error capture, notification, and incident triage passed' },
   { id: 'audience-import', category: 'Audience', title: 'CSV import and invalid-row reporting passed' },
   { id: 'duplicate-subscriber', category: 'Audience', title: 'Duplicate subscriber merge behavior passed' },
   { id: 'unsubscribe-suppression', category: 'Audience', title: 'Unsubscribe and suppression enforcement passed' },
@@ -50,6 +54,16 @@ export const RELEASE_QA_CHECKS = [
     critical: true,
   },
   {
+    id: 'studio-profile',
+    title: 'Studio Profile',
+    category: 'Core Studio',
+    endpoint: '/api/admin/studio-profile',
+    route: '/admin/studio-profile',
+    description: 'Confirms the single private Studio identity record and approved brand asset state.',
+    requiredPaths: ['profile'],
+    critical: true,
+  },
+  {
     id: 'client-circle',
     title: 'Client Circle',
     category: 'Core Studio',
@@ -69,6 +83,16 @@ export const RELEASE_QA_CHECKS = [
     description: 'Verifies booking data used by the calendar and session workspaces.',
     collectionPaths: ['bookings', 'records'],
     densityThreshold: 45,
+    critical: true,
+  },
+  {
+    id: 'notification-center',
+    title: 'Notification Center',
+    category: 'Communication',
+    endpoint: '/api/admin/notifications/summary',
+    route: '/admin/dashboard',
+    description: 'Checks recipient-scoped notification totals and unread activity.',
+    requiredPaths: ['summary'],
     critical: true,
   },
   {
@@ -184,16 +208,26 @@ export const RELEASE_QA_CHECKS = [
     critical: true,
   },
   {
-    id: 'phase30-readiness',
-    title: 'Integrated release readiness',
+    id: 'release-candidate-readiness',
+    title: 'Final release-candidate readiness',
     category: 'System',
     endpoint: '/api/admin/developer/release-readiness',
     route: '/admin/developer/qa',
-    description: 'Checks Phase 30 schema, production-shaped configuration, storage, providers, authentication, and HTTPS.',
+    description: 'Checks the complete Phase 50 schema, persistence invariants, Studio identity, production configuration, storage, providers, authentication, and HTTPS.',
     collectionPaths: ['checks'],
     requiredPaths: ['summary', 'database', 'storage', 'providers', 'environment'],
     releaseStatePath: 'summary.status',
     densityThreshold: 25,
+    critical: true,
+  },
+  {
+    id: 'incident-triage',
+    title: 'Developer incident triage',
+    category: 'System',
+    endpoint: '/api/admin/developer/errors/summary',
+    route: '/admin/developer/errors',
+    description: 'Checks Error Center persistence health, triage totals, and monitoring configuration.',
+    requiredPaths: ['summary', 'settings', 'persistence'],
     critical: true,
   },
   {
@@ -369,7 +403,7 @@ export function buildReleaseQaReport(
   const summary = summarizeReleaseQaResults(results)
   const evidence = summarizePhase30Evidence(completedEvidence)
   const lines = [
-    'Power Within Collective — Phase 30 Integrated Release QA',
+    'Power Within Collective — Phase 50 Final Release Candidate',
     `Generated: ${generatedAt}`,
     `Status: ${summary.ready && evidence.ready ? 'READY FOR SIGNED DEPLOYMENT GATE' : 'NOT READY'}`,
     `Checks: ${summary.passed} passed, ${summary.review} review, ${summary.failed} failed`,
@@ -387,7 +421,7 @@ export function buildReleaseQaReport(
     lines.push('')
   }
 
-  lines.push('Phase 30 external evidence')
+  lines.push('Phase 50 external evidence')
   for (const gate of PHASE30_EVIDENCE_GATES) {
     lines.push(`[${completedEvidence[gate.id] ? 'COMPLETE' : 'PENDING'}] ${gate.title}`)
   }

@@ -5,6 +5,7 @@ import {
   createDeveloperErrorTest,
   deleteDeveloperError,
   getDeveloperErrorCenter,
+  ignoreDeveloperSafeTestErrors,
   runDeveloperErrorChecks,
   updateDeveloperErrorStatus,
 } from '../../lib/nativeApi'
@@ -27,9 +28,28 @@ function formatDate(value) {
   }).format(new Date(value))
 }
 
+function queueLabel(value) {
+  return ({
+    attention: 'Needs attention',
+    urgent: 'Urgent',
+    recurring: 'Recurring',
+    tests: 'Safe tests',
+    history: 'History',
+    all: 'All records',
+  })[value] || 'Needs attention'
+}
+
+function recommendedStatusLabel(value) {
+  return ({
+    investigating: 'Start investigation',
+    resolved: 'Mark resolved',
+    ignored: 'Ignore safe test',
+  })[value] || 'Update status'
+}
+
 function buildQuery(filters) {
   const params = new URLSearchParams()
-  if (filters.status) params.set('status', filters.status)
+  if (filters.queue) params.set('queue', filters.queue)
   if (filters.severity) params.set('severity', filters.severity)
   if (filters.source) params.set('source', filters.source)
   if (filters.search.trim()) params.set('search', filters.search.trim())
@@ -41,7 +61,12 @@ export default function AdminDeveloperErrors({ embedded = false }) {
   const confirmAction = useAdminConfirm()
   const [snapshot, setSnapshot] = useState(null)
   const [selectedId, setSelectedId] = useState('')
-  const [filters, setFilters] = useState({ status: '', severity: '', source: '', search: '' })
+  const [filters, setFilters] = useState({
+    queue: 'attention',
+    severity: '',
+    source: '',
+    search: '',
+  })
   const [monitoringSettings, setMonitoringSettings] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
   const [isWorking, setIsWorking] = useState(false)
@@ -77,12 +102,13 @@ export default function AdminDeveloperErrors({ embedded = false }) {
   const errors = useMemo(() => snapshot?.errors || [], [snapshot])
   const selected = errors.find((item) => item.id === selectedId) || null
   const summary = snapshot?.summary || {}
+  const persistence = snapshot?.persistence || null
   const hasActiveFilters = Boolean(
-    filters.status || filters.severity || filters.source || filters.search.trim(),
+    filters.queue !== 'attention' || filters.severity || filters.source || filters.search.trim(),
   )
 
   const clearFilters = () => {
-    setFilters({ status: '', severity: '', source: '', search: '' })
+    setFilters({ queue: 'attention', severity: '', source: '', search: '' })
   }
 
   const copySelected = async (kind) => {
@@ -139,14 +165,26 @@ export default function AdminDeveloperErrors({ embedded = false }) {
               </div>
             </div>
 
-            {monitoringSettings && (
+            {(monitoringSettings || persistence) && (
               <div className="error-center-health-strip" aria-label="Monitoring status">
-                <span className={monitoringSettings.enabled ? 'is-active' : 'is-paused'}>
-                  <i aria-hidden="true" />
-                  {monitoringSettings.enabled ? 'Monitoring active' : 'Monitoring paused'}
-                </span>
-                <span>Checks every {monitoringSettings.uptimeIntervalMinutes} min</span>
-                <span>{monitoringSettings.retentionDays}-day retention</span>
+                {persistence && (
+                  <span className={persistence.status === 'ready' ? 'is-active' : 'is-paused'}>
+                    <i aria-hidden="true" />
+                    {persistence.status === 'ready'
+                      ? 'Capture storage ready'
+                      : 'Capture storage needs repair'}
+                  </span>
+                )}
+                {monitoringSettings && (
+                  <>
+                    <span className={monitoringSettings.enabled ? 'is-active' : 'is-paused'}>
+                      <i aria-hidden="true" />
+                      {monitoringSettings.enabled ? 'Monitoring active' : 'Monitoring paused'}
+                    </span>
+                    <span>Checks every {monitoringSettings.uptimeIntervalMinutes} min</span>
+                    <span>{monitoringSettings.retentionDays}-day retention</span>
+                  </>
+                )}
               </div>
             )}
           </div>
@@ -180,15 +218,15 @@ export default function AdminDeveloperErrors({ embedded = false }) {
         </header>
 
       <section className="pwc-admin-metrics-grid error-center-metrics" aria-label="Error summary">
-        <article className={Number(summary.open) > 0 ? 'is-attention' : ''}>
-          <span>Open</span>
-          <strong>{summary.open || 0}</strong>
-          <small>Needs developer review</small>
+        <article className={Number(summary.active) > 0 ? 'is-attention' : ''}>
+          <span>Needs attention</span>
+          <strong>{summary.active || 0}</strong>
+          <small>Active issues, excluding safe tests</small>
         </article>
-        <article className={Number(summary.critical) > 0 ? 'is-critical' : ''}>
-          <span>Critical</span>
-          <strong>{summary.critical || 0}</strong>
-          <small>Requires immediate action</small>
+        <article className={Number(summary.urgent) > 0 ? 'is-critical' : ''}>
+          <span>Urgent</span>
+          <strong>{summary.urgent || 0}</strong>
+          <small>High and critical active issues</small>
         </article>
         <article>
           <span>Last 24 hours</span>
@@ -196,9 +234,9 @@ export default function AdminDeveloperErrors({ embedded = false }) {
           <small>Recently detected records</small>
         </article>
         <article>
-          <span>Total occurrences</span>
-          <strong>{summary.total_occurrences || 0}</strong>
-          <small>Across all captured issues</small>
+          <span>Recurring</span>
+          <strong>{summary.recurring || 0}</strong>
+          <small>Active issues seen more than once</small>
         </article>
       </section>
 
@@ -226,15 +264,19 @@ export default function AdminDeveloperErrors({ embedded = false }) {
           />
         </label>
         <select
-          value={filters.status}
-          aria-label="Filter by status"
+          value={filters.queue}
+          aria-label="Choose triage queue"
           onChange={(event) => setFilters((current) => ({
             ...current,
-            status: event.target.value,
+            queue: event.target.value,
           }))}
         >
-          <option value="">All statuses</option>
-          {statusOptions.map((item) => <option key={item} value={item}>{label(item)}</option>)}
+          <option value="attention">Needs attention ({summary.active || 0})</option>
+          <option value="urgent">Urgent ({summary.urgent || 0})</option>
+          <option value="recurring">Recurring ({summary.recurring || 0})</option>
+          <option value="tests">Safe tests ({summary.safe_tests || 0} active)</option>
+          <option value="history">History ({Number(summary.resolved || 0) + Number(summary.ignored || 0)})</option>
+          <option value="all">All records ({summary.total || 0})</option>
         </select>
         <select
           value={filters.severity}
@@ -258,9 +300,29 @@ export default function AdminDeveloperErrors({ embedded = false }) {
           <option value="">All sources</option>
           {sourceOptions.map((item) => <option key={item} value={item}>{label(item)}</option>)}
         </select>
-        {hasActiveFilters && (
+        {filters.queue === 'tests' && Number(summary.safe_tests) > 0 ? (
+          <button
+            type="button"
+            className="error-center-clear-filters"
+            disabled={isWorking}
+            onClick={async () => {
+              const confirmed = await confirmAction({
+                title: 'Remove active safe tests from attention?',
+                message: 'The test records will be kept in history and marked ignored.',
+                confirmLabel: 'Ignore active tests',
+              })
+              if (!confirmed) return
+              act(
+                ignoreDeveloperSafeTestErrors,
+                'Active safe tests were moved out of the attention queue.',
+              )
+            }}
+          >
+            Ignore active tests
+          </button>
+        ) : hasActiveFilters && (
           <button type="button" className="error-center-clear-filters" onClick={clearFilters}>
-            Clear filters
+            Reset view
           </button>
         )}
       </section>
@@ -277,12 +339,12 @@ export default function AdminDeveloperErrors({ embedded = false }) {
       {!isLoading && errors.length === 0 && (
         <section className="error-center-state-card is-clear">
           <div className="error-center-state-icon" aria-hidden="true">✓</div>
-          <p className="eyebrow">{hasActiveFilters ? 'Filtered View' : 'System Status'}</p>
-          <h2>{hasActiveFilters ? 'No matching records' : 'All monitored systems are clear'}</h2>
+          <p className="eyebrow">{queueLabel(filters.queue)}</p>
+          <h2>{hasActiveFilters ? 'No matching records' : 'The attention queue is clear'}</h2>
           <p>
             {hasActiveFilters
-              ? 'No error records match the current search and filters.'
-              : 'There are no captured issues requiring attention in the current view.'}
+              ? `No records match the current ${queueLabel(filters.queue).toLowerCase()} view and filters.`
+              : 'There are no active production issues requiring developer attention.'}
           </p>
           <div className="error-center-state-actions">
             {hasActiveFilters && (
@@ -308,7 +370,7 @@ export default function AdminDeveloperErrors({ embedded = false }) {
             <div className="error-center-section-heading">
               <div>
                 <p className="eyebrow">Detected Issues</p>
-                <h2>{errors.length} record{errors.length === 1 ? '' : 's'}</h2>
+                <h2>{queueLabel(filters.queue)} · {errors.length}</h2>
               </div>
               <span className="error-center-list-count">{errors.length}</span>
             </div>
@@ -327,7 +389,7 @@ export default function AdminDeveloperErrors({ embedded = false }) {
                   </span>
                   <span className="error-center-row-copy">
                     <strong>{item.title}</strong>
-                    <small>{item.route || label(item.source)} · {formatDate(item.lastSeenAt)}</small>
+                    <small>{item.triage?.label || label(item.status)} · {item.route || label(item.source)} · {formatDate(item.lastSeenAt)}</small>
                   </span>
                   <span className="error-center-count">×{item.occurrenceCount}</span>
                 </button>
@@ -356,6 +418,29 @@ export default function AdminDeveloperErrors({ embedded = false }) {
                 </div>
 
                 <p className="error-center-message">{selected.message}</p>
+
+                {selected.triage?.recommendedAction && (
+                  <div className="developer-alert">
+                    <strong>Recommended next step</strong>
+                    <p>{selected.triage.recommendedAction}</p>
+                    {selected.triage.recommendedStatus && (
+                      <button
+                        type="button"
+                        className="btn primary"
+                        disabled={isWorking}
+                        onClick={() => act(
+                          () => updateDeveloperErrorStatus(
+                            selected.id,
+                            selected.triage.recommendedStatus,
+                          ),
+                          `Error marked ${label(selected.triage.recommendedStatus).toLowerCase()}.`,
+                        )}
+                      >
+                        {recommendedStatusLabel(selected.triage.recommendedStatus)}
+                      </button>
+                    )}
+                  </div>
+                )}
 
                 <div className="error-center-copy-actions" aria-label="Copy safe technical details">
                   <button type="button" onClick={() => copySelected('summary')}>Copy summary</button>

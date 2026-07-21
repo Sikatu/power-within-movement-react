@@ -14,7 +14,7 @@ export function validatePhase30Evidence(manifest, { currentCommit = '', expected
   const approval = manifest?.deploymentApproval || {}
   const evidence = manifest?.evidence || {}
 
-  if (manifest?.phase !== 30) failures.push('Manifest phase must be 30.')
+  if (manifest?.phase !== 50) failures.push('Manifest phase must be 50.')
   if (release.environment !== 'production') failures.push('Release environment must be production.')
   if (!/^[0-9a-f]{40}$/i.test(text(release.commit))) failures.push('Release commit must be a full 40-character Git SHA.')
   if (currentCommit && text(release.commit) !== text(currentCommit)) failures.push('Evidence commit does not match the checked-out Git commit.')

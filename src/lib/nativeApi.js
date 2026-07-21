@@ -450,6 +450,9 @@ export async function getAdminEncouragements(filters = {}) {
   if (filters.visibility && filters.visibility !== 'all') {
     params.set('visibility', filters.visibility)
   }
+  if (filters.messageType && filters.messageType !== 'all') {
+    params.set('messageType', filters.messageType)
+  }
   if (filters.search) params.set('search', filters.search)
 
   const query = params.toString()
@@ -1419,6 +1422,7 @@ export async function getDeveloperErrorCenter(query = '') {
   return {
     summary: summary.summary,
     settings: summary.settings,
+    persistence: summary.persistence,
     errors: errors.errors || [],
   }
 }
@@ -1451,6 +1455,12 @@ export async function saveDeveloperErrorSettings(settings) {
 
 export async function createDeveloperErrorTest() {
   return apiRequest('/api/admin/developer/errors/test', {
+    method: 'POST',
+  })
+}
+
+export async function ignoreDeveloperSafeTestErrors() {
+  return apiRequest('/api/admin/developer/errors/safe-tests/ignore', {
     method: 'POST',
   })
 }
@@ -1635,6 +1645,27 @@ export function getAssetVaultDownloadUrl(assetId) {
 export function getAssetVaultPreviewUrl(assetId) {
   return `${API_BASE_URL}/api/admin/assets/${assetId}/preview`
 }
+
+// phase-46-studio-profile-api-start
+export async function getStudioProfile() {
+  return apiRequest('/api/admin/studio-profile')
+}
+
+export async function saveStudioProfile(payload) {
+  return apiRequest('/api/admin/studio-profile', {
+    method: 'PATCH',
+    body: JSON.stringify(payload),
+  })
+}
+
+export async function getClientPortalStudioIdentity() {
+  const response = await apiRequest('/api/public/client-portal/studio-identity')
+  if (response.identity?.profileImageUrl) {
+    response.identity.profileImageUrl = `${API_BASE_URL}${response.identity.profileImageUrl}`
+  }
+  return response
+}
+// phase-46-studio-profile-api-end
 // phase-26-asset-vault-api-end
 
 // phase-27-newsletter-audience-api-start

@@ -204,7 +204,7 @@ export default function AdminLearningLibrary() {
   const [featureEnabled, setFeatureEnabled] = useState(true)
   const [selectedCourseId, setSelectedCourseId] = useState('')
   const [selectedCourse, setSelectedCourse] = useState(null)
-  const [activeTab, setActiveTab] = useState('overview')
+  const [activeTab, setActiveTab] = useState('access')
   const [courseForm, setCourseForm] = useState(emptyCourseForm)
   const [newCourseTitle, setNewCourseTitle] = useState('')
   const [moduleDraft, setModuleDraft] = useState({ title: '', description: '' })
@@ -356,7 +356,7 @@ export default function AdminLearningLibrary() {
 
   function selectCourse(courseId) {
     setSelectedCourseId(courseId)
-    setActiveTab('overview')
+    setActiveTab('access')
     setError('')
     setNotice('')
     loadCourse(courseId).catch((loadError) => {
@@ -532,10 +532,8 @@ export default function AdminLearningLibrary() {
         <header className="learning-library-header">
           <div>
             <p className="eyebrow">Programs</p>
-            <h1>Learning Library</h1>
-            <p>
-              Build guided learning experiences, choose who receives them, and follow client progress.
-            </p>
+            <h1>Programs</h1>
+            <p>Build guided learning, assign client access, and keep each journey organized.</p>
           </div>
           <div className="learning-library-header__status">
             <span>{featureEnabled ? 'Client access is live' : 'Client access is paused'}</span>
@@ -662,9 +660,9 @@ export default function AdminLearningLibrary() {
 
                 <nav className="learning-library-tabs" aria-label="Learning program sections">
                   {[
-                    ['overview', 'Overview'],
-                    ['curriculum', 'Modules & Lessons'],
-                    ['access', 'Client Access'],
+                    ['access', 'Client access'],
+                    ['curriculum', 'Lessons'],
+                    ['overview', 'Details'],
                   ].map(([key, label]) => (
                     <button
                       className={activeTab === key ? 'is-active' : ''}

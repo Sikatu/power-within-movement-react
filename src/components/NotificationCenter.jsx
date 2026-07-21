@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { useNavigate } from 'react-router-dom'
 import {
@@ -29,7 +29,7 @@ const categories = [
   ['resources', 'Resources'],
   ['learning', 'Learning'],
   ['memberships', 'Memberships'],
-  ['encouragements', 'Encouragements'],
+  ['encouragements', 'Notes & updates'],
   ['community', 'Community'],
   ['system', 'System'],
 ]
@@ -45,8 +45,24 @@ function formatTime(value) {
     return new Intl.DateTimeFormat('en-US', {
       dateStyle: 'medium',
       timeStyle: 'short',
-      timeZone: 'America/New_York',
     }).format(new Date(value))
+  } catch {
+    return ''
+  }
+}
+
+function safeNotificationPath(value, mode) {
+  if (typeof value !== 'string') return ''
+
+  const path = value.trim()
+  if (!path.startsWith('/') || path.startsWith('//')) return ''
+
+  try {
+    const url = new URL(path, window.location.origin)
+    const allowedRoot = mode === 'client' ? '/client-portal' : '/admin'
+    const allowed = url.origin === window.location.origin
+      && (url.pathname === allowedRoot || url.pathname.startsWith(`${allowedRoot}/`))
+    return allowed ? `${url.pathname}${url.search}${url.hash}` : ''
   } catch {
     return ''
   }
@@ -59,6 +75,9 @@ function categoryLabel(value) {
 export default function NotificationCenter({ mode = 'admin' }) {
   const navigate = useNavigate()
   const isClient = mode === 'client'
+  const triggerRef = useRef(null)
+  const drawerRef = useRef(null)
+  const closeButtonRef = useRef(null)
   const [open, setOpen] = useState(false)
   const [view, setView] = useState('notifications')
   const [category, setCategory] = useState('all')
@@ -73,6 +92,9 @@ export default function NotificationCenter({ mode = 'admin' }) {
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
   const [notice, setNotice] = useState('')
+  const dialogId = `pwc-${mode}-notification-dialog`
+  const notificationPanelId = `pwc-${mode}-notification-updates`
+  const preferencePanelId = `pwc-${mode}-notification-preferences`
 
   const api = useMemo(
     () =>
@@ -180,12 +202,61 @@ export default function NotificationCenter({ mode = 'admin' }) {
     if (!open) return undefined
 
     function handleKeyDown(event) {
-      if (event.key === 'Escape') setOpen(false)
+      if (event.key === 'Escape') {
+        event.preventDefault()
+        setOpen(false)
+        window.setTimeout(() => triggerRef.current?.focus(), 0)
+        return
+      }
+
+      if (event.key !== 'Tab' || !drawerRef.current) return
+
+      const focusable = Array.from(
+        drawerRef.current.querySelectorAll(
+          'button:not([disabled]), a[href], select:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])',
+        ),
+      )
+      if (focusable.length === 0) return
+
+      const first = focusable[0]
+      const last = focusable[focusable.length - 1]
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault()
+        last.focus()
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault()
+        first.focus()
+      }
     }
 
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    window.setTimeout(() => closeButtonRef.current?.focus(), 0)
     document.addEventListener('keydown', handleKeyDown)
-    return () => document.removeEventListener('keydown', handleKeyDown)
+    return () => {
+      document.body.style.overflow = previousOverflow
+      document.removeEventListener('keydown', handleKeyDown)
+    }
   }, [open])
+
+  const closeCenter = useCallback((restoreFocus = true) => {
+    setOpen(false)
+    if (restoreFocus) window.setTimeout(() => triggerRef.current?.focus(), 0)
+  }, [])
+
+  function switchViewWithKeyboard(event) {
+    if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return
+
+    event.preventDefault()
+    const nextView = event.key === 'ArrowLeft' || event.key === 'Home'
+      ? 'notifications'
+      : 'preferences'
+    setView(nextView)
+    const nextTabId = nextView === 'notifications'
+      ? `${dialogId}-updates-tab`
+      : `${dialogId}-preferences-tab`
+    window.setTimeout(() => document.getElementById(nextTabId)?.focus(), 0)
+  }
 
   async function openNotification(notification) {
     setError('')
@@ -209,21 +280,25 @@ export default function NotificationCenter({ mode = 'admin' }) {
         ),
       }))
 
-      setOpen(false)
-      if (!notification.actionUrl) return
-
-      if (notification.actionUrl.startsWith('/')) {
-        navigate(notification.actionUrl)
-      } else {
-        window.location.assign(notification.actionUrl)
+      const actionPath = safeNotificationPath(notification.actionUrl, mode)
+      if (!notification.actionUrl) {
+        setNotice('Update marked as read.')
+        return
       }
+      if (!actionPath) {
+        setError('This update does not have a safe portal destination.')
+        return
+      }
+
+      closeCenter(false)
+      navigate(actionPath)
     } catch (actionError) {
       setError(actionError.message || 'This notification could not be opened.')
     }
   }
 
   function openFullActivity() {
-    setOpen(false)
+    closeCenter(false)
     navigate('/admin/activity')
   }
 
@@ -290,10 +365,13 @@ export default function NotificationCenter({ mode = 'admin' }) {
   return (
     <div className={`pwc-notification-center is-${mode}`}>
       <button
+        ref={triggerRef}
         className="pwc-notification-trigger"
         type="button"
-        aria-label={`Notifications${summary.unread ? `, ${summary.unread} unread` : ''}`}
+        aria-label={`${isClient ? 'Updates' : 'Alerts'}${summary.unread ? `, ${summary.unread} unread` : ''}`}
+        aria-controls={dialogId}
         aria-expanded={open}
+        aria-haspopup="dialog"
         onClick={() => {
           setOpen(true)
           setView('notifications')
@@ -303,7 +381,7 @@ export default function NotificationCenter({ mode = 'admin' }) {
         <svg viewBox="0 0 24 24" aria-hidden="true">
           <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4" />
         </svg>
-        <span>Alerts</span>
+        <span>{isClient ? 'Updates' : 'Alerts'}</span>
         {Number(summary.unread || 0) > 0 && (
           <em className={Number(summary.importantUnread || 0) > 0 ? 'is-important' : ''}>
             {Number(summary.unread) > 99 ? '99+' : summary.unread}
@@ -312,26 +390,51 @@ export default function NotificationCenter({ mode = 'admin' }) {
       </button>
 
       {open && createPortal(
-        <div className="pwc-notification-overlay" role="presentation" onMouseDown={() => setOpen(false)}>
+        <div className={`pwc-notification-overlay is-${mode}`} role="presentation" onMouseDown={() => closeCenter()}>
           <aside
-            className="pwc-notification-drawer"
+            ref={drawerRef}
+            id={dialogId}
+            className={`pwc-notification-drawer is-${mode}`}
             role="dialog"
             aria-modal="true"
-            aria-label="Notification Center"
+            aria-labelledby={`${dialogId}-title`}
+            aria-describedby={`${dialogId}-summary`}
             onMouseDown={(event) => event.stopPropagation()}
           >
             <header>
               <div>
                 <p>Power Within</p>
-                <h2>Notification Center</h2>
-                <span>{summary.unread ? `${summary.unread} unread update${summary.unread === 1 ? '' : 's'}` : 'You are all caught up'}</span>
+                <h2 id={`${dialogId}-title`}>{isClient ? 'Your Updates' : 'Notification Center'}</h2>
+                <span id={`${dialogId}-summary`}>{summary.unread ? `${summary.unread} unread update${summary.unread === 1 ? '' : 's'}` : 'You are all caught up'}</span>
               </div>
-              <button type="button" aria-label="Close Notification Center" onClick={() => setOpen(false)}>×</button>
+              <button ref={closeButtonRef} type="button" aria-label="Close updates" onClick={() => closeCenter()}>×</button>
             </header>
 
-            <div className="pwc-notification-tabs" role="tablist">
-              <button type="button" className={view === 'notifications' ? 'is-active' : ''} onClick={() => setView('notifications')}>Updates</button>
-              <button type="button" className={view === 'preferences' ? 'is-active' : ''} onClick={() => setView('preferences')}>Preferences</button>
+            <div className="pwc-notification-tabs" role="tablist" aria-label="Notification Center views">
+              <button
+                id={`${dialogId}-updates-tab`}
+                type="button"
+                role="tab"
+                aria-controls={notificationPanelId}
+                aria-selected={view === 'notifications'}
+                className={view === 'notifications' ? 'is-active' : ''}
+                onClick={() => setView('notifications')}
+                onKeyDown={switchViewWithKeyboard}
+              >
+                Updates
+              </button>
+              <button
+                id={`${dialogId}-preferences-tab`}
+                type="button"
+                role="tab"
+                aria-controls={preferencePanelId}
+                aria-selected={view === 'preferences'}
+                className={view === 'preferences' ? 'is-active' : ''}
+                onClick={() => setView('preferences')}
+                onKeyDown={switchViewWithKeyboard}
+              >
+                Preferences
+              </button>
             </div>
 
             {(error || notice) && (
@@ -341,7 +444,13 @@ export default function NotificationCenter({ mode = 'admin' }) {
             )}
 
             {view === 'preferences' ? (
-              <form className="pwc-notification-preferences" onSubmit={savePreferences}>
+              <form
+                id={preferencePanelId}
+                className="pwc-notification-preferences"
+                role="tabpanel"
+                aria-labelledby={`${dialogId}-preferences-tab`}
+                onSubmit={savePreferences}
+              >
                 <label className="pwc-notification-email-toggle">
                   <div>
                     <strong>Email notifications</strong>
@@ -379,7 +488,12 @@ export default function NotificationCenter({ mode = 'admin' }) {
                 </button>
               </form>
             ) : (
-              <>
+              <div
+                id={notificationPanelId}
+                className="pwc-notification-updates"
+                role="tabpanel"
+                aria-labelledby={`${dialogId}-updates-tab`}
+              >
                 <div className="pwc-notification-tools">
                   <select value={category} onChange={(event) => setCategory(event.target.value)} aria-label="Filter notifications">
                     {categories.map(([key, label]) => <option key={key} value={key}>{label}</option>)}
@@ -402,20 +516,26 @@ export default function NotificationCenter({ mode = 'admin' }) {
                     <article
                       key={notification.id}
                       className={`${notification.readAt ? '' : 'is-unread'} is-${notification.importance}`}
-                      onClick={() => openNotification(notification)}
                     >
                       <div className="pwc-notification-item-top">
                         <span>{categoryLabel(notification.category)}</span>
                         <time>{formatTime(notification.createdAt)}</time>
                         <button type="button" aria-label="Remove notification" onClick={(event) => removeNotification(event, notification.id)}>×</button>
                       </div>
-                      <h3>{notification.title}</h3>
-                      <p>{notification.body}</p>
-                      {notification.actionLabel && <strong>{notification.actionLabel} →</strong>}
+                      <button
+                        className="pwc-notification-open"
+                        type="button"
+                        aria-label={`${notification.readAt ? 'Open' : 'Read'} update: ${notification.title}`}
+                        onClick={() => openNotification(notification)}
+                      >
+                        <h3>{notification.title}</h3>
+                        <p>{notification.body}</p>
+                        {notification.actionLabel && <strong>{notification.actionLabel} →</strong>}
+                      </button>
                     </article>
                   ))}
                 </div>
-              </>
+              </div>
             )}
           </aside>
         </div>,

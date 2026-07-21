@@ -116,6 +116,7 @@ function ClientPortalResources() {
   }, [activeType, resources, search])
 
   const featuredResource = resources[0] || null
+  const activeTypeLabel = resourceTypes.find((type) => type.id === activeType)?.label || 'All Resources'
 
   async function handleLogout() {
     setLoggingOut(true)
@@ -132,9 +133,9 @@ function ClientPortalResources() {
 
       <div className="portal-workspace-inner">
         <header className="portal-page-intro resource-page-intro">
-          <p className="eyebrow">Resources</p>
-          <h1>Your personal resource library.</h1>
-          <p>Return to guides, links, worksheets, videos, reminders, and private notes selected specifically for your care.</p>
+          <p className="eyebrow">My Library</p>
+          <h1>Everything shared for you.</h1>
+          <p>Open your newest resource first, or search the full private library when you need something specific.</p>
         </header>
 
         {error && <div className="portal-notice is-error" role="alert">{error}</div>}
@@ -171,13 +172,16 @@ function ClientPortalResources() {
                 <label className="resource-search"><span className="sr-only">Search your resources</span><input type="search" value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search your library" /></label>
               </header>
 
-              <div className="resource-filter-row" aria-label="Filter resources">
-                {resourceTypes.map((type) => {
-                  const count = type.id === 'all' ? resources.length : Number(resourceCounts[type.id] || 0)
-                  if (type.id !== 'all' && count === 0) return null
-                  return <button type="button" key={type.id} className={activeType === type.id ? 'is-active' : ''} onClick={() => setActiveType(type.id)} aria-pressed={activeType === type.id}>{type.short}<span>{count}</span></button>
-                })}
-              </div>
+              <details className="resource-filter-disclosure">
+                <summary><span>Filter library</span><strong>{activeTypeLabel}</strong></summary>
+                <div className="resource-filter-row" aria-label="Filter resources">
+                  {resourceTypes.map((type) => {
+                    const count = type.id === 'all' ? resources.length : Number(resourceCounts[type.id] || 0)
+                    if (type.id !== 'all' && count === 0) return null
+                    return <button type="button" key={type.id} className={activeType === type.id ? 'is-active' : ''} onClick={() => setActiveType(type.id)} aria-pressed={activeType === type.id}>{type.short}<span>{count}</span></button>
+                  })}
+                </div>
+              </details>
 
               {filteredResources.length === 0 ? (
                 <div className="resource-no-results"><strong>No resources match this view.</strong><p>Try another category or clear your search.</p><button type="button" onClick={() => { setActiveType('all'); setSearch('') }}>Show All Resources</button></div>

@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs'
 
 const appSource = readFileSync('src/App.jsx', 'utf8')
 const frameSource = readFileSync('src/components/admin/AdminFrame.jsx', 'utf8')
+  + readFileSync('src/components/admin/adminNavigation.js', 'utf8')
 const queueSource = readFileSync('src/pages/admin/AdminAttentionQueue.jsx', 'utf8')
 const preloadSource = readFileSync('src/components/admin/adminRoutePreloaders.js', 'utf8')
 const apiSource = readFileSync('src/lib/nativeApi.js', 'utf8')

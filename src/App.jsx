@@ -39,8 +39,10 @@ import {
   loadAdminLetters,
   loadAdminMembershipCircle,
   loadAdminOnboardingStudio,
+  loadAdminOperationsCenter,
   loadAdminScheduler,
   loadAdminSessionChangeRequests,
+  loadAdminStudioProfile,
   loadAdminTeamManagement,
 } from './components/admin/adminRoutePreloaders.js'
 import { signatureExperiences } from './data/signatureExperiences.js'
@@ -48,6 +50,7 @@ import About from './pages/About.jsx'
 import Contact from './pages/Contact.jsx'
 import ClientPortalInvite from './pages/ClientPortalInvite.jsx'
 import ClientPortalLogin from './pages/ClientPortalLogin.jsx'
+import ClientPortalAccount from './pages/ClientPortalAccount.jsx'
 import ClientPortalDashboard from './pages/ClientPortalDashboard.jsx'
 import ClientPortalCircle from './pages/ClientPortalCircle.jsx'
 import ClientPortalJourney from './pages/ClientPortalJourney.jsx'
@@ -100,8 +103,10 @@ const AdminMailStudio = lazy(loadAdminMailStudio)
 const AdminLetters = lazy(loadAdminLetters)
 const AdminMembershipCircle = lazy(loadAdminMembershipCircle)
 const AdminOnboardingStudio = lazy(loadAdminOnboardingStudio)
+const AdminOperationsCenter = lazy(loadAdminOperationsCenter)
 const AdminScheduler = lazy(loadAdminScheduler)
 const AdminSessionChangeRequests = lazy(loadAdminSessionChangeRequests)
+const AdminStudioProfile = lazy(loadAdminStudioProfile)
 const AdminTeamManagement = lazy(loadAdminTeamManagement)
 
 const routeMetadata = {
@@ -200,6 +205,10 @@ const routeMetadata = {
   '/client-portal/home': {
     title: 'My Client Portal | Power Within Collective',
     description: 'Private client notes, resources, reminders, session history, and care records from Power Within Collective.',
+  },
+  '/client-portal/account': {
+    title: 'My Account | Power Within Collective',
+    description: 'Private profile, onboarding, and security settings for the Power Within Collective client portal.',
   },
   '/client-portal/journey': {
     title: 'My Journey | Power Within Collective',
@@ -302,8 +311,12 @@ const routeMetadata = {
     description: 'Create and moderate the private Power Within Collective community.',
   },
   '/admin/encouragements': {
-    title: 'Encouragement Studio | The Studio',
-    description: 'Draft, schedule, and publish thoughtful client encouragements.',
+    title: 'Client Messages | The Studio',
+    description: 'Draft, schedule, and publish encouragements and portal announcements.',
+  },
+  '/admin/operations': {
+    title: 'Studio Operations Center | Power Within Collective',
+    description: 'Choose a clear Studio Operations lane for planning, client care, session continuity, or accountable history.',
   },
   '/admin/brief': {
     title: 'Today in The Studio | Power Within Collective',
@@ -515,6 +528,7 @@ function AppShell() {
         <Route path="/client-portal/invite/:token" element={<ClientPortalInvite />} />
         <Route path="/client-portal/dashboard" element={<Navigate to="/client-portal/home" replace />} />
         <Route path="/client-portal/home" element={<ClientPortalDashboard />} />
+        <Route path="/client-portal/account" element={<ClientPortalAccount />} />
         <Route path="/client-portal/journey" element={<ClientPortalJourney />} />
         <Route path="/client-portal/resources" element={<ClientPortalResources />} />
         <Route path="/client-portal/learning" element={<ClientPortalLearning />} />
@@ -543,6 +557,7 @@ function AppShell() {
         <Route path="/admin/clients/:clientId/:section" element={<AdminRouteGuard><AdminClients /></AdminRouteGuard>} />
         <Route path="/admin/scheduler" element={<AdminRouteGuard><AdminScheduler /></AdminRouteGuard>} />
         <Route path="/admin/session-changes" element={<AdminRouteGuard><AdminSessionChangeRequests /></AdminRouteGuard>} />
+        <Route path="/admin/studio-profile" element={<AdminRouteGuard><AdminStudioProfile /></AdminRouteGuard>} />
         <Route path="/admin/inbox" element={<AdminRouteGuard><AdminInbox /></AdminRouteGuard>} />
         <Route path="/admin/email-studio" element={<AdminRouteGuard><AdminMailStudio /></AdminRouteGuard>} />
         <Route path="/admin/letters" element={<AdminRouteGuard><AdminLetters /></AdminRouteGuard>} />
@@ -553,6 +568,7 @@ function AppShell() {
         <Route path="/admin/memberships" element={<AdminRouteGuard><AdminMembershipCircle /></AdminRouteGuard>} />
         <Route path="/admin/circle" element={<AdminRouteGuard><AdminCircleCommunity /></AdminRouteGuard>} />
         <Route path="/admin/encouragements" element={<AdminRouteGuard><AdminEncouragements /></AdminRouteGuard>} />
+        <Route path="/admin/operations" element={<AdminRouteGuard><AdminOperationsCenter /></AdminRouteGuard>} />
         <Route path="/admin/brief" element={<AdminRouteGuard><AdminDailyBrief /></AdminRouteGuard>} />
         <Route path="/admin/week" element={<AdminRouteGuard><AdminWeekPlanner /></AdminRouteGuard>} />
         <Route path="/admin/capacity" element={<AdminRouteGuard><AdminCapacityCenter /></AdminRouteGuard>} />

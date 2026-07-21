@@ -92,6 +92,8 @@ function AdminAssetVault() {
   const [clients, setClients] = useState([])
   const [selectedAssetId, setSelectedAssetId] = useState('')
   const [detail, setDetail] = useState(null)
+  const [workspaceView, setWorkspaceView] = useState('library')
+  const [assetDetailView, setAssetDetailView] = useState('clients')
   const [filters, setFilters] = useState({ search: '', folderId: '', type: '', status: 'active', tag: '' })
   const [metadataDraft, setMetadataDraft] = useState({ title: '', description: '', folderId: '', tags: '' })
   const [assignmentDraft, setAssignmentDraft] = useState({ clientProfileId: '', title: '', description: '' })
@@ -102,6 +104,7 @@ function AdminAssetVault() {
   const [uploadQueue, setUploadQueue] = useState([])
   const [selectedClientIds, setSelectedClientIds] = useState([])
   const [clientSearch, setClientSearch] = useState('')
+  const [showBulkAssignment, setShowBulkAssignment] = useState(false)
   const [previewUrl, setPreviewUrl] = useState('')
   const [relationships, setRelationships] = useState([])
   const [relatedAssetId, setRelatedAssetId] = useState('')
@@ -144,6 +147,7 @@ function AdminAssetVault() {
     setRelationships(relationshipResponse.relationships || [])
     setPreviewUrl('')
     setSelectedClientIds([])
+    setShowBulkAssignment(false)
     const asset = response.asset || {}
     setMetadataDraft({
       title: asset.title || '',
@@ -225,7 +229,11 @@ function AdminAssetVault() {
       setUploadDraft({ title: '', folderId: uploadDraft.folderId, tags: '' })
       setNotice(`${files.length} asset${files.length === 1 ? '' : 's'} uploaded securely.`)
       await Promise.all([loadSummary(), loadAssets()])
-      if (lastAsset?.id) setSelectedAssetId(lastAsset.id)
+      if (lastAsset?.id) {
+        setSelectedAssetId(lastAsset.id)
+        setAssetDetailView('clients')
+        setWorkspaceView('library')
+      }
     } catch (uploadError) {
       setUploadQueue((current) => current.map((item) => ['queued', 'uploading'].includes(item.status) ? { ...item, status: 'failed' } : item))
       setError(uploadError.message || 'The upload could not be completed.')
@@ -253,6 +261,11 @@ function AdminAssetVault() {
     } finally {
       setBusy('')
     }
+  }
+
+  function selectAsset(assetId) {
+    setSelectedAssetId(assetId)
+    setAssetDetailView('clients')
   }
 
   async function handleCreateFolder() {
@@ -363,6 +376,7 @@ function AdminAssetVault() {
       })
       setNotice(response.message || 'Asset assigned to the selected clients.')
       setSelectedClientIds([])
+      setShowBulkAssignment(false)
       await Promise.all([loadSummary(), loadAssets(), loadDetail(selectedAsset.id)])
     } catch (assignError) {
       setError(assignError.message || 'The selected client assignments could not be completed.')
@@ -478,9 +492,9 @@ function AdminAssetVault() {
       <div className="pwc-assets26-page">
         <header className="pwc-assets26-hero">
           <div>
-            <p className="pwc-assets26-eyebrow">Private content infrastructure</p>
+            <p className="pwc-assets26-eyebrow">Client resources</p>
             <h1>Asset Vault</h1>
-            <p>Upload once, organize carefully, reuse everywhere, and assign protected resources directly to client portals.</p>
+            <p>Store private resources once, then deliver them safely to the right clients.</p>
             <div className="pwc-assets26-hero-meta">
               <span>{storage.driver === 's3' ? 'S3-compatible storage' : 'Private local storage'}</span>
               <span>{formatBytes(storage.maxUploadBytes)} per file</span>
@@ -489,7 +503,7 @@ function AdminAssetVault() {
           </div>
           <div className="pwc-assets26-hero-actions">
             <button type="button" className="is-secondary" onClick={() => refreshAll()} disabled={loading}>Refresh vault</button>
-            <button type="button" onClick={() => fileInputRef.current?.click()} disabled={busy === 'upload'}>{busy === 'upload' ? 'Uploading…' : 'Upload assets'}</button>
+            <button type="button" onClick={() => setWorkspaceView('upload')} disabled={busy === 'upload'}>{busy === 'upload' ? 'Uploading…' : 'Upload assets'}</button>
           </div>
         </header>
 
@@ -502,6 +516,17 @@ function AdminAssetVault() {
           <article><span>Archived</span><strong>{Number(summary.archived_assets || 0)}</strong><small>Retained history</small></article>
         </section>
 
+        <nav className="onboarding-studio-tabs" aria-label="Asset Vault workspace">
+          <button className={workspaceView === 'library' ? 'is-active' : ''} onClick={() => setWorkspaceView('library')} type="button">
+            Library ({assets.length})
+          </button>
+          <button className={workspaceView === 'upload' ? 'is-active' : ''} onClick={() => setWorkspaceView('upload')} type="button">
+            Upload
+          </button>
+        </nav>
+
+        {workspaceView === 'upload' && (
+        <>
         <section className="pwc-assets26-upload-grid">
           <div
             className={`pwc-assets26-dropzone${dragActive ? ' is-dragging' : ''}`}
@@ -528,7 +553,10 @@ function AdminAssetVault() {
             <div>{uploadQueue.map((item) => <article key={item.id} className={`is-${item.status}`}><div><strong>{item.name}</strong><span>{item.status === 'failed' ? 'Upload failed' : item.status === 'complete' ? 'Stored securely' : item.status === 'queued' ? 'Waiting' : `${item.percent}% uploaded`}</span></div><progress max="100" value={item.percent}>{item.percent}%</progress></article>)}</div>
           </section>
         )}
+        </>
+        )}
 
+        {workspaceView === 'library' && (
         <section className="pwc-assets26-workspace">
           <aside className="pwc-assets26-library">
             <header><div><p className="pwc-assets26-eyebrow">Vault library</p><h2>{assets.length} asset{assets.length === 1 ? '' : 's'}</h2></div><button type="button" className="is-compact" onClick={() => setFilters((current) => ({ ...current, status: current.status === 'active' ? 'archived' : 'active' }))}>{filters.status === 'active' ? 'View archive' : 'View active'}</button></header>
@@ -541,7 +569,7 @@ function AdminAssetVault() {
 
             <div className="pwc-assets26-asset-list" aria-label="Assets">
               {loading ? <p className="pwc-assets26-empty">Opening the private vault…</p> : assets.length === 0 ? <div className="pwc-assets26-empty"><strong>No assets match this view.</strong><span>Upload a file or change the filters.</span></div> : assets.map((asset) => (
-                <button type="button" key={asset.id} className={asset.id === selectedAssetId ? 'is-selected' : ''} onClick={() => setSelectedAssetId(asset.id)}>
+                <button type="button" key={asset.id} className={asset.id === selectedAssetId ? 'is-selected' : ''} onClick={() => selectAsset(asset.id)}>
                   <span className={`pwc-assets26-filemark is-${fileFamily(asset.mime_type).toLowerCase()}`}>{fileFamily(asset.mime_type).slice(0, 3).toUpperCase()}</span>
                   <span className="pwc-assets26-asset-copy"><strong>{assetName(asset)}</strong><small>{asset.folder_name || 'General vault'} · {formatBytes(asset.size_bytes)}</small><em>{asset.original_filename}</em></span>
                   <span className="pwc-assets26-assignment-count">{Number(asset.assignment_count || 0)} assigned</span>
@@ -565,6 +593,18 @@ function AdminAssetVault() {
                   <div>{canPreview(selectedAsset) && <button type="button" className="is-secondary" onClick={() => handleAssetAccess('preview')} disabled={!assetUsable || busy === 'access-preview'}>{busy === 'access-preview' ? 'Opening…' : 'Preview'}</button>}<button type="button" onClick={() => handleAssetAccess('download')} disabled={!assetUsable || busy === 'access-download'}>{busy === 'access-download' ? 'Preparing…' : 'Download'}</button><button type="button" className="is-secondary" onClick={handleArchiveToggle}>{selectedAsset.status === 'archived' ? 'Restore' : 'Archive'}</button></div>
                 </header>
 
+                <nav className="onboarding-studio-tabs" aria-label="Selected asset workspace">
+                  <button className={assetDetailView === 'clients' ? 'is-active' : ''} onClick={() => setAssetDetailView('clients')} type="button">
+                    Client delivery ({activeAssignments.length})
+                  </button>
+                  <button className={assetDetailView === 'details' ? 'is-active' : ''} onClick={() => setAssetDetailView('details')} type="button">
+                    Details
+                  </button>
+                  <button className={assetDetailView === 'reuse' ? 'is-active' : ''} onClick={() => setAssetDetailView('reuse')} type="button">
+                    Reuse & versions
+                  </button>
+                </nav>
+
                 <div className="pwc-assets26-facts">
                   <div><span>Type</span><strong>{selectedAsset.mime_type}</strong></div><div><span>Size</span><strong>{formatBytes(selectedAsset.size_bytes)}</strong></div><div><span>Updated</span><strong>{formatDate(selectedAsset.updated_at)}</strong></div><div><span>Checksum</span><strong title={selectedAsset.checksum_sha256}>{String(selectedAsset.checksum_sha256 || '').slice(0, 12)}…</strong></div><div className={`is-scan-${selectedAsset.scan_status || 'disabled'}`}><span>File security</span><strong>{scanLabel(selectedAsset)}</strong></div>
                 </div>
@@ -578,24 +618,45 @@ function AdminAssetVault() {
                   </section>
                 )}
 
+                {assetDetailView === 'details' && (
                 <section className="pwc-assets26-panel">
                   <header><div><p className="pwc-assets26-eyebrow">Organization</p><h3>Reusable asset details</h3></div><button type="button" onClick={handleMetadataSave} disabled={busy === 'metadata'}>{busy === 'metadata' ? 'Saving…' : 'Save details'}</button></header>
                   <div className="pwc-assets26-form-grid"><label><span>Title</span><input value={metadataDraft.title} onChange={(event) => setMetadataDraft((current) => ({ ...current, title: event.target.value }))} /></label><label><span>Folder</span><select value={metadataDraft.folderId} onChange={(event) => setMetadataDraft((current) => ({ ...current, folderId: event.target.value }))}><option value="">General vault</option>{folders.map((folder) => <option key={folder.id} value={folder.id}>{folder.name}</option>)}</select></label><label className="is-wide"><span>Description</span><textarea rows="3" value={metadataDraft.description} onChange={(event) => setMetadataDraft((current) => ({ ...current, description: event.target.value }))} /></label><label className="is-wide"><span>Tags</span><input value={metadataDraft.tags} onChange={(event) => setMetadataDraft((current) => ({ ...current, tags: event.target.value }))} placeholder="Comma-separated tags" /></label></div>
                 </section>
+                )}
 
+                {assetDetailView === 'clients' && (
                 <section className="pwc-assets26-panel">
                   <header><div><p className="pwc-assets26-eyebrow">Client delivery</p><h3>Assignments</h3></div><span>{activeAssignments.length} active</span></header>
                   <div className="pwc-assets26-assignment-form"><select value={assignmentDraft.clientProfileId} onChange={(event) => setAssignmentDraft((current) => ({ ...current, clientProfileId: event.target.value }))}><option value="">Choose a client</option>{clients.map((client) => <option key={client.id} value={client.id}>{clientName(client)}</option>)}</select><input value={assignmentDraft.title} onChange={(event) => setAssignmentDraft((current) => ({ ...current, title: event.target.value }))} placeholder="Client-facing title" /><button type="button" onClick={handleAssign} disabled={!assetUsable || !assignmentDraft.clientProfileId || busy === 'assign'}>{busy === 'assign' ? 'Assigning…' : 'Assign to portal'}</button></div>
-                  <div className="pwc-assets26-client-multi">
-                    <header><div><strong>Choose multiple clients</strong><span>Select only the portals that should receive this resource.</span></div><em>{selectedClientIds.length} selected</em></header>
-                    <div className="pwc-assets26-client-multi-tools"><input type="search" value={clientSearch} onChange={(event) => setClientSearch(event.target.value)} placeholder="Search eligible clients" aria-label="Search eligible clients" /><button type="button" onClick={() => setSelectedClientIds(selectableClients.map((client) => client.id))}>Select shown</button><button type="button" onClick={() => setSelectedClientIds([])}>Clear</button></div>
-                    <div className="pwc-assets26-client-options">{selectableClients.length === 0 ? <p>No unassigned clients match this search.</p> : selectableClients.map((client) => <label key={client.id}><input type="checkbox" checked={selectedClientIds.includes(client.id)} onChange={(event) => setSelectedClientIds((current) => event.target.checked ? [...new Set([...current, client.id])] : current.filter((id) => id !== client.id))} /><span><strong>{clientName(client)}</strong><small>{client.email || 'Private client profile'}</small></span></label>)}</div>
-                    <button type="button" onClick={handleAssignSelected} disabled={!assetUsable || selectedClientIds.length === 0 || busy === 'assign-selected'}>{busy === 'assign-selected' ? 'Assigning selected…' : `Assign ${selectedClientIds.length || ''} selected client${selectedClientIds.length === 1 ? '' : 's'}`}</button>
+                  <div className="pwc-assets26-bulk-disclosure">
+                    <button
+                      type="button"
+                      className="is-secondary"
+                      aria-expanded={showBulkAssignment}
+                      onClick={() => setShowBulkAssignment((current) => !current)}
+                    >
+                      {showBulkAssignment ? 'Hide bulk delivery' : 'Assign multiple clients'}
+                    </button>
+                    <span>{bulkAssignableCount} client{bulkAssignableCount === 1 ? '' : 's'} available</span>
                   </div>
-                  <div className="pwc-assets26-assignment-bulk"><div><strong>Share with every client</strong><span>{bulkAssignableCount > 0 ? `${bulkAssignableCount} of ${eligibleBulkClients.length} eligible clients do not have this resource yet.` : eligibleBulkClients.length > 0 ? 'Every eligible client already has this resource.' : 'No eligible client profiles are available.'}</span><small>Archived profiles and non-client system accounts are excluded.</small></div><button type="button" onClick={handleAssignAll} disabled={!assetUsable || busy === 'assign-all' || eligibleBulkClients.length === 0}>{busy === 'assign-all' ? 'Assigning to all…' : 'Assign to all clients'}</button></div>
+                  {showBulkAssignment && (
+                    <div className="pwc-assets26-bulk-workspace">
+                      <div className="pwc-assets26-client-multi">
+                        <header><div><strong>Choose multiple clients</strong><span>Select only the portals that should receive this resource.</span></div><em>{selectedClientIds.length} selected</em></header>
+                        <div className="pwc-assets26-client-multi-tools"><input type="search" value={clientSearch} onChange={(event) => setClientSearch(event.target.value)} placeholder="Search eligible clients" aria-label="Search eligible clients" /><button type="button" onClick={() => setSelectedClientIds(selectableClients.map((client) => client.id))}>Select shown</button><button type="button" onClick={() => setSelectedClientIds([])}>Clear</button></div>
+                        <div className="pwc-assets26-client-options">{selectableClients.length === 0 ? <p>No unassigned clients match this search.</p> : selectableClients.map((client) => <label key={client.id}><input type="checkbox" checked={selectedClientIds.includes(client.id)} onChange={(event) => setSelectedClientIds((current) => event.target.checked ? [...new Set([...current, client.id])] : current.filter((id) => id !== client.id))} /><span><strong>{clientName(client)}</strong><small>{client.email || 'Private client profile'}</small></span></label>)}</div>
+                        <button type="button" onClick={handleAssignSelected} disabled={!assetUsable || selectedClientIds.length === 0 || busy === 'assign-selected'}>{busy === 'assign-selected' ? 'Assigning selected…' : `Assign ${selectedClientIds.length || ''} selected client${selectedClientIds.length === 1 ? '' : 's'}`}</button>
+                      </div>
+                      <div className="pwc-assets26-assignment-bulk"><div><strong>Share with every client</strong><span>{bulkAssignableCount > 0 ? `${bulkAssignableCount} of ${eligibleBulkClients.length} eligible clients do not have this resource yet.` : eligibleBulkClients.length > 0 ? 'Every eligible client already has this resource.' : 'No eligible client profiles are available.'}</span><small>Archived profiles and non-client system accounts are excluded.</small></div><button type="button" onClick={handleAssignAll} disabled={!assetUsable || busy === 'assign-all' || eligibleBulkClients.length === 0}>{busy === 'assign-all' ? 'Assigning to all…' : 'Assign to all clients'}</button></div>
+                    </div>
+                  )}
                   <div className="pwc-assets26-assignment-list">{activeAssignments.length === 0 ? <p>No active client assignments.</p> : activeAssignments.map((assignment) => <article key={assignment.id}><div><strong>{[assignment.first_name, assignment.last_name].filter(Boolean).join(' ') || assignment.email || 'Client'}</strong><span>{assignment.email || 'Private client profile'}</span><small>Assigned {formatDate(assignment.assigned_at)}</small></div><button type="button" onClick={() => handleUnassign(assignment)} disabled={busy === `unassign-${assignment.id}`}>Remove</button></article>)}</div>
                 </section>
+                )}
 
+                {assetDetailView === 'reuse' && (
+                <>
                 <section className="pwc-assets26-panel">
                   <header><div><p className="pwc-assets26-eyebrow">Reuse foundation</p><h3>Asset relationships</h3></div><span>{relationships.length} linked</span></header>
                   <div className="pwc-assets26-relationship-create"><AssetVaultPicker value={relatedAssetId} onChange={setRelatedAssetId} excludeAssetIds={[selectedAsset.id]} label="Relate another vault asset" /><button type="button" onClick={handleCreateRelationship} disabled={!relatedAssetId || busy === 'relationship'}>{busy === 'relationship' ? 'Linking…' : 'Link asset'}</button></div>
@@ -609,10 +670,13 @@ function AdminAssetVault() {
                   {(busy === 'version' || versionProgress > 0) && <div className="pwc-assets26-version-progress" aria-live="polite"><progress max="100" value={versionProgress}>{versionProgress}%</progress><span>{versionProgress < 100 ? `${versionProgress}% uploaded` : 'Upload complete'}</span></div>}
                   <div className="pwc-assets26-version-list">{(detail?.versions || []).map((version) => <article key={version.id}><span>v{version.version_number}</span><div><strong>{version.original_filename}</strong><small>{formatBytes(version.size_bytes)} · {formatDate(version.created_at)}</small></div><em>{version.notes || (version.version_number === selectedAsset.current_version_number ? 'Current version' : 'Saved version')}</em></article>)}</div>
                 </section>
+                </>
+                )}
               </>
             )}
           </div>
         </section>
+        )}
       </div>
     </AdminFrame>
   )

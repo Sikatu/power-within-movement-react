@@ -13,7 +13,8 @@ const sources = {
   settings: read('src/components/admin/LetterBlockSettings.jsx'),
   api: read('src/lib/nativeApi.js'),
   app: read('src/App.jsx'),
-  nav: read('src/components/admin/AdminFrame.jsx'),
+  nav: read('src/components/admin/AdminFrame.jsx')
+    + read('src/components/admin/adminNavigation.js'),
   tests: read('server/tests/letter-builder.test.cjs'),
   package: read('package.json'),
 }

@@ -61,6 +61,8 @@ function splitManualEmails(value) {
 
 export default function AdminAudience() {
   const csvInputRef = useRef(null)
+  const [workspaceMode, setWorkspaceMode] = useState('directory')
+  const [recordView, setRecordView] = useState('profile')
   const [summary, setSummary] = useState({ metrics: {}, tags: [], segments: [], sources: [], recentImports: [] })
   const [subscribers, setSubscribers] = useState([])
   const [clients, setClients] = useState([])
@@ -312,7 +314,17 @@ export default function AdminAudience() {
         {error && <div className="pwc-audience27-alert is-error" role="alert">{error}</div>}
         {notice && <div className="pwc-audience27-alert is-success" role="status">{notice}</div>}
 
-        <section className="pwc-audience27-metrics" aria-label="Audience status summary">
+        <nav className="pwc-phase35-primary-tabs" aria-label="Audience workspace sections">
+          {[
+            ['directory', 'Directory'],
+            ['add', 'Add people'],
+            ['imports', 'Import history'],
+          ].map(([id, label]) => (
+            <button key={id} type="button" className={workspaceMode === id || (id === 'directory' && workspaceMode === 'record') ? 'is-active' : ''} aria-current={workspaceMode === id ? 'page' : undefined} onClick={() => setWorkspaceMode(id)}>{label}</button>
+          ))}
+        </nav>
+
+        {workspaceMode === 'directory' && <section className="pwc-audience27-metrics" aria-label="Audience status summary">
           {[
             ['Total directory', metrics.total],
             ['Subscribed', metrics.subscribed],
@@ -321,9 +333,9 @@ export default function AdminAudience() {
             ['Bounced', metrics.bounced],
             ['Suppressed', Number(metrics.suppressed || 0) + Number(metrics.complained || 0)],
           ].map(([label, value]) => <article key={label}><span>{label}</span><strong>{Number(value || 0).toLocaleString()}</strong></article>)}
-        </section>
+        </section>}
 
-        <div className="pwc-audience27-entry-layout">
+        {workspaceMode === 'add' && <div className="pwc-audience27-entry-layout">
           <section className="pwc-audience27-panel pwc-audience27-entry">
             <header>
               <div><p className="admin-eyebrow">Add Recipients</p><h2>Grow the directory safely</h2></div>
@@ -389,12 +401,12 @@ export default function AdminAudience() {
             <div><span>Filter total</span><b>{Number(pagination.total || 0).toLocaleString()}</b></div>
             <div><span>Delivery protection</span><b>Enforced</b></div>
           </aside>
-        </div>
+        </div>}
 
-        <section className="pwc-audience27-panel pwc-audience27-directory">
+        {workspaceMode === 'directory' && <section className="pwc-audience27-panel pwc-audience27-directory">
           <header>
             <div><p className="admin-eyebrow">Stored Directory</p><h2>Search, filter, and segment</h2></div>
-            <span>{pagination.total || 0} matching</span>
+            <div className="pwc-phase35-directory-actions"><span>{pagination.total || 0} matching · {Number(previewCount).toLocaleString()} eligible</span><button type="button" onClick={() => setWorkspaceMode('add')}>+ Add people</button></div>
           </header>
           <div className="pwc-audience27-filters">
             <label><span className="sr-only">Search audience</span><input type="search" value={filters.search} onChange={(event) => updateFilter('search', event.target.value)} placeholder="Search name or email" /></label>
@@ -422,7 +434,7 @@ export default function AdminAudience() {
                 {loading ? <tr><td colSpan="7" className="pwc-audience27-empty">Loading the audience…</td></tr> : subscribers.length === 0 ? <tr><td colSpan="7" className="pwc-audience27-empty">No audience members match these filters.</td></tr> : subscribers.map((member) => (
                   <tr key={member.id} className={selectedId === member.id ? 'is-selected' : ''}>
                     <td><input type="checkbox" aria-label={`Select ${memberName(member)}`} checked={selectedIds.includes(member.id)} onChange={() => toggleMember(member.id)} /></td>
-                    <td><button type="button" onClick={() => setSelectedId(member.id)}><strong>{memberName(member)}</strong><span>{member.email}</span></button></td>
+                    <td><button type="button" onClick={() => { setSelectedId(member.id); setRecordView('profile'); setWorkspaceMode('record') }}><strong>{memberName(member)}</strong><span>{member.email}</span></button></td>
                     <td><span className={`pwc-audience27-status is-${member.status}`}>{formatStatus(member.status)}</span>{member.active_suppression && <small>Suppression active</small>}</td>
                     <td><strong>{formatStatus(member.consent_status)}</strong><small>{member.consent_at ? formatDate(member.consent_at) : 'No consent timestamp'}</small></td>
                     <td><div className="pwc-audience27-labels">{[...(member.tags || []), ...(member.segments || []).map((segment) => `◦ ${segment}`)].slice(0, 4).map((label) => <span key={label}>{label}</span>)}</div></td>
@@ -434,11 +446,24 @@ export default function AdminAudience() {
             </table>
           </div>
           <footer className="pwc-audience27-pagination"><span>Page {pagination.page || 1} of {pageCount}</span><div><button type="button" disabled={(pagination.page || 1) <= 1} onClick={() => setFilters((current) => ({ ...current, page: current.page - 1 }))}>Previous</button><button type="button" disabled={(pagination.page || 1) >= pageCount} onClick={() => setFilters((current) => ({ ...current, page: current.page + 1 }))}>Next</button></div></footer>
-        </section>
+        </section>}
 
-        {selectedMember && (
-          <section className="pwc-audience27-detail-grid">
-            <article className="pwc-audience27-panel pwc-audience27-detail">
+        {workspaceMode === 'record' && selectedMember && (
+          <section className="pwc-phase35-record-workspace">
+            <header className="pwc-phase35-record-header">
+              <button type="button" onClick={() => setWorkspaceMode('directory')}>← Directory</button>
+              <div><p className="admin-eyebrow">Recipient Record</p><h2>{memberName(selectedMember)}</h2><p>{selectedMember.email}</p></div>
+              <span className={`pwc-audience27-status is-${selectedMember.status}`}>{formatStatus(selectedMember.status)}</span>
+            </header>
+            <nav className="pwc-phase35-view-switch pwc-phase35-record-tabs" role="tablist" aria-label="Audience record sections">
+              {[
+                ['profile', 'Profile'],
+                ['consent', 'Consent & status'],
+                ['delivery', 'Delivery history'],
+              ].map(([id, label]) => <button key={id} type="button" role="tab" aria-selected={recordView === id} className={recordView === id ? 'is-active' : ''} onClick={() => setRecordView(id)}>{label}</button>)}
+            </nav>
+            <div className="pwc-audience27-detail-grid">
+            {recordView === 'profile' && <article className="pwc-audience27-panel pwc-audience27-detail">
               <header><div><p className="admin-eyebrow">Recipient Record</p><h2>{memberName(selectedMember)}</h2><p>{selectedMember.email}</p></div><span className={`pwc-audience27-status is-${selectedMember.status}`}>{formatStatus(selectedMember.status)}</span></header>
               <form className="pwc-audience27-form" onSubmit={handleDetailSave}>
                 <label><span>First name</span><input value={detailDraft.firstName} onChange={(event) => setDetailDraft((current) => ({ ...current, firstName: event.target.value }))} /></label>
@@ -452,9 +477,9 @@ export default function AdminAudience() {
                 <div><span>Source</span><p>{formatStatus(selectedMember.source)}</p></div>
                 <div><span>Client link</span><p>{selectedMember.client_profile_id ? 'Linked without ownership' : 'Newsletter-only record'}</p></div>
               </div>
-            </article>
+            </article>}
 
-            <article className="pwc-audience27-panel pwc-audience27-status-card">
+            {recordView === 'consent' && <article className="pwc-audience27-panel pwc-audience27-status-card">
               <p className="admin-eyebrow">Delivery Protection</p>
               <h2>Status & suppression</h2>
               <form onSubmit={handleStatusChange}>
@@ -463,24 +488,25 @@ export default function AdminAudience() {
                 <button type="submit" disabled={busy === 'status'}>{busy === 'status' ? 'Applying…' : 'Apply protected status'}</button>
               </form>
               {selectedMember.active_suppression ? <div className="pwc-audience27-suppression"><strong>Active suppression</strong><p>{formatStatus(selectedMember.active_suppression.reason)} · {formatDate(selectedMember.active_suppression.createdAt)}</p></div> : <div className="pwc-audience27-suppression is-clear"><strong>No active suppression</strong><p>Eligibility still requires subscribed status and granted consent.</p></div>}
-            </article>
+            </article>}
 
-            <article className="pwc-audience27-panel pwc-audience27-history">
+            {recordView === 'consent' && <article className="pwc-audience27-panel pwc-audience27-history">
               <header><div><p className="admin-eyebrow">Consent History</p><h2>Immutable audience events</h2></div><span>{detail?.consentHistory?.length || 0} events</span></header>
               <div>{detail?.consentHistory?.length ? detail.consentHistory.slice(0, 10).map((event) => <article key={event.id}><span>{formatStatus(event.event_type)}</span><strong>{formatStatus(event.status_after || event.consent_after)}</strong><p>{formatStatus(event.source)} · {formatDate(event.created_at)}</p></article>) : <p className="pwc-audience27-empty">No consent events recorded yet.</p>}</div>
-            </article>
+            </article>}
 
-            <article className="pwc-audience27-panel pwc-audience27-history">
+            {recordView === 'delivery' && <article className="pwc-audience27-panel pwc-audience27-history pwc-phase35-wide-card">
               <header><div><p className="admin-eyebrow">Send History</p><h2>Recipient delivery record</h2></div><span>{detail?.sendHistory?.length || 0} deliveries</span></header>
               <div>{detail?.sendHistory?.length ? detail.sendHistory.slice(0, 10).map((send) => <article key={send.id}><span>{formatStatus(send.delivery_status)}</span><strong>{send.subject || 'Newsletter delivery'}</strong><p>{formatDate(send.sent_at || send.created_at)}</p></article>) : <p className="pwc-audience27-empty">No newsletter delivery history yet. Broadcast sending begins in a later phase.</p>}</div>
-            </article>
+            </article>}
+            </div>
           </section>
         )}
 
-        {(summary.recentImports || []).length > 0 && (
+        {workspaceMode === 'imports' && (
           <section className="pwc-audience27-panel pwc-audience27-imports">
             <header><div><p className="admin-eyebrow">Import Audit</p><h2>Recent manual and CSV changes</h2></div></header>
-            <div>{summary.recentImports.map((record) => <article key={record.id}><div><strong>{record.file_name || 'Manual audience update'}</strong><span>{formatStatus(record.status)}</span></div><p>{record.created_count} created · {record.merged_count} merged · {record.duplicate_count} duplicates · {record.skipped_count} skipped</p><time>{formatDate(record.created_at)}</time></article>)}</div>
+            <div>{(summary.recentImports || []).length ? summary.recentImports.map((record) => <article key={record.id}><div><strong>{record.file_name || 'Manual audience update'}</strong><span>{formatStatus(record.status)}</span></div><p>{record.created_count} created · {record.merged_count} merged · {record.duplicate_count} duplicates · {record.skipped_count} skipped</p><time>{formatDate(record.created_at)}</time></article>) : <p className="pwc-audience27-empty">No imports have been recorded yet.</p>}</div>
           </section>
         )}
       </section>

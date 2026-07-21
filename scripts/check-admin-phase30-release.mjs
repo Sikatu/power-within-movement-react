@@ -52,4 +52,4 @@ if (failures.length) {
   process.exit(1)
 }
 
-console.log('Admin Phase 30 integrated release audit passed (live readiness, 20 evidence gates, guarded migration rehearsal, verified backup, deployment, and rollback).')
+console.log('Admin integrated release audit passed (live readiness, signed evidence, guarded migration rehearsal, verified backup, deployment, and rollback).')

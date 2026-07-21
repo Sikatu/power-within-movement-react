@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import ClientPortalChrome from '../components/ClientPortalChrome.jsx'
 import logo from '../assets/images/logo.webp'
-import { getClientPortalDashboard, getClientPortalResources, logoutClientPortal } from '../lib/nativeApi.js'
+import { getClientPortalDashboard, getClientPortalResources, getClientPortalStudioIdentity, logoutClientPortal } from '../lib/nativeApi.js'
 import './ClientPortalDashboard.css'
 
 const businessTimeZone = 'America/New_York'
@@ -109,10 +109,11 @@ function ClientPortalDashboard() {
     Promise.all([
       getClientPortalDashboard(),
       getClientPortalResources().catch(() => ({ resources: [] })),
+      getClientPortalStudioIdentity().catch(() => ({ identity: null })),
     ])
-      .then(([dashboardResponse, resourcesResponse]) => {
+      .then(([dashboardResponse, resourcesResponse, identityResponse]) => {
         if (!active) return
-        setDashboard(dashboardResponse)
+        setDashboard({ ...dashboardResponse, studioIdentity: identityResponse.identity || null })
         setResources(resourcesResponse.resources || [])
         setStatus({ state: 'ready', message: '' })
       })
@@ -164,8 +165,10 @@ function ClientPortalDashboard() {
   }, {}), [resources])
 
   const client = dashboard?.client
+  const studioIdentity = dashboard?.studioIdentity
   const firstName = client?.firstName || client?.name?.split(' ')[0] || 'there'
   const featuredResource = resources[0]
+  const featuredResourceUrl = getSafeResourceUrl(featuredResource?.resource_url)
   const nextBooking = upcomingBookings[0]
   const nextFollowUp = sortedFollowUps[0]
 
@@ -188,6 +191,37 @@ function ClientPortalDashboard() {
             title: 'Your private care space is ready.',
             text: 'Shared resources, notes, sessions, and follow-ups will appear here as your Power Within journey grows.',
           }
+
+  const focusAction = nextBooking
+    ? { to: '/client-portal/sessions', label: 'Manage session' }
+    : featuredResourceUrl
+      ? { href: featuredResourceUrl, label: 'Open resource' }
+      : visibleNotes[0]
+        ? { to: '/client-portal/journey', label: 'Read reflection' }
+        : { to: '/client-portal/resources', label: 'Open library' }
+
+  const shortcuts = [
+    {
+      to: '/client-portal/journey',
+      label: 'My Journey',
+      detail: nextFollowUp ? 'Review your next step' : 'Reflections and care notes',
+    },
+    {
+      to: '/client-portal/resources',
+      label: 'My Library',
+      detail: resources.length ? `${resources.length} saved resource${resources.length === 1 ? '' : 's'}` : 'Guides and private resources',
+    },
+    {
+      to: '/client-portal/sessions',
+      label: 'Sessions',
+      detail: nextBooking ? formatDateTime(nextBooking.starts_at) : 'Book or manage a session',
+    },
+    {
+      to: '/client-portal/messages',
+      label: 'Messages',
+      detail: 'Private conversation with your care team',
+    },
+  ]
 
   const stats = [
     { label: 'Visible Notes', value: visibleNotes.length, detail: 'Shared from your care record.' },
@@ -241,9 +275,10 @@ function ClientPortalDashboard() {
         {status.message && <div className="client-dashboard-alert" role="alert">{status.message}</div>}
 
         <header className="client-dashboard-welcome">
-          <p className="eyebrow">Your Private Care Space</p>
-          <h1>Welcome, {firstName}.</h1>
-          <p>Your private care space for shared notes, resources, reminders, and session history.</p>
+          <p className="eyebrow">Today in Your Portal</p>
+          <h1>Good to see you, {firstName}.</h1>
+          <p>{studioIdentity?.welcomeMessage || 'Start with what matters now. Everything else remains close when you need it.'}</p>
+          {studioIdentity?.signatureLine && <small className="client-dashboard-welcome-signature">{studioIdentity.signatureLine}</small>}
         </header>
 
         <section className="client-dashboard-overview">
@@ -251,16 +286,21 @@ function ClientPortalDashboard() {
             <p className="eyebrow">Today&apos;s Portal Focus</p>
             <h2>{focus.title}</h2>
             <p>{focus.text}</p>
+            {focusAction.href ? (
+              <a href={focusAction.href} target="_blank" rel="noreferrer">{focusAction.label}</a>
+            ) : (
+              <Link to={focusAction.to}>{focusAction.label}</Link>
+            )}
           </article>
-          <div className="client-dashboard-stats">
-            {stats.map((stat) => (
-              <article key={stat.label}>
-                <span>{stat.label}</span>
-                <strong>{stat.value}</strong>
-                <p>{stat.detail}</p>
-              </article>
+          <nav className="client-dashboard-shortcuts" aria-label="Portal shortcuts">
+            {shortcuts.map((item) => (
+              <Link to={item.to} key={item.to}>
+                <span>{item.label}</span>
+                <small>{item.detail}</small>
+                <em aria-hidden="true">→</em>
+              </Link>
             ))}
-          </div>
+          </nav>
         </section>
 
         <section className="client-dashboard-feature">
@@ -272,13 +312,34 @@ function ClientPortalDashboard() {
           <div>
             <span>{formatLabel(featuredResource?.resource_type || 'Resource')}</span>
             {featuredResource && <time>{formatDate(featuredResource.created_at)}</time>}
-            {getSafeResourceUrl(featuredResource?.resource_url) ? (
-              <a href={getSafeResourceUrl(featuredResource.resource_url)} target="_blank" rel="noreferrer">Open Resource</a>
+            {featuredResourceUrl ? (
+              <a href={featuredResourceUrl} target="_blank" rel="noreferrer">Open Resource</a>
+            ) : featuredResource ? (
+              <em>Saved as a private note</em>
             ) : (
-              <em>{featuredResource ? 'Saved as a private note' : 'Awaiting first resource'}</em>
+              <Link to="/client-portal/resources">Open Library</Link>
             )}
           </div>
         </section>
+
+        <details className="client-dashboard-more">
+          <summary>
+            <span>
+              <strong>More from your portal</strong>
+              <small>Library overview, shared notes, follow-ups, and care history</small>
+            </span>
+            <em>View details</em>
+          </summary>
+          <div className="client-dashboard-more-content">
+            <div className="client-dashboard-stats" aria-label="Portal totals">
+              {stats.map((stat) => (
+                <article key={stat.label}>
+                  <span>{stat.label}</span>
+                  <strong>{stat.value}</strong>
+                  <p>{stat.detail}</p>
+                </article>
+              ))}
+            </div>
 
         <section className="client-dashboard-library">
           <header>
@@ -395,8 +456,14 @@ function ClientPortalDashboard() {
             </div>
           )}
         </section>
+          </div>
+        </details>
 
-        <p className="client-dashboard-private-note">Private access · Power Within Movement, LLC</p>
+        <p className="client-dashboard-private-note">
+          Private access · Power Within Movement, LLC
+          {studioIdentity?.publicEmail && <> · <a href={`mailto:${studioIdentity.publicEmail}`}>{studioIdentity.publicEmail}</a></>}
+          {studioIdentity?.publicPhone && <> · <a href={`tel:${studioIdentity.publicPhone}`}>{studioIdentity.publicPhone}</a></>}
+        </p>
       </main>
     </div>
   )

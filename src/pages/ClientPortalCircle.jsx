@@ -323,8 +323,8 @@ function ClientPortalCircle() {
       <div className="portal-workspace-inner">
         <header className="portal-page-intro circle-page-intro">
           <p className="eyebrow">The Circle</p>
-          <h1>A private community for the long return.</h1>
-          <p>Reflections, encouragement, and honest conversation with women walking the same season—guided by Power Within.</p>
+          <h1>Your private community.</h1>
+          <p>Read the latest reflection, respond when you feel ready, and keep every member story inside The Circle.</p>
         </header>
 
         {(error || notice) && <div className={`portal-notice${error ? ' is-error' : ''}`} role="status">{error || notice}</div>}
@@ -346,12 +346,27 @@ function ClientPortalCircle() {
             <Link to="/client-portal/home">Return Home</Link>
           </section>
         ) : (
-          <div className="circle-layout">
+          <div className="circle-layout circle-focused-layout">
+            <details className="circle-context-disclosure">
+              <summary><div><span>Private space</span><strong>About The Circle</strong></div><em>Guidelines &amp; access</em></summary>
+              <div className="circle-context-grid">
+                <article className="circle-guidelines-card">
+                  <p>Circle Guidelines</p>
+                  {guidelines.map((guideline) => <div key={guideline}><span aria-hidden="true" /><p>{guideline}</p></div>)}
+                </article>
+
+                <article className="circle-membership-card">
+                  <p>Your Membership Access</p>
+                  {memberships.map((membership) => <div key={membership.id}><strong>{membership.name}</strong>{membership.tagline && <span>{membership.tagline}</span>}</div>)}
+                </article>
+              </div>
+            </details>
+
             <section className="circle-feed">
               {featuredPost?.comments_enabled && (
                 <article className="circle-share-card">
                   <form onSubmit={submitFeaturedReflection}>
-                    <label htmlFor="circle-featured-reflection"><span>Share with The Circle</span><textarea id="circle-featured-reflection" rows="3" maxLength="1500" value={sharingDraft} onChange={(event) => setSharingDraft(event.target.value)} placeholder="What is on your heart this week?" /></label>
+                    <label htmlFor="circle-featured-reflection"><span>This week · {featuredPost.title || 'Guided reflection'}</span><textarea id="circle-featured-reflection" rows="3" maxLength="1500" value={sharingDraft} onChange={(event) => setSharingDraft(event.target.value)} placeholder="What is on your heart this week?" /></label>
                     <small>Your reflection joins this week&apos;s guided conversation.</small>
                     <button type="submit" disabled={busyId === `comment-${featuredPost.id}`}>{busyId === `comment-${featuredPost.id}` ? 'Sharing…' : 'Share Reflection'}</button>
                   </form>
@@ -362,24 +377,6 @@ function ClientPortalCircle() {
                 <section className="circle-access-card"><p className="eyebrow">Community Feed</p><h2>The conversation will begin here.</h2><p>Founder reflections, events, challenges, and member conversations will appear when they are published.</p></section>
               ) : orderedPosts.map(renderPost)}
             </section>
-
-            <aside className="circle-sidebar">
-              <article className="circle-reflection-card">
-                <p>This Week&apos;s Reflection</p>
-                <h2>{featuredPost?.title || 'Where did you feel most like yourself this week?'}</h2>
-                <span>{featuredPost?.body || 'Kim invites The Circle to notice one moment of congruence—however small—and name what made it possible.'}</span>
-              </article>
-
-              <article className="circle-guidelines-card">
-                <p>Circle Guidelines</p>
-                {guidelines.map((guideline) => <div key={guideline}><span aria-hidden="true" /><p>{guideline}</p></div>)}
-              </article>
-
-              <article className="circle-membership-card">
-                <p>Your Membership Access</p>
-                {memberships.map((membership) => <div key={membership.id}><strong>{membership.name}</strong>{membership.tagline && <span>{membership.tagline}</span>}</div>)}
-              </article>
-            </aside>
           </div>
         )}
       </div>

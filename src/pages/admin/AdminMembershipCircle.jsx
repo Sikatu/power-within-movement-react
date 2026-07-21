@@ -232,7 +232,7 @@ export default function AdminMembershipCircle() {
   const [featureEnabled, setFeatureEnabled] = useState(true)
   const [selectedMembershipId, setSelectedMembershipId] = useState('')
   const [selectedMembership, setSelectedMembership] = useState(null)
-  const [activeTab, setActiveTab] = useState('overview')
+  const [activeTab, setActiveTab] = useState('members')
   const [planForm, setPlanForm] = useState(emptyPlanForm)
   const [newPlanName, setNewPlanName] = useState('')
   const [memberForm, setMemberForm] = useState(emptyMemberForm)
@@ -371,7 +371,7 @@ export default function AdminMembershipCircle() {
 
   async function handleSelectMembership(membershipId) {
     setSelectedMembershipId(membershipId)
-    setActiveTab('overview')
+    setActiveTab('members')
     setError('')
     setNotice('')
 
@@ -403,6 +403,7 @@ export default function AdminMembershipCircle() {
       setNewPlanName('')
       setSelectedMembershipId(response.membership.id)
       await loadCircle(response.membership.id)
+      setActiveTab('overview')
     }
   }
 
@@ -1208,10 +1209,7 @@ export default function AdminMembershipCircle() {
           <div>
             <p className="eyebrow">Programs</p>
             <h1>Memberships</h1>
-            <p>
-              Manage ongoing client access, renewal dates, private resources, learning,
-              and member communication from one calm workspace.
-            </p>
+            <p>Manage members, access, resources, and updates without leaving the plan.</p>
           </div>
           <div className="membership-circle-header__status">
             <span>{featureEnabled ? 'Client Memberships On' : 'Client Memberships Paused'}</span>
@@ -1227,7 +1225,7 @@ export default function AdminMembershipCircle() {
           </div>
         )}
 
-        <section className="membership-metrics">
+        <section className="membership-metrics" aria-label="Membership summary">
           <article>
             <span>Active plans</span>
             <strong>{metrics.activePlans}</strong>
@@ -1347,10 +1345,10 @@ export default function AdminMembershipCircle() {
 
                 <nav className="membership-tabs" aria-label="Membership workspace">
                   {[
-                    ['overview', 'Overview'],
                     ['members', 'Members'],
-                    ['content', 'Benefits & Content'],
-                    ['updates', 'Member Updates'],
+                    ['content', 'Content'],
+                    ['updates', 'Updates'],
+                    ['overview', 'Details'],
                   ].map(([id, label]) => (
                     <button
                       key={id}

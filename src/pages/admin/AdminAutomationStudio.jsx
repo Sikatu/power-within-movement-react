@@ -122,6 +122,7 @@ export default function AdminAutomationStudio() {
   const [workflowForm, setWorkflowForm] = useState({ ...emptyWorkflow, steps: [] })
   const [enrollmentClientId, setEnrollmentClientId] = useState('')
   const [runImmediately, setRunImmediately] = useState(false)
+  const [workspaceView, setWorkspaceView] = useState('activity')
   const [isLoading, setIsLoading] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
   const [notice, setNotice] = useState('')
@@ -155,6 +156,7 @@ export default function AdminAutomationStudio() {
       setSelectedWorkflowId(nextWorkflowId)
       setWorkflowForm(workflowToForm(workflows.find((item) => item.id === nextWorkflowId)))
       setEnrollmentClientId((current) => current || nextStudio?.clients?.[0]?.id || '')
+      if (!workflows.length) setWorkspaceView('builder')
     } catch (loadError) {
       setError(loadError.message || 'Unable to load Automation Studio.')
     } finally {
@@ -179,6 +181,7 @@ export default function AdminAutomationStudio() {
     setWorkflowForm({ ...emptyWorkflow, steps: [] })
     setNotice('')
     setError('')
+    setWorkspaceView('builder')
   }
 
   function updateWorkflowField(event) {
@@ -323,12 +326,9 @@ export default function AdminAutomationStudio() {
       <div className="automation-studio-page">
         <header className="automation-studio-header">
           <div>
-            <p className="eyebrow">Communications</p>
-            <h1>Automation Studio</h1>
-            <p>
-              Build thoughtful nurture sequences that send emails, create follow-up tasks,
-              and alert the team without losing the personal care behind each relationship.
-            </p>
+            <p className="eyebrow">Client growth</p>
+            <h1>Automations</h1>
+            <p>Monitor client sequences, handle exceptions, and edit workflows when needed.</p>
           </div>
           <div className="automation-studio-header-actions">
             <button className="pwc-admin-secondary-button" onClick={startNewWorkflow} type="button">
@@ -399,6 +399,24 @@ export default function AdminAutomationStudio() {
             </aside>
 
             <main className="automation-studio-workspace">
+              <nav className="onboarding-studio-tabs" aria-label="Automation workspace">
+                <button
+                  className={workspaceView === 'activity' ? 'is-active' : ''}
+                  onClick={() => setWorkspaceView('activity')}
+                  type="button"
+                >
+                  People & activity ({workflowEnrollments.length})
+                </button>
+                <button
+                  className={workspaceView === 'builder' ? 'is-active' : ''}
+                  onClick={() => setWorkspaceView('builder')}
+                  type="button"
+                >
+                  Workflow builder
+                </button>
+              </nav>
+
+              {workspaceView === 'builder' && (
               <form className="automation-workflow-editor" onSubmit={saveWorkflow}>
                 <header>
                   <div>
@@ -597,7 +615,10 @@ export default function AdminAutomationStudio() {
                   </p>
                 </section>
               </form>
+              )}
 
+              {workspaceView === 'activity' && (
+              <>
               {selectedWorkflow && (
                 <section className="automation-enrollment-panel">
                   <header>
@@ -681,6 +702,8 @@ export default function AdminAutomationStudio() {
                   )}
                 </div>
               </section>
+              </>
+              )}
             </main>
           </div>
         )}

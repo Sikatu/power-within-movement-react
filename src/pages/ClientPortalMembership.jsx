@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import ClientPortalChrome from '../components/ClientPortalChrome.jsx'
 import { getClientMemberships, getClientPortalDashboard, logoutClientPortal } from '../lib/nativeApi.js'
@@ -57,6 +57,7 @@ function ClientPortalMembership() {
   const navigate = useNavigate()
   const [client, setClient] = useState(null)
   const [memberships, setMemberships] = useState([])
+  const [activeMembershipId, setActiveMembershipId] = useState('')
   const [featureEnabled, setFeatureEnabled] = useState(true)
   const [loading, setLoading] = useState(true)
   const [loggingOut, setLoggingOut] = useState(false)
@@ -73,7 +74,9 @@ function ClientPortalMembership() {
       .then(([dashboardResponse, membershipResponse]) => {
         if (!active) return
         setClient(dashboardResponse.client || null)
-        setMemberships(membershipResponse.memberships || [])
+        const loadedMemberships = membershipResponse.memberships || []
+        setMemberships(loadedMemberships)
+        setActiveMembershipId(loadedMemberships[0]?.id || '')
         setFeatureEnabled(membershipResponse.featureEnabled !== false)
         setLoading(false)
       })
@@ -98,6 +101,11 @@ function ClientPortalMembership() {
     }
   }
 
+  const activeMembership = useMemo(
+    () => memberships.find((membership) => membership.id === activeMembershipId) || memberships[0] || null,
+    [activeMembershipId, memberships],
+  )
+
   return (
     <main id="main-content" className="portal-workspace portal-membership-page">
       <ClientPortalChrome client={client} loggingOut={loggingOut} onLogout={handleLogout} />
@@ -105,8 +113,8 @@ function ClientPortalMembership() {
       <div className="portal-workspace-inner">
         <header className="portal-page-intro membership-page-intro">
           <p className="eyebrow">Membership</p>
-          <h1>Your ongoing member experience.</h1>
-          <p>See your active membership, renewal details, private benefits, member resources, learning, and Circle updates.</p>
+          <h1>Everything included with your membership.</h1>
+          <p>Check access, open a benefit, or continue into Learning and The Circle.</p>
         </header>
 
         {error && <div className="portal-notice is-error" role="alert">{error}</div>}
@@ -119,7 +127,17 @@ function ClientPortalMembership() {
           <section className="membership-empty-state"><p className="eyebrow">Your Membership</p><h2>No active membership is connected yet.</h2><p>When Power Within adds you to an active membership, your benefits, resources, learning, renewal details, and private updates will appear here.</p></section>
         ) : (
           <div className="membership-list">
-            {memberships.map((membership) => (
+            {memberships.length > 1 && (
+              <nav className="membership-switcher" aria-label="Your memberships">
+                {memberships.map((membership) => (
+                  <button key={membership.id} type="button" className={membership.id === activeMembership?.id ? 'is-active' : ''} aria-pressed={membership.id === activeMembership?.id} onClick={() => setActiveMembershipId(membership.id)}>
+                    <span>{readable(membership.enrollment_status)}</span><strong>{membership.name}</strong>
+                  </button>
+                ))}
+              </nav>
+            )}
+
+            {memberships.filter((membership) => membership.id === activeMembership?.id).map((membership) => (
               <article className="membership-experience" key={membership.id}>
                 <header className="membership-hero">
                   <div><p className="eyebrow">Active Membership</p><span>{membership.tagline || 'A private space for continued growth and belonging.'}</span><h2>{membership.name}</h2><p>{membership.description || membership.welcome_message || 'Your continuing Power Within experience.'}</p></div>
@@ -137,40 +155,40 @@ function ClientPortalMembership() {
                 </section>
 
                 {Array.isArray(membership.benefits) && membership.benefits.length > 0 && (
-                  <section className="membership-section">
-                    <header><div><p className="eyebrow">Your Benefits</p><h3>What is included</h3></div><span>{membership.benefits.length} member benefit{membership.benefits.length === 1 ? '' : 's'}</span></header>
-                    <ul className="membership-benefits">{membership.benefits.map((benefit, index) => <li key={benefit}><span>{String(index + 1).padStart(2, '0')}</span><p>{benefit}</p></li>)}</ul>
-                  </section>
+                  <details className="membership-section membership-disclosure" open>
+                    <summary><div><p className="eyebrow">Your Benefits</p><h3>What is included</h3></div><span>{membership.benefits.length} benefit{membership.benefits.length === 1 ? '' : 's'}</span></summary>
+                    <div className="membership-disclosure-body"><ul className="membership-benefits">{membership.benefits.map((benefit, index) => <li key={benefit}><span>{String(index + 1).padStart(2, '0')}</span><p>{benefit}</p></li>)}</ul></div>
+                  </details>
                 )}
 
                 {(membership.resources || []).length > 0 && (
-                  <section className="membership-section">
-                    <header><div><p className="eyebrow">Member Resources</p><h3>Private resources for your membership</h3></div><span>{membership.resources.length} saved</span></header>
-                    <div className="membership-resource-grid">
+                  <details className="membership-section membership-disclosure">
+                    <summary><div><p className="eyebrow">Member Resources</p><h3>Private resources</h3></div><span>{membership.resources.length} saved</span></summary>
+                    <div className="membership-disclosure-body membership-resource-grid">
                       {membership.resources.map((resource) => {
                         const url = safeUrl(resource.resource_url)
                         return <article key={resource.id}><span>{readable(resource.resource_type)}</span><h4>{resource.title}</h4><p>{resource.description || 'A private resource selected for members.'}</p>{url ? <a href={url} target="_blank" rel="noreferrer">Open Resource <span aria-hidden="true">↗</span></a> : <em>Private member note</em>}</article>
                       })}
                     </div>
-                  </section>
+                  </details>
                 )}
 
                 {(membership.courses || []).length > 0 && (
-                  <section className="membership-section">
-                    <header><div><p className="eyebrow">Member Learning</p><h3>Learning included with your membership</h3></div><Link to="/client-portal/learning">Open Learning Library</Link></header>
-                    <div className="membership-course-grid">
+                  <details className="membership-section membership-disclosure">
+                    <summary><div><p className="eyebrow">Member Learning</p><h3>Included programs</h3></div><span>{membership.courses.length} program{membership.courses.length === 1 ? '' : 's'}</span></summary>
+                    <div className="membership-disclosure-body"><Link className="membership-disclosure-link" to="/client-portal/learning">Open Learning Library</Link><div className="membership-course-grid">
                       {membership.courses.map((course) => <article key={course.id}><span>{course.category || 'Personal Growth'}</span><h4>{course.title}</h4><p>{course.description || 'A guided member learning experience.'}</p><small>{course.estimated_minutes || 30} minutes</small></article>)}
-                    </div>
-                  </section>
+                    </div></div>
+                  </details>
                 )}
 
                 {(membership.announcements || []).length > 0 && (
-                  <section className="membership-section membership-updates-section">
-                    <header><div><p className="eyebrow">Circle Updates</p><h3>Private membership notes</h3></div><Link to="/client-portal/circle">Enter The Circle</Link></header>
-                    <div className="membership-updates">
+                  <details className="membership-section membership-disclosure membership-updates-section">
+                    <summary><div><p className="eyebrow">Circle Updates</p><h3>Membership notes</h3></div><span>{membership.announcements.length} update{membership.announcements.length === 1 ? '' : 's'}</span></summary>
+                    <div className="membership-disclosure-body"><Link className="membership-disclosure-link" to="/client-portal/circle">Enter The Circle</Link><div className="membership-updates">
                       {membership.announcements.map((announcement) => <article key={announcement.id}><time>{formatDate(announcement.published_at, 'Recent update')}</time><h4>{announcement.title}</h4><p>{announcement.body}</p></article>)}
-                    </div>
-                  </section>
+                    </div></div>
+                  </details>
                 )}
 
                 <footer className="membership-community-cta"><div><p className="eyebrow">Your Community</p><h3>Continue the conversation in The Circle.</h3><p>Return to private reflections, encouragement, and honest conversation with fellow members.</p></div><Link to="/client-portal/circle">Enter The Circle</Link></footer>

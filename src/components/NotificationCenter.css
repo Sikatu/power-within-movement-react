@@ -51,3 +51,146 @@
   .pwc-notification-drawer { width: 100%; }
   .pwc-notification-tools { align-items: flex-start; flex-direction: column; }
 }
+
+/* phase-44-client-notification-center-start */
+.pwc-notification-center.is-client {
+  display: inline-flex;
+}
+
+.pwc-notification-center.is-client .pwc-notification-trigger {
+  min-height: 38px;
+  border-color: rgba(84, 31, 48, 0.12);
+  background: #f7efea;
+  color: #5b2638;
+  letter-spacing: 0.04em;
+}
+
+.pwc-notification-trigger:hover {
+  border-color: rgba(95, 41, 56, 0.34);
+  background: #fff;
+}
+
+.pwc-notification-trigger:focus-visible,
+.pwc-notification-drawer button:focus-visible,
+.pwc-notification-drawer select:focus-visible,
+.pwc-notification-drawer input:focus-visible {
+  outline: 3px solid rgba(194, 132, 83, 0.42);
+  outline-offset: 2px;
+}
+
+.pwc-notification-drawer.is-client {
+  width: min(440px, 100%);
+  background: #fffdf9;
+}
+
+.pwc-notification-drawer.is-client > header {
+  padding: 1.25rem 1.25rem 0.95rem;
+}
+
+.pwc-notification-drawer.is-client > header h2 {
+  color: #451628;
+  font-family: var(--font-display, Georgia, serif);
+  font-size: clamp(1.55rem, 4vw, 1.9rem);
+}
+
+.pwc-notification-drawer.is-client > header p {
+  color: #a36331;
+}
+
+.pwc-notification-updates {
+  min-height: 0;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+}
+
+.pwc-notification-list article {
+  cursor: default;
+}
+
+.pwc-notification-open {
+  width: 100%;
+  display: block;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  padding: 0;
+  text-align: left;
+}
+
+.pwc-notification-list .pwc-notification-open h3 {
+  margin: 0.65rem 0 0.35rem;
+}
+
+.pwc-notification-list .pwc-notification-open p {
+  margin: 0;
+}
+
+.pwc-notification-list .pwc-notification-open > strong {
+  display: block;
+  margin-top: 0.65rem;
+  color: #6d3444;
+  font-size: 0.75rem;
+}
+
+.pwc-notification-drawer.is-client .pwc-notification-actions {
+  justify-content: flex-start;
+}
+
+.pwc-notification-drawer.is-client .pwc-notification-empty {
+  max-width: 270px;
+  margin: auto;
+  line-height: 1.6;
+}
+
+@media (max-width: 720px) {
+  .pwc-notification-center.is-client .pwc-notification-trigger {
+    width: 38px;
+    min-width: 38px;
+    height: 38px;
+    justify-content: center;
+    padding: 0;
+  }
+
+  .pwc-notification-center.is-client .pwc-notification-trigger em {
+    position: absolute;
+    top: -5px;
+    right: -7px;
+    min-width: 1.15rem;
+    height: 1.15rem;
+    font-size: 0.6rem;
+  }
+
+  .pwc-notification-drawer.is-client {
+    width: 100%;
+  }
+
+  .pwc-notification-drawer.is-client .pwc-notification-tools {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+  }
+
+  .pwc-notification-drawer.is-client .pwc-notification-tools select {
+    width: 100%;
+    min-width: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pwc-notification-list article {
+    transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .pwc-notification-trigger,
+  .pwc-notification-list article,
+  .pwc-notification-email-toggle,
+  .pwc-notification-preferences fieldset {
+    border: 1px solid CanvasText;
+  }
+}
+/* phase-44-client-notification-center-end */

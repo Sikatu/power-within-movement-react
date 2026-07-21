@@ -79,6 +79,7 @@ export default function AdminCircleCommunity() {
   const [selectedPostId, setSelectedPostId] = useState('')
   const [selectedPost, setSelectedPost] = useState(null)
   const [composer, setComposer] = useState(emptyComposer)
+  const [isComposerOpen, setIsComposerOpen] = useState(false)
   const [activeTab, setActiveTab] = useState('content')
   const [filter, setFilter] = useState('all')
   const [search, setSearch] = useState('')
@@ -109,6 +110,7 @@ export default function AdminCircleCommunity() {
       eventStartsAt: toDateTimeLocal(post.event_starts_at),
       eventEndsAt: toDateTimeLocal(post.event_ends_at),
     })
+    return post
   }, [])
 
   const loadWorkspace = useCallback(async (preferredPostId = '') => {
@@ -127,7 +129,9 @@ export default function AdminCircleCommunity() {
           : nextPosts[0]?.id || ''
 
     setSelectedPostId(nextId)
-    await loadPost(nextId)
+    const post = await loadPost(nextId)
+    setIsComposerOpen(Boolean(post))
+    setActiveTab(post?.reports?.some((report) => report.status === 'open') ? 'moderation' : 'content')
   }, [loadPost, selectedPostId])
 
   useEffect(() => {
@@ -184,10 +188,12 @@ export default function AdminCircleCommunity() {
 
   async function selectPost(postId) {
     setSelectedPostId(postId)
+    setIsComposerOpen(true)
     setError('')
     setNotice('')
     try {
-      await loadPost(postId)
+      const post = await loadPost(postId)
+      setActiveTab(post?.reports?.some((report) => report.status === 'open') ? 'moderation' : 'content')
     } catch (loadError) {
       setError(loadError.message || 'This Circle post could not load.')
     }
@@ -197,6 +203,7 @@ export default function AdminCircleCommunity() {
     setSelectedPostId('')
     setSelectedPost(null)
     setComposer(emptyComposer)
+    setIsComposerOpen(true)
     setActiveTab('content')
     setNotice('Start with a clear title and a warm, useful message.')
   }
@@ -274,6 +281,7 @@ export default function AdminCircleCommunity() {
       setSelectedPostId('')
       setSelectedPost(null)
       setComposer(emptyComposer)
+      setIsComposerOpen(false)
       await loadWorkspace('')
     }
   }
@@ -304,11 +312,8 @@ export default function AdminCircleCommunity() {
         <header className="circle-admin-header">
           <div>
             <p className="admin-eyebrow">Community</p>
-            <h1>The Circle</h1>
-            <p>
-              Create a thoughtful member community with founder posts, conversations,
-              events, challenges, and careful moderation.
-            </p>
+            <h1>Circle</h1>
+            <p>Publish member posts and handle conversations that need care.</p>
           </div>
           <button type="button" onClick={startNewPost}>New Circle Post</button>
         </header>
@@ -401,7 +406,7 @@ export default function AdminCircleCommunity() {
                 aria-selected={activeTab === 'content'}
                 onClick={() => setActiveTab('content')}
               >
-                Content
+                Post
               </button>
               <button
                 type="button"
@@ -414,7 +419,19 @@ export default function AdminCircleCommunity() {
               </button>
             </div>
 
-            {activeTab === 'content' && (
+            {activeTab === 'content' && !isComposerOpen && !selectedPost && (
+              <div className="circle-composer-welcome">
+                <span aria-hidden="true">✦</span>
+                <div>
+                  <p className="admin-eyebrow">Ready when you are</p>
+                  <h2>Start with one clear message.</h2>
+                  <p>Create an update, announcement, event, or challenge only when your community needs it.</p>
+                </div>
+                <button type="button" onClick={startNewPost}>Create a Circle post</button>
+              </div>
+            )}
+
+            {activeTab === 'content' && isComposerOpen && (
               <div className="circle-composer-card">
                 <div className="circle-workspace-heading">
                   <div>

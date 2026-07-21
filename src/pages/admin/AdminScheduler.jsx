@@ -60,6 +60,24 @@ const bookingFilters = [
   { value: 'closed', label: 'Closed' },
 ]
 
+const schedulerViews = [
+  {
+    value: 'requests',
+    label: 'Requests',
+    description: 'Review and move client requests forward.',
+  },
+  {
+    value: 'types',
+    label: 'Session Types',
+    description: 'Manage the services clients can request.',
+  },
+  {
+    value: 'availability',
+    label: 'Availability',
+    description: 'Choose when clients may request time.',
+  },
+]
+
 const sessionCareActions = [
   {
     label: 'Approve request',
@@ -223,6 +241,7 @@ function SectionHeading({ eyebrow, title, description, action }) {
 }
 
 function AdminScheduler() {
+  const [workspaceView, setWorkspaceView] = useState('requests')
   const [appointmentTypes, setAppointmentTypes] = useState([])
   const [availabilityBlocks, setAvailabilityBlocks] = useState([])
   const [bookings, setBookings] = useState([])
@@ -633,9 +652,9 @@ function AdminScheduler() {
         <header className="pwc-scheduler-hero">
           <div className="pwc-scheduler-hero-copy">
             <p className="eyebrow">Sessions & Calendar</p>
-            <h1>Shape a calm, clear client schedule.</h1>
+            <h1>Sessions</h1>
             <p>
-              Review requests, define your services, and open the right windows for clients to begin.
+              Review requests, manage session types, and protect your availability.
             </p>
           </div>
 
@@ -643,11 +662,23 @@ function AdminScheduler() {
             <Link className="btn secondary" to="/session-request">
               Preview booking page
             </Link>
-            <Link className="btn primary" to="/admin/dashboard">
-              Return to The Studio
-            </Link>
           </div>
         </header>
+
+        <nav className="pwc-scheduler-view-tabs" aria-label="Sessions workspace">
+          {schedulerViews.map((view) => (
+            <button
+              key={view.value}
+              type="button"
+              className={workspaceView === view.value ? 'is-active' : ''}
+              aria-pressed={workspaceView === view.value}
+              onClick={() => setWorkspaceView(view.value)}
+            >
+              <span>{view.label}</span>
+              <small>{view.description}</small>
+            </button>
+          ))}
+        </nav>
 
         <section className="pwc-scheduler-metrics" aria-label="Scheduler summary">
           <article className={bookingStats.needsCare > 0 ? 'is-attention' : ''}>
@@ -679,6 +710,7 @@ function AdminScheduler() {
           </div>
         )}
 
+        {workspaceView === 'requests' && (
         <section className="pwc-scheduler-section pwc-scheduler-inbox-section">
           <SectionHeading
             eyebrow="Booking Inbox"
@@ -907,7 +939,9 @@ function AdminScheduler() {
             </form>
           </div>
         </section>
+        )}
 
+        {workspaceView === 'types' && (
         <section className="pwc-scheduler-section">
           <SectionHeading
             eyebrow="Session Library"
@@ -1109,7 +1143,9 @@ function AdminScheduler() {
             </section>
           </div>
         </section>
+        )}
 
+        {workspaceView === 'availability' && (
         <section className="pwc-scheduler-section">
           <SectionHeading
             eyebrow="Open Windows"
@@ -1289,6 +1325,7 @@ function AdminScheduler() {
             </section>
           </div>
         </section>
+        )}
       </main>
     </AdminFrame>
   )

@@ -10,6 +10,7 @@ export default function AssetVaultPicker({
   onChange,
   excludeAssetIds = [],
   label = 'Choose an asset',
+  type = '',
 }) {
   const [search, setSearch] = useState('')
   const [assets, setAssets] = useState([])
@@ -23,7 +24,7 @@ export default function AssetVaultPicker({
       setLoading(true)
       setError('')
       try {
-        const response = await getAssetVaultAssets({ search: search.trim(), status: 'active' })
+        const response = await getAssetVaultAssets({ search: search.trim(), status: 'active', type })
         if (active) setAssets((response.assets || []).slice(0, 25))
       } catch (loadError) {
         if (active) setError(loadError.message || 'Vault assets could not load.')
@@ -36,7 +37,7 @@ export default function AssetVaultPicker({
       active = false
       window.clearTimeout(timer)
     }
-  }, [search])
+  }, [search, type])
 
   const options = assets.filter((asset) => !excluded.has(asset.id))
 

@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs'
 const read = (path) => readFileSync(path, 'utf8')
 const app = read('src/App.jsx')
 const frame = read('src/components/admin/AdminFrame.jsx')
+  + read('src/components/admin/adminNavigation.js')
 const preload = read('src/components/admin/adminRoutePreloaders.js')
 const page = read('src/pages/admin/AdminAssetVault.jsx')
 const api = read('src/lib/nativeApi.js')
