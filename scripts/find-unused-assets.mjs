@@ -33,14 +33,14 @@ console.log('--- Unused Assets Candidates ---');
 for (const asset of assets) {
   const basename = path.basename(asset);
   let isReferenced = false;
-  
+
   for (const content of fileContents) {
     if (content.includes(basename)) {
       isReferenced = true;
       break;
     }
   }
-  
+
   if (!isReferenced) {
     console.log(path.relative(ROOT, asset).replace(/\\/g, '/'));
   }

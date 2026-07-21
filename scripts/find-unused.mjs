@@ -52,7 +52,7 @@ for (const file of allSrcFiles) {
 
   for (const [otherFile, content] of allFileContents.entries()) {
     if (file === otherFile) continue;
-    
+
     if (content.includes(basename)) {
       isReferenced = true;
       break;

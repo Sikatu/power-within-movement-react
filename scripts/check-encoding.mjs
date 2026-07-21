@@ -48,8 +48,8 @@ const MOJIBAKE_PATTERNS = [
 ];
 
 const CONTROL_CHARS = /[\x00-\x08\x0B\x0C\x0E-\x1F]/g;
-const NULL_BYTE = /\x00/g;
-const REPLACEMENT_CHAR = /\uFFFD/g; // 
+const NULL_BYTE = /\x00/;
+const REPLACEMENT_CHAR = /\uFFFD/;
 const ZERO_WIDTH_BIDI = /[\u200B\u200C\u200D\u2060\u200E\u200F\u202A-\u202E\u2066-\u2069]/g;
 const BOM = /\uFEFF/g;
 const HTML_ENTITIES = /&amp;(nbsp|amp|quot|#39|#x2019);/g;
@@ -58,15 +58,15 @@ function walk(dir) {
   const entries = fs.readdirSync(dir, { withFileTypes: true });
   for (const entry of entries) {
     if (EXCLUDED_DIRS.has(entry.name)) continue;
-    
+
     const fullPath = path.join(dir, entry.name);
-    
+
     if (entry.isDirectory()) {
       walk(fullPath);
     } else if (entry.isFile()) {
       const ext = path.extname(entry.name).toLowerCase();
       if (EXCLUDED_EXTENSIONS.has(ext)) continue;
-      
+
       // If it doesn't have an extension but it's a known text file, or has a text extension
       if (ALLOWED_EXTENSIONS.has(ext) || entry.name.includes('.env') || ext === '') {
         scanFile(fullPath);
@@ -87,11 +87,11 @@ function checkAllowlist(filePath, match, rule) {
 
 function addFinding(filePath, lineIndex, match, category, desc, severity) {
   const relPath = path.relative(ROOT, filePath).replace(/\\/g, '/');
-  
+
   if (checkAllowlist(filePath, match, category)) {
     return;
   }
-  
+
   FINDINGS.push({
     file: relPath,
     line: lineIndex + 1,
@@ -104,7 +104,7 @@ function addFinding(filePath, lineIndex, match, category, desc, severity) {
 
 function scanFile(filePath) {
   const buffer = fs.readFileSync(filePath);
-  
+
   // 1. Check for UTF-8 validity
   let str = '';
   try {
@@ -122,6 +122,11 @@ function scanFile(filePath) {
   }
 
   const lines = str.split(/\r?\n/);
+  const relativePath = path
+    .relative(ROOT, filePath)
+    .replace(/\\/g, '/');
+  const isScannerSource =
+    relativePath === 'scripts/check-encoding.mjs';
 
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
@@ -146,12 +151,22 @@ function scanFile(filePath) {
       addFinding(filePath, i, '', 'REPLACEMENT_CHAR', 'Unicode replacement character (failed decoding)', 'High');
     }
 
-    // Mojibake patterns
-    for (const rule of MOJIBAKE_PATTERNS) {
-      const ruleMatches = line.match(rule.regex);
-      if (ruleMatches) {
-        for (const m of ruleMatches) {
-          addFinding(filePath, i, m, 'MOJIBAKE', rule.desc, 'High');
+    // The scanner contains intentional detector signatures.
+    if (!isScannerSource) {
+      for (const rule of MOJIBAKE_PATTERNS) {
+        const ruleMatches = line.match(rule.regex);
+
+        if (ruleMatches) {
+          for (const detectedMatch of ruleMatches) {
+            addFinding(
+              filePath,
+              i,
+              detectedMatch,
+              'MOJIBAKE',
+              rule.desc,
+              'High'
+            );
+          }
         }
       }
     }
@@ -175,7 +190,7 @@ function scanFile(filePath) {
         addFinding(filePath, i, '\\uFEFF', 'BOM_INTERNAL', 'Byte Order Mark found inside file content', 'Medium');
       }
     }
-    
+
     // HTML Entities (double encoded or suspicious)
     const entityMatches = line.match(HTML_ENTITIES);
     if (entityMatches) {
