@@ -13570,3 +13570,79 @@ body.admin-app-mode.admin-comfort-view :where(
   }
 }
 /* phase-52-comfort-view-end */
+
+/* phase-53-visual-acceptance-start */
+/* Keep every dark workspace header readable regardless of earlier route styles. */
+body.admin-app-mode :where(
+  .learning-library-header,
+  .membership-circle-header,
+  .circle-admin-header,
+  .automation-studio-header,
+  .onboarding-studio-header,
+  .pwc-assets26-hero,
+  .pwc-letters28-hero,
+  .admin-inbox__header,
+  .lead-pipeline-header
+) :where(h1, h2) {
+  color: #fff9f3;
+  overflow-wrap: anywhere;
+  text-wrap: balance;
+}
+
+body.admin-app-mode :where(
+  .automation-studio-header-actions .pwc-admin-primary-button,
+  .circle-admin-header > div:last-child > button:last-child,
+  .onboarding-studio-header > button,
+  .pwc-assets26-hero-actions > button:not(.is-secondary)
+) {
+  border-color: rgba(255, 249, 243, 0.74);
+  background: #fff9f3;
+  color: var(--admin-burgundy);
+  box-shadow: 0 12px 28px -18px rgba(16, 8, 11, 0.8);
+}
+
+body.admin-app-mode :where(
+  .automation-studio-header-actions .pwc-admin-primary-button,
+  .circle-admin-header > div:last-child > button:last-child,
+  .onboarding-studio-header > button,
+  .pwc-assets26-hero-actions > button:not(.is-secondary)
+):hover:not(:disabled) {
+  border-color: #fff;
+  background: #fff;
+  color: var(--admin-burgundy-deep);
+}
+
+body.admin-app-mode :where(
+  .automation-studio-metrics,
+  .onboarding-studio-metrics
+) > article {
+  min-width: 0;
+}
+
+body.admin-app-mode :where(
+  .automation-studio-metrics,
+  .onboarding-studio-metrics
+) > article strong {
+  overflow-wrap: anywhere;
+}
+
+@media (min-width: 1081px) {
+  body.admin-app-mode :where(
+    .automation-studio-metrics,
+    .onboarding-studio-metrics
+  ) {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+}
+
+@media (forced-colors: active) {
+  body.admin-app-mode :where(
+    .automation-studio-header-actions .pwc-admin-primary-button,
+    .circle-admin-header > div:last-child > button:last-child,
+    .onboarding-studio-header > button,
+    .pwc-assets26-hero-actions > button:not(.is-secondary)
+  ) {
+    border: 1px solid ButtonText;
+  }
+}
+/* phase-53-visual-acceptance-end */

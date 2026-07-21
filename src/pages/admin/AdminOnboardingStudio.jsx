@@ -347,7 +347,7 @@ export default function AdminOnboardingStudio() {
         {error && <div className="onboarding-studio-alert is-error" role="alert">{error}</div>}
         {notice && <div className="onboarding-studio-alert is-success" role="status">{notice}</div>}
 
-        <section className="onboarding-studio-metrics">
+        <section className="onboarding-studio-metrics" aria-label="Onboarding summary">
           <article><span>Active onboarding</span><strong>{studio?.stats?.active || 0}</strong></article>
           <article><span>Ready for review</span><strong>{studio?.stats?.submitted || 0}</strong></article>
           <article><span>Completed</span><strong>{studio?.stats?.completed || 0}</strong></article>

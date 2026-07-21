@@ -1225,7 +1225,7 @@ export default function AdminMembershipCircle() {
           </div>
         )}
 
-        <section className="membership-metrics">
+        <section className="membership-metrics" aria-label="Membership summary">
           <article>
             <span>Active plans</span>
             <strong>{metrics.activePlans}</strong>
