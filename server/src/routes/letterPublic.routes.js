@@ -15,6 +15,7 @@ const {
   logRecipientEvent,
   refreshBroadcastAnalytics,
 } = require('../services/letterBroadcast.service')
+const { processInboundEmailEvent } = require('../services/inboundEmail.service')
 const {
   createSuppression,
   writeConsentEvent,
@@ -209,6 +210,26 @@ router.post('/webhooks/resend', async (req, res) => {
   })
   if (!env.resendWebhookSecret) return res.status(503).json({ ok: false, error: 'Webhook verification is not configured.' })
   if (!verified) return res.status(401).json({ ok: false, error: 'Invalid webhook signature.' })
+
+  if (req.body?.type === 'email.received') {
+    try {
+      const result = await processInboundEmailEvent({
+        pool,
+        event: req.body,
+        providerEventId: req.get('svix-id') || req.body?.id || null,
+      })
+      return res.json({ ok: true, ...result })
+    } catch (error) {
+      console.error('Inbound Resend email processing failed:', error.message)
+      return res.status(error.statusCode || 500).json({
+        ok: false,
+        error: error.statusCode && error.statusCode < 500
+          ? error.message
+          : 'Inbound email processing failed.',
+        code: error.code || 'INBOUND_EMAIL_PROCESSING_FAILED',
+      })
+    }
+  }
 
   const eventType = providerEventType(req.body?.type)
   if (!eventType) return res.json({ ok: true, ignored: true })

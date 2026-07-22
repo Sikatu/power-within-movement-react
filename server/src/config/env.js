@@ -97,6 +97,7 @@ const env = {
   portalEmailFrom: process.env.PORTAL_EMAIL_FROM || '',
   newsletterEmailFrom: process.env.NEWSLETTER_EMAIL_FROM || process.env.RESEND_FROM_EMAIL || process.env.PORTAL_EMAIL_FROM || '',
   newsletterReplyTo: process.env.NEWSLETTER_REPLY_TO || '',
+  newsletterReceivingDomain: String(process.env.NEWSLETTER_RECEIVING_DOMAIN || '').trim().toLowerCase(),
   resendWebhookSecret: process.env.RESEND_WEBHOOK_SECRET || '',
   publicApiUrl: process.env.PUBLIC_API_URL || process.env.PUBLIC_SITE_URL || clientOrigins[0] || DEFAULT_DEV_CLIENT_ORIGIN,
   letterSigningSecret: process.env.LETTER_SIGNING_SECRET || jwtSecret,

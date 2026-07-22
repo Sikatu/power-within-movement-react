@@ -11341,15 +11341,16 @@ async function getAdminInboxConversation(conversationId, db = pool) {
     `
     SELECT
       cc.*,
-      cp.first_name,
-      cp.last_name,
-      COALESCE(su.email, cp.public_contact_email) AS client_email,
+      COALESCE(cp.first_name, s.first_name, cc.external_name) AS first_name,
+      COALESCE(cp.last_name, s.last_name, '') AS last_name,
+      COALESCE(su.email, cp.public_contact_email, s.email, cc.external_email) AS client_email,
       assignee.email AS assigned_email,
       assignee.role AS assigned_role,
       creator.email AS created_by_email,
       creator.role AS created_by_role
     FROM client_conversations cc
-    JOIN client_profiles cp ON cp.id = cc.client_profile_id
+    LEFT JOIN client_profiles cp ON cp.id = cc.client_profile_id
+    LEFT JOIN subscribers s ON s.id = cc.subscriber_id
     LEFT JOIN system_users su ON su.id = cp.user_id
     LEFT JOIN system_users assignee ON assignee.id = cc.assigned_user_id
     LEFT JOIN system_users creator ON creator.id = cc.created_by_user_id
@@ -11370,9 +11371,15 @@ async function getAdminInboxConversation(conversationId, db = pool) {
       COALESCE(
         NULLIF(TRIM(CONCAT(cp.first_name, ' ', cp.last_name)), ''),
         sender.email,
+        NULLIF(message_conversation.external_name, ''),
+        NULLIF(TRIM(CONCAT(message_subscriber.first_name, ' ', message_subscriber.last_name)), ''),
+        message_subscriber.email,
+        message_conversation.external_email,
         'Power Within Team'
       ) AS sender_name
     FROM client_conversation_messages ccm
+    JOIN client_conversations message_conversation ON message_conversation.id = ccm.conversation_id
+    LEFT JOIN subscribers message_subscriber ON message_subscriber.id = message_conversation.subscriber_id
     LEFT JOIN system_users sender ON sender.id = ccm.sender_user_id
     LEFT JOIN client_profiles cp ON cp.user_id = ccm.sender_user_id
     WHERE ccm.conversation_id = $1
@@ -11401,9 +11408,9 @@ router.get('/inbox', requireAdmin, async (req, res, next) => {
       `
       SELECT
         cc.*,
-        cp.first_name,
-        cp.last_name,
-        COALESCE(su.email, cp.public_contact_email) AS client_email,
+        COALESCE(cp.first_name, s.first_name, cc.external_name) AS first_name,
+        COALESCE(cp.last_name, s.last_name, '') AS last_name,
+        COALESCE(su.email, cp.public_contact_email, s.email, cc.external_email) AS client_email,
         assignee.email AS assigned_email,
         assignee.role AS assigned_role,
         COALESCE(message_counts.message_count, 0)::int AS message_count,
@@ -11412,7 +11419,8 @@ router.get('/inbox', requireAdmin, async (req, res, next) => {
         latest.sender_role AS latest_sender_role,
         latest.is_internal_note AS latest_is_internal_note
       FROM client_conversations cc
-      JOIN client_profiles cp ON cp.id = cc.client_profile_id
+      LEFT JOIN client_profiles cp ON cp.id = cc.client_profile_id
+      LEFT JOIN subscribers s ON s.id = cc.subscriber_id
       LEFT JOIN system_users su ON su.id = cp.user_id
       LEFT JOIN system_users assignee ON assignee.id = cc.assigned_user_id
       LEFT JOIN LATERAL (
@@ -11436,9 +11444,9 @@ router.get('/inbox', requireAdmin, async (req, res, next) => {
         AND (
           $3 = ''
           OR cc.subject ILIKE '%' || $3 || '%'
-          OR cp.first_name ILIKE '%' || $3 || '%'
-          OR cp.last_name ILIKE '%' || $3 || '%'
-          OR COALESCE(su.email, cp.public_contact_email, '') ILIKE '%' || $3 || '%'
+          OR COALESCE(cp.first_name, s.first_name, cc.external_name, '') ILIKE '%' || $3 || '%'
+          OR COALESCE(cp.last_name, s.last_name, '') ILIKE '%' || $3 || '%'
+          OR COALESCE(su.email, cp.public_contact_email, s.email, cc.external_email, '') ILIKE '%' || $3 || '%'
         )
       ORDER BY
         CASE cc.priority WHEN 'urgent' THEN 0 WHEN 'high' THEN 1 ELSE 2 END,
@@ -11636,6 +11644,15 @@ router.post('/inbox/:conversationId/messages', requireAdmin, async (req, res, ne
     if (!before) {
       await db.query('ROLLBACK')
       return res.status(404).json({ ok: false, error: 'Conversation not found.' })
+    }
+
+    if (before.channel === 'email' && !parsed.data.isInternalNote) {
+      await db.query('ROLLBACK')
+      return res.status(409).json({
+        ok: false,
+        error: 'Email delivery from the Power Within Inbox is not enabled yet. Add an internal note while outbound email threading is completed.',
+        code: 'INBOX_EMAIL_REPLY_NOT_READY',
+      })
     }
 
     const messageResult = await db.query(
