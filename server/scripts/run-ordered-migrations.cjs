@@ -24,6 +24,7 @@ const orderedMigrations = [
   'db:migrate-circle-community',
   'db:migrate-client-session-self-service',
   'db:migrate-secure-client-inbox',
+  'db:migrate-unified-email-inbox',
   'db:migrate-notification-center',
   'db:migrate-client-messages',
   'db:migrate-studio-profile',
