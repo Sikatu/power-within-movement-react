@@ -200,11 +200,6 @@ export default function AdminInbox() {
   async function sendReply(event) {
     event.preventDefault()
     if (!selectedConversation) return
-    if (selectedConversation.channel === 'email' && !reply.isInternalNote) {
-      setError('Email sending from the Power Within Inbox will be enabled in the next phase. Add an internal note for now.')
-      setNotice('')
-      return
-    }
 
     const result = await perform(
       () => sendAdminInboxMessage(selectedConversation.id, reply),
@@ -438,7 +433,7 @@ export default function AdminInbox() {
                 <form className="admin-inbox-reply" onSubmit={sendReply}>
                   {selectedConversation.channel === 'email' && !reply.isInternalNote && (
                     <div className="admin-inbox__notice" role="status">
-                      This reply arrived by email. Reading and internal notes are ready; outbound email threading is the next implementation phase.
+                      This response will be sent by email and kept in the same conversation thread.
                     </div>
                   )}
                   <div className="admin-inbox-reply__mode">
@@ -482,13 +477,9 @@ export default function AdminInbox() {
                   <button
                     className="btn primary"
                     type="submit"
-                    disabled={
-                      busy ||
-                      !reply.body.trim() ||
-                      (selectedConversation.channel === 'email' && !reply.isInternalNote)
-                    }
+                    disabled={busy || !reply.body.trim()}
                   >
-                    {busy ? 'Saving…' : reply.isInternalNote ? 'Add Internal Note' : 'Send Reply'}
+                    {busy ? (reply.isInternalNote ? 'Saving…' : 'Sending…') : reply.isInternalNote ? 'Add Internal Note' : 'Send Reply'}
                   </button>
                 </form>
               </>

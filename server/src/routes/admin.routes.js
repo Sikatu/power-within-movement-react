@@ -107,6 +107,13 @@ const {
   scheduleBookingCommunications,
   startClientOnboarding: startBookingClientOnboarding,
 } = require('../services/bookingOnboarding.service')
+const {
+  createInboxEmailPayload,
+} = require('../services/outboundInboxEmail.service')
+const {
+  assertOutgoingEmailAvailable,
+  sendLetterEmail,
+} = require('../services/letterBroadcast.service')
 
 const router = express.Router()
 
@@ -11647,12 +11654,131 @@ router.post('/inbox/:conversationId/messages', requireAdmin, async (req, res, ne
     }
 
     if (before.channel === 'email' && !parsed.data.isInternalNote) {
-      await db.query('ROLLBACK')
-      return res.status(409).json({
-        ok: false,
-        error: 'Email delivery from the Power Within Inbox is not enabled yet. Add an internal note while outbound email threading is completed.',
-        code: 'INBOX_EMAIL_REPLY_NOT_READY',
+      await assertOutgoingEmailAvailable(db)
+      const hydratedConversation = await getAdminInboxConversation(before.id, db)
+      const email = createInboxEmailPayload({
+        conversation: hydratedConversation,
+        messages: hydratedConversation.messages,
+        body: parsed.data.body,
+        attachmentUrl: parsed.data.attachmentUrl,
+        attachmentLabel: parsed.data.attachmentLabel,
       })
+
+      const pendingResult = await db.query(
+        `
+        INSERT INTO client_conversation_messages (
+          conversation_id,
+          sender_user_id,
+          sender_role,
+          body,
+          attachment_url,
+          attachment_label,
+          is_internal_note,
+          read_by_team_at,
+          in_reply_to,
+          reference_ids,
+          email_from,
+          email_to,
+          channel,
+          delivery_status
+        )
+        VALUES ($1, $2, $3, $4, $5, $6, false, now(), $7, $8::text[], $9, $10, 'email', 'pending')
+        RETURNING *
+        `,
+        [
+          before.id,
+          req.user.id,
+          req.user.role,
+          parsed.data.body,
+          parsed.data.attachmentUrl || null,
+          parsed.data.attachmentLabel || null,
+          email.inReplyTo,
+          email.referenceIds,
+          email.fromAddress || null,
+          email.to,
+        ],
+      )
+
+      await db.query('COMMIT')
+      const pendingMessage = pendingResult.rows[0]
+
+      try {
+        const providerData = await sendLetterEmail({
+          to: email.to,
+          subject: email.subject,
+          html: email.html,
+          text: email.text,
+          headers: email.headers,
+          replyTo: email.replyTo,
+        })
+
+        await db.query(
+          `
+          UPDATE client_conversation_messages
+          SET
+            provider_email_id = $2,
+            delivery_status = 'sent',
+            provider_metadata = $3::jsonb,
+            updated_at = now()
+          WHERE id = $1
+          `,
+          [pendingMessage.id, providerData?.id || null, JSON.stringify(providerData || {})],
+        )
+
+        await db.query(
+          `
+          UPDATE client_conversations
+          SET
+            status = 'waiting_on_client',
+            assigned_user_id = COALESCE(assigned_user_id, $2),
+            last_message_at = now(),
+            closed_at = NULL,
+            updated_at = now()
+          WHERE id = $1
+          `,
+          [before.id, req.user.id],
+        )
+
+        await writeInboxAudit(
+          req,
+          'client_conversation_email_reply_sent',
+          before.id,
+          before,
+          { messageId: pendingMessage.id, providerMessageId: providerData?.id || null },
+        )
+
+        return res.status(201).json({
+          ok: true,
+          message: 'Email reply sent.',
+          conversation: await getAdminInboxConversation(before.id),
+        })
+      } catch (error) {
+        await db.query(
+          `
+          UPDATE client_conversation_messages
+          SET
+            delivery_status = 'failed',
+            provider_metadata = $2::jsonb,
+            updated_at = now()
+          WHERE id = $1
+          `,
+          [pendingMessage.id, JSON.stringify({
+            error: error.message,
+            providerStatus: error.providerStatus || null,
+            providerData: error.providerData || {},
+          })],
+        ).catch(() => {})
+
+        await writeInboxAudit(
+          req,
+          'client_conversation_email_reply_failed',
+          before.id,
+          before,
+          { messageId: pendingMessage.id, error: error.message },
+        )
+
+        return next(error)
+      }
     }
 
     const messageResult = await db.query(
