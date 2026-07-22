@@ -35,16 +35,26 @@ const FINDINGS = [];
 
 // Detection Patterns
 const MOJIBAKE_PATTERNS = [
-  { regex: /Ã[©±]/g, desc: 'Likely Latin-1 interpretation of UTF-8 (e.g., Ã© -> é)' },
-  { regex: /Â[©\xA0]/g, desc: 'Likely Latin-1 interpretation of UTF-8 (e.g., Â© -> ©, Â  -> NBSP)' },
-  { regex: /â€™/g, desc: 'Mojibake for ’ (Right Single Quotation Mark)' },
-  { regex: /â€œ/g, desc: 'Mojibake for “ (Left Double Quotation Mark)' },
-  { regex: /â€/g, desc: 'Mojibake for ” (Right Double Quotation Mark)' },
-  { regex: /â€“/g, desc: 'Mojibake for – (En Dash)' },
-  { regex: /â€”/g, desc: 'Mojibake for — (Em Dash)' },
-  { regex: /â€¦/g, desc: 'Mojibake for … (Ellipsis)' },
-  { regex: /ï»¿/g, desc: 'Mojibake for UTF-8 BOM' },
-  { regex: /ðŸ/g, desc: 'Mojibake for Emoji starting with F0 9F' }
+  {
+    regex: /\u00c3[\u0080-\u00ff]/gu,
+    desc: 'Likely UTF-8 decoded as Windows-1252 or Latin-1',
+  },
+  {
+    regex: /\u00c2[\u0080-\u00ff]/gu,
+    desc: 'Likely stray UTF-8 lead byte decoded as Windows-1252 or Latin-1',
+  },
+  {
+    regex: /\u00e2[\u0080-\uffff]{1,4}/gu,
+    desc: 'Likely mojibake from a UTF-8 punctuation or symbol sequence',
+  },
+  {
+    regex: /\u00f0[\u0080-\uffff]{1,5}/gu,
+    desc: 'Likely mojibake from a UTF-8 emoji sequence',
+  },
+  {
+    regex: /\u00ef[\u0080-\uffff]{1,4}/gu,
+    desc: 'Likely mojibake from a UTF-8 BOM or replacement sequence',
+  },
 ];
 
 const CONTROL_CHARS = /[\x00-\x08\x0B\x0C\x0E-\x1F]/g;

@@ -614,7 +614,7 @@
 }
 
 .circle-context-disclosure[open] > summary em::after {
-  content: ' −';
+  content: ' \2212 ';
 }
 
 .circle-context-grid {

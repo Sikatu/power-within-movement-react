@@ -1031,7 +1031,7 @@
 }
 
 .portal-progressive-section[open] > summary em::after {
-  content: ' −';
+  content: ' \2212 ';
 }
 
 .portal-task-switcher {

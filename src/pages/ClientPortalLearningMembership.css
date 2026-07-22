@@ -1107,7 +1107,7 @@
 
 .learning-program-picker[open] > summary em::after,
 .membership-disclosure[open] > summary > span::after {
-  content: ' −';
+  content: ' \2212 ';
 }
 
 .learning-program-picker .learning-course-tabs {
