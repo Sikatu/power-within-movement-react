@@ -194,3 +194,17 @@ test('autosave conflicts, immutable snapshots, and dispatcher recovery risk stay
   assert.match(dueSelection, /status = 'scheduled' AND scheduled_at <= now\(\)/)
   assert.doesNotMatch(dueSelection, /processing/)
 })
+
+test('broadcast lifecycle is independent from the editable source letter', () => {
+  const routes = fs.readFileSync(path.join(__dirname, '..', 'src', 'routes', 'letterBuilder.routes.js'), 'utf8')
+  const service = fs.readFileSync(path.join(__dirname, '..', 'src', 'services', 'letterBroadcast.service.js'), 'utf8')
+  const editor = fs.readFileSync(path.join(__dirname, '..', '..', 'src', 'pages', 'admin', 'AdminLetters.jsx'), 'utf8')
+
+  assert.match(routes, /if \(current\.status === 'archived'\)/)
+  assert.match(routes, /if \(letter\.status === 'archived'\)/)
+  assert.doesNotMatch(routes, /UPDATE letter_documents SET status = 'scheduled'/)
+  assert.doesNotMatch(routes, /UPDATE letter_documents SET status = 'cancelled'/)
+  assert.doesNotMatch(service, /UPDATE letter_documents SET status = 'sending'/)
+  assert.doesNotMatch(service, /UPDATE letter_documents SET status = 'sent'/)
+  assert.match(editor, /const readOnly = working\?\.status === 'archived'/)
+})

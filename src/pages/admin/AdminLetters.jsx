@@ -195,7 +195,7 @@ export default function AdminLetters() {
   const metrics = overview.metrics || {}
   const scheduledBroadcasts = (overview.broadcasts || []).filter((broadcast) => ['scheduled', 'processing', 'failed'].includes(broadcast.status))
   const sentBroadcasts = (overview.broadcasts || []).filter((broadcast) => ['sent', 'partial'].includes(broadcast.status))
-  const readOnly = ['scheduled', 'sent', 'sending', 'archived'].includes(working?.status)
+  const readOnly = working?.status === 'archived'
 
   const openLetter = useCallback(async (letterId) => {
     setBusy('open-letter')
@@ -547,7 +547,7 @@ export default function AdminLetters() {
   }
 
   async function handleCancelBroadcast(broadcast) {
-    const accepted = await requestConfirm({ title: 'Cancel this scheduled broadcast?', message: 'No recipients will be sent this broadcast. The letter can be duplicated into a new draft afterward.', confirmLabel: 'Cancel broadcast', tone: 'danger' })
+    const accepted = await requestConfirm({ title: 'Cancel this scheduled broadcast?', message: 'No recipients will be sent this broadcast. The original letter remains available to edit or use for another broadcast.', confirmLabel: 'Cancel broadcast', tone: 'danger' })
     if (!accepted) return
     try {
       await cancelLetterBroadcast(broadcast.id)

@@ -221,9 +221,9 @@ router.patch('/letters/:letterId', async (req, res, next) => {
       await db.query('ROLLBACK')
       return res.status(404).json({ ok: false, error: 'Letter not found.' })
     }
-    if (['scheduled', 'sent', 'sending', 'archived'].includes(current.status)) {
+    if (current.status === 'archived') {
       await db.query('ROLLBACK')
-      return res.status(409).json({ ok: false, error: 'Scheduled, sending, sent, or archived letters are read-only. Cancel a schedule or duplicate the letter to continue editing.' })
+      return res.status(409).json({ ok: false, error: 'Archived letters are read-only. Restore or duplicate the letter to continue editing.' })
     }
     if (parsed.data.baseRevision !== undefined && parsed.data.baseRevision !== current.autosave_revision) {
       await db.query('ROLLBACK')
@@ -303,9 +303,9 @@ router.post('/letters/:letterId/versions/:versionId/restore', async (req, res, n
       await db.query('ROLLBACK')
       return res.status(404).json({ ok: false, error: 'Letter version not found.' })
     }
-    if (['sent', 'sending', 'archived'].includes(current.status)) {
+    if (current.status === 'archived') {
       await db.query('ROLLBACK')
-      return res.status(409).json({ ok: false, error: 'This letter is read-only.' })
+      return res.status(409).json({ ok: false, error: 'Archived letters are read-only.' })
     }
     const revision = current.autosave_revision + 1
     const snapshot = version.snapshot
@@ -439,9 +439,9 @@ router.post('/letters/:letterId/broadcasts/prepare', async (req, res, next) => {
       await db.query('ROLLBACK')
       return res.status(404).json({ ok: false, error: 'Letter not found.' })
     }
-    if (!['draft', 'cancelled'].includes(letter.status)) {
+    if (letter.status === 'archived') {
       await db.query('ROLLBACK')
-      return res.status(409).json({ ok: false, error: 'Only draft letters can choose a new broadcast audience.' })
+      return res.status(409).json({ ok: false, error: 'Archived letters cannot prepare a broadcast. Restore or duplicate the letter first.' })
     }
     const validation = validateLetter({ title: letter.title, subject: letter.subject, design: letter.design })
     if (!validation.ok) {
@@ -518,7 +518,6 @@ router.post('/broadcasts/:broadcastId/schedule', async (req, res, _next) => {
     const result = await pool.query(`UPDATE letter_broadcasts SET status = 'scheduled', scheduled_at = $2, updated_at = now() WHERE id = $1 AND status = 'draft' RETURNING *`, [req.params.broadcastId, scheduledAt.toISOString()])
     const broadcast = result.rows[0]
     if (!broadcast) return res.status(409).json({ ok: false, error: 'Only prepared draft broadcasts can be scheduled.' })
-    await pool.query(`UPDATE letter_documents SET status = 'scheduled', scheduled_at = $2, updated_at = now() WHERE id = $1`, [broadcast.letter_id, scheduledAt.toISOString()])
     await writeAudit(pool, req, 'letter_broadcast_scheduled', 'letter_broadcasts', broadcast.id, { scheduledAt: broadcast.scheduled_at, recipientCount: broadcast.recipient_count })
     res.json({ ok: true, broadcast })
   } catch (error) {
@@ -543,7 +542,6 @@ router.post('/broadcasts/:broadcastId/cancel', async (req, res, next) => {
     const result = await pool.query(`UPDATE letter_broadcasts SET status = 'cancelled', updated_at = now() WHERE id = $1 AND status IN ('draft', 'scheduled', 'failed') RETURNING *`, [req.params.broadcastId])
     const broadcast = result.rows[0]
     if (!broadcast) return res.status(409).json({ ok: false, error: 'Only draft, scheduled, or failed broadcasts can be cancelled.' })
-    await pool.query(`UPDATE letter_documents SET status = 'cancelled', scheduled_at = NULL, updated_at = now() WHERE id = $1`, [broadcast.letter_id])
     await writeAudit(pool, req, 'letter_broadcast_cancelled', 'letter_broadcasts', broadcast.id, { letterId: broadcast.letter_id })
     res.json({ ok: true, broadcast })
   } catch (error) {

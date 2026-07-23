@@ -385,7 +385,6 @@ async function processLetterBroadcast(pool, broadcastId) {
     const validation = validateLetter({ title: broadcast.title, subject: broadcast.subject, design: broadcast.design })
     if (!validation.ok) throw Object.assign(new Error(validation.errors.join(' ')), { statusCode: 400 })
     await claim.query(`UPDATE letter_broadcasts SET status = 'processing', started_at = COALESCE(started_at, now()), error_message = NULL, updated_at = now() WHERE id = $1`, [broadcastId])
-    await claim.query(`UPDATE letter_documents SET status = 'sending', updated_at = now() WHERE id = $1`, [broadcast.letter_id])
     await claim.query('COMMIT')
   } catch (error) {
     await claim.query('ROLLBACK').catch(() => {})
@@ -413,10 +412,6 @@ async function processLetterBroadcast(pool, broadcastId) {
   const final = await pool.query(
     `UPDATE letter_broadcasts SET status = $2, completed_at = now(), updated_at = now() WHERE id = $1 RETURNING *`,
     [broadcastId, finalStatus],
-  )
-  await pool.query(
-    `UPDATE letter_documents SET status = 'sent', sent_at = now(), updated_at = now() WHERE id = $1`,
-    [broadcast.letter_id],
   )
   return final.rows[0]
 }
