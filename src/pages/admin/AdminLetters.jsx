@@ -1,9 +1,14 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { Link, useSearchParams } from 'react-router-dom'
+import { useSearchParams } from 'react-router-dom'
 import AdminFrame from '../../components/admin/AdminFrame.jsx'
 import { useAdminConfirm } from '../../components/admin/AdminConfirmContext.js'
-import LetterBlockSettings from '../../components/admin/LetterBlockSettings.jsx'
-import LetterCanvas from '../../components/admin/LetterCanvas.jsx'
+import {
+  BroadcastAnalytics,
+  DeliveryQueue,
+  LetterEditor,
+  LettersLibrary,
+  LettersWorkspace,
+} from '../../components/admin/letters/LettersWorkspace.jsx'
 import {
   cancelLetterBroadcast,
   createLetter,
@@ -25,12 +30,6 @@ import {
   sendLetterBroadcastNow,
   sendLetterTest,
 } from '../../lib/nativeApi.js'
-
-const workspaceTabs = [
-  ['letters', 'Letters'],
-  ['delivery', 'Delivery'],
-  ['results', 'Results'],
-]
 
 const blockPalette = [
   ['heading', 'Heading', 'H'],
@@ -588,104 +587,81 @@ export default function AdminLetters() {
     if (flowStep === 'send') {
       return <div className="pwc-letters28-send-panel"><header><p className="admin-eyebrow">Schedule or Send</p><h2>Final delivery choice</h2></header><form onSubmit={handleSchedule}><label><span>Schedule date and time</span><input type="datetime-local" value={scheduleAt} onChange={(event) => setScheduleAt(event.target.value)} required /></label><button type="submit" disabled={busy === 'schedule'}>{busy === 'schedule' ? 'Scheduling…' : 'Schedule broadcast'}</button></form><div className="pwc-letters28-send-divider"><span>or</span></div><button type="button" className="is-danger" onClick={handleSendNow} disabled={busy === 'send-now'}>{busy === 'send-now' ? 'Sending safely…' : `Send now to ${preparedBroadcast?.recipient_count || 0}`}</button><p>Immediate sending cannot be undone. Consent and suppressions are rechecked for every recipient.</p></div>
     }
-    return <LetterBlockSettings block={selectedBlock} onChange={changeBlock} onDuplicate={duplicateBlock} onDelete={deleteBlock} />
+    return null
   }
 
   return (
     <AdminFrame>
-      <section className="pwc-letters28-page">
-        <header className="pwc-letters28-hero"><div><p className="admin-eyebrow">Power Within Communications</p><h1>Letters & Broadcasts</h1><p>Design thoughtful, branded letters and deliver them only to people whose current consent allows it.</p></div><aside><span>Eligible audience</span><strong>{Number(audience.metrics?.eligible || 0).toLocaleString()}</strong><small>Phase 27 protections active</small></aside></header>
-
-        {error && <div className="pwc-letters28-alert is-error" role="alert">{error}</div>}
-        {notice && <div className="pwc-letters28-alert is-success" role="status">{notice}</div>}
-
-        <nav className="pwc-letters28-tabs pwc-phase35-primary-tabs" aria-label="Letters workspace sections">
-          {workspaceTabs.map(([id, label]) => (
-            <button
-              key={id}
-              type="button"
-              className={activeTab === id ? 'is-active' : ''}
-              aria-current={activeTab === id ? 'page' : undefined}
-              onClick={() => {
-                setActiveTab(id)
-                if (id !== 'letters') setWorking(null)
-              }}
-            >
-              {label}
-              {id === 'delivery' && scheduledBroadcasts.length > 0 ? <span>{scheduledBroadcasts.length}</span> : null}
-            </button>
-          ))}
-        </nav>
-
-        {activeTab === 'letters' && !working && (
-          <section className="pwc-phase35-letter-library">
-            <header className="pwc-phase35-taskbar">
-              <div>
-                <p className="admin-eyebrow">Letter Library</p>
-                <h2>{libraryMode === 'drafts' ? 'Draft and recent work' : 'Reusable designs'}</h2>
-              </div>
-              <div className="pwc-phase35-taskbar__actions">
-                <div className="pwc-phase35-view-switch" role="tablist" aria-label="Letter library view">
-                  <button type="button" role="tab" aria-selected={libraryMode === 'drafts'} className={libraryMode === 'drafts' ? 'is-active' : ''} onClick={() => setLibraryMode('drafts')}>Letters</button>
-                  <button type="button" role="tab" aria-selected={libraryMode === 'templates'} className={libraryMode === 'templates' ? 'is-active' : ''} onClick={() => setLibraryMode('templates')}>Templates</button>
-                </div>
-                <button type="button" className="pwc-phase35-primary-action" onClick={() => setCreatingLetter((current) => !current)}>{creatingLetter ? 'Close' : '+ New letter'}</button>
-              </div>
-            </header>
-
-            {creatingLetter && (
-              <section className="pwc-letters28-panel pwc-letters28-new pwc-phase35-create-panel">
-                <header><div><p className="admin-eyebrow">Create</p><h2>Begin a new letter</h2></div></header>
-                <form onSubmit={handleCreateLetter}>
-                  <label><span>Internal letter title</span><input value={newLetter.title} onChange={(event) => setNewLetter((current) => ({ ...current, title: event.target.value }))} placeholder="July reflection for a new season" required /></label>
-                  <label><span>Starting template</span><select value={newLetter.templateId} onChange={(event) => setNewLetter((current) => ({ ...current, templateId: event.target.value }))}><option value="">Clean Power Within letter</option>{(overview.templates || []).map((template) => <option key={template.id} value={template.id}>{template.name}</option>)}</select></label>
-                  <button type="submit" disabled={busy === 'create'}>{busy === 'create' ? 'Creating…' : 'Create letter'}</button>
-                </form>
-              </section>
-            )}
-
-            {libraryMode === 'drafts' ? (
-              <section className="pwc-letters28-panel pwc-letters28-letter-list">
-                <header><div><p className="admin-eyebrow">Letters</p><h2>Open a letter to continue</h2></div><span>{overview.letters?.length || 0} letters</span></header>
-                <div>{loading ? <p className="pwc-letters28-empty">Loading letters…</p> : (overview.letters || []).length ? overview.letters.map((letter) => <article key={letter.id}><button type="button" onClick={() => openLetter(letter.id)}><span className={`pwc-letters28-status is-${letter.status}`}>{formatStatus(letter.status)}</span><strong>{letter.title}</strong><p>{letter.subject || 'Subject not written yet'}</p><small>Revision {letter.autosave_revision} · {formatDate(letter.updated_at)}</small></button><button type="button" className="is-copy" onClick={() => handleDuplicateLetter(letter.id)}>Duplicate</button></article>) : <p className="pwc-letters28-empty">Create the first visual Power Within letter.</p>}</div>
-              </section>
-            ) : (
-              <section className="pwc-letters28-panel pwc-letters28-templates">
-                <header><div><p className="admin-eyebrow">Templates</p><h2>Start from a reusable design</h2></div><span>{overview.templates?.length || 0} active</span></header>
-                <div>{(overview.templates || []).map((template) => <article key={template.id}><span>{formatStatus(template.category)}</span><h3>{template.name}</h3><p>{template.description || template.preview_text}</p><small>{template.design?.blocks?.length || 0} blocks · Updated {formatDate(template.updated_at)}</small><button type="button" onClick={() => { setNewLetter({ title: `${template.name} letter`, templateId: template.id }); setLibraryMode('drafts'); setCreatingLetter(true) }}>Use template</button></article>)}</div>
-              </section>
-            )}
-          </section>
-        )}
-
-        {activeTab === 'letters' && working && <section className="pwc-letters28-builder"><header className="pwc-letters28-topbar"><button type="button" className="is-back" onClick={() => { setWorking(null); loadWorkspace({ preserveMessages: true }) }}>← Letters</button><div className="pwc-letters28-title-fields"><input aria-label="Internal letter title" value={working.title} onChange={(event) => updateLetter({ title: event.target.value })} /><input aria-label="Email subject" value={working.subject || ''} onChange={(event) => updateLetter({ subject: event.target.value })} placeholder="Email subject" /></div><div className="pwc-letters28-save-state"><span className={`is-${saveState}`}>{saveState === 'saved' ? 'Saved' : saveState === 'saving' ? 'Saving…' : saveState === 'error' ? 'Save error' : 'Unsaved'}</span><small>Revision {working.autosave_revision}</small></div><div className="pwc-letters28-top-actions"><button type="button" onClick={undo} disabled={!undoStack.length || readOnly}>Undo</button><button type="button" onClick={redo} disabled={!redoStack.length || readOnly}>Redo</button><div><button type="button" className={previewMode === 'desktop' ? 'is-active' : ''} onClick={() => setPreviewMode('desktop')}>Desktop</button><button type="button" className={previewMode === 'mobile' ? 'is-active' : ''} onClick={() => setPreviewMode('mobile')}>Mobile</button></div><button type="button" onClick={() => persistWorking('manual')} disabled={readOnly}>Save now</button><button type="button" className="is-primary" onClick={() => { setFlowStep('recipients'); handleAudiencePreview() }} disabled={readOnly || !working.subject}>Choose recipients →</button></div></header><div className="pwc-letters28-flow"><span className={flowStep === 'design' ? 'is-active' : ''}>1 Design</span><span className={flowStep === 'recipients' ? 'is-active' : ''}>2 Recipients</span><span className={flowStep === 'review' ? 'is-active' : ''}>3 Review</span><span className={flowStep === 'test' ? 'is-active' : ''}>4 Test</span><span className={flowStep === 'send' ? 'is-active' : ''}>5 Schedule or send</span></div><div className="pwc-letters28-builder-grid"><aside className="pwc-letters28-blocks"><header><p className="admin-eyebrow">Content Blocks</p><h2>Build your letter</h2></header><div>{blockPalette.map(([type, label, icon]) => <button type="button" key={type} onClick={() => addBlock(type)} disabled={readOnly}><span>{icon}</span><strong>{label}</strong></button>)}</div><section><p className="admin-eyebrow">Global Style</p><label><span>Page color</span><input type="color" value={working.design.settings.backgroundColor} onChange={(event) => updateDesign({ ...working.design, settings: { ...working.design.settings, backgroundColor: event.target.value } })} /></label><label><span>Content color</span><input type="color" value={working.design.settings.contentColor} onChange={(event) => updateDesign({ ...working.design, settings: { ...working.design.settings, contentColor: event.target.value } })} /></label><label><span>Text color</span><input type="color" value={working.design.settings.textColor} onChange={(event) => updateDesign({ ...working.design, settings: { ...working.design.settings, textColor: event.target.value } })} /></label><label><span>Accent color</span><input type="color" value={working.design.settings.accentColor} onChange={(event) => updateDesign({ ...working.design, settings: { ...working.design.settings, accentColor: event.target.value } })} /></label><label><span>Display type</span><select value={working.design.settings.fontFamily} onChange={(event) => updateDesign({ ...working.design, settings: { ...working.design.settings, fontFamily: event.target.value } })}><option value="Georgia, serif">Georgia</option><option value="'Times New Roman', serif">Times New Roman</option></select></label><label><span>Body type</span><select value={working.design.settings.bodyFontFamily} onChange={(event) => updateDesign({ ...working.design, settings: { ...working.design.settings, bodyFontFamily: event.target.value } })}><option value="Arial, sans-serif">Arial</option><option value="Helvetica, Arial, sans-serif">Helvetica</option><option value="'Trebuchet MS', Arial, sans-serif">Trebuchet</option></select></label></section></aside><main className="pwc-letters28-canvas-column"><label className="pwc-letters28-preview-text"><span>Inbox preview text</span><input value={working.preview_text || ''} onChange={(event) => updateLetter({ preview_text: event.target.value })} placeholder="A short line shown beside the subject" /></label><LetterCanvas design={working.design} selectedBlockId={selectedBlockId} onSelect={(blockId) => { setSelectedBlockId(blockId); setFlowStep('design') }} onMove={moveBlock} previewMode={previewMode} readOnly={readOnly} /></main><aside className="pwc-letters28-right-panel">{renderFlowPanel()}{flowStep === 'design' && <><section className="pwc-letters28-version-box"><header><p className="admin-eyebrow">Draft Recovery</p><strong>{versions.length} versions</strong></header><div>{versions.slice(0, 6).map((version) => <button type="button" key={version.id} onClick={() => handleRestoreVersion(version)} disabled={readOnly || busy === 'restore'}><span>Revision {version.revision}</span><small>{formatStatus(version.reason)} · {formatDate(version.created_at)}</small></button>)}</div></section><form className="pwc-letters28-template-save" onSubmit={handleSaveTemplate}><label><span>Save as reusable template</span><input value={templateName} onChange={(event) => setTemplateName(event.target.value)} placeholder="Template name" /></label><button type="submit" disabled={!templateName.trim() || busy === 'template'}>Save template</button></form></>}</aside></div></section>}
-
-        {activeTab === 'delivery' && (
-          <div className="pwc-phase35-delivery-stack">
-            <section className="pwc-letters28-panel pwc-phase35-audience-ready">
-              <div><p className="admin-eyebrow">Audience Readiness</p><h2>{Number(audience.metrics?.eligible || 0).toLocaleString()} eligible recipients</h2><p>Consent and suppression protections are checked again at send time.</p></div>
-              <Link to="/admin/audience">Manage audience →</Link>
-            </section>
-            <section className="pwc-letters28-panel pwc-letters28-broadcasts">
-              <header>
-                <div><p className="admin-eyebrow">Delivery Queue</p><h2>{deliveryView === 'scheduled' ? 'Upcoming broadcasts' : 'Delivered letters'}</h2></div>
-                <div className="pwc-phase35-taskbar__actions">
-                  <div className="pwc-phase35-view-switch" role="tablist" aria-label="Broadcast delivery view">
-                    <button type="button" role="tab" aria-selected={deliveryView === 'scheduled'} className={deliveryView === 'scheduled' ? 'is-active' : ''} onClick={() => setDeliveryView('scheduled')}>Scheduled {scheduledBroadcasts.length}</button>
-                    <button type="button" role="tab" aria-selected={deliveryView === 'sent'} className={deliveryView === 'sent' ? 'is-active' : ''} onClick={() => setDeliveryView('sent')}>Sent {sentBroadcasts.length}</button>
-                  </div>
-                  {deliveryView === 'scheduled' && adminUser?.role === 'developer' && <button type="button" onClick={runDueBroadcasts} disabled={busy === 'process-due'}>{busy === 'process-due' ? 'Checking…' : 'Process due now'}</button>}
-                </div>
-              </header>
-              {deliveryView === 'scheduled'
-                ? renderBroadcastList(scheduledBroadcasts, 'No broadcasts are scheduled.', true)
-                : renderBroadcastList(sentBroadcasts, 'No broadcasts have been sent yet.')}
-            </section>
-          </div>
-        )}
-
-        {activeTab === 'results' && <section className="pwc-letters28-analytics"><div className="pwc-letters28-metrics">{[['Sent', metrics.delivered_to_provider], ['Opened', metrics.opened], ['Clicked', metrics.clicked], ['Open rate', rate(metrics.opened, metrics.delivered_to_provider)], ['Click rate', rate(metrics.clicked, metrics.delivered_to_provider)], ['Broadcasts', metrics.sent]].map(([label, value]) => <article key={label}><span>{label}</span><strong>{typeof value === 'number' ? value.toLocaleString() : value}</strong></article>)}</div>{selectedBroadcast ? <section className="pwc-letters28-panel pwc-letters28-results"><header><div><p className="admin-eyebrow">Broadcast Results</p><h2>{selectedBroadcast.broadcast.title}</h2><p>{selectedBroadcast.broadcast.subject}</p></div><a href={getLetterBroadcastExportUrl(selectedBroadcast.broadcast.id)}>Export CSV</a></header><div className="pwc-letters28-result-metrics">{[['Recipients', selectedBroadcast.broadcast.recipient_count], ['Sent', selectedBroadcast.broadcast.sent_count], ['Delivered', selectedBroadcast.broadcast.delivered_count], ['Opened', selectedBroadcast.broadcast.opened_count], ['Clicked', selectedBroadcast.broadcast.clicked_count], ['Bounced', selectedBroadcast.broadcast.bounced_count], ['Unsubscribed', selectedBroadcast.broadcast.unsubscribed_count]].map(([label, value]) => <div key={label}><span>{label}</span><strong>{value || 0}</strong></div>)}</div><div className="pwc-letters28-results-grid"><section><h3>Per-link activity</h3>{selectedBroadcast.links.length ? selectedBroadcast.links.map((link) => <article key={link.id}><div><strong>{link.label || 'Tracked link'}</strong><small>{link.destination_url}</small></div><span>{link.click_count} clicks · {link.unique_click_count} unique</span></article>) : <p>No tracked link activity yet.</p>}</section><section><h3>Subscriber activity</h3>{selectedBroadcast.recipients.slice(0, 100).map((recipient) => <article key={recipient.id}><div><strong>{[recipient.first_name, recipient.last_name].filter(Boolean).join(' ') || recipient.email}</strong><small>{recipient.email}</small></div><span className={`pwc-letters28-status is-${recipient.delivery_status}`}>{formatStatus(recipient.delivery_status)}</span></article>)}</section></div></section> : <section className="pwc-letters28-panel pwc-letters28-analytics-list"><header><div><p className="admin-eyebrow">Results</p><h2>Choose a sent broadcast</h2></div></header>{renderBroadcastList(sentBroadcasts, 'Analytics will appear after the first broadcast.')}</section>}</section>}
-      </section>
+      <LettersWorkspace
+        audience={audience}
+        activeTab={activeTab}
+        scheduledCount={scheduledBroadcasts.length}
+        error={error}
+        notice={notice}
+        onTabChange={(tab) => {
+          setActiveTab(tab)
+          if (tab !== 'letters') setWorking(null)
+        }}
+      >
+        {activeTab === 'letters' && !working && <LettersLibrary
+          libraryMode={libraryMode}
+          setLibraryMode={setLibraryMode}
+          creatingLetter={creatingLetter}
+          setCreatingLetter={setCreatingLetter}
+          newLetter={newLetter}
+          setNewLetter={setNewLetter}
+          overview={overview}
+          loading={loading}
+          busy={busy}
+          onCreate={handleCreateLetter}
+          onOpen={openLetter}
+          onDuplicate={handleDuplicateLetter}
+          formatStatus={formatStatus}
+          formatDate={formatDate}
+          onUseTemplate={(template) => {
+            setNewLetter({ title: `${template.name} letter`, templateId: template.id })
+            setLibraryMode('drafts')
+            setCreatingLetter(true)
+          }}
+        />}
+        {activeTab === 'letters' && working && <LetterEditor
+          working={working}
+          readOnly={readOnly}
+          saveState={saveState}
+          undoCount={undoStack.length}
+          redoCount={redoStack.length}
+          previewMode={previewMode}
+          setPreviewMode={setPreviewMode}
+          flowStep={flowStep}
+          selectedBlockId={selectedBlockId}
+          selectedBlock={selectedBlock}
+          versions={versions}
+          busy={busy}
+          templateName={templateName}
+          setTemplateName={setTemplateName}
+          palette={blockPalette}
+          onBack={() => { setWorking(null); loadWorkspace({ preserveMessages: true }) }}
+          onUpdateLetter={updateLetter}
+          onUpdateDesign={updateDesign}
+          onUndo={undo}
+          onRedo={redo}
+          onSave={() => persistWorking('manual')}
+          onChooseRecipients={() => { setFlowStep('recipients'); handleAudiencePreview() }}
+          onAddBlock={addBlock}
+          onSelectBlock={(blockId) => { setSelectedBlockId(blockId); setFlowStep('design') }}
+          onMoveBlock={moveBlock}
+          onChangeBlock={changeBlock}
+          onDuplicateBlock={duplicateBlock}
+          onDeleteBlock={deleteBlock}
+          renderFlowPanel={renderFlowPanel}
+          onRestoreVersion={handleRestoreVersion}
+          onSaveTemplate={handleSaveTemplate}
+          formatStatus={formatStatus}
+          formatDate={formatDate}
+        />}
+        {activeTab === 'delivery' && <DeliveryQueue audience={audience} deliveryView={deliveryView} setDeliveryView={setDeliveryView} scheduled={scheduledBroadcasts} sent={sentBroadcasts} adminUser={adminUser} busy={busy} onProcessDue={runDueBroadcasts} renderBroadcastList={renderBroadcastList} />}
+        {activeTab === 'results' && <BroadcastAnalytics metrics={metrics} selectedBroadcast={selectedBroadcast} sentBroadcasts={sentBroadcasts} rate={rate} formatStatus={formatStatus} exportUrl={getLetterBroadcastExportUrl} renderBroadcastList={renderBroadcastList} />}
+      </LettersWorkspace>
     </AdminFrame>
   )
 }
