@@ -1866,6 +1866,10 @@ export async function cancelLetterBroadcast(broadcastId) {
   return apiRequest(`/api/admin/letters/broadcasts/${broadcastId}/cancel`, { method: 'POST' })
 }
 
+export async function retryFailedLetterBroadcast(broadcastId) {
+  return apiRequest(`/api/admin/letters/broadcasts/${broadcastId}/retry-failed`, { method: 'POST' })
+}
+
 export async function processDueLetterBroadcasts() {
   return apiRequest('/api/admin/letters/process-due', { method: 'POST' })
 }

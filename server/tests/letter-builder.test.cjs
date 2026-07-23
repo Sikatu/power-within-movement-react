@@ -17,6 +17,7 @@ const {
   verifyResendWebhook,
 } = require('../src/services/letterBuilder.service')
 const {
+  STALE_PROCESSING_MINUTES,
   audienceFilterSql,
   buildBroadcastPreflight,
   normalizeAudienceFilter,
@@ -247,9 +248,25 @@ test('autosave conflicts, immutable snapshots, and dispatcher recovery risk stay
   assert.match(routes, /title_snapshot = \$2, subject_snapshot = \$3/)
   assert.match(routes, /design_snapshot = \$5::jsonb/)
   assert.match(routes, /req\.user\?\.role !== 'developer'/)
-  const dueSelection = service.match(/SELECT id FROM letter_broadcasts WHERE[^`]+/)?.[0] || ''
-  assert.match(dueSelection, /status = 'scheduled' AND scheduled_at <= now\(\)/)
-  assert.doesNotMatch(dueSelection, /processing/)
+  assert.equal(STALE_PROCESSING_MINUTES, 15)
+  assert.match(service, /FOR UPDATE SKIP LOCKED/)
+  assert.match(service, /status = 'processing'/)
+  assert.match(service, /Recovered automatically after an interrupted delivery worker/)
+  assert.match(service, /Idempotency-Key/)
+  assert.match(service, /pwc-letter-\$\{recipient\.id\}/)
+  assert.match(routes, /retry-failed/)
+  assert.match(routes, /delivery_status = 'pending'/)
+})
+
+test('failed-recipient recovery is bounded and preserves successful deliveries', () => {
+  const routes = fs.readFileSync(path.join(__dirname, '..', 'src', 'routes', 'letterBuilder.routes.js'), 'utf8')
+  const retryRoute = routes.match(/router\.post\('\/broadcasts\/:broadcastId\/retry-failed'[\s\S]+?\n\}\)\n/)?.[0] || ''
+
+  assert.match(retryRoute, /status IN \('failed', 'partial'\)/)
+  assert.match(retryRoute, /delivery_status = 'failed'/)
+  assert.match(retryRoute, /delivery_status = 'pending'/)
+  assert.doesNotMatch(retryRoute, /delivery_status IN \('sent'/)
+  assert.match(retryRoute, /letter_broadcast_retry_queued/)
 })
 
 test('broadcast lifecycle is independent from the editable source letter', () => {

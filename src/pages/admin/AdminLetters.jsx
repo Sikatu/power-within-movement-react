@@ -25,6 +25,7 @@ import {
   previewLetterAudience,
   renderLetterPreview,
   processDueLetterBroadcasts,
+  retryFailedLetterBroadcast,
   restoreLetterVersion,
   saveLetter,
   saveLetterAsTemplate,
@@ -622,7 +623,12 @@ export default function AdminLetters() {
     setBusy('process-due')
     try {
       const response = await processDueLetterBroadcasts()
-      setNotice(`${response.processed || 0} scheduled broadcast${response.processed === 1 ? '' : 's'} processed.`)
+      const details = [
+        `${response.processed || 0} processed`,
+        `${response.recovered || 0} recovered`,
+        `${response.failed || 0} failed`,
+      ]
+      setNotice(`Delivery worker check complete: ${details.join(', ')}.`)
       await loadWorkspace({ preserveMessages: true })
     } catch (processError) {
       setError(processError.message || 'Scheduled broadcasts could not be processed.')
@@ -631,8 +637,27 @@ export default function AdminLetters() {
     }
   }
 
+  async function handleRetryFailedBroadcast(broadcast) {
+    const accepted = await requestConfirm({
+      title: 'Retry failed recipients?',
+      message: 'Only recipients whose earlier attempt failed will be queued. Already sent, skipped, unsubscribed, or suppressed recipients will not be sent again.',
+      confirmLabel: 'Queue safe retry',
+    })
+    if (!accepted) return
+    setBusy(`retry-${broadcast.id}`)
+    try {
+      const response = await retryFailedLetterBroadcast(broadcast.id)
+      setNotice(`${response.retryCount || 0} failed recipient${response.retryCount === 1 ? '' : 's'} queued for a safe retry.`)
+      await loadWorkspace({ preserveMessages: true })
+    } catch (retryError) {
+      setError(retryError.message || 'Failed recipients could not be queued for retry.')
+    } finally {
+      setBusy('')
+    }
+  }
+
   function renderBroadcastList(items, emptyMessage, allowCancel = false) {
-    return <div className="pwc-letters28-broadcast-list">{items.length ? items.map((broadcast) => <article key={broadcast.id}><div><span className={`pwc-letters28-status is-${broadcast.status}`}>{formatStatus(broadcast.status)}</span><h3>{broadcast.title}</h3><p>{broadcast.subject || 'No subject'} · {broadcast.recipient_count} recipients</p></div><dl><div><dt>Scheduled</dt><dd>{formatDate(broadcast.scheduled_at)}</dd></div><div><dt>Sent</dt><dd>{broadcast.sent_count || 0}</dd></div></dl><footer><button type="button" onClick={() => openBroadcast(broadcast.id)}>View details</button>{allowCancel && <button type="button" className="is-danger" onClick={() => handleCancelBroadcast(broadcast)}>Cancel</button>}</footer></article>) : <p className="pwc-letters28-empty">{emptyMessage}</p>}</div>
+    return <div className="pwc-letters28-broadcast-list">{items.length ? items.map((broadcast) => <article key={broadcast.id}><div><span className={`pwc-letters28-status is-${broadcast.status}`}>{formatStatus(broadcast.status)}</span><h3>{broadcast.title}</h3><p>{broadcast.subject || 'No subject'} · {broadcast.recipient_count} recipients</p>{broadcast.error_message && <small role="status">{broadcast.error_message}</small>}</div><dl><div><dt>Scheduled</dt><dd>{formatDate(broadcast.scheduled_at)}</dd></div><div><dt>Sent</dt><dd>{broadcast.sent_count || 0}</dd></div><div><dt>Failed</dt><dd>{broadcast.failed_count || 0}</dd></div></dl><footer><button type="button" onClick={() => openBroadcast(broadcast.id)}>View details</button>{Number(broadcast.failed_count || 0) > 0 && ['failed', 'partial'].includes(broadcast.status) && <button type="button" onClick={() => handleRetryFailedBroadcast(broadcast)} disabled={busy === `retry-${broadcast.id}`}>{busy === `retry-${broadcast.id}` ? 'Queuing…' : 'Retry failures'}</button>}{allowCancel && ['draft', 'scheduled', 'failed'].includes(broadcast.status) && <button type="button" className="is-danger" onClick={() => handleCancelBroadcast(broadcast)}>Cancel</button>}</footer></article>) : <p className="pwc-letters28-empty">{emptyMessage}</p>}</div>
   }
 
   function renderFlowPanel() {

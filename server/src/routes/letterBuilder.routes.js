@@ -572,9 +572,9 @@ router.post('/broadcasts/:broadcastId/schedule', async (req, res, _next) => {
     const scheduledAt = new Date(parsed.data.scheduledAt)
     if (scheduledAt <= new Date(Date.now() + 60_000)) return res.status(400).json({ ok: false, error: 'Schedule the broadcast at least one minute in the future.' })
     if (scheduledAt > new Date(Date.now() + 366 * 24 * 60 * 60 * 1000)) return res.status(400).json({ ok: false, error: 'Broadcasts may be scheduled up to one year ahead.' })
-    const result = await pool.query(`UPDATE letter_broadcasts SET status = 'scheduled', scheduled_at = $2, updated_at = now() WHERE id = $1 AND status = 'draft' RETURNING *`, [req.params.broadcastId, scheduledAt.toISOString()])
+    const result = await pool.query(`UPDATE letter_broadcasts SET status = 'scheduled', scheduled_at = $2, completed_at = NULL, error_message = NULL, updated_at = now() WHERE id = $1 AND status IN ('draft', 'scheduled', 'failed') RETURNING *`, [req.params.broadcastId, scheduledAt.toISOString()])
     const broadcast = result.rows[0]
-    if (!broadcast) return res.status(409).json({ ok: false, error: 'Only prepared draft broadcasts can be scheduled.' })
+    if (!broadcast) return res.status(409).json({ ok: false, error: 'Only prepared, scheduled, or failed broadcasts can be scheduled.' })
     await writeAudit(pool, req, 'letter_broadcast_scheduled', 'letter_broadcasts', broadcast.id, { scheduledAt: broadcast.scheduled_at, recipientCount: broadcast.recipient_count })
     res.json({ ok: true, broadcast })
   } catch (error) {
@@ -603,6 +603,43 @@ router.post('/broadcasts/:broadcastId/cancel', async (req, res, next) => {
     res.json({ ok: true, broadcast })
   } catch (error) {
     next(error)
+  }
+})
+
+router.post('/broadcasts/:broadcastId/retry-failed', async (req, res, next) => {
+  if (unavailable(res)) return
+  const db = await pool.connect()
+  try {
+    await db.query('BEGIN')
+    const broadcastResult = await db.query(
+      `SELECT * FROM letter_broadcasts WHERE id = $1 AND status IN ('failed', 'partial') FOR UPDATE`,
+      [req.params.broadcastId],
+    )
+    const broadcast = broadcastResult.rows[0]
+    if (!broadcast) {
+      await db.query('ROLLBACK')
+      return res.status(409).json({ ok: false, error: 'Only failed or partially delivered broadcasts can retry failed recipients.' })
+    }
+    const recipients = await db.query(
+      `UPDATE letter_broadcast_recipients SET delivery_status = 'pending', error_message = NULL, updated_at = now() WHERE broadcast_id = $1 AND delivery_status = 'failed' RETURNING id`,
+      [broadcast.id],
+    )
+    if (!recipients.rowCount) {
+      await db.query('ROLLBACK')
+      return res.status(409).json({ ok: false, error: 'This broadcast has no failed recipients to retry.' })
+    }
+    const updated = await db.query(
+      `UPDATE letter_broadcasts SET status = 'scheduled', scheduled_at = now(), completed_at = NULL, error_message = NULL, updated_at = now() WHERE id = $1 RETURNING *`,
+      [broadcast.id],
+    )
+    await writeAudit(db, req, 'letter_broadcast_retry_queued', 'letter_broadcasts', broadcast.id, { failedRecipients: recipients.rowCount })
+    await db.query('COMMIT')
+    res.json({ ok: true, broadcast: updated.rows[0], retryCount: recipients.rowCount })
+  } catch (error) {
+    await db.query('ROLLBACK').catch(() => {})
+    next(error)
+  } finally {
+    db.release()
   }
 })
 
