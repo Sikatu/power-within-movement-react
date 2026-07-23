@@ -70,6 +70,8 @@ export default function AdminInbox() {
   const [showNew, setShowNew] = useState(false)
   const [newConversation, setNewConversation] = useState(emptyNewConversation)
   const [reply, setReply] = useState(emptyReply)
+  const [composerExpanded, setComposerExpanded] = useState(false)
+  const replyTextareaRef = useRef(null)
   const [loading, setLoading] = useState(true)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
@@ -198,6 +200,18 @@ export default function AdminInbox() {
     }
   }
 
+  function openReplyComposer() {
+    setComposerExpanded(true)
+
+    window.requestAnimationFrame(() => {
+      replyTextareaRef.current?.focus({ preventScroll: true })
+    })
+  }
+
+  function minimizeReplyComposer() {
+    if (!busy) setComposerExpanded(false)
+  }
+
   async function sendReply(event) {
     event.preventDefault()
     if (!selectedConversation) return
@@ -208,7 +222,10 @@ export default function AdminInbox() {
       selectedConversation.id,
     )
 
-    if (result) setReply(emptyReply)
+    if (result) {
+      setReply(emptyReply)
+      setComposerExpanded(false)
+    }
   }
 
   async function updateConversation(changes) {
@@ -431,7 +448,35 @@ export default function AdminInbox() {
                   ))}
                 </div>
 
-                <form className="admin-inbox-reply" onSubmit={sendReply}>
+                <form
+                  className={`admin-inbox-reply${composerExpanded ? ' is-expanded' : ' is-collapsed'}`}
+                  onSubmit={sendReply}
+                >
+                  <div className="admin-inbox-reply__dock">
+                    {!composerExpanded && (
+                      <button
+                        className="admin-inbox-reply__preview"
+                        type="button"
+                        onClick={openReplyComposer}
+                      >
+                        <span>{reply.body.trim() || 'Write a reply or private note???'}</span>
+                        {(reply.body.trim() || reply.attachmentUrl.trim()) && (
+                          <strong>Draft saved</strong>
+                        )}
+                      </button>
+                    )}
+                    <button
+                      className="admin-inbox-reply__toggle"
+                      type="button"
+                      aria-expanded={composerExpanded}
+                      disabled={busy}
+                      onClick={composerExpanded ? minimizeReplyComposer : openReplyComposer}
+                    >
+                      {composerExpanded ? 'Minimize' : 'Expand'}
+                    </button>
+                  </div>
+                  {composerExpanded && (
+                    <>
                   {selectedConversation.channel === 'email' && !reply.isInternalNote && (
                     <div className="admin-inbox__notice" role="status">
                       This response will be sent by email and kept in the same conversation thread.
@@ -458,6 +503,7 @@ export default function AdminInbox() {
                   <label>
                     <span>{reply.isInternalNote ? 'Private team note' : 'Message'}</span>
                     <textarea
+                      ref={replyTextareaRef}
                       rows="5"
                       value={reply.body}
                       onChange={(event) => setReply((current) => ({ ...current, body: event.target.value }))}
@@ -482,6 +528,8 @@ export default function AdminInbox() {
                   >
                     {busy ? (reply.isInternalNote ? 'Saving…' : 'Sending…') : reply.isInternalNote ? 'Add Internal Note' : 'Send Reply'}
                   </button>
+                    </>
+                  )}
                 </form>
               </>
             )}
