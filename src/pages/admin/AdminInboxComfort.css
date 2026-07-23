@@ -886,3 +886,39 @@ body.admin-app-mode .admin-inbox-reply.is-expanded .admin-inbox-reply__toggle {
     overscroll-behavior: contain;
   }
 }
+
+/* admin-inbox-expanded-composer-fit */
+@media (min-width: 901px) {
+  body.admin-app-mode
+    .admin-inbox__thread:has(.admin-inbox-reply.is-expanded) {
+    grid-template-rows: auto minmax(110px, 1fr) minmax(0, 280px);
+  }
+
+  body.admin-app-mode .admin-inbox-reply.is-expanded {
+    min-height: 0;
+    max-height: 280px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-gutter: stable;
+  }
+
+  body.admin-app-mode
+    .admin-inbox-reply.is-expanded
+    .admin-inbox-reply__dock {
+    position: sticky;
+    top: 0;
+    z-index: 4;
+    background: rgba(255, 252, 249, 0.98);
+  }
+}
+
+@media (min-width: 901px) and (min-height: 900px) {
+  body.admin-app-mode
+    .admin-inbox__thread:has(.admin-inbox-reply.is-expanded) {
+    grid-template-rows: auto minmax(150px, 1fr) minmax(0, 340px);
+  }
+
+  body.admin-app-mode .admin-inbox-reply.is-expanded {
+    max-height: 340px;
+  }
+}
