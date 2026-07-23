@@ -706,3 +706,65 @@ body.admin-app-mode .admin-inbox a:focus-visible {
     justify-self: stretch;
   }
 }
+
+/* admin-inbox-viewport-fit-pass */
+@media (min-width: 901px) {
+  body.admin-app-mode .admin-inbox__workspace {
+    min-height: 500px;
+    height: clamp(500px, calc(100vh - 355px), 720px);
+    height: clamp(500px, calc(100dvh - 355px), 720px);
+  }
+
+  body.admin-app-mode .admin-inbox__thread {
+    min-height: 0;
+    overflow: hidden;
+    grid-template-rows: auto minmax(140px, 1fr) auto;
+  }
+
+  body.admin-app-mode .admin-inbox-thread__messages {
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 24px 28px;
+  }
+
+  body.admin-app-mode .admin-inbox-reply {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 10px 12px;
+    padding: 13px 17px 15px;
+  }
+
+  body.admin-app-mode .admin-inbox-reply .admin-inbox__notice,
+  body.admin-app-mode .admin-inbox-reply__mode,
+  body.admin-app-mode .admin-inbox-reply > label {
+    grid-column: 1 / -1;
+  }
+
+  body.admin-app-mode .admin-inbox-reply__attachments {
+    grid-column: 1;
+    align-self: end;
+  }
+
+  body.admin-app-mode .admin-inbox-reply > .btn.primary {
+    grid-column: 2;
+    align-self: end;
+    margin: 0;
+  }
+
+  body.admin-app-mode .admin-inbox-reply textarea {
+    min-height: 88px;
+    max-height: 160px;
+  }
+}
+
+@media (max-width: 900px) {
+  body.admin-app-mode .admin-inbox__workspace {
+    height: auto;
+    min-height: 0;
+  }
+
+  body.admin-app-mode .admin-inbox__thread {
+    min-height: 680px;
+    grid-template-rows: auto minmax(260px, 1fr) auto;
+  }
+}
