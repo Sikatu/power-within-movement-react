@@ -13889,3 +13889,17 @@ body.admin-app-mode
 .pwc-letters28-blocks input[type=range]{min-height:1.2rem;padding:0;accent-color:var(--let-wine)}
 @media (max-width:1100px){.pwc-letters28-production-preview iframe{height:38rem}}
 /* letters-broadcast-phase-5-editor-foundation-end */
+/* letters-broadcast-phase-6-media-workflows-start */
+.pwc-asset-picker-heading{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:end;gap:.4rem}
+.pwc-asset-picker-file{position:absolute!important;width:1px!important;height:1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important}
+.pwc-asset-picker-upload{min-height:2.7rem;padding:.55rem .7rem;border:1px solid var(--admin-burgundy);border-radius:.75rem;background:var(--admin-burgundy);color:#fff;font-size:.58rem;font-weight:800;cursor:pointer}
+.pwc-asset-picker-selected{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:.55rem;padding:.55rem;border:1px solid rgba(64,130,91,.25);border-radius:.75rem;background:#eff8f1}
+.pwc-asset-picker-selected img,.pwc-asset-picker-options button>img{width:2.5rem;height:2.5rem;border-radius:.45rem;background:#eee;object-fit:cover}
+.pwc-asset-picker-selected span{display:grid;min-width:0;gap:.08rem}
+.pwc-asset-picker-selected small,.pwc-asset-picker-selected em{overflow:hidden;color:var(--admin-body);font-size:.54rem;font-style:normal;text-overflow:ellipsis;white-space:nowrap}
+.pwc-asset-picker-selected button{padding:.35rem .45rem;border:1px solid var(--admin-border);border-radius:.5rem;background:#fff;color:var(--admin-burgundy);font-size:.54rem;font-weight:800;cursor:pointer}
+.pwc-asset-picker-options button{display:grid;grid-template-columns:auto minmax(0,1fr) auto}
+.pwc-letters28-canvas-image{display:inline-block;max-width:100%;height:auto;border-radius:.45rem}
+.pwc-letters28-canvas .is-caption{margin-top:.45rem;color:var(--let-muted);font-size:.6rem}
+@media(max-width:520px){.pwc-asset-picker-heading{grid-template-columns:1fr}.pwc-asset-picker-upload{width:100%}}
+/* letters-broadcast-phase-6-media-workflows-end */

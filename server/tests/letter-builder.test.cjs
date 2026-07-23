@@ -148,6 +148,18 @@ test('audience modes discard stale filters and always preserve delivery eligibil
   assert.match(selected.where, /ANY\(/)
 })
 
+test('letter validation warns when a selected image has no alternative text', () => {
+  const design = normalizeDesign({
+    blocks: [
+      createLetterBlock('text', { content: { text: 'A complete letter.' } }),
+      createLetterBlock('image', { id: 'hero-image', content: { assetId: 'asset-1', alt: '' } }),
+    ],
+  })
+  const validation = validateLetter({ title: 'July reflection', subject: 'A thoughtful note', design })
+  assert.equal(validation.ok, true)
+  assert.match(validation.warnings.join(' '), /hero-image needs alternative text/i)
+})
+
 test('production renderer includes a mobile stacking rule for two-column letters', () => {
   const rendered = renderLetter({
     subject: 'Responsive letter',

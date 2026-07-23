@@ -1,4 +1,5 @@
 import { getLetterBlockTitle } from './letterBuilderBlocks.js'
+import { getAssetVaultPreviewUrl } from '../../lib/nativeApi.js'
 
 function EditableText({ value, fallback, className, onChange, multiline = true }) {
   return <span
@@ -34,7 +35,7 @@ function BlockPreview({ block, settings, readOnly, onChange }) {
     return <div style={style}><p className={block.type === 'greeting' ? 'is-greeting' : ''}>{readOnly ? content.text || 'Write your message here.' : <EditableText value={content.text} fallback="Write your message here." onChange={(text) => onChange('text', text)} />}</p></div>
   }
   if (block.type === 'image') {
-    return <div style={style}><div className="pwc-letters28-asset-placeholder"><span>Image</span><strong>{content.assetId ? 'Asset Vault image selected' : 'Choose an Asset Vault image'}</strong><small>{content.alt || 'Add alternative text'}</small></div>{content.caption && <p className="is-caption">{content.caption}</p>}</div>
+    return <div style={style}>{content.assetId ? <img className="pwc-letters28-canvas-image" src={getAssetVaultPreviewUrl(content.assetId)} alt={content.alt || ''} style={{ width: `${block.settings?.width || 100}%` }} /> : <div className="pwc-letters28-asset-placeholder"><span>Image</span><strong>Choose an Asset Vault image</strong><small>Add alternative text</small></div>}{content.caption && <p className="is-caption">{content.caption}</p>}</div>
   }
   if (block.type === 'button') {
     return <div style={style}><span className="pwc-letters28-preview-button" style={{ background: settings.accentColor }}>{content.text || 'Button label'}</span></div>

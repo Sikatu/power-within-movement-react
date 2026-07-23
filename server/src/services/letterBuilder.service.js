@@ -174,6 +174,9 @@ function validateLetter({ title, subject, design }) {
     if (['image', 'resource'].includes(block.type) && !block.content.assetId) {
       warnings.push(`${block.type === 'image' ? 'Image' : 'Resource'} block ${block.id} does not have an Asset Vault selection.`)
     }
+    if (block.type === 'image' && block.content.assetId && !String(block.content.alt || '').trim()) {
+      warnings.push(`Image block ${block.id} needs alternative text for accessibility.`)
+    }
     if (['button', 'video_preview'].includes(block.type) && !safeUrl(block.content.url)) {
       warnings.push(`${block.type === 'button' ? 'Button' : 'Video'} block ${block.id} needs a safe destination URL.`)
     }
