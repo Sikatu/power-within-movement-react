@@ -15,6 +15,7 @@ import {
   duplicateLetter,
   getLetter,
   getLetterBroadcast,
+  getLetterBroadcastPreflight,
   getLetterBroadcastExportUrl,
   getLetterBuilderOverview,
   getLetterVersions,
@@ -146,6 +147,7 @@ export default function AdminLetters() {
   const [audienceFilter, setAudienceFilter] = useState(initialAudienceFilter)
   const [audiencePreview, setAudiencePreview] = useState(0)
   const [preparedBroadcast, setPreparedBroadcast] = useState(null)
+  const [preflight, setPreflight] = useState(null)
   const [testEmail, setTestEmail] = useState('')
   const [scheduleAt, setScheduleAt] = useState('')
   const [templateName, setTemplateName] = useState('')
@@ -466,6 +468,8 @@ export default function AdminLetters() {
     try {
       const response = await prepareLetterBroadcast(working.id, audienceFilter)
       setPreparedBroadcast(response.broadcast)
+      const preflightResponse = await getLetterBroadcastPreflight(response.broadcast.id)
+      setPreflight(preflightResponse.preflight)
       setAudiencePreview(response.broadcast.recipient_count || 0)
       setFlowStep('review')
       setNotice(`${response.broadcast.recipient_count} eligible recipients locked into the review snapshot.`)
@@ -498,6 +502,11 @@ export default function AdminLetters() {
     setBusy('schedule')
     setError('')
     try {
+      const preflightResponse = await getLetterBroadcastPreflight(preparedBroadcast.id)
+      setPreflight(preflightResponse.preflight)
+      if (!preflightResponse.preflight.ready) {
+        throw new Error(preflightResponse.preflight.blockers.join(' '))
+      }
       const response = await scheduleLetterBroadcast(preparedBroadcast.id, new Date(scheduleAt).toISOString())
       setPreparedBroadcast(response.broadcast)
       setNotice(`Broadcast scheduled for ${formatDate(response.broadcast.scheduled_at)}.`)
@@ -514,6 +523,17 @@ export default function AdminLetters() {
 
   async function handleSendNow() {
     if (!preparedBroadcast) return
+    try {
+      const preflightResponse = await getLetterBroadcastPreflight(preparedBroadcast.id)
+      setPreflight(preflightResponse.preflight)
+      if (!preflightResponse.preflight.ready) {
+        setError(preflightResponse.preflight.blockers.join(' '))
+        return
+      }
+    } catch (preflightError) {
+      setError(preflightError.message || 'Final delivery review could not be completed.')
+      return
+    }
     const accepted = await requestConfirm({
       title: `Send to ${preparedBroadcast.recipient_count} recipients now?`,
       message: 'Every recipient will be checked again for current consent and suppression immediately before delivery. Sending cannot be undone.',
@@ -620,7 +640,7 @@ export default function AdminLetters() {
       return <div className="pwc-letters28-recipient-panel"><header><p className="admin-eyebrow">Choose Recipients</p><h2>Consent-aware audience</h2></header><label><span>Selection mode</span><select value={audienceFilter.mode} onChange={(event) => changeAudienceFilter({ mode: event.target.value, subscriberIds: [] })}><option value="all">All eligible subscribers</option><option value="filtered">Filtered segment</option><option value="selected">Selected people</option></select></label>{audienceFilter.mode === 'filtered' && <><label><span>Tag</span><select value={audienceFilter.tag} onChange={(event) => changeAudienceFilter({ tag: event.target.value })}><option value="">Any tag</option>{(audience.tags || []).map((tag) => <option key={tag.name} value={tag.name}>{tag.name} ({tag.count})</option>)}</select></label><label><span>Segment</span><select value={audienceFilter.segment} onChange={(event) => changeAudienceFilter({ segment: event.target.value })}><option value="">Any segment</option>{(audience.segments || []).map((segment) => <option key={segment.id} value={segment.name}>{segment.name} ({segment.count})</option>)}</select></label><label><span>Source</span><select value={audienceFilter.source} onChange={(event) => changeAudienceFilter({ source: event.target.value })}><option value="">Any source</option>{(audience.sources || []).map((source) => <option key={source.source} value={source.source}>{formatStatus(source.source)} ({source.count})</option>)}</select></label></>}{audienceFilter.mode === 'selected' && <div className="pwc-letters28-recipient-options">{audienceMembers.map((member) => <label key={member.id}><input type="checkbox" checked={audienceFilter.subscriberIds.includes(member.id)} onChange={() => changeAudienceFilter({ subscriberIds: audienceFilter.subscriberIds.includes(member.id) ? audienceFilter.subscriberIds.filter((id) => id !== member.id) : [...audienceFilter.subscriberIds, member.id] })} /><span><strong>{[member.first_name, member.last_name].filter(Boolean).join(' ') || member.email}</strong><small>{member.email}</small></span></label>)}</div>}<aside><span>Eligible recipients</span><strong>{audiencePreview}</strong><small>Unsubscribed, bounced, complained, suppressed, pending, and unconsented addresses excluded.</small></aside><div className="pwc-letters28-panel-actions"><button type="button" className="is-secondary" onClick={() => setFlowStep('design')}>Back to design</button><button type="button" onClick={prepareBroadcast} disabled={busy === 'prepare' || audiencePreview === 0}>{busy === 'prepare' ? 'Preparing…' : 'Continue to review'}</button></div></div>
     }
     if (flowStep === 'review') {
-      return <div className="pwc-letters28-review-panel"><header><p className="admin-eyebrow">Review</p><h2>Ready for a test</h2></header><dl><div><dt>Letter</dt><dd>{working.title}</dd></div><div><dt>Subject</dt><dd>{working.subject || 'Missing subject'}</dd></div><div><dt>Blocks</dt><dd>{working.design.blocks.length}</dd></div><div><dt>Recipients</dt><dd>{preparedBroadcast?.recipient_count || 0}</dd></div><div><dt>Unsubscribe</dt><dd>Required block present</dd></div><div><dt>Pre-send recheck</dt><dd>Enabled</dd></div></dl><p>Recipient eligibility will be checked again at the exact moment of sending.</p><div className="pwc-letters28-panel-actions"><button type="button" className="is-secondary" onClick={() => setFlowStep('recipients')}>Change recipients</button><button type="button" onClick={() => setFlowStep('test')}>Continue to test</button></div></div>
+      return <div className="pwc-letters28-review-panel"><header><p className="admin-eyebrow">Final readiness</p><h2>{preflight?.ready ? 'Ready for a test' : 'Needs attention'}</h2></header><dl><div><dt>Letter</dt><dd>{working.title}</dd></div><div><dt>Subject</dt><dd>{working.subject || 'Missing subject'}</dd></div><div><dt>Blocks</dt><dd>{working.design.blocks.length}</dd></div><div><dt>Recipients now eligible</dt><dd>{preflight?.recipientCount ?? preparedBroadcast?.recipient_count ?? 0}</dd></div><div><dt>Content</dt><dd>{preflight?.checks?.content ? 'Passed' : 'Blocked'}</dd></div><div><dt>Delivery provider</dt><dd>{preflight?.checks?.provider ? 'Ready' : 'Unavailable'}</dd></div><div><dt>Outgoing email</dt><dd>{preflight?.checks?.outgoingEmail ? 'Available' : 'Paused'}</dd></div><div><dt>Audience snapshot</dt><dd>{preflight?.checks?.snapshotFresh ? 'Current' : 'Changed'}</dd></div></dl>{preflight?.blockers?.length ? <ul className="pwc-letters-preflight is-blocked">{preflight.blockers.map((item) => <li key={item}>{item}</li>)}</ul> : null}{preflight?.warnings?.length ? <ul className="pwc-letters-preflight is-warning">{preflight.warnings.map((item) => <li key={item}>{item}</li>)}</ul> : null}<p>Recipient eligibility will be checked again at the exact moment of sending.</p><div className="pwc-letters28-panel-actions"><button type="button" className="is-secondary" onClick={() => setFlowStep('recipients')}>Change recipients</button><button type="button" onClick={() => setFlowStep('test')} disabled={!preflight?.ready}>Continue to test</button></div></div>
     }
     if (flowStep === 'test') {
       return <form className="pwc-letters28-test-panel" onSubmit={handleTestSend}><header><p className="admin-eyebrow">Test</p><h2>Send a private preview</h2></header><label><span>Test email address</span><input type="email" value={testEmail} onChange={(event) => setTestEmail(event.target.value)} required /></label><p>The subject is prefixed with [TEST]. Test activity is stored separately from broadcast analytics.</p><div className="pwc-letters28-panel-actions"><button type="button" className="is-secondary" onClick={() => setFlowStep('review')}>Back</button><button type="submit" disabled={busy === 'test'}>{busy === 'test' ? 'Sending…' : 'Send test letter'}</button></div></form>

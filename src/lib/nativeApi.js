@@ -1850,6 +1850,10 @@ export async function getLetterBroadcast(broadcastId) {
   return apiRequest(`/api/admin/letters/broadcasts/${broadcastId}`)
 }
 
+export async function getLetterBroadcastPreflight(broadcastId) {
+  return apiRequest(`/api/admin/letters/broadcasts/${broadcastId}/preflight`)
+}
+
 export async function scheduleLetterBroadcast(broadcastId, scheduledAt) {
   return apiRequest(`/api/admin/letters/broadcasts/${broadcastId}/schedule`, { method: 'POST', body: JSON.stringify({ scheduledAt }) })
 }

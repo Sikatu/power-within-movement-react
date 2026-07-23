@@ -13,6 +13,7 @@ const {
 const {
   assertOutgoingEmailAvailable,
   assertProviderConfigured,
+  buildBroadcastPreflight,
   letterPublicBaseUrl,
   normalizeAudienceFilter,
   previewLetterAudience,
@@ -526,12 +527,48 @@ router.get('/broadcasts/:broadcastId', async (req, res, next) => {
   }
 })
 
+router.get('/broadcasts/:broadcastId/preflight', async (req, res, next) => {
+  if (unavailable(res)) return
+  try {
+    const result = await pool.query(
+      `SELECT lb.*, ld.title AS source_title
+       FROM letter_broadcasts lb
+       JOIN letter_documents ld ON ld.id = lb.letter_id
+       WHERE lb.id = $1 LIMIT 1`,
+      [req.params.broadcastId],
+    )
+    const broadcast = result.rows[0]
+    if (!broadcast) return res.status(404).json({ ok: false, error: 'Broadcast not found.' })
+    const validation = validateLetter({
+      title: broadcast.title_snapshot || broadcast.source_title,
+      subject: broadcast.subject_snapshot,
+      design: broadcast.design_snapshot,
+    })
+    const audience = await previewLetterAudience(pool, broadcast.audience_snapshot)
+    let providerConfigured = true
+    let outgoingEmailAvailable = true
+    try { assertProviderConfigured() } catch { providerConfigured = false }
+    try { await assertOutgoingEmailAvailable(pool) } catch { outgoingEmailAvailable = false }
+    const preflight = buildBroadcastPreflight({
+      broadcast,
+      validation,
+      eligibleRecipients: audience.eligible,
+      providerConfigured,
+      outgoingEmailAvailable,
+    })
+    res.json({ ok: true, preflight })
+  } catch (error) {
+    next(error)
+  }
+})
+
 router.post('/broadcasts/:broadcastId/schedule', async (req, res, _next) => {
   if (unavailable(res)) return
   const parsed = scheduleSchema.safeParse(req.body)
   if (!parsed.success) return res.status(400).json({ ok: false, error: issue(parsed, 'A valid schedule time is required.') })
   try {
     assertProviderConfigured()
+    await assertOutgoingEmailAvailable(pool)
     const scheduledAt = new Date(parsed.data.scheduledAt)
     if (scheduledAt <= new Date(Date.now() + 60_000)) return res.status(400).json({ ok: false, error: 'Schedule the broadcast at least one minute in the future.' })
     if (scheduledAt > new Date(Date.now() + 366 * 24 * 60 * 60 * 1000)) return res.status(400).json({ ok: false, error: 'Broadcasts may be scheduled up to one year ahead.' })

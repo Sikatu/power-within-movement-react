@@ -416,6 +416,41 @@ async function processLetterBroadcast(pool, broadcastId) {
   return final.rows[0]
 }
 
+function buildBroadcastPreflight({
+  broadcast,
+  validation = { ok: false, errors: ['Letter validation was unavailable.'], warnings: [] },
+  eligibleRecipients = 0,
+  providerConfigured = false,
+  outgoingEmailAvailable = false,
+} = {}) {
+  const blockers = []
+  const warnings = [...(validation.warnings || [])]
+  if (!broadcast) blockers.push('The prepared broadcast could not be found.')
+  if (broadcast && broadcast.status !== 'draft') blockers.push('Only a prepared draft broadcast can pass final delivery review.')
+  blockers.push(...(validation.errors || []))
+  if (!Number(eligibleRecipients)) blockers.push('No recipients remain eligible after the consent and suppression recheck.')
+  if (!providerConfigured) blockers.push('Newsletter delivery is not configured.')
+  if (!outgoingEmailAvailable) blockers.push('Outgoing email is currently paused or unavailable.')
+  if (broadcast && Number(broadcast.recipient_count || 0) !== Number(eligibleRecipients || 0)) {
+    warnings.push(`The eligible audience changed from ${Number(broadcast.recipient_count || 0)} to ${Number(eligibleRecipients || 0)}. Prepare a fresh snapshot before delivery.`)
+  }
+  const ready = blockers.length === 0
+  return {
+    ready,
+    status: ready ? (warnings.length ? 'ready_with_warnings' : 'ready') : 'blocked',
+    blockers,
+    warnings,
+    checks: {
+      content: Boolean(validation.ok),
+      audience: Number(eligibleRecipients) > 0,
+      provider: Boolean(providerConfigured),
+      outgoingEmail: Boolean(outgoingEmailAvailable),
+      snapshotFresh: Boolean(broadcast) && Number(broadcast.recipient_count || 0) === Number(eligibleRecipients || 0),
+    },
+    recipientCount: Number(eligibleRecipients || 0),
+  }
+}
+
 async function processDueLetterBroadcasts(pool) {
   if (!providerConfiguration().apiKey || !providerConfiguration().from) return { processed: 0, skipped: 'provider_not_configured' }
   const lockClient = await pool.connect()
@@ -458,6 +493,7 @@ module.exports = {
   assertOutgoingEmailAvailable,
   assertProviderConfigured,
   audienceFilterSql,
+  buildBroadcastPreflight,
   letterPublicBaseUrl,
   logRecipientEvent,
   normalizeAudienceFilter,

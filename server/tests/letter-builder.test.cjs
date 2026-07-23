@@ -18,6 +18,7 @@ const {
 } = require('../src/services/letterBuilder.service')
 const {
   audienceFilterSql,
+  buildBroadcastPreflight,
   normalizeAudienceFilter,
 } = require('../src/services/letterBroadcast.service')
 
@@ -173,6 +174,35 @@ test('production renderer includes a mobile stacking rule for two-column letters
   assert.match(rendered.html, /class="pwc-column"/)
   assert.match(rendered.html, /@media only screen and \(max-width:600px\)/)
   assert.match(rendered.text, /Left\s+Right/)
+})
+
+test('broadcast preflight blocks unsafe delivery and reports a changed audience snapshot', () => {
+  const preflight = buildBroadcastPreflight({
+    broadcast: { status: 'draft', recipient_count: 12 },
+    validation: { ok: true, errors: [], warnings: ['Image needs alternative text.'] },
+    eligibleRecipients: 10,
+    providerConfigured: true,
+    outgoingEmailAvailable: false,
+  })
+  assert.equal(preflight.ready, false)
+  assert.equal(preflight.status, 'blocked')
+  assert.equal(preflight.checks.snapshotFresh, false)
+  assert.match(preflight.blockers.join(' '), /paused or unavailable/i)
+  assert.match(preflight.warnings.join(' '), /changed from 12 to 10/i)
+})
+
+test('broadcast preflight becomes ready only when every delivery gate passes', () => {
+  const preflight = buildBroadcastPreflight({
+    broadcast: { status: 'draft', recipient_count: 10 },
+    validation: { ok: true, errors: [], warnings: [] },
+    eligibleRecipients: 10,
+    providerConfigured: true,
+    outgoingEmailAvailable: true,
+  })
+  assert.equal(preflight.ready, true)
+  assert.equal(preflight.status, 'ready')
+  assert.deepEqual(preflight.blockers, [])
+  assert.equal(preflight.checks.snapshotFresh, true)
 })
 
 test('existing version 1 letter fixtures remain compatible and normalize deterministically', () => {
