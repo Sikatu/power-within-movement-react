@@ -51,6 +51,12 @@ const saveLetterSchema = z.object({
   baseRevision: z.number().int().min(0).optional(),
   saveReason: z.enum(['autosave', 'manual']).optional().default('autosave'),
 })
+const renderPreviewSchema = z.object({
+  title: z.string().trim().max(240).optional().default('Preview letter'),
+  subject: z.string().trim().max(250).optional().default(''),
+  previewText: z.string().trim().max(300).optional().default(''),
+  design: z.unknown(),
+})
 const templateSchema = z.object({
   name: z.string().trim().min(1).max(180),
   description: z.string().trim().max(1000).optional().default(''),
@@ -343,6 +349,20 @@ router.post('/letters/:letterId/preview', async (req, res, next) => {
   } catch (error) {
     next(error)
   }
+})
+
+router.post('/render-preview', async (req, res) => {
+  const parsed = renderPreviewSchema.safeParse(req.body)
+  if (!parsed.success) return res.status(400).json({ ok: false, error: issue(parsed, 'The letter preview is invalid.') })
+  const validation = validateLetter(parsed.data)
+  const rendered = renderLetter({
+    design: validation.design,
+    subject: parsed.data.subject,
+    previewText: parsed.data.previewText,
+    variables: { firstName: 'Kim', lastName: '', email: 'preview@powerwithinmovement.com' },
+    unsubscribeUrl: '#unsubscribe-preview',
+  })
+  res.json({ ok: true, validation, html: rendered.html, text: rendered.text })
 })
 
 router.post('/letters/:letterId/test-send', async (req, res, _next) => {

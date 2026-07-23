@@ -22,6 +22,7 @@ import {
   getNewsletterAudienceSummary,
   prepareLetterBroadcast,
   previewLetterAudience,
+  renderLetterPreview,
   processDueLetterBroadcasts,
   restoreLetterVersion,
   saveLetter,
@@ -137,7 +138,10 @@ export default function AdminLetters() {
   const [versions, setVersions] = useState([])
   const [selectedBroadcast, setSelectedBroadcast] = useState(null)
   const [newLetter, setNewLetter] = useState({ title: '', templateId: '' })
-  const [previewMode, setPreviewMode] = useState('desktop')
+  const [previewMode, setPreviewMode] = useState('edit')
+  const [renderedPreview, setRenderedPreview] = useState({ html: '', text: '' })
+  const [previewLoading, setPreviewLoading] = useState(false)
+  const [previewError, setPreviewError] = useState('')
   const [flowStep, setFlowStep] = useState('design')
   const [audienceFilter, setAudienceFilter] = useState(initialAudienceFilter)
   const [audiencePreview, setAudiencePreview] = useState(0)
@@ -189,6 +193,34 @@ export default function AdminLetters() {
   useEffect(() => () => {
     if (audiencePreviewTimerRef.current) window.clearTimeout(audiencePreviewTimerRef.current)
   }, [])
+
+  useEffect(() => {
+    if (!working || previewMode === 'edit') return undefined
+    let active = true
+    const timer = window.setTimeout(async () => {
+      if (active) setPreviewLoading(true)
+      try {
+        const response = await renderLetterPreview({
+          title: working.title,
+          subject: working.subject || '',
+          previewText: working.preview_text || '',
+          design: working.design,
+        })
+        if (active) {
+          setRenderedPreview({ html: response.html || '', text: response.text || '' })
+          setPreviewError('')
+        }
+      } catch (previewFailure) {
+        if (active) setPreviewError(previewFailure.message || 'The production preview could not be rendered.')
+      } finally {
+        if (active) setPreviewLoading(false)
+      }
+    }, 300)
+    return () => {
+      active = false
+      window.clearTimeout(timer)
+    }
+  }, [previewMode, working])
 
   const selectedBlock = useMemo(() => working?.design?.blocks?.find((block) => block.id === selectedBlockId) || null, [selectedBlockId, working])
   const metrics = overview.metrics || {}
@@ -299,6 +331,15 @@ export default function AdminLetters() {
     const next = [...blocks]
     next.splice(requiredIndex >= 0 ? requiredIndex : next.length, 0, block)
     updateDesign({ ...working.design, blocks: next })
+    setSelectedBlockId(block.id)
+  }
+
+  function insertBlock(index, type = 'text') {
+    const blocks = [...(working?.design?.blocks || [])]
+    const block = makeBlock(type)
+    const safeIndex = Math.max(0, Math.min(Number(index) || 0, Math.max(0, blocks.length - 1)))
+    blocks.splice(safeIndex, 0, block)
+    updateDesign({ ...working.design, blocks })
     setSelectedBlockId(block.id)
   }
 
@@ -632,6 +673,9 @@ export default function AdminLetters() {
           redoCount={redoStack.length}
           previewMode={previewMode}
           setPreviewMode={setPreviewMode}
+          renderedPreview={renderedPreview}
+          previewLoading={previewLoading}
+          previewError={previewError}
           flowStep={flowStep}
           selectedBlockId={selectedBlockId}
           selectedBlock={selectedBlock}
@@ -648,6 +692,7 @@ export default function AdminLetters() {
           onSave={() => persistWorking('manual')}
           onChooseRecipients={() => { setFlowStep('recipients'); handleAudiencePreview() }}
           onAddBlock={addBlock}
+          onInsertBlock={insertBlock}
           onSelectBlock={(blockId) => { setSelectedBlockId(blockId); setFlowStep('design') }}
           onMoveBlock={moveBlock}
           onChangeBlock={changeBlock}

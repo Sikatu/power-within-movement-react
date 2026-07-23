@@ -148,6 +148,21 @@ test('audience modes discard stale filters and always preserve delivery eligibil
   assert.match(selected.where, /ANY\(/)
 })
 
+test('production renderer includes a mobile stacking rule for two-column letters', () => {
+  const rendered = renderLetter({
+    subject: 'Responsive letter',
+    design: {
+      blocks: [
+        createLetterBlock('two_column', { id: 'responsive-columns', content: { left: 'Left', right: 'Right' } }),
+      ],
+    },
+  })
+  assert.match(rendered.html, /class="pwc-two-column"/)
+  assert.match(rendered.html, /class="pwc-column"/)
+  assert.match(rendered.html, /@media only screen and \(max-width:600px\)/)
+  assert.match(rendered.text, /Left\s+Right/)
+})
+
 test('existing version 1 letter fixtures remain compatible and normalize deterministically', () => {
   const fixturePath = path.join(__dirname, 'fixtures', 'letters', 'version-1-letter.json')
   const fixture = JSON.parse(fs.readFileSync(fixturePath, 'utf8'))

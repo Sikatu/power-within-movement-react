@@ -13870,3 +13870,22 @@ body.admin-app-mode
 }
 
 /* founder-final-interaction-fix-end */
+
+/* letters-broadcast-phase-5-editor-foundation-start */
+.pwc-letters28-production-preview,.pwc-letters28-plain-preview{width:100%;min-height:38rem;border:1px solid var(--let-line);border-radius:1rem;background:#fff;overflow:hidden;box-shadow:0 20px 55px rgba(54,34,41,.12)}
+.pwc-letters28-production-preview>header,.pwc-letters28-plain-preview>header{display:flex;justify-content:space-between;gap:1rem;padding:.65rem .8rem;border-bottom:1px solid var(--let-line);background:#fffaf6;color:var(--let-body);font-size:.58rem}
+.pwc-letters28-production-preview iframe{display:block;width:100%;height:44rem;border:0;background:#f6eee9}
+.pwc-letters28-production-preview.is-mobile{width:min(100%,27rem);margin-inline:auto}
+.pwc-letters28-production-preview.is-mobile iframe{height:48rem}
+.pwc-letters28-preview-error{padding:2rem;color:#813342;font-size:.68rem}
+.pwc-letters28-plain-preview pre{min-height:34rem;margin:0;padding:1.25rem;overflow:auto;white-space:pre-wrap;color:var(--let-ink);font:500 .72rem/1.7 ui-monospace,SFMono-Regular,Consolas,monospace}
+.pwc-letters28-block-wrap{position:relative;padding-top:.35rem}
+.pwc-letters28-insert-control{position:absolute;z-index:4;top:-.45rem;left:50%;translate:-50% 0;min-height:1.55rem!important;padding:.2rem .5rem!important;border:1px solid var(--let-gold)!important;border-radius:999px!important;background:#fff!important;color:var(--let-wine)!important;font-size:.5rem!important;opacity:0;transition:opacity .15s}
+.pwc-letters28-block-wrap:hover>.pwc-letters28-insert-control,.pwc-letters28-insert-control:focus-visible{opacity:1}
+.pwc-letters28-selection-toolbar{position:absolute;z-index:5;top:.25rem;left:.25rem;display:flex;gap:.2rem;padding:.2rem;border-radius:.45rem;background:var(--let-wine);box-shadow:0 5px 18px rgba(45,25,32,.24)}
+.pwc-letters28-selection-toolbar button{min-height:1.7rem!important;padding:.2rem .4rem!important;border:1px solid rgba(255,255,255,.2)!important;border-radius:.3rem!important;background:transparent!important;color:#fff!important;font-size:.48rem!important}
+.pwc-letters28-canvas [contenteditable=true]{display:inline;min-width:1ch;outline:0;white-space:pre-wrap}
+.pwc-letters28-canvas [contenteditable=true]:focus{border-radius:.2rem;box-shadow:0 0 0 3px rgba(199,165,99,.25)}
+.pwc-letters28-blocks input[type=range]{min-height:1.2rem;padding:0;accent-color:var(--let-wine)}
+@media (max-width:1100px){.pwc-letters28-production-preview iframe{height:38rem}}
+/* letters-broadcast-phase-5-editor-foundation-end */
