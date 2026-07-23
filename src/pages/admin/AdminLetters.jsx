@@ -114,9 +114,18 @@ function clone(value) {
   return JSON.parse(JSON.stringify(value))
 }
 
+function readCachedAdminUser() {
+  try {
+    return JSON.parse(window.sessionStorage.getItem('pwc_admin_user') || 'null')
+  } catch {
+    return null
+  }
+}
+
 export default function AdminLetters() {
   const requestConfirm = useAdminConfirm()
   const [searchParams] = useSearchParams()
+  const [adminUser] = useState(readCachedAdminUser)
   const [activeTab, setActiveTab] = useState('letters')
   const [libraryMode, setLibraryMode] = useState('drafts')
   const [creatingLetter, setCreatingLetter] = useState(false)
@@ -665,7 +674,7 @@ export default function AdminLetters() {
                     <button type="button" role="tab" aria-selected={deliveryView === 'scheduled'} className={deliveryView === 'scheduled' ? 'is-active' : ''} onClick={() => setDeliveryView('scheduled')}>Scheduled {scheduledBroadcasts.length}</button>
                     <button type="button" role="tab" aria-selected={deliveryView === 'sent'} className={deliveryView === 'sent' ? 'is-active' : ''} onClick={() => setDeliveryView('sent')}>Sent {sentBroadcasts.length}</button>
                   </div>
-                  {deliveryView === 'scheduled' && <button type="button" onClick={runDueBroadcasts} disabled={busy === 'process-due'}>{busy === 'process-due' ? 'Checking…' : 'Process due now'}</button>}
+                  {deliveryView === 'scheduled' && adminUser?.role === 'developer' && <button type="button" onClick={runDueBroadcasts} disabled={busy === 'process-due'}>{busy === 'process-due' ? 'Checking…' : 'Process due now'}</button>}
                 </div>
               </header>
               {deliveryView === 'scheduled'

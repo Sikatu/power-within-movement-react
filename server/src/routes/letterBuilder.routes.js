@@ -553,6 +553,9 @@ router.post('/broadcasts/:broadcastId/cancel', async (req, res, next) => {
 
 router.post('/process-due', async (req, res) => {
   if (unavailable(res)) return
+  if (req.user?.role !== 'developer') {
+    return res.status(403).json({ ok: false, error: 'Manual broadcast processing requires the developer account.' })
+  }
   try {
     const result = await processDueLetterBroadcasts(pool)
     res.json({ ok: true, ...result })

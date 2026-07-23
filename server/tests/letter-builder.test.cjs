@@ -1,6 +1,8 @@
 const test = require('node:test')
 const assert = require('node:assert/strict')
 const crypto = require('node:crypto')
+const fs = require('node:fs')
+const path = require('node:path')
 
 const {
   LETTER_BLOCK_TYPES,
@@ -144,4 +146,51 @@ test('audience modes discard stale filters and always preserve delivery eligibil
   assert.match(selected.where, /consent_status = 'granted'/)
   assert.match(selected.where, /newsletter_suppressions/)
   assert.match(selected.where, /ANY\(/)
+})
+
+test('existing version 1 letter fixtures remain compatible and normalize deterministically', () => {
+  const fixturePath = path.join(__dirname, 'fixtures', 'letters', 'version-1-letter.json')
+  const fixture = JSON.parse(fs.readFileSync(fixturePath, 'utf8'))
+  const normalized = normalizeDesign(fixture.design)
+
+  assert.equal(fixture.design.version, 1)
+  assert.equal(normalized.version, 1)
+  assert.equal(normalized.blocks.at(-1).type, 'unsubscribe')
+  assert.equal(normalized.blocks.find((block) => block.id === 'fixture-heading').content.text, 'A quieter way forward')
+  assert.deepEqual(normalizeDesign(normalized), normalized)
+})
+
+test('prepared broadcast fixture remains unchanged when its source letter is edited later', () => {
+  const fixturePath = path.join(__dirname, 'fixtures', 'letters', 'version-1-letter.json')
+  const source = JSON.parse(fs.readFileSync(fixturePath, 'utf8'))
+  const preparedSnapshot = structuredClone({
+    title: source.title,
+    subject: source.subject,
+    previewText: source.previewText,
+    design: normalizeDesign(source.design),
+    audienceFilter: source.audienceFilter,
+  })
+
+  source.title = 'A later draft'
+  source.subject = 'A revised subject'
+  source.design.blocks[0].content.text = 'Rewritten after preparation'
+  source.audienceFilter.tag = 'Later segment'
+
+  assert.equal(preparedSnapshot.title, 'July reflection')
+  assert.equal(preparedSnapshot.subject, 'A thoughtful note for {{firstName}}')
+  assert.equal(preparedSnapshot.design.blocks[0].content.text, 'A quieter way forward')
+  assert.equal(preparedSnapshot.audienceFilter.tag, 'Reflection')
+})
+
+test('autosave conflicts, immutable snapshots, and dispatcher recovery risk stay characterized', () => {
+  const routes = fs.readFileSync(path.join(__dirname, '..', 'src', 'routes', 'letterBuilder.routes.js'), 'utf8')
+  const service = fs.readFileSync(path.join(__dirname, '..', 'src', 'services', 'letterBroadcast.service.js'), 'utf8')
+
+  assert.match(routes, /LETTER_REVISION_CONFLICT/)
+  assert.match(routes, /title_snapshot = \$2, subject_snapshot = \$3/)
+  assert.match(routes, /design_snapshot = \$5::jsonb/)
+  assert.match(routes, /req\.user\?\.role !== 'developer'/)
+  const dueSelection = service.match(/SELECT id FROM letter_broadcasts WHERE[^`]+/)?.[0] || ''
+  assert.match(dueSelection, /status = 'scheduled' AND scheduled_at <= now\(\)/)
+  assert.doesNotMatch(dueSelection, /processing/)
 })
