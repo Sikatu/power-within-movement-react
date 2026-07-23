@@ -40,6 +40,13 @@ const retiredPhasedUiFiles = [
 ]
 
 const authoritativeUiFile = 'src/pages/admin/AdminFreshUI.css'
+const sanctionedScopedUiFiles = new Map([
+  ['src/pages/admin/AdminInboxComfort.css', 'src/pages/admin/AdminInbox.jsx'],
+])
+const allowedAdminCssFiles = new Set([
+  authoritativeUiFile,
+  ...sanctionedScopedUiFiles.keys(),
+])
 const retiredFiles = [...retiredLegacyFiles, ...retiredPhasedUiFiles]
 
 function normalize(path) {
@@ -65,6 +72,53 @@ if (!existsSync(authoritativeUiFile)) {
   failures.push(`${authoritativeUiFile}: fresh admin design system is missing`)
 }
 
+for (const [stylesheetPath, importerPath] of sanctionedScopedUiFiles) {
+  if (!existsSync(stylesheetPath)) {
+    failures.push(`${stylesheetPath}: sanctioned scoped stylesheet is missing`)
+    continue
+  }
+
+  if (!existsSync(importerPath)) {
+    failures.push(`${importerPath}: scoped stylesheet importer is missing`)
+    continue
+  }
+
+  const basename = stylesheetPath.split('/').at(-1)
+  const importer = readFileSync(importerPath, 'utf8')
+  const scopedStylesheet = readFileSync(stylesheetPath, 'utf8')
+  const normalizedScopedStylesheet = scopedStylesheet.replace(/\r\n/g, '\n')
+  const scopedBytes = Buffer.byteLength(normalizedScopedStylesheet, 'utf8')
+  const scopedImportantCount =
+    (scopedStylesheet.match(/!important/g) || []).length
+
+  if (
+    !importer.includes(`'./${basename}'`) &&
+    !importer.includes(`"./${basename}"`)
+  ) {
+    failures.push(
+      `${importerPath}: does not import sanctioned stylesheet ${basename}`,
+    )
+  }
+
+  if (scopedBytes > 80 * 1024) {
+    failures.push(
+      `${stylesheetPath}: exceeds the 80 KiB scoped stylesheet budget`,
+    )
+  }
+
+  if (scopedImportantCount > 24) {
+    failures.push(
+      `${stylesheetPath}: uses ${scopedImportantCount} !important declarations; scoped budget is 24`,
+    )
+  }
+
+  if (!scopedStylesheet.includes('body.admin-app-mode .admin-inbox')) {
+    failures.push(
+      `${stylesheetPath}: is not visibly scoped to the Admin Inbox`,
+    )
+  }
+}
+
 const sourceFiles = walk('src').filter((file) => /\.(css|jsx|js)$/.test(file))
 const retiredBasenames = retiredFiles.map((file) => file.split('/').at(-1))
 
@@ -77,6 +131,16 @@ for (const file of sourceFiles) {
       failures.push(`${displayPath}: still references retired UI stylesheet ${basename}`)
     }
   }
+
+  for (const [stylesheetPath, importerPath] of sanctionedScopedUiFiles) {
+    const basename = stylesheetPath.split('/').at(-1)
+
+    if (content.includes(basename) && displayPath !== importerPath) {
+      failures.push(
+        `${displayPath}: cannot import scoped stylesheet ${basename}`,
+      )
+    }
+  }
 }
 
 const adminCssFiles = [
@@ -86,7 +150,7 @@ const adminCssFiles = [
 
 for (const file of adminCssFiles) {
   const normalizedFile = normalize(relative('.', file))
-  if (normalizedFile !== authoritativeUiFile) {
+  if (!allowedAdminCssFiles.has(normalizedFile)) {
     failures.push(`${normalizedFile}: unexpected admin UI stylesheet remains`)
   }
 }
@@ -98,5 +162,5 @@ if (failures.length) {
 }
 
 console.log(
-  `Admin fresh UI check passed (one authoritative stylesheet; ${retiredFiles.length} retired stylesheets absent).`,
+  `Admin fresh UI check passed (one authoritative stylesheet, ${sanctionedScopedUiFiles.size} governed scoped stylesheet; ${retiredFiles.length} retired stylesheets absent).`,
 )

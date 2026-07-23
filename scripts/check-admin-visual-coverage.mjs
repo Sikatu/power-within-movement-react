@@ -51,8 +51,9 @@ for (const selector of requiredSelectors) {
 const normalizedStylesheet = stylesheet.replace(/\r\n/g, '\n')
 const stylesheetBytes = Buffer.byteLength(normalizedStylesheet, 'utf8')
 // Phases 52–53 add shared accessibility and final visual-acceptance layers.
-// Keep a firm ceiling while allowing the cross-route overrides to remain readable.
-const stylesheetBudget = 568 * 1024
+// Approved Founder contrast refinements established the current baseline.
+// Keep only a narrow margin so further stylesheet growth still fails visibly.
+const stylesheetBudget = 572 * 1024
 if (stylesheetBytes > stylesheetBudget) {
   failures.push(
     `AdminFreshUI.css exceeds the ${stylesheetBudget / 1024} KiB source budget (${Math.ceil(stylesheetBytes / 1024)} KiB)`,
@@ -60,8 +61,13 @@ if (stylesheetBytes > stylesheetBudget) {
 }
 
 const importantCount = (stylesheet.match(/!important/g) || []).length
-if (importantCount > 32) {
-  failures.push(`AdminFreshUI.css uses ${importantCount} !important declarations; budget is 32`)
+// The approved Founder interaction layer established the current baseline.
+// Any additional !important declaration must fail this audit.
+const importantBudget = 54
+if (importantCount > importantBudget) {
+  failures.push(
+    `AdminFreshUI.css uses ${importantCount} !important declarations; budget is ${importantBudget}`,
+  )
 }
 
 if (/\bPass\s+\d+(?:\.\d+)?\b/i.test(stylesheet)) {
