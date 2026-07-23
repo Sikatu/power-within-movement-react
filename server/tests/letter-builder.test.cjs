@@ -22,6 +22,11 @@ const {
   buildBroadcastPreflight,
   normalizeAudienceFilter,
 } = require('../src/services/letterBroadcast.service')
+const {
+  DELIVERY_CHANGE_CUTOFF_MINUTES,
+  assertDeliveryChangeOutsideCutoff,
+  letterCapabilities,
+} = require('../src/services/letterPermissions.service')
 
 test('letter builder exposes every Phase 28 content block', () => {
   assert.deepEqual([...LETTER_BLOCK_TYPES], [
@@ -247,7 +252,7 @@ test('autosave conflicts, immutable snapshots, and dispatcher recovery risk stay
   assert.match(routes, /LETTER_REVISION_CONFLICT/)
   assert.match(routes, /title_snapshot = \$2, subject_snapshot = \$3/)
   assert.match(routes, /design_snapshot = \$5::jsonb/)
-  assert.match(routes, /req\.user\?\.role !== 'developer'/)
+  assert.match(routes, /requireLetterAction\('recovery'\)/)
   assert.equal(STALE_PROCESSING_MINUTES, 15)
   assert.match(service, /FOR UPDATE SKIP LOCKED/)
   assert.match(service, /status = 'processing'/)
@@ -281,4 +286,36 @@ test('broadcast lifecycle is independent from the editable source letter', () =>
   assert.doesNotMatch(service, /UPDATE letter_documents SET status = 'sending'/)
   assert.doesNotMatch(service, /UPDATE letter_documents SET status = 'sent'/)
   assert.match(editor, /const readOnly = working\?\.status === 'archived'/)
+})
+
+test('letter delivery capabilities separate authoring from live delivery authority', () => {
+  const staff = letterCapabilities(
+    { role: 'staff' },
+    { permissions: { communications: 'manage' } },
+  )
+  assert.equal(staff.edit, true)
+  assert.equal(staff.test, true)
+  assert.equal(staff.schedule, false)
+  assert.equal(staff.send, false)
+  assert.equal(staff.cancel, false)
+  assert.equal(staff.retry, false)
+
+  const owner = letterCapabilities({ role: 'owner' })
+  assert.equal(owner.send, true)
+  assert.equal(owner.cancel, true)
+  assert.equal(owner.recovery, false)
+  assert.equal(letterCapabilities({ role: 'developer' }).recovery, true)
+})
+
+test('scheduled delivery changes close five minutes before dispatch', () => {
+  assert.equal(DELIVERY_CHANGE_CUTOFF_MINUTES, 5)
+  const now = new Date('2026-07-24T10:00:00.000Z')
+  assert.doesNotThrow(() => assertDeliveryChangeOutsideCutoff({
+    status: 'scheduled',
+    scheduled_at: '2026-07-24T10:06:00.000Z',
+  }, now))
+  assert.throws(() => assertDeliveryChangeOutsideCutoff({
+    status: 'scheduled',
+    scheduled_at: '2026-07-24T10:04:59.000Z',
+  }, now), (error) => error.code === 'LETTER_DELIVERY_CUTOFF_ACTIVE' && error.statusCode === 409)
 })
