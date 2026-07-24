@@ -154,6 +154,54 @@ test('broadcast HTML includes saved block fonts and image positioning', () => {
   assert.match(rendered.html, /width:140%/)
 })
 
+test('image blocks preserve and render personalized beside text for left and right layouts', () => {
+  const normalized = normalizeDesign({
+    blocks: [
+      createLetterBlock('image', {
+        id: 'image-with-text',
+        content: {
+          assetId: 'asset-1',
+          alt: 'Kim welcoming a client',
+          caption: 'A thoughtful moment',
+          besideText: 'Hello {{firstName}},\nThis belongs beside the image.',
+        },
+        settings: { align: 'right', width: 40 },
+      }),
+    ],
+  })
+  const image = normalized.blocks.find((block) => block.id === 'image-with-text')
+  assert.equal(image.content.besideText, 'Hello {{firstName}},\nThis belongs beside the image.')
+
+  const rendered = renderLetter({
+    subject: 'A note',
+    design: normalized,
+    variables: { firstName: 'Ari' },
+    assetUrl: () => 'https://example.com/image.jpg',
+  })
+  assert.match(rendered.html, /class="pwc-image-with-text"/)
+  assert.match(rendered.html, /Hello Ari,<br>This belongs beside the image\./)
+  assert.match(rendered.html, /class="pwc-image-column" width="60%".*Hello Ari.*class="pwc-image-column" width="40%"/s)
+  assert.match(rendered.html, /pwc-image-with-text.*display:block!important/)
+  assert.match(rendered.text, /Hello Ari/)
+})
+
+test('centered images remain standalone even when legacy beside text exists', () => {
+  const rendered = renderLetter({
+    subject: 'A note',
+    design: {
+      blocks: [
+        createLetterBlock('image', {
+          content: { assetId: 'asset-1', besideText: 'Do not show beside centered media.' },
+          settings: { align: 'center', width: 70 },
+        }),
+      ],
+    },
+    assetUrl: () => 'https://example.com/image.jpg',
+  })
+  assert.doesNotMatch(rendered.html, /class="pwc-image-with-text"/)
+  assert.doesNotMatch(rendered.html, /Do not show beside centered media/)
+})
+
 test('letter validation reports missing subjects and unsafe destinations without removing compliance', () => {
   const design = normalizeDesign({ blocks: [createLetterBlock('button', { content: { text: 'Unsafe', url: 'javascript:alert(1)' } })] })
   const validation = validateLetter({ title: 'July reflection', subject: '', design })
@@ -354,7 +402,7 @@ test('autosave conflicts, immutable snapshots, and dispatcher recovery risk stay
 
 test('failed-recipient recovery is bounded and preserves successful deliveries', () => {
   const routes = fs.readFileSync(path.join(__dirname, '..', 'src', 'routes', 'letterBuilder.routes.js'), 'utf8')
-  const retryRoute = routes.match(/router\.post\('\/broadcasts\/:broadcastId\/retry-failed'[\s\S]+?\n\}\)\n/)?.[0] || ''
+  const retryRoute = routes.match(/router\.post\('\/broadcasts\/:broadcastId\/retry-failed'[\s\S]+?\r?\n\}\)\r?\n/)?.[0] || ''
 
   assert.match(retryRoute, /status IN \('failed', 'partial'\)/)
   assert.match(retryRoute, /delivery_status = 'failed'/)
