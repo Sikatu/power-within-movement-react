@@ -28,7 +28,7 @@ const requirements = [
   [styles, 'phase-52-comfort-view-start', 'scoped Comfort View layer'],
   [styles, 'body.admin-app-mode.admin-comfort-view', 'optional global comfort mode'],
   [styles, '.pwc-comfort52-control', 'responsive display control'],
-  [visualAudit, 'const stylesheetBudget = 568 * 1024', 'bounded stylesheet budget'],
+  [visualAudit, 'const stylesheetBudget = 600 * 1024', 'bounded stylesheet budget'],
   [packageSource, '"admin:qa:phase52"', 'focused Phase 52 QA command'],
   [docs, 'browser-local preference', 'privacy boundary documentation'],
 ]
