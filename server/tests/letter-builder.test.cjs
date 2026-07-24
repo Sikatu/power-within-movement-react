@@ -121,6 +121,58 @@ test('design normalization preserves safe block fonts and image crop settings', 
   assert.equal(image.settings.zoom, 135)
 })
 
+test('design normalization preserves safe typography and clamps invalid sizes', () => {
+  const normalized = normalizeDesign({
+    blocks: [
+      createLetterBlock('text', {
+        id: 'custom-body',
+        settings: { fontFamily: "Garamond, 'Times New Roman', serif", fontSize: 22 },
+      }),
+      createLetterBlock('heading', {
+        id: 'oversized-heading',
+        settings: { fontFamily: 'Comic Sans MS', fontSize: 900 },
+      }),
+      createLetterBlock('image', {
+        id: 'image-side-typography',
+        content: { besideText: 'Side copy' },
+        settings: { align: 'left', besideFontFamily: "'Century Gothic', CenturyGothic, AppleGothic, sans-serif", besideFontSize: 9 },
+      }),
+    ],
+  })
+
+  const body = normalized.blocks.find((block) => block.id === 'custom-body')
+  const heading = normalized.blocks.find((block) => block.id === 'oversized-heading')
+  const image = normalized.blocks.find((block) => block.id === 'image-side-typography')
+  assert.equal(body.settings.fontFamily, "Garamond, 'Times New Roman', serif")
+  assert.equal(body.settings.fontSize, 22)
+  assert.equal(heading.settings.fontFamily, '')
+  assert.equal(heading.settings.fontSize, 72)
+  assert.equal(image.settings.besideFontFamily, "'Century Gothic', CenturyGothic, AppleGothic, sans-serif")
+  assert.equal(image.settings.besideFontSize, 10)
+})
+
+test('broadcast HTML renders block and image-side typography', () => {
+  const rendered = renderLetter({
+    subject: 'Typography',
+    design: {
+      blocks: [
+        createLetterBlock('text', {
+          content: { text: 'Readable body copy' },
+          settings: { fontFamily: "Baskerville, 'Times New Roman', serif", fontSize: 21 },
+        }),
+        createLetterBlock('image', {
+          content: { assetId: 'asset-1', besideText: 'Independent side copy' },
+          settings: { align: 'right', width: 40, besideFontFamily: "'Courier New', Courier, monospace", besideFontSize: 18 },
+        }),
+      ],
+    },
+    assetUrl: () => 'https://example.com/image.jpg',
+  })
+
+  assert.match(rendered.html, /font-family:Baskerville, 'Times New Roman', serif;font-size:21px/)
+  assert.match(rendered.html, /font-family:'Courier New', Courier, monospace;font-size:18px/)
+})
+
 test('broadcast HTML includes saved block fonts and image positioning', () => {
   const rendered = renderLetter({
     subject: 'A thoughtful note',

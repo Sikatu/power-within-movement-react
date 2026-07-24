@@ -22,17 +22,19 @@ function BlockPreview({ block, settings, readOnly, onChange }) {
   const content = block.content || {}
   const blockFont = block.settings?.fontFamily || settings.bodyFontFamily
   const displayFont = block.settings?.fontFamily || settings.fontFamily
+  const blockFontSize = block.settings?.fontSize
   const style = {
     padding: `${block.settings?.padding ?? 16}px`,
     textAlign: block.settings?.align || 'left',
     background: block.settings?.backgroundColor || 'transparent',
     color: settings.textColor,
     fontFamily: blockFont,
+    ...(blockFontSize ? { fontSize: `${blockFontSize}px` } : {}),
   }
 
   if (block.type === 'heading') {
     const Tag = `h${Math.min(3, Math.max(1, Number(content.level || 2)))}`
-    return <div style={style}><Tag style={{ fontFamily: displayFont }}>{readOnly ? content.text || 'Untitled heading' : <EditableText value={content.text} fallback="Untitled heading" onChange={(text) => onChange('text', text)} />}</Tag></div>
+    return <div style={style}><Tag style={{ fontFamily: displayFont, ...(blockFontSize ? { fontSize: `${blockFontSize}px` } : {}) }}>{readOnly ? content.text || 'Untitled heading' : <EditableText value={content.text} fallback="Untitled heading" onChange={(text) => onChange('text', text)} />}</Tag></div>
   }
   if (block.type === 'text' || block.type === 'greeting') {
     return <div style={style}><p className={block.type === 'greeting' ? 'is-greeting' : ''}>{readOnly ? content.text || 'Write your message here.' : <EditableText value={content.text} fallback="Write your message here." onChange={(text) => onChange('text', text)} />}</p></div>
@@ -43,7 +45,8 @@ function BlockPreview({ block, settings, readOnly, onChange }) {
     const hasSideLayout = ['left', 'right'].includes(imageSettings.align)
     const image = <div className="pwc-letters28-image-media" style={{ '--pwc-letters-image-width': hasSideLayout ? `${Math.min(imageSettings.width || 100, 65)}%` : '100%' }}>{content.assetId ? <div className={`pwc-letters28-image-frame${cropped ? ' is-cropped' : ''}`} style={{ width: hasSideLayout ? '100%' : `${imageSettings.width || 100}%`, height: cropped ? `${imageSettings.cropHeight || 280}px` : 'auto' }}><img className="pwc-letters28-canvas-image" src={getAssetVaultPreviewUrl(content.assetId)} alt={content.alt || ''} style={cropped ? { width: `${imageSettings.zoom || 100}%`, height: '100%', objectFit: 'cover', objectPosition: `${imageSettings.positionX ?? 50}% ${imageSettings.positionY ?? 50}%` } : undefined} /></div> : <div className="pwc-letters28-asset-placeholder"><span>Image</span><strong>Choose an Asset Vault image</strong><small>Add alternative text</small></div>}{content.caption && <p className="is-caption">{content.caption}</p>}</div>
     if (hasSideLayout) {
-      return <div style={{ ...style, textAlign: 'left' }} className={`pwc-letters28-image-with-text is-${imageSettings.align}`}>{image}<p className="pwc-letters28-image-side-text">{readOnly ? content.besideText || 'Text beside the image.' : <EditableText value={content.besideText} fallback="Click to add text beside the image." onChange={(text) => onChange('besideText', text)} />}</p></div>
+      const besideStyle = { fontFamily: imageSettings.besideFontFamily || settings.bodyFontFamily, fontSize: `${imageSettings.besideFontSize || 16}px` }
+      return <div style={{ ...style, textAlign: 'left' }} className={`pwc-letters28-image-with-text is-${imageSettings.align}`}>{image}<p className="pwc-letters28-image-side-text" style={besideStyle}>{readOnly ? content.besideText || 'Text beside the image.' : <EditableText value={content.besideText} fallback="Click to add text beside the image." onChange={(text) => onChange('besideText', text)} />}</p></div>
     }
     return <div style={style}>{image}</div>
   }
@@ -60,7 +63,7 @@ function BlockPreview({ block, settings, readOnly, onChange }) {
     return <div style={style} className="pwc-letters28-two-column"><p>{content.left || 'Left column'}</p><p>{content.right || 'Right column'}</p></div>
   }
   if (block.type === 'quote') {
-    return <div style={style}><blockquote style={{ fontFamily: displayFont }}>“{content.text || 'A meaningful reflection.'}”</blockquote>{content.attribution && <cite>{content.attribution}</cite>}</div>
+    return <div style={style}><blockquote style={{ fontFamily: displayFont, ...(blockFontSize ? { fontSize: `${blockFontSize}px` } : {}) }}>“{content.text || 'A meaningful reflection.'}”</blockquote>{content.attribution && <cite>{content.attribution}</cite>}</div>
   }
   if (block.type === 'signature') {
     return <div style={style} className="pwc-letters28-signature"><strong style={{ fontFamily: displayFont }}>{content.name || 'Kim Mittelstadt'}</strong><span>{content.title || 'Power Within Collective'}</span></div>
