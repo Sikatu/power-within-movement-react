@@ -28,6 +28,7 @@
     "db:migrate-circle-community": "node scripts/ensure-circle-community.cjs",
     "db:migrate-client-session-self-service": "node scripts/ensure-client-session-self-service.cjs",
     "db:migrate-secure-client-inbox": "node scripts/ensure-secure-client-inbox.cjs",
+    "db:migrate-unified-email-inbox": "node scripts/ensure-unified-email-inbox.cjs",
     "db:migrate-account-governance": "node scripts/ensure-account-governance.cjs",
     "db:migrate-team-management": "node scripts/ensure-team-management.cjs",
     "db:migrate-client-360": "node scripts/ensure-client-360.cjs",

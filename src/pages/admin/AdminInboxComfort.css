@@ -1,0 +1,924 @@
+/*
+ * Admin Inbox comfort pass
+ * Loaded after AdminFreshUI.css and intentionally scoped to the Inbox only.
+ */
+
+body.admin-app-mode .admin-inbox {
+  width: min(100%, 1380px);
+  margin: 0 auto;
+  padding: clamp(18px, 2.2vw, 34px);
+  display: grid;
+  gap: 16px;
+}
+
+body.admin-app-mode .admin-inbox__header {
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 24px 28px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 24px;
+  background:
+    radial-gradient(circle at 95% 20%, rgba(200, 169, 106, 0.16), transparent 28%),
+    linear-gradient(135deg, #542b36 0%, #3c252b 72%, #352126 100%);
+  box-shadow: 0 24px 54px -42px rgba(42, 21, 27, 0.82);
+}
+
+body.admin-app-mode .admin-inbox__header > div:first-child {
+  min-width: 0;
+}
+
+body.admin-app-mode .admin-inbox__header .eyebrow {
+  margin: 0 0 5px;
+  color: #e1bf77;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.17em;
+}
+
+body.admin-app-mode .admin-inbox__header h1 {
+  margin: 0;
+  color: #fff9f2;
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: clamp(40px, 4vw, 54px);
+  font-weight: 500;
+  line-height: 0.95;
+}
+
+body.admin-app-mode .admin-inbox__header h1 + p {
+  max-width: 650px;
+  margin: 10px 0 0;
+  color: rgba(255, 249, 242, 0.8);
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+body.admin-app-mode .admin-inbox__header-actions {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+body.admin-app-mode .admin-inbox__header-actions .btn {
+  min-height: 44px;
+  padding: 0 18px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 750;
+}
+
+body.admin-app-mode .admin-inbox__header-actions .btn.primary {
+  border-color: #dec17f;
+  background: #dec17f;
+  color: #352126;
+  box-shadow: none;
+}
+
+body.admin-app-mode .admin-inbox__header-actions .btn.secondary {
+  border-color: rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.11);
+  color: #fff9f2;
+}
+
+body.admin-app-mode .admin-inbox__metrics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+body.admin-app-mode .admin-inbox__metrics > button,
+body.admin-app-mode .admin-inbox__metrics > article {
+  min-height: 94px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 18px 20px;
+  border: 1px solid var(--admin-border);
+  border-radius: 18px;
+  background: rgba(255, 252, 249, 0.9);
+  box-shadow: 0 16px 34px -34px rgba(58, 37, 40, 0.65);
+  text-align: left;
+}
+
+body.admin-app-mode .admin-inbox__metrics > button {
+  cursor: pointer;
+}
+
+body.admin-app-mode .admin-inbox__metrics > button:hover,
+body.admin-app-mode .admin-inbox__metrics > button:focus-visible {
+  border-color: var(--admin-gold-border);
+  background: #fffaf4;
+  transform: translateY(-1px);
+}
+
+body.admin-app-mode .admin-inbox__metrics > .is-attention {
+  border-color: rgba(181, 136, 77, 0.36);
+  background: linear-gradient(145deg, #fffaf4, #f8efe4);
+}
+
+body.admin-app-mode .admin-inbox__metrics > .is-urgent {
+  border-color: rgba(153, 84, 92, 0.28);
+  background: linear-gradient(145deg, #fffaf7, #f8eeee);
+}
+
+body.admin-app-mode .admin-inbox__metrics span {
+  color: var(--admin-body);
+  font-size: 12px;
+  font-weight: 750;
+  letter-spacing: 0.02em;
+}
+
+body.admin-app-mode .admin-inbox__metrics strong {
+  color: var(--admin-ink);
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 36px;
+  font-weight: 600;
+  line-height: 1;
+}
+
+body.admin-app-mode .admin-inbox__toolbar {
+  min-height: 62px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px;
+  border: 1px solid var(--admin-border);
+  border-radius: 17px;
+  background: rgba(255, 252, 249, 0.9);
+}
+
+body.admin-app-mode .admin-inbox__search {
+  flex: 1 1 auto;
+}
+
+body.admin-app-mode .admin-inbox__search input {
+  width: 100%;
+  min-height: 44px;
+  padding: 0 15px;
+  border: 1px solid rgba(124, 81, 75, 0.16);
+  border-radius: 12px;
+  background: #fffefd;
+  color: var(--admin-ink);
+  font-size: 14px;
+}
+
+body.admin-app-mode .admin-inbox__toolbar .btn {
+  min-height: 44px;
+  padding: 0 16px;
+  border-radius: 12px;
+  font-size: 13px;
+}
+
+body.admin-app-mode .admin-inbox__filters {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 260px));
+  gap: 12px;
+  padding: 14px 16px;
+  border: 1px solid var(--admin-border);
+  border-radius: 16px;
+  background: rgba(255, 252, 249, 0.88);
+}
+
+body.admin-app-mode .admin-inbox__filters label,
+body.admin-app-mode .admin-inbox-thread__controls label,
+body.admin-app-mode .admin-inbox-reply label {
+  display: grid;
+  gap: 6px;
+}
+
+body.admin-app-mode .admin-inbox__filters label > span,
+body.admin-app-mode .admin-inbox-thread__controls label > span,
+body.admin-app-mode .admin-inbox-reply label > span {
+  color: var(--admin-muted);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+
+body.admin-app-mode .admin-inbox__filters select,
+body.admin-app-mode .admin-inbox-thread__controls select,
+body.admin-app-mode .admin-inbox-reply input,
+body.admin-app-mode .admin-inbox-reply textarea {
+  border: 1px solid rgba(124, 81, 75, 0.18);
+  background: #fffefd;
+  color: var(--admin-ink);
+  font: inherit;
+}
+
+body.admin-app-mode .admin-inbox__filters select,
+body.admin-app-mode .admin-inbox-thread__controls select,
+body.admin-app-mode .admin-inbox-reply input {
+  min-height: 42px;
+  padding: 0 12px;
+  border-radius: 11px;
+  font-size: 13px;
+}
+
+body.admin-app-mode .admin-inbox__count {
+  margin: -4px 4px 0 0;
+  color: var(--admin-muted);
+  font-size: 11px;
+  font-weight: 750;
+  letter-spacing: 0.08em;
+  text-align: right;
+  text-transform: uppercase;
+}
+
+body.admin-app-mode .admin-inbox__workspace {
+  min-height: 820px;
+  height: clamp(820px, calc(100vh - 170px), 980px);
+  display: grid;
+  grid-template-columns: minmax(320px, 355px) minmax(0, 1fr);
+  overflow: hidden;
+  border: 1px solid var(--admin-border);
+  border-radius: 20px;
+  background: #fffdfb;
+  box-shadow: 0 28px 60px -48px rgba(58, 37, 40, 0.55);
+}
+
+body.admin-app-mode .admin-inbox__list {
+  min-width: 0;
+  overflow-y: auto;
+  border-right: 1px solid var(--admin-border);
+  background: linear-gradient(180deg, #fbf7f2 0%, #f8f1ea 100%);
+  scrollbar-width: thin;
+  scrollbar-color: rgba(125, 86, 80, 0.28) transparent;
+}
+
+body.admin-app-mode .admin-inbox-list-item {
+  width: 100%;
+  min-height: 120px;
+  display: grid;
+  gap: 7px;
+  padding: 17px 18px;
+  border: 0;
+  border-bottom: 1px solid rgba(124, 81, 75, 0.12);
+  border-radius: 0;
+  background: transparent;
+  color: var(--admin-ink);
+  text-align: left;
+  cursor: pointer;
+}
+
+body.admin-app-mode .admin-inbox-list-item:hover {
+  background: rgba(255, 252, 249, 0.72);
+}
+
+body.admin-app-mode .admin-inbox-list-item.is-active {
+  border-left: 4px solid var(--admin-gold-deep);
+  padding-left: 14px;
+  background: linear-gradient(135deg, #fffdf9, #f8edde);
+  box-shadow: inset 0 0 0 1px rgba(200, 169, 106, 0.24);
+}
+
+body.admin-app-mode .admin-inbox-list-item__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+body.admin-app-mode .admin-inbox-list-item__top strong {
+  overflow: hidden;
+  color: var(--admin-ink);
+  font-size: 14px;
+  font-weight: 800;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+body.admin-app-mode .admin-inbox-list-item__top span {
+  min-width: 22px;
+  height: 22px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background: var(--admin-burgundy);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+body.admin-app-mode .admin-inbox-list-item h2 {
+  margin: 0;
+  overflow: hidden;
+  color: var(--admin-ink-soft);
+  font-family: "Manrope", system-ui, sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.35;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+body.admin-app-mode .admin-inbox-list-item > p {
+  display: -webkit-box;
+  margin: 0;
+  overflow: hidden;
+  color: var(--admin-body);
+  font-size: 12px;
+  line-height: 1.45;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+body.admin-app-mode .admin-inbox-list-item > div:last-child {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+body.admin-app-mode .admin-inbox-list-item em {
+  padding: 3px 7px;
+  border: 1px solid rgba(124, 81, 75, 0.15);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.7);
+  color: var(--admin-muted);
+  font-size: 9px;
+  font-style: normal;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+body.admin-app-mode .admin-inbox-list-item em.is-urgent,
+body.admin-app-mode .admin-inbox-list-item em.is-high {
+  border-color: rgba(153, 84, 92, 0.24);
+  color: var(--admin-danger);
+}
+
+body.admin-app-mode .admin-inbox-list-item time {
+  margin-left: auto;
+  overflow: hidden;
+  color: var(--admin-faint);
+  font-size: 10px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+body.admin-app-mode .admin-inbox__thread {
+  min-width: 0;
+  min-height: 0;
+  display: grid;
+  grid-template-rows: auto minmax(430px, 1fr) auto;
+  background: #fffdfb;
+}
+
+body.admin-app-mode .admin-inbox-thread__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 20px 22px;
+  border-bottom: 1px solid var(--admin-border);
+  background: rgba(255, 252, 249, 0.96);
+}
+
+body.admin-app-mode .admin-inbox-thread__header > div:first-child {
+  min-width: 0;
+}
+
+body.admin-app-mode .admin-inbox-thread__header p {
+  margin: 0 0 3px;
+  color: var(--admin-gold-deep);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+
+body.admin-app-mode .admin-inbox-thread__header h2 {
+  margin: 0;
+  overflow: hidden;
+  color: var(--admin-ink);
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 30px;
+  font-weight: 600;
+  line-height: 1.05;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+body.admin-app-mode .admin-inbox-thread__header a,
+body.admin-app-mode .admin-inbox-thread__header > div:first-child > span {
+  display: inline-block;
+  margin-top: 5px;
+  color: var(--admin-muted);
+  font-size: 12px;
+}
+
+body.admin-app-mode .admin-inbox-thread__controls {
+  flex: 0 0 auto;
+  display: grid;
+  grid-template-columns: 150px 210px auto;
+  align-items: end;
+  gap: 10px;
+}
+
+body.admin-app-mode .admin-inbox-thread__controls .btn {
+  min-height: 42px;
+  padding: 0 16px;
+  border-radius: 11px;
+  font-size: 12px;
+}
+
+body.admin-app-mode .admin-inbox-thread__messages {
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+  overflow-y: auto;
+  padding: 28px 30px;
+  background:
+    radial-gradient(circle at 100% 0%, rgba(200, 169, 106, 0.08), transparent 28%),
+    linear-gradient(180deg, #fffdfb 0%, #faf6f1 100%);
+  scrollbar-width: thin;
+  scrollbar-color: rgba(125, 86, 80, 0.28) transparent;
+}
+
+body.admin-app-mode .admin-inbox-message {
+  width: fit-content;
+  max-width: min(74%, 720px);
+  padding: 13px 15px;
+  border: 1px solid rgba(124, 81, 75, 0.14);
+  border-radius: 17px 17px 17px 5px;
+  background: #fff;
+  box-shadow: 0 12px 30px -30px rgba(58, 37, 40, 0.56);
+}
+
+body.admin-app-mode .admin-inbox-message.is-admin,
+body.admin-app-mode .admin-inbox-message.is-owner,
+body.admin-app-mode .admin-inbox-message.is-staff,
+body.admin-app-mode .admin-inbox-message.is-developer {
+  margin-left: auto;
+  border-color: rgba(200, 169, 106, 0.3);
+  border-radius: 17px 17px 5px 17px;
+  background: #f9efe2;
+}
+
+body.admin-app-mode .admin-inbox-message.is-internal {
+  max-width: 82%;
+  border-color: rgba(181, 136, 77, 0.35);
+  background: #fff8df;
+}
+
+body.admin-app-mode .admin-inbox-message > div:first-child {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+body.admin-app-mode .admin-inbox-message strong {
+  color: var(--admin-ink);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+body.admin-app-mode .admin-inbox-message time {
+  color: var(--admin-faint);
+  font-size: 9px;
+  white-space: nowrap;
+}
+
+body.admin-app-mode .admin-inbox-message p {
+  margin: 7px 0 0;
+  color: var(--admin-ink-soft);
+  font-size: 13px;
+  line-height: 1.55;
+  white-space: pre-wrap;
+}
+
+body.admin-app-mode .admin-inbox-message a {
+  display: inline-flex;
+  margin-top: 9px;
+  color: var(--admin-burgundy);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+body.admin-app-mode .admin-inbox-reply {
+  display: grid;
+  gap: 10px;
+  padding: 14px 18px 16px;
+  border-top: 1px solid var(--admin-border);
+  background: rgba(255, 252, 249, 0.98);
+}
+
+body.admin-app-mode .admin-inbox-reply .admin-inbox__notice {
+  min-height: 0;
+  margin: 0;
+  padding: 9px 11px;
+  border: 1px solid rgba(85, 113, 93, 0.22);
+  border-radius: 10px;
+  background: rgba(85, 113, 93, 0.08);
+  color: #4d6855;
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+body.admin-app-mode .admin-inbox-reply__mode {
+  display: inline-flex;
+  width: fit-content;
+  padding: 3px;
+  border: 1px solid var(--admin-border);
+  border-radius: 999px;
+  background: #f8f2ed;
+}
+
+body.admin-app-mode .admin-inbox-reply__mode button {
+  min-height: 34px;
+  padding: 0 13px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--admin-muted);
+  font-size: 11px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+body.admin-app-mode .admin-inbox-reply__mode button.is-active {
+  background: var(--admin-burgundy);
+  color: #fff;
+}
+
+body.admin-app-mode .admin-inbox-reply textarea {
+  width: 100%;
+  min-height: 104px;
+  resize: vertical;
+  padding: 12px 14px;
+  border-radius: 13px;
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+body.admin-app-mode .admin-inbox-reply__attachments {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(180px, 0.38fr);
+  gap: 11px;
+}
+
+body.admin-app-mode .admin-inbox-reply > .btn.primary {
+  min-width: 150px;
+  min-height: 44px;
+  justify-self: end;
+  padding: 0 20px;
+  border-radius: 12px;
+  font-size: 13px;
+}
+
+body.admin-app-mode .admin-inbox-reply > .btn.primary:disabled {
+  opacity: 0.5;
+}
+
+body.admin-app-mode .admin-inbox__empty {
+  padding: 34px 22px;
+  color: var(--admin-muted);
+  font-size: 13px;
+  text-align: center;
+}
+
+body.admin-app-mode .admin-inbox__empty strong {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--admin-ink);
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 26px;
+  font-weight: 600;
+}
+
+body.admin-app-mode .admin-inbox__empty p {
+  margin: 0;
+}
+
+body.admin-app-mode .admin-inbox input:focus-visible,
+body.admin-app-mode .admin-inbox select:focus-visible,
+body.admin-app-mode .admin-inbox textarea:focus-visible,
+body.admin-app-mode .admin-inbox button:focus-visible,
+body.admin-app-mode .admin-inbox a:focus-visible {
+  outline: none;
+  box-shadow: var(--admin-focus);
+}
+
+@media (max-width: 1180px) {
+  body.admin-app-mode .admin-inbox__workspace {
+    grid-template-columns: minmax(280px, 315px) minmax(0, 1fr);
+  }
+
+  body.admin-app-mode .admin-inbox-thread__header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  body.admin-app-mode .admin-inbox-thread__controls {
+    width: 100%;
+    grid-template-columns: minmax(130px, 0.75fr) minmax(180px, 1fr) auto;
+  }
+}
+
+@media (max-width: 900px) {
+  body.admin-app-mode .admin-inbox__metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  body.admin-app-mode .admin-inbox__workspace {
+    height: auto;
+    min-height: 0;
+    grid-template-columns: 1fr;
+  }
+
+  body.admin-app-mode .admin-inbox__list {
+    max-height: 290px;
+    border-right: 0;
+    border-bottom: 1px solid var(--admin-border);
+  }
+
+  body.admin-app-mode .admin-inbox__thread {
+    min-height: 820px;
+  }
+}
+
+@media (max-width: 680px) {
+  body.admin-app-mode .admin-inbox {
+    padding: 14px;
+  }
+
+  body.admin-app-mode .admin-inbox__header {
+    align-items: flex-start;
+    flex-direction: column;
+    padding: 21px;
+  }
+
+  body.admin-app-mode .admin-inbox__header-actions {
+    width: 100%;
+  }
+
+  body.admin-app-mode .admin-inbox__header-actions .btn {
+    flex: 1 1 0;
+  }
+
+  body.admin-app-mode .admin-inbox__metrics {
+    grid-template-columns: 1fr 1fr;
+    gap: 9px;
+  }
+
+  body.admin-app-mode .admin-inbox__metrics > button,
+  body.admin-app-mode .admin-inbox__metrics > article {
+    min-height: 82px;
+    padding: 14px;
+  }
+
+  body.admin-app-mode .admin-inbox__toolbar {
+    align-items: stretch;
+    flex-wrap: wrap;
+  }
+
+  body.admin-app-mode .admin-inbox__search {
+    flex-basis: 100%;
+  }
+
+  body.admin-app-mode .admin-inbox__filters,
+  body.admin-app-mode .admin-inbox-thread__controls,
+  body.admin-app-mode .admin-inbox-reply__attachments {
+    grid-template-columns: 1fr;
+  }
+
+  body.admin-app-mode .admin-inbox-thread__header,
+  body.admin-app-mode .admin-inbox-thread__messages,
+  body.admin-app-mode .admin-inbox-reply {
+    padding-left: 15px;
+    padding-right: 15px;
+  }
+
+  body.admin-app-mode .admin-inbox-message {
+    max-width: 92%;
+  }
+
+  body.admin-app-mode .admin-inbox-reply > .btn.primary {
+    width: 100%;
+    justify-self: stretch;
+  }
+}
+
+/* admin-inbox-viewport-fit-pass */
+@media (min-width: 901px) {
+  body.admin-app-mode .admin-inbox__workspace {
+    min-height: 500px;
+    height: clamp(500px, calc(100vh - 355px), 720px);
+    height: clamp(500px, calc(100dvh - 355px), 720px);
+  }
+
+  body.admin-app-mode .admin-inbox__thread {
+    min-height: 0;
+    overflow: hidden;
+    grid-template-rows: auto minmax(140px, 1fr) auto;
+  }
+
+  body.admin-app-mode .admin-inbox-thread__messages {
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 24px 28px;
+  }
+
+  body.admin-app-mode .admin-inbox-reply {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 10px 12px;
+    padding: 13px 17px 15px;
+  }
+
+  body.admin-app-mode .admin-inbox-reply .admin-inbox__notice,
+  body.admin-app-mode .admin-inbox-reply__mode,
+  body.admin-app-mode .admin-inbox-reply > label {
+    grid-column: 1 / -1;
+  }
+
+  body.admin-app-mode .admin-inbox-reply__attachments {
+    grid-column: 1;
+    align-self: end;
+  }
+
+  body.admin-app-mode .admin-inbox-reply > .btn.primary {
+    grid-column: 2;
+    align-self: end;
+    margin: 0;
+  }
+
+  body.admin-app-mode .admin-inbox-reply textarea {
+    min-height: 88px;
+    max-height: 160px;
+  }
+}
+
+@media (max-width: 900px) {
+  body.admin-app-mode .admin-inbox__workspace {
+    height: auto;
+    min-height: 0;
+  }
+
+  body.admin-app-mode .admin-inbox__thread {
+    min-height: 680px;
+    grid-template-rows: auto minmax(260px, 1fr) auto;
+  }
+}
+
+/* admin-inbox-collapsible-composer */
+body.admin-app-mode .admin-inbox-reply__dock {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+body.admin-app-mode .admin-inbox-reply.is-collapsed {
+  display: block;
+  padding: 9px 11px;
+  background: rgba(255, 252, 249, 0.99);
+}
+
+body.admin-app-mode .admin-inbox-reply.is-collapsed .admin-inbox-reply__dock {
+  min-height: 48px;
+}
+
+body.admin-app-mode .admin-inbox-reply__preview {
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0 14px;
+  overflow: hidden;
+  border: 1px solid rgba(124, 81, 75, 0.16);
+  border-radius: 11px;
+  background: #fffefd;
+  color: var(--admin-muted);
+  cursor: text;
+  text-align: left;
+}
+
+body.admin-app-mode .admin-inbox-reply__preview:hover,
+body.admin-app-mode .admin-inbox-reply__preview:focus-visible {
+  border-color: var(--admin-gold-border);
+  background: #fffaf4;
+}
+
+body.admin-app-mode .admin-inbox-reply__preview span {
+  overflow: hidden;
+  font-size: 12px;
+  line-height: 1.4;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+body.admin-app-mode .admin-inbox-reply__preview strong {
+  flex: 0 0 auto;
+  color: var(--admin-gold-deep);
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+body.admin-app-mode .admin-inbox-reply__toggle {
+  flex: 0 0 auto;
+  min-height: 40px;
+  padding: 0 14px;
+  border: 1px solid rgba(124, 81, 75, 0.18);
+  border-radius: 11px;
+  background: #fffefd;
+  color: var(--admin-burgundy);
+  font-size: 11px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+body.admin-app-mode .admin-inbox-reply__toggle:hover,
+body.admin-app-mode .admin-inbox-reply__toggle:focus-visible {
+  border-color: var(--admin-gold-border);
+  background: var(--admin-surface-gold);
+}
+
+body.admin-app-mode .admin-inbox-reply__toggle:disabled {
+  cursor: wait;
+  opacity: 0.55;
+}
+
+body.admin-app-mode .admin-inbox-reply.is-expanded .admin-inbox-reply__dock {
+  margin-bottom: 1px;
+}
+
+body.admin-app-mode .admin-inbox-reply.is-expanded .admin-inbox-reply__toggle {
+  margin-left: auto;
+}
+
+@media (min-width: 901px) {
+  body.admin-app-mode .admin-inbox-reply.is-collapsed {
+    position: relative;
+    z-index: 2;
+  }
+
+  body.admin-app-mode .admin-inbox__thread {
+    grid-template-rows: auto minmax(220px, 1fr) auto;
+  }
+}
+
+@media (max-width: 900px) {
+  body.admin-app-mode .admin-inbox-reply {
+    position: sticky;
+    bottom: 0;
+    z-index: 8;
+    box-shadow: 0 -18px 36px -30px rgba(58, 37, 40, 0.75);
+  }
+
+  body.admin-app-mode .admin-inbox-reply.is-expanded {
+    max-height: min(72dvh, 620px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+}
+
+/* admin-inbox-expanded-composer-fit */
+@media (min-width: 901px) {
+  body.admin-app-mode
+    .admin-inbox__thread:has(.admin-inbox-reply.is-expanded) {
+    grid-template-rows: auto minmax(110px, 1fr) minmax(0, 280px);
+  }
+
+  body.admin-app-mode .admin-inbox-reply.is-expanded {
+    min-height: 0;
+    max-height: 280px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-gutter: stable;
+  }
+
+  body.admin-app-mode
+    .admin-inbox-reply.is-expanded
+    .admin-inbox-reply__dock {
+    position: sticky;
+    top: 0;
+    z-index: 4;
+    background: rgba(255, 252, 249, 0.98);
+  }
+}
+
+@media (min-width: 901px) and (min-height: 900px) {
+  body.admin-app-mode
+    .admin-inbox__thread:has(.admin-inbox-reply.is-expanded) {
+    grid-template-rows: auto minmax(150px, 1fr) minmax(0, 340px);
+  }
+
+  body.admin-app-mode .admin-inbox-reply.is-expanded {
+    max-height: 340px;
+  }
+}

@@ -1,4 +1,5 @@
 const { env } = require('../config/env')
+const { recipientReplyTo } = require('./inboundEmail.service')
 const { getPlatformSettings } = require('./platformSettings.service')
 const {
   collectTrackedLinks,
@@ -67,20 +68,37 @@ async function snapshotBroadcastRecipients(db, broadcastId, audienceFilter) {
   const { filter, where, values } = audienceFilterSql(audienceFilter)
   const result = await db.query(
     `
-    INSERT INTO letter_broadcast_recipients (broadcast_id, subscriber_id, email, personalization)
+    INSERT INTO letter_broadcast_recipients (
+      broadcast_id,
+      subscriber_id,
+      email,
+      personalization,
+      reply_alias
+    )
     SELECT $${values.length + 1}, s.id, s.email,
       jsonb_build_object(
         'firstName', COALESCE(s.first_name, ''),
         'lastName', COALESCE(s.last_name, ''),
         'email', s.email,
         'subscriberId', s.id
-      )
+      ),
+      lower(replace(gen_random_uuid()::text, '-', ''))
     FROM subscribers s
     WHERE ${where}
     ON CONFLICT (broadcast_id, subscriber_id) DO NOTHING
     RETURNING id
     `,
     [...values, broadcastId],
+  )
+  await db.query(
+    `
+    UPDATE letter_broadcast_recipients
+    SET reply_alias = lower(replace(gen_random_uuid()::text, '-', '')),
+        updated_at = now()
+    WHERE broadcast_id = $1
+      AND reply_alias IS NULL
+    `,
+    [broadcastId],
   )
   await db.query(
     `UPDATE letter_broadcasts SET audience_snapshot = $2::jsonb, recipient_count = (SELECT COUNT(*)::int FROM letter_broadcast_recipients WHERE broadcast_id = $1), updated_at = now() WHERE id = $1`,
@@ -111,8 +129,10 @@ function providerConfiguration() {
     apiKey: String(env.resendApiKey || '').trim(),
     from: String(env.newsletterEmailFrom || env.portalEmailFrom || '').trim(),
     replyTo: String(env.newsletterReplyTo || '').trim(),
+    receivingDomain: String(env.newsletterReceivingDomain || '').trim().toLowerCase(),
   }
 }
+
 
 function assertProviderConfigured() {
   const config = providerConfiguration()
@@ -135,8 +155,17 @@ async function assertOutgoingEmailAvailable(db) {
   }
 }
 
-async function sendLetterEmail({ to, subject, html, text, headers = {}, idempotencyKey = '' }) {
+async function sendLetterEmail({
+  to,
+  subject,
+  html,
+  text,
+  headers = {},
+  idempotencyKey = '',
+  replyTo = '',
+}) {
   const config = assertProviderConfigured()
+  const resolvedReplyTo = String(replyTo || config.replyTo || '').trim()
   const response = await fetch('https://api.resend.com/emails', {
     method: 'POST',
     headers: {
@@ -150,7 +179,7 @@ async function sendLetterEmail({ to, subject, html, text, headers = {}, idempote
       subject,
       html,
       text,
-      ...(config.replyTo ? { reply_to: config.replyTo } : {}),
+      ...(resolvedReplyTo ? { reply_to: resolvedReplyTo } : {}),
       ...(Object.keys(headers).length ? { headers } : {}),
     }),
   })
@@ -330,6 +359,7 @@ async function sendBroadcastRecipient(db, broadcast, recipient, links) {
       html: rendered.html,
       text: rendered.text,
       idempotencyKey: `pwc-letter-${recipient.id}`,
+      replyTo: recipientReplyTo(recipient),
       headers: {
         'List-Unsubscribe': `<${urls.oneClickUnsubscribeUrl}>`,
         'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
