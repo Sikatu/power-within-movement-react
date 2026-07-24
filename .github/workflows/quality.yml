@@ -44,7 +44,10 @@ jobs:
       - name: Smoke-check backend
         run: npm --prefix server run smoke
 
+      - name: Test dependency audit policy
+        run: node --test scripts/audit-production.test.mjs
+
       - name: Audit production dependencies
         run: |
-          npm audit --omit=dev --audit-level=high
-          npm --prefix server audit --omit=dev --audit-level=high
+          node scripts/audit-production.mjs
+          node scripts/audit-production.mjs --prefix server
