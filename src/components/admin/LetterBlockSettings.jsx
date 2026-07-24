@@ -35,6 +35,13 @@ function FontSizeField({ value, fallback, onChange, label = 'Font size' }) {
   return <Field label={label}><input type="number" min="10" max="72" step="1" list="pwc-letter-font-sizes" value={size} onChange={(event) => onChange(Number(event.target.value))} /><small>{size}px · 10–72</small><datalist id="pwc-letter-font-sizes">{FONT_SIZE_PRESETS.map(([preset, name]) => <option key={preset} value={preset}>{name}</option>)}</datalist></Field>
 }
 
+function TypographySpacingFields({ settings, onChange }) {
+  return <>
+    <Field label="Line height"><input type="number" min="1" max="2.5" step="0.05" value={settings.lineHeight ?? ''} placeholder="Auto" onChange={(event) => onChange('lineHeight', event.target.value === '' ? null : Number(event.target.value))} /><small>1–2.5 · blank uses the recommended default</small></Field>
+    <Field label="Letter spacing"><input type="number" min="-1" max="8" step="0.1" value={settings.letterSpacing ?? ''} placeholder="Auto" onChange={(event) => onChange('letterSpacing', event.target.value === '' ? null : Number(event.target.value))} /><small>-1–8px · blank uses the recommended default</small></Field>
+  </>
+}
+
 export default function LetterBlockSettings({ block, onChange, onDuplicate, onDelete }) {
   if (!block) {
     return <div className="pwc-letters28-settings-empty"><strong>Select a content block</strong><p>Block-specific typography, content, spacing, links, and Asset Vault choices will appear here.</p></div>
@@ -66,7 +73,7 @@ export default function LetterBlockSettings({ block, onChange, onDuplicate, onDe
 
         {!['spacer'].includes(block.type) && <>
           <Field label="Alignment"><select value={settings.align || 'left'} onChange={(event) => changeSetting('align', event.target.value)}><option value="left">Left</option><option value="center">Center</option><option value="right">Right</option></select></Field>
-          {['heading', 'text', 'greeting', 'quote', 'signature', 'footer', 'unsubscribe'].includes(block.type) && <><Field label="Font"><select value={settings.fontFamily || ''} onChange={(event) => changeSetting('fontFamily', event.target.value)}>{FONT_OPTIONS.map(([value, label]) => <option key={label} value={value}>{label}</option>)}</select></Field><FontSizeField value={settings.fontSize} fallback={block.type === 'heading' ? ({ 1: 42, 2: 32, 3: 24 }[content.level || 2]) : block.type === 'quote' ? 27 : block.type === 'signature' ? 28 : block.type === 'footer' ? 12 : block.type === 'unsubscribe' ? 11 : 16} onChange={(value) => changeSetting('fontSize', value)} /></>}
+          {['heading', 'text', 'greeting', 'quote', 'signature', 'footer', 'unsubscribe'].includes(block.type) && <><Field label="Font"><select value={settings.fontFamily || ''} onChange={(event) => changeSetting('fontFamily', event.target.value)}>{FONT_OPTIONS.map(([value, label]) => <option key={label} value={value}>{label}</option>)}</select></Field><FontSizeField value={settings.fontSize} fallback={block.type === 'heading' ? ({ 1: 42, 2: 32, 3: 24 }[content.level || 2]) : block.type === 'quote' ? 27 : block.type === 'signature' ? 28 : block.type === 'footer' ? 12 : block.type === 'unsubscribe' ? 11 : 16} onChange={(value) => changeSetting('fontSize', value)} /><TypographySpacingFields settings={settings} onChange={changeSetting} /></>}
           <Field label="Section padding"><input type="range" min="0" max="80" value={settings.padding ?? 16} onChange={(event) => changeSetting('padding', Number(event.target.value))} /><small>{settings.padding ?? 16}px</small></Field>
           <Field label="Section background"><input type="color" value={settings.backgroundColor === 'transparent' ? '#fffdf9' : settings.backgroundColor || '#fffdf9'} onChange={(event) => changeSetting('backgroundColor', event.target.value)} /></Field>
           {settings.backgroundColor !== 'transparent' && <button type="button" className="is-text" onClick={() => changeSetting('backgroundColor', 'transparent')}>Clear background</button>}

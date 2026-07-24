@@ -141,6 +141,14 @@ function normalizeBlock(block, index = 0) {
   normalized.settings.fontSize = normalized.settings.fontSize
     ? clamp(normalized.settings.fontSize, 10, 72, 16)
     : null
+  normalized.settings.lineHeight = normalized.settings.lineHeight
+    ? clamp(normalized.settings.lineHeight, 1, 2.5, 1.6)
+    : null
+  normalized.settings.letterSpacing = normalized.settings.letterSpacing !== undefined
+    && normalized.settings.letterSpacing !== null
+    && normalized.settings.letterSpacing !== ''
+    ? clamp(normalized.settings.letterSpacing, -1, 8, 0)
+    : null
   if (normalized.type === 'image') {
     normalized.content.besideText = String(normalized.content.besideText || '').slice(0, 12000)
     normalized.settings.imageFit = normalized.settings.imageFit === 'crop' ? 'crop' : 'natural'
@@ -242,15 +250,18 @@ function renderBlock(block, context) {
   const bodyFont = block.settings.fontFamily || settings.bodyFontFamily
   const displayFont = block.settings.fontFamily || settings.fontFamily
   const fontSize = block.settings.fontSize
+  const lineHeight = block.settings.lineHeight
+  const letterSpacing = block.settings.letterSpacing
+  const typography = `${lineHeight ? `line-height:${lineHeight};` : ''}${letterSpacing !== null ? `letter-spacing:${letterSpacing}px;` : ''}`
 
   if (block.type === 'heading') {
     const level = clamp(content.level, 1, 3, 2)
     const size = fontSize || (level === 1 ? 42 : level === 2 ? 32 : 24)
-    return blockWrapper(block, `<h${level} style="margin:0;color:${color};font-family:${displayFont};font-size:${size}px;font-weight:500;line-height:1.08;">${paragraphHtml(personalize(content.text, variables))}</h${level}>`)
+    return blockWrapper(block, `<h${level} style="margin:0;color:${color};font-family:${displayFont};font-size:${size}px;font-weight:500;line-height:${lineHeight || 1.08};${letterSpacing !== null ? `letter-spacing:${letterSpacing}px;` : ''}">${paragraphHtml(personalize(content.text, variables))}</h${level}>`)
   }
   if (block.type === 'text' || block.type === 'greeting') {
     const weight = block.type === 'greeting' ? 700 : 400
-    return blockWrapper(block, `<div style="color:${color};font-family:${bodyFont};font-size:${fontSize || 16}px;font-weight:${weight};line-height:1.72;">${paragraphHtml(personalize(content.text, variables))}</div>`)
+    return blockWrapper(block, `<div style="color:${color};font-family:${bodyFont};font-size:${fontSize || 16}px;font-weight:${weight};line-height:${lineHeight || 1.72};${letterSpacing !== null ? `letter-spacing:${letterSpacing}px;` : ''}">${paragraphHtml(personalize(content.text, variables))}</div>`)
   }
   if (block.type === 'image') {
     const source = context.assetUrl?.(content.assetId, block) || ''
@@ -292,10 +303,10 @@ function renderBlock(block, context) {
   }
   if (block.type === 'quote') {
     const attribution = content.attribution ? `<p style="margin:12px 0 0;color:${muted};font-family:${bodyFont};font-size:12px;letter-spacing:.08em;text-transform:uppercase;">${escapeHtml(content.attribution)}</p>` : ''
-    return blockWrapper(block, `<blockquote style="margin:0;color:${color};font-family:${displayFont};font-size:${fontSize || 27}px;font-style:italic;line-height:1.25;">“${escapeHtml(personalize(content.text, variables))}”</blockquote>${attribution}`)
+    return blockWrapper(block, `<blockquote style="margin:0;color:${color};font-family:${displayFont};font-size:${fontSize || 27}px;font-style:italic;line-height:${lineHeight || 1.25};${letterSpacing !== null ? `letter-spacing:${letterSpacing}px;` : ''}">“${escapeHtml(personalize(content.text, variables))}”</blockquote>${attribution}`)
   }
   if (block.type === 'signature') {
-    return blockWrapper(block, `<p style="margin:0;color:${color};font-family:${displayFont};font-size:${fontSize || 28}px;font-style:italic;">${escapeHtml(content.name)}</p><p style="margin:5px 0 0;color:${muted};font-family:${bodyFont};font-size:12px;">${escapeHtml(content.title)}</p>`)
+    return blockWrapper(block, `<p style="margin:0;color:${color};font-family:${displayFont};font-size:${fontSize || 28}px;font-style:italic;${typography}">${escapeHtml(content.name)}</p><p style="margin:5px 0 0;color:${muted};font-family:${bodyFont};font-size:12px;">${escapeHtml(content.title)}</p>`)
   }
   if (block.type === 'social_links') {
     const links = Object.entries(content).filter(([, url]) => safeUrl(url)).map(([name, url]) => `<a href="${escapeAttribute(safeUrl(url))}" style="margin:0 8px;color:${accent};font-family:${bodyFont};font-size:13px;text-decoration:underline;">${escapeHtml(name.replace(/\b\w/g, (letter) => letter.toUpperCase()))}</a>`).join('')
@@ -312,10 +323,10 @@ function renderBlock(block, context) {
     return blockWrapper(block, `<a href="${escapeAttribute(url)}" style="display:block;padding:18px;border:1px solid #e3d2c5;border-radius:12px;color:${color};font-family:${bodyFont};text-decoration:none;"><strong style="display:block;color:${accent};font-size:15px;">↓ ${escapeHtml(content.title)}</strong><span style="display:block;margin-top:5px;color:${muted};font-size:13px;line-height:1.5;">${escapeHtml(content.description)}</span></a>`)
   }
   if (block.type === 'footer') {
-    return blockWrapper(block, `<p style="margin:0;color:${muted};font-family:${bodyFont};font-size:${fontSize || 12}px;line-height:1.55;">${paragraphHtml(content.text)}</p>`)
+    return blockWrapper(block, `<p style="margin:0;color:${muted};font-family:${bodyFont};font-size:${fontSize || 12}px;line-height:${lineHeight || 1.55};${letterSpacing !== null ? `letter-spacing:${letterSpacing}px;` : ''}">${paragraphHtml(content.text)}</p>`)
   }
   if (block.type === 'unsubscribe') {
-    return blockWrapper(block, `<a href="${escapeAttribute(context.unsubscribeUrl || '#')}" style="color:${muted};font-family:${bodyFont};font-size:${fontSize || 11}px;text-decoration:underline;">${escapeHtml(content.text || 'Unsubscribe')}</a>`)
+    return blockWrapper(block, `<a href="${escapeAttribute(context.unsubscribeUrl || '#')}" style="color:${muted};font-family:${bodyFont};font-size:${fontSize || 11}px;line-height:${lineHeight || 1.4};${letterSpacing !== null ? `letter-spacing:${letterSpacing}px;` : ''}text-decoration:underline;">${escapeHtml(content.text || 'Unsubscribe')}</a>`)
   }
   return ''
 }

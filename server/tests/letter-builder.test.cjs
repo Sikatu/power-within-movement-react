@@ -151,6 +151,44 @@ test('design normalization preserves safe typography and clamps invalid sizes', 
   assert.equal(image.settings.besideFontSize, 10)
 })
 
+test('design normalization preserves readable spacing controls and clamps unsafe values', () => {
+  const normalized = normalizeDesign({
+    blocks: [
+      createLetterBlock('text', {
+        id: 'readable-body',
+        settings: { lineHeight: 1.85, letterSpacing: 0.4 },
+      }),
+      createLetterBlock('heading', {
+        id: 'clamped-heading',
+        settings: { lineHeight: 99, letterSpacing: -99 },
+      }),
+    ],
+  })
+
+  const body = normalized.blocks.find((block) => block.id === 'readable-body')
+  const heading = normalized.blocks.find((block) => block.id === 'clamped-heading')
+  assert.equal(body.settings.lineHeight, 1.85)
+  assert.equal(body.settings.letterSpacing, 0.4)
+  assert.equal(heading.settings.lineHeight, 2.5)
+  assert.equal(heading.settings.letterSpacing, -1)
+})
+
+test('broadcast HTML includes saved line height and letter spacing', () => {
+  const rendered = renderLetter({
+    subject: 'Readable typography',
+    design: {
+      blocks: [
+        createLetterBlock('text', {
+          content: { text: 'Comfortable body copy' },
+          settings: { lineHeight: 1.9, letterSpacing: 0.3 },
+        }),
+      ],
+    },
+  })
+
+  assert.match(rendered.html, /line-height:1\.9;letter-spacing:0\.3px/)
+})
+
 test('broadcast HTML renders block and image-side typography', () => {
   const rendered = renderLetter({
     subject: 'Typography',
