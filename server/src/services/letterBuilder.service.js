@@ -64,6 +64,8 @@ function safeAlign(value) {
 function safeFontFamily(value, fallback) {
   const allowed = new Set([
     'Georgia, serif',
+    "Garamond, 'Times New Roman', serif",
+    "Baskerville, 'Times New Roman', serif",
     'Arial, sans-serif',
     'Helvetica, Arial, sans-serif',
     "'Trebuchet MS', Arial, sans-serif",
@@ -71,6 +73,9 @@ function safeFontFamily(value, fallback) {
     "'Palatino Linotype', Palatino, Georgia, serif",
     'Verdana, Geneva, sans-serif',
     'Tahoma, Geneva, sans-serif',
+    "'Century Gothic', CenturyGothic, AppleGothic, sans-serif",
+    "'Lucida Sans Unicode', 'Lucida Grande', sans-serif",
+    "'Courier New', Courier, monospace",
   ])
   return allowed.has(String(value || '')) ? String(value) : fallback
 }
@@ -133,6 +138,9 @@ function normalizeBlock(block, index = 0) {
   normalized.settings.fontFamily = normalized.settings.fontFamily
     ? safeFontFamily(normalized.settings.fontFamily, '')
     : ''
+  normalized.settings.fontSize = normalized.settings.fontSize
+    ? clamp(normalized.settings.fontSize, 10, 72, 16)
+    : null
   if (normalized.type === 'image') {
     normalized.content.besideText = String(normalized.content.besideText || '').slice(0, 12000)
     normalized.settings.imageFit = normalized.settings.imageFit === 'crop' ? 'crop' : 'natural'
@@ -140,6 +148,12 @@ function normalizeBlock(block, index = 0) {
     normalized.settings.positionX = clamp(normalized.settings.positionX, 0, 100, 50)
     normalized.settings.positionY = clamp(normalized.settings.positionY, 0, 100, 50)
     normalized.settings.zoom = clamp(normalized.settings.zoom, 100, 200, 100)
+    normalized.settings.besideFontFamily = normalized.settings.besideFontFamily
+      ? safeFontFamily(normalized.settings.besideFontFamily, '')
+      : ''
+    normalized.settings.besideFontSize = normalized.settings.besideFontSize
+      ? clamp(normalized.settings.besideFontSize, 10, 72, 16)
+      : null
   }
   return normalized
 }
@@ -227,15 +241,16 @@ function renderBlock(block, context) {
   const muted = settings.mutedColor
   const bodyFont = block.settings.fontFamily || settings.bodyFontFamily
   const displayFont = block.settings.fontFamily || settings.fontFamily
+  const fontSize = block.settings.fontSize
 
   if (block.type === 'heading') {
     const level = clamp(content.level, 1, 3, 2)
-    const size = level === 1 ? 42 : level === 2 ? 32 : 24
+    const size = fontSize || (level === 1 ? 42 : level === 2 ? 32 : 24)
     return blockWrapper(block, `<h${level} style="margin:0;color:${color};font-family:${displayFont};font-size:${size}px;font-weight:500;line-height:1.08;">${paragraphHtml(personalize(content.text, variables))}</h${level}>`)
   }
   if (block.type === 'text' || block.type === 'greeting') {
     const weight = block.type === 'greeting' ? 700 : 400
-    return blockWrapper(block, `<div style="color:${color};font-family:${bodyFont};font-size:16px;font-weight:${weight};line-height:1.72;">${paragraphHtml(personalize(content.text, variables))}</div>`)
+    return blockWrapper(block, `<div style="color:${color};font-family:${bodyFont};font-size:${fontSize || 16}px;font-weight:${weight};line-height:1.72;">${paragraphHtml(personalize(content.text, variables))}</div>`)
   }
   if (block.type === 'image') {
     const source = context.assetUrl?.(content.assetId, block) || ''
@@ -254,7 +269,9 @@ function renderBlock(block, context) {
       const imageWidth = Math.min(block.settings.width, 65)
       const textWidth = 100 - imageWidth
       const imageCell = `<td class="pwc-image-column" width="${imageWidth}%" valign="top" style="width:${imageWidth}%;${block.settings.align === 'left' ? 'padding-right:18px;' : 'padding-left:18px;'}"><div style="width:100%;max-width:100%;overflow:hidden;border-radius:12px;">${image}</div>${caption}</td>`
-      const textCell = `<td class="pwc-image-column" width="${textWidth}%" valign="top" style="width:${textWidth}%;color:${color};font-family:${bodyFont};font-size:16px;line-height:1.72;text-align:left;">${paragraphHtml(personalize(besideText, variables))}</td>`
+      const besideFont = block.settings.besideFontFamily || settings.bodyFontFamily
+      const besideFontSize = block.settings.besideFontSize || 16
+      const textCell = `<td class="pwc-image-column" width="${textWidth}%" valign="top" style="width:${textWidth}%;color:${color};font-family:${besideFont};font-size:${besideFontSize}px;line-height:1.72;text-align:left;">${paragraphHtml(personalize(besideText, variables))}</td>`
       const columns = block.settings.align === 'left' ? `${imageCell}${textCell}` : `${textCell}${imageCell}`
       return blockWrapper(block, `<table class="pwc-image-with-text" role="presentation" width="100%" cellspacing="0" cellpadding="0"><tr>${columns}</tr></table>`)
     }
@@ -275,10 +292,10 @@ function renderBlock(block, context) {
   }
   if (block.type === 'quote') {
     const attribution = content.attribution ? `<p style="margin:12px 0 0;color:${muted};font-family:${bodyFont};font-size:12px;letter-spacing:.08em;text-transform:uppercase;">${escapeHtml(content.attribution)}</p>` : ''
-    return blockWrapper(block, `<blockquote style="margin:0;color:${color};font-family:${displayFont};font-size:27px;font-style:italic;line-height:1.25;">“${escapeHtml(personalize(content.text, variables))}”</blockquote>${attribution}`)
+    return blockWrapper(block, `<blockquote style="margin:0;color:${color};font-family:${displayFont};font-size:${fontSize || 27}px;font-style:italic;line-height:1.25;">“${escapeHtml(personalize(content.text, variables))}”</blockquote>${attribution}`)
   }
   if (block.type === 'signature') {
-    return blockWrapper(block, `<p style="margin:0;color:${color};font-family:${displayFont};font-size:28px;font-style:italic;">${escapeHtml(content.name)}</p><p style="margin:5px 0 0;color:${muted};font-family:${bodyFont};font-size:12px;">${escapeHtml(content.title)}</p>`)
+    return blockWrapper(block, `<p style="margin:0;color:${color};font-family:${displayFont};font-size:${fontSize || 28}px;font-style:italic;">${escapeHtml(content.name)}</p><p style="margin:5px 0 0;color:${muted};font-family:${bodyFont};font-size:12px;">${escapeHtml(content.title)}</p>`)
   }
   if (block.type === 'social_links') {
     const links = Object.entries(content).filter(([, url]) => safeUrl(url)).map(([name, url]) => `<a href="${escapeAttribute(safeUrl(url))}" style="margin:0 8px;color:${accent};font-family:${bodyFont};font-size:13px;text-decoration:underline;">${escapeHtml(name.replace(/\b\w/g, (letter) => letter.toUpperCase()))}</a>`).join('')
@@ -295,10 +312,10 @@ function renderBlock(block, context) {
     return blockWrapper(block, `<a href="${escapeAttribute(url)}" style="display:block;padding:18px;border:1px solid #e3d2c5;border-radius:12px;color:${color};font-family:${bodyFont};text-decoration:none;"><strong style="display:block;color:${accent};font-size:15px;">↓ ${escapeHtml(content.title)}</strong><span style="display:block;margin-top:5px;color:${muted};font-size:13px;line-height:1.5;">${escapeHtml(content.description)}</span></a>`)
   }
   if (block.type === 'footer') {
-    return blockWrapper(block, `<p style="margin:0;color:${muted};font-family:${bodyFont};font-size:12px;line-height:1.55;">${paragraphHtml(content.text)}</p>`)
+    return blockWrapper(block, `<p style="margin:0;color:${muted};font-family:${bodyFont};font-size:${fontSize || 12}px;line-height:1.55;">${paragraphHtml(content.text)}</p>`)
   }
   if (block.type === 'unsubscribe') {
-    return blockWrapper(block, `<a href="${escapeAttribute(context.unsubscribeUrl || '#')}" style="color:${muted};font-family:${bodyFont};font-size:11px;text-decoration:underline;">${escapeHtml(content.text || 'Unsubscribe')}</a>`)
+    return blockWrapper(block, `<a href="${escapeAttribute(context.unsubscribeUrl || '#')}" style="color:${muted};font-family:${bodyFont};font-size:${fontSize || 11}px;text-decoration:underline;">${escapeHtml(content.text || 'Unsubscribe')}</a>`)
   }
   return ''
 }
