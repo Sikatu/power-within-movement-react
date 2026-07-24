@@ -40,7 +40,12 @@ function BlockPreview({ block, settings, readOnly, onChange }) {
   if (block.type === 'image') {
     const imageSettings = block.settings || {}
     const cropped = imageSettings.imageFit === 'crop'
-    return <div style={style}>{content.assetId ? <div className={`pwc-letters28-image-frame${cropped ? ' is-cropped' : ''}`} style={{ width: `${imageSettings.width || 100}%`, height: cropped ? `${imageSettings.cropHeight || 280}px` : 'auto' }}><img className="pwc-letters28-canvas-image" src={getAssetVaultPreviewUrl(content.assetId)} alt={content.alt || ''} style={cropped ? { width: `${imageSettings.zoom || 100}%`, height: '100%', objectFit: 'cover', objectPosition: `${imageSettings.positionX ?? 50}% ${imageSettings.positionY ?? 50}%` } : undefined} /></div> : <div className="pwc-letters28-asset-placeholder"><span>Image</span><strong>Choose an Asset Vault image</strong><small>Add alternative text</small></div>}{content.caption && <p className="is-caption">{content.caption}</p>}</div>
+    const hasSideLayout = ['left', 'right'].includes(imageSettings.align)
+    const image = <div className="pwc-letters28-image-media" style={{ '--pwc-letters-image-width': hasSideLayout ? `${Math.min(imageSettings.width || 100, 65)}%` : '100%' }}>{content.assetId ? <div className={`pwc-letters28-image-frame${cropped ? ' is-cropped' : ''}`} style={{ width: hasSideLayout ? '100%' : `${imageSettings.width || 100}%`, height: cropped ? `${imageSettings.cropHeight || 280}px` : 'auto' }}><img className="pwc-letters28-canvas-image" src={getAssetVaultPreviewUrl(content.assetId)} alt={content.alt || ''} style={cropped ? { width: `${imageSettings.zoom || 100}%`, height: '100%', objectFit: 'cover', objectPosition: `${imageSettings.positionX ?? 50}% ${imageSettings.positionY ?? 50}%` } : undefined} /></div> : <div className="pwc-letters28-asset-placeholder"><span>Image</span><strong>Choose an Asset Vault image</strong><small>Add alternative text</small></div>}{content.caption && <p className="is-caption">{content.caption}</p>}</div>
+    if (hasSideLayout) {
+      return <div style={{ ...style, textAlign: 'left' }} className={`pwc-letters28-image-with-text is-${imageSettings.align}`}>{image}<p className="pwc-letters28-image-side-text">{readOnly ? content.besideText || 'Text beside the image.' : <EditableText value={content.besideText} fallback="Click to add text beside the image." onChange={(text) => onChange('besideText', text)} />}</p></div>
+    }
+    return <div style={style}>{image}</div>
   }
   if (block.type === 'button') {
     return <div style={style}><span className="pwc-letters28-preview-button" style={{ background: settings.accentColor }}>{content.text || 'Button label'}</span></div>

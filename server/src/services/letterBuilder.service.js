@@ -32,7 +32,7 @@ const DEFAULT_SETTINGS = Object.freeze({
 const BLOCK_DEFAULTS = Object.freeze({
   heading: { content: { text: 'A heading for your letter', level: 2 }, settings: { align: 'center', padding: 20 } },
   text: { content: { text: 'Write your thoughtful message here.' }, settings: { align: 'left', padding: 16 } },
-  image: { content: { assetId: '', alt: 'Power Within newsletter image', caption: '' }, settings: { align: 'center', padding: 12, width: 100, imageFit: 'natural', cropHeight: 280, positionX: 50, positionY: 50, zoom: 100 } },
+  image: { content: { assetId: '', alt: 'Power Within newsletter image', caption: '', besideText: '' }, settings: { align: 'center', padding: 12, width: 100, imageFit: 'natural', cropHeight: 280, positionX: 50, positionY: 50, zoom: 100 } },
   button: { content: { text: 'Continue your journey', url: 'https://powerwithinmovement.com' }, settings: { align: 'center', padding: 18 } },
   divider: { content: {}, settings: { padding: 14, color: '#dfcdbf' } },
   spacer: { content: {}, settings: { height: 32, padding: 0 } },
@@ -134,6 +134,7 @@ function normalizeBlock(block, index = 0) {
     ? safeFontFamily(normalized.settings.fontFamily, '')
     : ''
   if (normalized.type === 'image') {
+    normalized.content.besideText = String(normalized.content.besideText || '').slice(0, 12000)
     normalized.settings.imageFit = normalized.settings.imageFit === 'crop' ? 'crop' : 'natural'
     normalized.settings.cropHeight = clamp(normalized.settings.cropHeight, 120, 520, 280)
     normalized.settings.positionX = clamp(normalized.settings.positionX, 0, 100, 50)
@@ -248,6 +249,15 @@ function renderBlock(block, context) {
     const frame = cropped
       ? `<div style="display:inline-block;width:${block.settings.width}%;max-width:100%;height:${block.settings.cropHeight}px;overflow:hidden;border-radius:12px;">${image}</div>`
       : `<div style="display:inline-block;width:${block.settings.width}%;max-width:100%;overflow:hidden;border-radius:12px;">${image}</div>`
+    const besideText = String(content.besideText || '').trim()
+    if (besideText && ['left', 'right'].includes(block.settings.align)) {
+      const imageWidth = Math.min(block.settings.width, 65)
+      const textWidth = 100 - imageWidth
+      const imageCell = `<td class="pwc-image-column" width="${imageWidth}%" valign="top" style="width:${imageWidth}%;${block.settings.align === 'left' ? 'padding-right:18px;' : 'padding-left:18px;'}"><div style="width:100%;max-width:100%;overflow:hidden;border-radius:12px;">${image}</div>${caption}</td>`
+      const textCell = `<td class="pwc-image-column" width="${textWidth}%" valign="top" style="width:${textWidth}%;color:${color};font-family:${bodyFont};font-size:16px;line-height:1.72;text-align:left;">${paragraphHtml(personalize(besideText, variables))}</td>`
+      const columns = block.settings.align === 'left' ? `${imageCell}${textCell}` : `${textCell}${imageCell}`
+      return blockWrapper(block, `<table class="pwc-image-with-text" role="presentation" width="100%" cellspacing="0" cellpadding="0"><tr>${columns}</tr></table>`)
+    }
     return blockWrapper(block, `${frame}${caption}`)
   }
   if (block.type === 'button') {
@@ -298,7 +308,7 @@ function renderLetter({ design, subject, previewText = '', variables = {}, unsub
   const settings = normalized.settings
   const rows = normalized.blocks.map((block) => renderBlock(block, { settings, variables, unsubscribeUrl, trackingUrls, assetUrl })).join('')
   const pixel = openPixelUrl ? `<img src="${escapeAttribute(openPixelUrl)}" width="1" height="1" alt="" style="display:block;width:1px;height:1px;border:0;overflow:hidden;">` : ''
-  const html = `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${escapeHtml(personalize(subject, variables))}</title><style>@media only screen and (max-width:600px){.pwc-two-column,.pwc-two-column tbody,.pwc-two-column tr,.pwc-column{display:block!important;width:100%!important}.pwc-column{box-sizing:border-box!important;padding:0 0 16px!important}.pwc-column:last-child{padding-bottom:0!important}}</style></head><body style="margin:0;padding:0;background:${settings.backgroundColor};"><div style="display:none;max-height:0;overflow:hidden;opacity:0;">${escapeHtml(personalize(previewText, variables))}</div><table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="width:100%;background:${settings.backgroundColor};"><tr><td align="center" style="padding:28px 12px;"><table role="presentation" width="${settings.contentWidth}" cellspacing="0" cellpadding="0" style="width:100%;max-width:${settings.contentWidth}px;background:${settings.contentColor};border:1px solid #eadbd0;border-radius:24px;overflow:hidden;">${rows}</table><p style="margin:16px 0 0;color:${settings.mutedColor};font-family:${settings.bodyFontFamily};font-size:11px;">Power Within Collective</p></td></tr></table>${pixel}</body></html>`
+  const html = `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${escapeHtml(personalize(subject, variables))}</title><style>@media only screen and (max-width:600px){.pwc-two-column,.pwc-two-column tbody,.pwc-two-column tr,.pwc-column,.pwc-image-with-text,.pwc-image-with-text tbody,.pwc-image-with-text tr,.pwc-image-column{display:block!important;width:100%!important}.pwc-column,.pwc-image-column{box-sizing:border-box!important;padding:0 0 16px!important}.pwc-column:last-child,.pwc-image-column:last-child{padding-bottom:0!important}}</style></head><body style="margin:0;padding:0;background:${settings.backgroundColor};"><div style="display:none;max-height:0;overflow:hidden;opacity:0;">${escapeHtml(personalize(previewText, variables))}</div><table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="width:100%;background:${settings.backgroundColor};"><tr><td align="center" style="padding:28px 12px;"><table role="presentation" width="${settings.contentWidth}" cellspacing="0" cellpadding="0" style="width:100%;max-width:${settings.contentWidth}px;background:${settings.contentColor};border:1px solid #eadbd0;border-radius:24px;overflow:hidden;">${rows}</table><p style="margin:16px 0 0;color:${settings.mutedColor};font-family:${settings.bodyFontFamily};font-size:11px;">Power Within Collective</p></td></tr></table>${pixel}</body></html>`
   const text = normalized.blocks.map((block) => {
     const content = block.content || {}
     if (['heading', 'text', 'greeting', 'quote', 'footer'].includes(block.type)) return personalize(content.text, variables)
@@ -306,6 +316,7 @@ function renderLetter({ design, subject, previewText = '', variables = {}, unsub
     if (block.type === 'signature') return `${content.name}\n${content.title}`
     if (block.type === 'button') return `${personalize(content.text, variables)}: ${safeUrl(content.url)}`
     if (block.type === 'resource') return `${content.title}: ${assetUrl?.(content.assetId, block) || ''}`
+    if (block.type === 'image' && content.besideText) return personalize(content.besideText, variables)
     if (block.type === 'unsubscribe') return `${content.text}: ${unsubscribeUrl}`
     return ''
   }).filter(Boolean).join('\n\n')

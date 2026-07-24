@@ -54,7 +54,7 @@ const blockPalette = [
 const defaultBlockContent = {
   heading: { text: 'A heading for your letter', level: 2 },
   text: { text: 'Write your thoughtful message here.' },
-  image: { assetId: '', alt: 'Power Within newsletter image', caption: '' },
+  image: { assetId: '', alt: 'Power Within newsletter image', caption: '', besideText: '' },
   button: { text: 'Continue your journey', url: 'https://powerwithinmovement.com' },
   divider: {},
   spacer: {},
