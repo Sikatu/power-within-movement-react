@@ -12575,7 +12575,7 @@ body.admin-app-mode :where(
   line-height: 1.35;
 }
 
-/* Content directories remain visible; editors appear beside them only when useful. */
+
 body.admin-app-mode :where(
   .learning-library-layout,
   .membership-circle-layout,
@@ -12693,7 +12693,7 @@ body.admin-app-mode :where(.circle-composer-welcome, .onboarding-start-card) > b
   color: #fff9f3;
 }
 
-/* Asset delivery keeps common single-client work visible and reveals bulk tools on request. */
+
 body.admin-app-mode .pwc-assets26-page {
   padding-top: 22px;
   padding-bottom: 52px;
@@ -12743,7 +12743,7 @@ body.admin-app-mode .pwc-assets26-client-options {
   max-height: 260px;
 }
 
-/* Leads and Sessions become genuine master/detail workspaces on larger screens. */
+
 body.admin-app-mode .lead-pipeline-workbench {
   display: grid;
   grid-template-columns: minmax(290px, 0.42fr) minmax(0, 1.58fr);
@@ -12884,7 +12884,7 @@ body.admin-app-mode .admin-inbox__empty.is-large {
   min-height: 260px;
 }
 
-/* Team and automation pages prioritize the selected task over decorative height. */
+
 body.admin-app-mode .team-management-page {
   padding-top: 22px;
   padding-bottom: 52px;
@@ -12923,7 +12923,7 @@ body.admin-app-mode .automation-step-card textarea {
   min-height: 82px;
 }
 
-/* Letter creation aligns with the library instead of floating over unused space. */
+
 body.admin-app-mode .pwc-letters28-page {
   padding-top: 22px;
   padding-bottom: 52px;
@@ -13572,7 +13572,7 @@ body.admin-app-mode.admin-comfort-view :where(
 /* phase-52-comfort-view-end */
 
 /* phase-53-visual-acceptance-start */
-/* Keep every dark workspace header readable regardless of earlier route styles. */
+
 body.admin-app-mode :where(
   .learning-library-header,
   .membership-circle-header,
@@ -13649,10 +13649,6 @@ body.admin-app-mode :where(
 
 /* founder-schedule-contrast-fix-start */
 
-/*
- * Preserve the rich burgundy Founder card while giving every foreground
- * element an explicit high-contrast color.
- */
 body.admin-app-mode .founder-home__panel--schedule {
   color: #fff8f3;
 }
@@ -13735,11 +13731,6 @@ body.admin-app-mode
 /* founder-schedule-contrast-fix-end */
 
 /* founder-final-interaction-fix-start */
-
-/*
- * Final Founder workspace contrast and interaction overrides.
- * These rules intentionally override generic admin hover behavior.
- */
 
 /* Dark schedule card typography */
 body.admin-app-mode
@@ -13912,11 +13903,11 @@ body.admin-app-mode
 .pwc-letters28-image-frame{display:inline-block;max-width:100%;overflow:hidden;border-radius:.75rem;vertical-align:top}
 .pwc-letters28-image-frame img{display:block;width:100%;max-width:100%;height:auto;border:0}
 .pwc-letters28-image-frame.is-cropped img{max-width:none}
-.pwc-letters28-image-with-text{display:flex;align-items:flex-start;gap:1.1rem;text-align:left!important}
+.pwc-letters28-image-with-text{display:flex;align-items:flex-start;gap:1.1rem;text-align:left}
 .pwc-letters28-image-with-text.is-right{flex-direction:row-reverse}
-.pwc-letters28-image-media{flex:0 0 auto;min-width:0}
+.pwc-letters28-image-media{flex:0 0 auto;min-width:0;width:var(--pwc-letters-image-width)}
 .pwc-letters28-image-side-text{flex:1;min-width:0;margin:0;font-size:.72rem;line-height:1.72;white-space:pre-wrap}
-@media(max-width:600px){.pwc-letters28-image-with-text,.pwc-letters28-image-with-text.is-right{flex-direction:column}.pwc-letters28-image-media{width:100%!important}.pwc-letters28-image-side-text{width:100%}}
+@media(max-width:600px){.pwc-letters28-image-with-text,.pwc-letters28-image-with-text.is-right{flex-direction:column}.pwc-letters28-image-media{width:100%}.pwc-letters28-image-side-text{width:100%}}
 .pwc-letters28-image-presets{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.3rem}
 .pwc-letters28-image-presets button{min-height:2rem;padding:.35rem;border:1px solid var(--let-line);border-radius:.55rem;background:#fff;color:var(--let-wine);font-size:.52rem;font-weight:800;cursor:pointer}
 /* letters-broadcast-image-position-fonts-end */
@@ -13938,11 +13929,6 @@ body.admin-app-mode
 @media(prefers-reduced-motion:reduce){.pwc-letters10-result-actions a{scroll-behavior:auto}}
 @media(forced-colors:active){.pwc-letters10-privacy-note,.pwc-letters10-result-actions a{border:1px solid CanvasText}}
 /* letters-broadcast-phase-10-final-refinement-end */
-
-/* ========================================
-   ADMIN INBOX COMFORT
-   Consolidated Inbox comfort rules
-   ======================================== */
 
 /*
  * Admin Inbox comfort pass
