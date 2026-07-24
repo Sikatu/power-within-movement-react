@@ -71,7 +71,7 @@ const defaultBlockContent = {
 const defaultBlockSettings = {
   heading: { align: 'center', padding: 20 },
   text: { align: 'left', padding: 16 },
-  image: { align: 'center', padding: 12, width: 100 },
+  image: { align: 'center', padding: 12, width: 100, imageFit: 'natural', cropHeight: 280, positionX: 50, positionY: 50, zoom: 100 },
   button: { align: 'center', padding: 18 },
   divider: { align: 'left', padding: 14, color: '#dfcdbf' },
   spacer: { align: 'left', padding: 0, height: 32 },

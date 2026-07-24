@@ -29,6 +29,7 @@ export default function AssetVaultPicker({
   const [error, setError] = useState('')
   const [uploading, setUploading] = useState(false)
   const [uploadProgress, setUploadProgress] = useState(0)
+  const [dragActive, setDragActive] = useState(false)
   const inputRef = useRef(null)
   const excluded = useMemo(() => new Set(excludeAssetIds), [excludeAssetIds])
 
@@ -61,9 +62,7 @@ export default function AssetVaultPicker({
   const options = assets.filter((asset) => !excluded.has(asset.id) && isUsable(asset))
   const selected = options.find((asset) => asset.id === value) || selectedAsset
 
-  async function handleUpload(event) {
-    const file = event.target.files?.[0]
-    event.target.value = ''
+  async function uploadFile(file) {
     if (!file) return
     if (accept && !file.type.startsWith(accept.replace('/*', '/'))) {
       setError(`Choose a ${accept.replace('/*', '')} file for this block.`)
@@ -93,8 +92,44 @@ export default function AssetVaultPicker({
     }
   }
 
+  function handleUpload(event) {
+    const file = event.target.files?.[0]
+    event.target.value = ''
+    uploadFile(file)
+  }
+
+  function handleDrop(event) {
+    event.preventDefault()
+    setDragActive(false)
+    const files = Array.from(event.dataTransfer.files || [])
+    if (files.length !== 1) {
+      setError('Drop one file at a time.')
+      return
+    }
+    uploadFile(files[0])
+  }
+
   return (
-    <div className="pwc-asset-picker">
+    <div
+      className={`pwc-asset-picker${dragActive ? ' is-drag-active' : ''}`}
+      onDragEnter={(event) => {
+        if (!allowUpload || uploading) return
+        event.preventDefault()
+        setDragActive(true)
+      }}
+      onDragOver={(event) => {
+        if (!allowUpload || uploading) return
+        event.preventDefault()
+        event.dataTransfer.dropEffect = 'copy'
+      }}
+      onDragLeave={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget)) setDragActive(false)
+      }}
+      onDrop={(event) => {
+        if (!allowUpload || uploading) return
+        handleDrop(event)
+      }}
+    >
       <div className="pwc-asset-picker-heading">
         <label>
           <span>{label}</span>
@@ -107,6 +142,10 @@ export default function AssetVaultPicker({
           </button>
         </>}
       </div>
+      {allowUpload && <button type="button" className="pwc-asset-picker-dropzone" onClick={() => inputRef.current?.click()} disabled={uploading}>
+        <strong>{dragActive ? 'Drop to upload' : 'Drag an image here'}</strong>
+        <span>{uploading ? `Saving to Asset Vault… ${uploadProgress}%` : 'or click to browse your computer'}</span>
+      </button>}
       {selected && <article className="pwc-asset-picker-selected">
         {selected.mime_type?.startsWith('image/') && <img src={getAssetVaultPreviewUrl(selected.id)} alt="" />}
         <span><small>Selected asset</small><strong>{displayName(selected)}</strong><em>{selected.original_filename}</em></span>
