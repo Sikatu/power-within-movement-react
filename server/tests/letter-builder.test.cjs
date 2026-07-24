@@ -27,6 +27,32 @@ const {
   assertDeliveryChangeOutsideCutoff,
   letterCapabilities,
 } = require('../src/services/letterPermissions.service')
+const { buildLetterAnalytics, percentage } = require('../src/services/letterAnalytics.service')
+
+test('Phase 10 analytics use delivered recipients for engagement rates', () => {
+  const analytics = buildLetterAnalytics({
+    sent_count: 100,
+    delivered_count: 80,
+    opened_count: 40,
+    clicked_count: 10,
+    bounced_count: 5,
+    unsubscribed_count: 2,
+  })
+  assert.equal(analytics.deliveryRate, 80)
+  assert.equal(analytics.openRate, 50)
+  assert.equal(analytics.clickRate, 12.5)
+  assert.equal(analytics.clickToOpenRate, 25)
+  assert.equal(analytics.bounceRate, 5)
+  assert.equal(analytics.unsubscribeRate, 2.5)
+  assert.equal(analytics.openTrackingIsEstimate, true)
+})
+
+test('Phase 10 analytics remain finite when provider delivery data is absent', () => {
+  assert.equal(percentage(10, 0), 0)
+  const analytics = buildLetterAnalytics({ sent_count: 20, opened_count: 4, clicked_count: 1 })
+  assert.equal(analytics.openRate, 20)
+  assert.equal(analytics.clickRate, 5)
+})
 
 test('letter builder exposes every Phase 28 content block', () => {
   assert.deepEqual([...LETTER_BLOCK_TYPES], [

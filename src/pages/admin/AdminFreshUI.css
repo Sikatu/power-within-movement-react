@@ -13903,3 +13903,21 @@ body.admin-app-mode
 .pwc-letters28-canvas .is-caption{margin-top:.45rem;color:var(--let-muted);font-size:.6rem}
 @media(max-width:520px){.pwc-asset-picker-heading{grid-template-columns:1fr}.pwc-asset-picker-upload{width:100%}}
 /* letters-broadcast-phase-6-media-workflows-end */
+
+/* letters-broadcast-phase-10-final-refinement-start */
+.pwc-letters10-privacy-note{display:flex;align-items:flex-start;gap:.6rem;padding:.8rem 1rem;border:1px solid #b58a3d55;border-radius:.85rem;background:#fff9eccc;color:#584b3c;font-size:.6rem;line-height:1.55}
+.pwc-letters10-privacy-note strong{flex:none;color:#512631}
+.pwc-letters10-result-actions{display:flex;align-items:center;gap:.45rem;flex-wrap:wrap}
+.pwc-letters10-result-actions a{padding:.55rem .75rem;border:1px solid #512631;border-radius:.7rem;background:#512631;color:#fff;font-size:.6rem;font-weight:800;text-decoration:none}
+.pwc-letters10-result-actions a:first-child{background:#fff;color:#512631}
+.pwc-letters10-compare{display:flex;align-items:end;justify-content:space-between;gap:1rem;padding:.8rem;border-bottom:1px solid var(--let-line);background:#fcf8f4}
+.pwc-letters10-compare label{display:grid;gap:.25rem;min-width:min(100%,20rem)}
+.pwc-letters10-compare label span{color:var(--let-muted);font-size:.54rem;font-weight:800}
+.pwc-letters10-compare select{min-height:2.5rem}
+.pwc-letters10-compare p{margin:0;color:var(--let-muted);font-size:.58rem}
+.pwc-letters28-result-metrics small{color:var(--let-muted);font-size:.48rem;line-height:1.3}
+.pwc-letters28-results :is(a,button,select):focus-visible{outline:3px solid #b58a3d;outline-offset:2px}
+@media(max-width:760px){.pwc-letters10-privacy-note,.pwc-letters10-compare{align-items:stretch;flex-direction:column}.pwc-letters10-result-actions{width:100%}.pwc-letters10-result-actions a{flex:1;text-align:center}}
+@media(prefers-reduced-motion:reduce){.pwc-letters10-result-actions a{scroll-behavior:auto}}
+@media(forced-colors:active){.pwc-letters10-privacy-note,.pwc-letters10-result-actions a{border:1px solid CanvasText}}
+/* letters-broadcast-phase-10-final-refinement-end */

@@ -139,6 +139,7 @@ export default function AdminLetters() {
   const [selectedBlockId, setSelectedBlockId] = useState('')
   const [versions, setVersions] = useState([])
   const [selectedBroadcast, setSelectedBroadcast] = useState(null)
+  const [compareBroadcastId, setCompareBroadcastId] = useState('')
   const [newLetter, setNewLetter] = useState({ title: '', templateId: '' })
   const [previewMode, setPreviewMode] = useState('edit')
   const [renderedPreview, setRenderedPreview] = useState({ html: '', text: '' })
@@ -230,6 +231,7 @@ export default function AdminLetters() {
   const capabilities = overview.capabilities || {}
   const scheduledBroadcasts = (overview.broadcasts || []).filter((broadcast) => ['scheduled', 'processing', 'failed'].includes(broadcast.status))
   const sentBroadcasts = (overview.broadcasts || []).filter((broadcast) => ['sent', 'partial'].includes(broadcast.status))
+  const compareBroadcast = sentBroadcasts.find((broadcast) => broadcast.id === compareBroadcastId) || null
   const readOnly = working?.status === 'archived' || capabilities.edit === false
 
   const openLetter = useCallback(async (letterId) => {
@@ -751,7 +753,7 @@ export default function AdminLetters() {
           formatDate={formatDate}
         />}
         {activeTab === 'delivery' && <DeliveryQueue audience={audience} deliveryView={deliveryView} setDeliveryView={setDeliveryView} scheduled={scheduledBroadcasts} sent={sentBroadcasts} adminUser={adminUser} capabilities={capabilities} busy={busy} onProcessDue={runDueBroadcasts} renderBroadcastList={renderBroadcastList} />}
-        {activeTab === 'results' && <BroadcastAnalytics metrics={metrics} selectedBroadcast={selectedBroadcast} sentBroadcasts={sentBroadcasts} rate={rate} formatStatus={formatStatus} exportUrl={getLetterBroadcastExportUrl} renderBroadcastList={renderBroadcastList} />}
+        {activeTab === 'results' && <BroadcastAnalytics metrics={metrics} selectedBroadcast={selectedBroadcast} compareBroadcast={compareBroadcast} sentBroadcasts={sentBroadcasts} rate={rate} formatStatus={formatStatus} exportUrl={getLetterBroadcastExportUrl} renderBroadcastList={renderBroadcastList} onCompareChange={setCompareBroadcastId} />}
       </LettersWorkspace>
     </AdminFrame>
   )
