@@ -91,6 +91,69 @@ test('design normalization rejects CSS injection and clamps visual settings', ()
   assert.equal(normalized.blocks[0].settings.backgroundColor, '#abc')
 })
 
+test('design normalization preserves safe block fonts and image crop settings', () => {
+  const normalized = normalizeDesign({
+    blocks: [
+      createLetterBlock('heading', {
+        id: 'heading-custom-font',
+        settings: { fontFamily: 'Verdana, Geneva, sans-serif' },
+      }),
+      createLetterBlock('image', {
+        id: 'image-custom-crop',
+        settings: {
+          imageFit: 'crop',
+          cropHeight: 340,
+          positionX: 25,
+          positionY: 70,
+          zoom: 135,
+        },
+      }),
+    ],
+  })
+  const heading = normalized.blocks.find((block) => block.id === 'heading-custom-font')
+  const image = normalized.blocks.find((block) => block.id === 'image-custom-crop')
+
+  assert.equal(heading.settings.fontFamily, 'Verdana, Geneva, sans-serif')
+  assert.equal(image.settings.imageFit, 'crop')
+  assert.equal(image.settings.cropHeight, 340)
+  assert.equal(image.settings.positionX, 25)
+  assert.equal(image.settings.positionY, 70)
+  assert.equal(image.settings.zoom, 135)
+})
+
+test('broadcast HTML includes saved block fonts and image positioning', () => {
+  const rendered = renderLetter({
+    subject: 'A thoughtful note',
+    design: {
+      blocks: [
+        createLetterBlock('heading', {
+          id: 'heading-font',
+          content: { text: 'Welcome' },
+          settings: { fontFamily: 'Tahoma, Geneva, sans-serif' },
+        }),
+        createLetterBlock('image', {
+          id: 'cropped-image',
+          content: { assetId: 'asset-1', alt: 'A welcoming portrait' },
+          settings: {
+            width: 80,
+            imageFit: 'crop',
+            cropHeight: 300,
+            positionX: 20,
+            positionY: 75,
+            zoom: 140,
+          },
+        }),
+      ],
+    },
+    assetUrl: () => 'https://example.com/image.jpg',
+  })
+
+  assert.match(rendered.html, /font-family:Tahoma, Geneva, sans-serif/)
+  assert.match(rendered.html, /object-position:20% 75%/)
+  assert.match(rendered.html, /height:300px/)
+  assert.match(rendered.html, /width:140%/)
+})
+
 test('letter validation reports missing subjects and unsafe destinations without removing compliance', () => {
   const design = normalizeDesign({ blocks: [createLetterBlock('button', { content: { text: 'Unsafe', url: 'javascript:alert(1)' } })] })
   const validation = validateLetter({ title: 'July reflection', subject: '', design })

@@ -32,7 +32,7 @@ const DEFAULT_SETTINGS = Object.freeze({
 const BLOCK_DEFAULTS = Object.freeze({
   heading: { content: { text: 'A heading for your letter', level: 2 }, settings: { align: 'center', padding: 20 } },
   text: { content: { text: 'Write your thoughtful message here.' }, settings: { align: 'left', padding: 16 } },
-  image: { content: { assetId: '', alt: 'Power Within newsletter image', caption: '' }, settings: { align: 'center', padding: 12, width: 100 } },
+  image: { content: { assetId: '', alt: 'Power Within newsletter image', caption: '' }, settings: { align: 'center', padding: 12, width: 100, imageFit: 'natural', cropHeight: 280, positionX: 50, positionY: 50, zoom: 100 } },
   button: { content: { text: 'Continue your journey', url: 'https://powerwithinmovement.com' }, settings: { align: 'center', padding: 18 } },
   divider: { content: {}, settings: { padding: 14, color: '#dfcdbf' } },
   spacer: { content: {}, settings: { height: 32, padding: 0 } },
@@ -68,6 +68,9 @@ function safeFontFamily(value, fallback) {
     'Helvetica, Arial, sans-serif',
     "'Trebuchet MS', Arial, sans-serif",
     "'Times New Roman', serif",
+    "'Palatino Linotype', Palatino, Georgia, serif",
+    'Verdana, Geneva, sans-serif',
+    'Tahoma, Geneva, sans-serif',
   ])
   return allowed.has(String(value || '')) ? String(value) : fallback
 }
@@ -127,6 +130,16 @@ function normalizeBlock(block, index = 0) {
   if (normalized.type === 'heading') normalized.content.level = clamp(normalized.content.level, 1, 3, 2)
   if (normalized.type === 'spacer') normalized.settings.height = clamp(normalized.settings.height, 4, 160, 32)
   if (normalized.type === 'image') normalized.settings.width = clamp(normalized.settings.width, 20, 100, 100)
+  normalized.settings.fontFamily = normalized.settings.fontFamily
+    ? safeFontFamily(normalized.settings.fontFamily, '')
+    : ''
+  if (normalized.type === 'image') {
+    normalized.settings.imageFit = normalized.settings.imageFit === 'crop' ? 'crop' : 'natural'
+    normalized.settings.cropHeight = clamp(normalized.settings.cropHeight, 120, 520, 280)
+    normalized.settings.positionX = clamp(normalized.settings.positionX, 0, 100, 50)
+    normalized.settings.positionY = clamp(normalized.settings.positionY, 0, 100, 50)
+    normalized.settings.zoom = clamp(normalized.settings.zoom, 100, 200, 100)
+  }
   return normalized
 }
 
@@ -211,8 +224,8 @@ function renderBlock(block, context) {
   const color = settings.textColor
   const accent = settings.accentColor
   const muted = settings.mutedColor
-  const bodyFont = settings.bodyFontFamily
-  const displayFont = settings.fontFamily
+  const bodyFont = block.settings.fontFamily || settings.bodyFontFamily
+  const displayFont = block.settings.fontFamily || settings.fontFamily
 
   if (block.type === 'heading') {
     const level = clamp(content.level, 1, 3, 2)
@@ -227,7 +240,15 @@ function renderBlock(block, context) {
     const source = context.assetUrl?.(content.assetId, block) || ''
     if (!source) return blockWrapper(block, `<div style="padding:28px;border:1px dashed #d9c8bd;color:${muted};font-family:${bodyFont};font-size:13px;">Image selected from Asset Vault</div>`)
     const caption = content.caption ? `<p style="margin:9px 0 0;color:${muted};font-family:${bodyFont};font-size:12px;">${escapeHtml(content.caption)}</p>` : ''
-    return blockWrapper(block, `<img src="${escapeAttribute(source)}" width="${Math.round(600 * (block.settings.width / 100))}" alt="${escapeAttribute(content.alt || '')}" style="display:inline-block;width:${block.settings.width}%;max-width:100%;height:auto;border:0;border-radius:12px;">${caption}`)
+    const cropped = block.settings.imageFit === 'crop'
+    const imageStyle = cropped
+      ? `display:block;width:${block.settings.zoom}%;max-width:none;height:${block.settings.cropHeight}px;object-fit:cover;object-position:${block.settings.positionX}% ${block.settings.positionY}%;border:0;`
+      : 'display:block;width:100%;max-width:100%;height:auto;border:0;'
+    const image = `<img src="${escapeAttribute(source)}" width="${Math.round(600 * (block.settings.width / 100))}" alt="${escapeAttribute(content.alt || '')}" style="${imageStyle}">`
+    const frame = cropped
+      ? `<div style="display:inline-block;width:${block.settings.width}%;max-width:100%;height:${block.settings.cropHeight}px;overflow:hidden;border-radius:12px;">${image}</div>`
+      : `<div style="display:inline-block;width:${block.settings.width}%;max-width:100%;overflow:hidden;border-radius:12px;">${image}</div>`
+    return blockWrapper(block, `${frame}${caption}`)
   }
   if (block.type === 'button') {
     const url = resolveTrackedUrl(block, content.url, context)
