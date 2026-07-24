@@ -9,6 +9,7 @@ const {
 } = require('./letterBuilder.service')
 
 const DISPATCH_INTERVAL_MS = 60_000
+const STALE_PROCESSING_MINUTES = 15
 const TRACKING_TTL_SECONDS = 365 * 24 * 60 * 60
 const ASSET_TTL_SECONDS = 180 * 24 * 60 * 60
 
@@ -154,12 +155,24 @@ async function assertOutgoingEmailAvailable(db) {
   }
 }
 
-async function sendLetterEmail({ to, subject, html, text, headers = {}, replyTo = '' }) {
+async function sendLetterEmail({
+  to,
+  subject,
+  html,
+  text,
+  headers = {},
+  idempotencyKey = '',
+  replyTo = '',
+}) {
   const config = assertProviderConfigured()
   const resolvedReplyTo = String(replyTo || config.replyTo || '').trim()
   const response = await fetch('https://api.resend.com/emails', {
     method: 'POST',
-    headers: { Authorization: `Bearer ${config.apiKey}`, 'Content-Type': 'application/json' },
+    headers: {
+      Authorization: `Bearer ${config.apiKey}`,
+      'Content-Type': 'application/json',
+      ...(idempotencyKey ? { 'Idempotency-Key': idempotencyKey } : {}),
+    },
     body: JSON.stringify({
       from: config.from,
       to: [to],
@@ -345,6 +358,7 @@ async function sendBroadcastRecipient(db, broadcast, recipient, links) {
       subject,
       html: rendered.html,
       text: rendered.text,
+      idempotencyKey: `pwc-letter-${recipient.id}`,
       replyTo: recipientReplyTo(recipient),
       headers: {
         'List-Unsubscribe': `<${urls.oneClickUnsubscribeUrl}>`,
@@ -379,7 +393,7 @@ async function sendBroadcastRecipient(db, broadcast, recipient, links) {
   }
 }
 
-async function processLetterBroadcast(pool, broadcastId) {
+async function processLetterBroadcast(pool, broadcastId, { alreadyClaimed = false } = {}) {
   assertProviderConfigured()
   await assertOutgoingEmailAvailable(pool)
   const claim = await pool.connect()
@@ -400,14 +414,17 @@ async function processLetterBroadcast(pool, broadcastId) {
     )
     broadcast = result.rows[0]
     if (!broadcast) throw Object.assign(new Error('Broadcast not found.'), { statusCode: 404 })
-    if (!['draft', 'scheduled', 'failed'].includes(broadcast.status)) {
+    const processable = ['draft', 'scheduled', 'failed'].includes(broadcast.status)
+      || (alreadyClaimed && broadcast.status === 'processing')
+    if (!processable) {
       await claim.query('ROLLBACK')
       return broadcast
     }
     const validation = validateLetter({ title: broadcast.title, subject: broadcast.subject, design: broadcast.design })
     if (!validation.ok) throw Object.assign(new Error(validation.errors.join(' ')), { statusCode: 400 })
-    await claim.query(`UPDATE letter_broadcasts SET status = 'processing', started_at = COALESCE(started_at, now()), error_message = NULL, updated_at = now() WHERE id = $1`, [broadcastId])
-    await claim.query(`UPDATE letter_documents SET status = 'sending', updated_at = now() WHERE id = $1`, [broadcast.letter_id])
+    if (broadcast.status !== 'processing') {
+      await claim.query(`UPDATE letter_broadcasts SET status = 'processing', started_at = COALESCE(started_at, now()), error_message = NULL, updated_at = now() WHERE id = $1`, [broadcastId])
+    }
     await claim.query('COMMIT')
   } catch (error) {
     await claim.query('ROLLBACK').catch(() => {})
@@ -436,11 +453,42 @@ async function processLetterBroadcast(pool, broadcastId) {
     `UPDATE letter_broadcasts SET status = $2, completed_at = now(), updated_at = now() WHERE id = $1 RETURNING *`,
     [broadcastId, finalStatus],
   )
-  await pool.query(
-    `UPDATE letter_documents SET status = 'sent', sent_at = now(), updated_at = now() WHERE id = $1`,
-    [broadcast.letter_id],
-  )
   return final.rows[0]
+}
+
+function buildBroadcastPreflight({
+  broadcast,
+  validation = { ok: false, errors: ['Letter validation was unavailable.'], warnings: [] },
+  eligibleRecipients = 0,
+  providerConfigured = false,
+  outgoingEmailAvailable = false,
+} = {}) {
+  const blockers = []
+  const warnings = [...(validation.warnings || [])]
+  if (!broadcast) blockers.push('The prepared broadcast could not be found.')
+  if (broadcast && broadcast.status !== 'draft') blockers.push('Only a prepared draft broadcast can pass final delivery review.')
+  blockers.push(...(validation.errors || []))
+  if (!Number(eligibleRecipients)) blockers.push('No recipients remain eligible after the consent and suppression recheck.')
+  if (!providerConfigured) blockers.push('Newsletter delivery is not configured.')
+  if (!outgoingEmailAvailable) blockers.push('Outgoing email is currently paused or unavailable.')
+  if (broadcast && Number(broadcast.recipient_count || 0) !== Number(eligibleRecipients || 0)) {
+    warnings.push(`The eligible audience changed from ${Number(broadcast.recipient_count || 0)} to ${Number(eligibleRecipients || 0)}. Prepare a fresh snapshot before delivery.`)
+  }
+  const ready = blockers.length === 0
+  return {
+    ready,
+    status: ready ? (warnings.length ? 'ready_with_warnings' : 'ready') : 'blocked',
+    blockers,
+    warnings,
+    checks: {
+      content: Boolean(validation.ok),
+      audience: Number(eligibleRecipients) > 0,
+      provider: Boolean(providerConfigured),
+      outgoingEmail: Boolean(outgoingEmailAvailable),
+      snapshotFresh: Boolean(broadcast) && Number(broadcast.recipient_count || 0) === Number(eligibleRecipients || 0),
+    },
+    recipientCount: Number(eligibleRecipients || 0),
+  }
 }
 
 async function processDueLetterBroadcasts(pool) {
@@ -449,19 +497,50 @@ async function processDueLetterBroadcasts(pool) {
   try {
     const lock = await lockClient.query(`SELECT pg_try_advisory_lock(hashtext('pwc-letter-broadcast-dispatcher')) AS acquired`)
     if (!lock.rows[0]?.acquired) return { processed: 0, skipped: 'dispatcher_busy' }
+    const recovered = await lockClient.query(
+      `
+      UPDATE letter_broadcasts
+      SET status = 'scheduled', started_at = NULL,
+        error_message = 'Recovered automatically after an interrupted delivery worker.',
+        updated_at = now()
+      WHERE status = 'processing'
+        AND updated_at < now() - ($1::int * interval '1 minute')
+        AND EXISTS (
+          SELECT 1 FROM letter_broadcast_recipients lbr
+          WHERE lbr.broadcast_id = letter_broadcasts.id
+            AND lbr.delivery_status IN ('pending', 'failed')
+        )
+      RETURNING id
+      `,
+      [STALE_PROCESSING_MINUTES],
+    )
     const due = await lockClient.query(
-      `SELECT id FROM letter_broadcasts WHERE status = 'scheduled' AND scheduled_at <= now() ORDER BY scheduled_at ASC LIMIT 5`,
+      `
+      UPDATE letter_broadcasts
+      SET status = 'processing', started_at = COALESCE(started_at, now()),
+        error_message = NULL, updated_at = now()
+      WHERE id IN (
+        SELECT id FROM letter_broadcasts
+        WHERE status = 'scheduled' AND scheduled_at <= now()
+        ORDER BY scheduled_at ASC
+        FOR UPDATE SKIP LOCKED
+        LIMIT 5
+      )
+      RETURNING id
+      `,
     )
     let processed = 0
+    let failed = 0
     for (const row of due.rows) {
       try {
-        await processLetterBroadcast(pool, row.id)
+        await processLetterBroadcast(pool, row.id, { alreadyClaimed: true })
         processed += 1
       } catch (error) {
+        failed += 1
         await pool.query(`UPDATE letter_broadcasts SET status = 'failed', error_message = $2, completed_at = now(), updated_at = now() WHERE id = $1`, [row.id, error.message])
       }
     }
-    return { processed }
+    return { processed, failed, recovered: recovered.rowCount }
   } finally {
     await lockClient.query(`SELECT pg_advisory_unlock(hashtext('pwc-letter-broadcast-dispatcher'))`).catch(() => {})
     lockClient.release()
@@ -485,6 +564,7 @@ module.exports = {
   assertOutgoingEmailAvailable,
   assertProviderConfigured,
   audienceFilterSql,
+  buildBroadcastPreflight,
   letterPublicBaseUrl,
   logRecipientEvent,
   normalizeAudienceFilter,
@@ -494,5 +574,6 @@ module.exports = {
   refreshBroadcastAnalytics,
   sendLetterEmail,
   snapshotBroadcastRecipients,
+  STALE_PROCESSING_MINUTES,
   startLetterBroadcastDispatcher,
 }

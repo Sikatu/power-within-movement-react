@@ -1,6 +1,8 @@
 const test = require('node:test')
 const assert = require('node:assert/strict')
 const crypto = require('node:crypto')
+const fs = require('node:fs')
+const path = require('node:path')
 
 const {
   LETTER_BLOCK_TYPES,
@@ -15,9 +17,42 @@ const {
   verifyResendWebhook,
 } = require('../src/services/letterBuilder.service')
 const {
+  STALE_PROCESSING_MINUTES,
   audienceFilterSql,
+  buildBroadcastPreflight,
   normalizeAudienceFilter,
 } = require('../src/services/letterBroadcast.service')
+const {
+  DELIVERY_CHANGE_CUTOFF_MINUTES,
+  assertDeliveryChangeOutsideCutoff,
+  letterCapabilities,
+} = require('../src/services/letterPermissions.service')
+const { buildLetterAnalytics, percentage } = require('../src/services/letterAnalytics.service')
+
+test('Phase 10 analytics use delivered recipients for engagement rates', () => {
+  const analytics = buildLetterAnalytics({
+    sent_count: 100,
+    delivered_count: 80,
+    opened_count: 40,
+    clicked_count: 10,
+    bounced_count: 5,
+    unsubscribed_count: 2,
+  })
+  assert.equal(analytics.deliveryRate, 80)
+  assert.equal(analytics.openRate, 50)
+  assert.equal(analytics.clickRate, 12.5)
+  assert.equal(analytics.clickToOpenRate, 25)
+  assert.equal(analytics.bounceRate, 5)
+  assert.equal(analytics.unsubscribeRate, 2.5)
+  assert.equal(analytics.openTrackingIsEstimate, true)
+})
+
+test('Phase 10 analytics remain finite when provider delivery data is absent', () => {
+  assert.equal(percentage(10, 0), 0)
+  const analytics = buildLetterAnalytics({ sent_count: 20, opened_count: 4, clicked_count: 1 })
+  assert.equal(analytics.openRate, 20)
+  assert.equal(analytics.clickRate, 5)
+})
 
 test('letter builder exposes every Phase 28 content block', () => {
   assert.deepEqual([...LETTER_BLOCK_TYPES], [
@@ -144,4 +179,169 @@ test('audience modes discard stale filters and always preserve delivery eligibil
   assert.match(selected.where, /consent_status = 'granted'/)
   assert.match(selected.where, /newsletter_suppressions/)
   assert.match(selected.where, /ANY\(/)
+})
+
+test('letter validation warns when a selected image has no alternative text', () => {
+  const design = normalizeDesign({
+    blocks: [
+      createLetterBlock('text', { content: { text: 'A complete letter.' } }),
+      createLetterBlock('image', { id: 'hero-image', content: { assetId: 'asset-1', alt: '' } }),
+    ],
+  })
+  const validation = validateLetter({ title: 'July reflection', subject: 'A thoughtful note', design })
+  assert.equal(validation.ok, true)
+  assert.match(validation.warnings.join(' '), /hero-image needs alternative text/i)
+})
+
+test('production renderer includes a mobile stacking rule for two-column letters', () => {
+  const rendered = renderLetter({
+    subject: 'Responsive letter',
+    design: {
+      blocks: [
+        createLetterBlock('two_column', { id: 'responsive-columns', content: { left: 'Left', right: 'Right' } }),
+      ],
+    },
+  })
+  assert.match(rendered.html, /class="pwc-two-column"/)
+  assert.match(rendered.html, /class="pwc-column"/)
+  assert.match(rendered.html, /@media only screen and \(max-width:600px\)/)
+  assert.match(rendered.text, /Left\s+Right/)
+})
+
+test('broadcast preflight blocks unsafe delivery and reports a changed audience snapshot', () => {
+  const preflight = buildBroadcastPreflight({
+    broadcast: { status: 'draft', recipient_count: 12 },
+    validation: { ok: true, errors: [], warnings: ['Image needs alternative text.'] },
+    eligibleRecipients: 10,
+    providerConfigured: true,
+    outgoingEmailAvailable: false,
+  })
+  assert.equal(preflight.ready, false)
+  assert.equal(preflight.status, 'blocked')
+  assert.equal(preflight.checks.snapshotFresh, false)
+  assert.match(preflight.blockers.join(' '), /paused or unavailable/i)
+  assert.match(preflight.warnings.join(' '), /changed from 12 to 10/i)
+})
+
+test('broadcast preflight becomes ready only when every delivery gate passes', () => {
+  const preflight = buildBroadcastPreflight({
+    broadcast: { status: 'draft', recipient_count: 10 },
+    validation: { ok: true, errors: [], warnings: [] },
+    eligibleRecipients: 10,
+    providerConfigured: true,
+    outgoingEmailAvailable: true,
+  })
+  assert.equal(preflight.ready, true)
+  assert.equal(preflight.status, 'ready')
+  assert.deepEqual(preflight.blockers, [])
+  assert.equal(preflight.checks.snapshotFresh, true)
+})
+
+test('existing version 1 letter fixtures remain compatible and normalize deterministically', () => {
+  const fixturePath = path.join(__dirname, 'fixtures', 'letters', 'version-1-letter.json')
+  const fixture = JSON.parse(fs.readFileSync(fixturePath, 'utf8'))
+  const normalized = normalizeDesign(fixture.design)
+
+  assert.equal(fixture.design.version, 1)
+  assert.equal(normalized.version, 1)
+  assert.equal(normalized.blocks.at(-1).type, 'unsubscribe')
+  assert.equal(normalized.blocks.find((block) => block.id === 'fixture-heading').content.text, 'A quieter way forward')
+  assert.deepEqual(normalizeDesign(normalized), normalized)
+})
+
+test('prepared broadcast fixture remains unchanged when its source letter is edited later', () => {
+  const fixturePath = path.join(__dirname, 'fixtures', 'letters', 'version-1-letter.json')
+  const source = JSON.parse(fs.readFileSync(fixturePath, 'utf8'))
+  const preparedSnapshot = structuredClone({
+    title: source.title,
+    subject: source.subject,
+    previewText: source.previewText,
+    design: normalizeDesign(source.design),
+    audienceFilter: source.audienceFilter,
+  })
+
+  source.title = 'A later draft'
+  source.subject = 'A revised subject'
+  source.design.blocks[0].content.text = 'Rewritten after preparation'
+  source.audienceFilter.tag = 'Later segment'
+
+  assert.equal(preparedSnapshot.title, 'July reflection')
+  assert.equal(preparedSnapshot.subject, 'A thoughtful note for {{firstName}}')
+  assert.equal(preparedSnapshot.design.blocks[0].content.text, 'A quieter way forward')
+  assert.equal(preparedSnapshot.audienceFilter.tag, 'Reflection')
+})
+
+test('autosave conflicts, immutable snapshots, and dispatcher recovery risk stay characterized', () => {
+  const routes = fs.readFileSync(path.join(__dirname, '..', 'src', 'routes', 'letterBuilder.routes.js'), 'utf8')
+  const service = fs.readFileSync(path.join(__dirname, '..', 'src', 'services', 'letterBroadcast.service.js'), 'utf8')
+
+  assert.match(routes, /LETTER_REVISION_CONFLICT/)
+  assert.match(routes, /title_snapshot = \$2, subject_snapshot = \$3/)
+  assert.match(routes, /design_snapshot = \$5::jsonb/)
+  assert.match(routes, /requireLetterAction\('recovery'\)/)
+  assert.equal(STALE_PROCESSING_MINUTES, 15)
+  assert.match(service, /FOR UPDATE SKIP LOCKED/)
+  assert.match(service, /status = 'processing'/)
+  assert.match(service, /Recovered automatically after an interrupted delivery worker/)
+  assert.match(service, /Idempotency-Key/)
+  assert.match(service, /pwc-letter-\$\{recipient\.id\}/)
+  assert.match(routes, /retry-failed/)
+  assert.match(routes, /delivery_status = 'pending'/)
+})
+
+test('failed-recipient recovery is bounded and preserves successful deliveries', () => {
+  const routes = fs.readFileSync(path.join(__dirname, '..', 'src', 'routes', 'letterBuilder.routes.js'), 'utf8')
+  const retryRoute = routes.match(/router\.post\('\/broadcasts\/:broadcastId\/retry-failed'[\s\S]+?\n\}\)\n/)?.[0] || ''
+
+  assert.match(retryRoute, /status IN \('failed', 'partial'\)/)
+  assert.match(retryRoute, /delivery_status = 'failed'/)
+  assert.match(retryRoute, /delivery_status = 'pending'/)
+  assert.doesNotMatch(retryRoute, /delivery_status IN \('sent'/)
+  assert.match(retryRoute, /letter_broadcast_retry_queued/)
+})
+
+test('broadcast lifecycle is independent from the editable source letter', () => {
+  const routes = fs.readFileSync(path.join(__dirname, '..', 'src', 'routes', 'letterBuilder.routes.js'), 'utf8')
+  const service = fs.readFileSync(path.join(__dirname, '..', 'src', 'services', 'letterBroadcast.service.js'), 'utf8')
+  const editor = fs.readFileSync(path.join(__dirname, '..', '..', 'src', 'pages', 'admin', 'AdminLetters.jsx'), 'utf8')
+
+  assert.match(routes, /if \(current\.status === 'archived'\)/)
+  assert.match(routes, /if \(letter\.status === 'archived'\)/)
+  assert.doesNotMatch(routes, /UPDATE letter_documents SET status = 'scheduled'/)
+  assert.doesNotMatch(routes, /UPDATE letter_documents SET status = 'cancelled'/)
+  assert.doesNotMatch(service, /UPDATE letter_documents SET status = 'sending'/)
+  assert.doesNotMatch(service, /UPDATE letter_documents SET status = 'sent'/)
+  assert.match(editor, /const readOnly = working\?\.status === 'archived'/)
+})
+
+test('letter delivery capabilities separate authoring from live delivery authority', () => {
+  const staff = letterCapabilities(
+    { role: 'staff' },
+    { permissions: { communications: 'manage' } },
+  )
+  assert.equal(staff.edit, true)
+  assert.equal(staff.test, true)
+  assert.equal(staff.schedule, false)
+  assert.equal(staff.send, false)
+  assert.equal(staff.cancel, false)
+  assert.equal(staff.retry, false)
+
+  const owner = letterCapabilities({ role: 'owner' })
+  assert.equal(owner.send, true)
+  assert.equal(owner.cancel, true)
+  assert.equal(owner.recovery, false)
+  assert.equal(letterCapabilities({ role: 'developer' }).recovery, true)
+})
+
+test('scheduled delivery changes close five minutes before dispatch', () => {
+  assert.equal(DELIVERY_CHANGE_CUTOFF_MINUTES, 5)
+  const now = new Date('2026-07-24T10:00:00.000Z')
+  assert.doesNotThrow(() => assertDeliveryChangeOutsideCutoff({
+    status: 'scheduled',
+    scheduled_at: '2026-07-24T10:06:00.000Z',
+  }, now))
+  assert.throws(() => assertDeliveryChangeOutsideCutoff({
+    status: 'scheduled',
+    scheduled_at: '2026-07-24T10:04:59.000Z',
+  }, now), (error) => error.code === 'LETTER_DELIVERY_CUTOFF_ACTIVE' && error.statusCode === 409)
 })

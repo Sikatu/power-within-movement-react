@@ -1,6 +1,8 @@
 import { readFileSync } from 'node:fs'
 
-const lettersSource = readFileSync('src/pages/admin/AdminLetters.jsx', 'utf8')
+const lettersSource =
+  readFileSync('src/pages/admin/AdminLetters.jsx', 'utf8')
+  + readFileSync('src/components/admin/letters/LettersWorkspace.jsx', 'utf8')
 const audienceSource = readFileSync('src/pages/admin/AdminAudience.jsx', 'utf8')
 const sessionChangesSource = readFileSync('src/pages/admin/AdminSessionChangeRequests.jsx', 'utf8')
 const stylesSource = readFileSync('src/pages/admin/AdminFreshUI.css', 'utf8')

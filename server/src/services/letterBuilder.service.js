@@ -174,6 +174,9 @@ function validateLetter({ title, subject, design }) {
     if (['image', 'resource'].includes(block.type) && !block.content.assetId) {
       warnings.push(`${block.type === 'image' ? 'Image' : 'Resource'} block ${block.id} does not have an Asset Vault selection.`)
     }
+    if (block.type === 'image' && block.content.assetId && !String(block.content.alt || '').trim()) {
+      warnings.push(`Image block ${block.id} needs alternative text for accessibility.`)
+    }
     if (['button', 'video_preview'].includes(block.type) && !safeUrl(block.content.url)) {
       warnings.push(`${block.type === 'button' ? 'Button' : 'Video'} block ${block.id} needs a safe destination URL.`)
     }
@@ -237,7 +240,7 @@ function renderBlock(block, context) {
     return `<tr><td data-letter-block="${escapeAttribute(block.id)}" height="${block.settings.height}" style="height:${block.settings.height}px;font-size:0;line-height:0;">&nbsp;</td></tr>`
   }
   if (block.type === 'two_column') {
-    return blockWrapper(block, `<table role="presentation" width="100%" cellspacing="0" cellpadding="0"><tr><td width="50%" valign="top" style="padding-right:${block.settings.gap / 2}px;color:${color};font-family:${bodyFont};font-size:15px;line-height:1.65;">${paragraphHtml(personalize(content.left, variables))}</td><td width="50%" valign="top" style="padding-left:${block.settings.gap / 2}px;color:${color};font-family:${bodyFont};font-size:15px;line-height:1.65;">${paragraphHtml(personalize(content.right, variables))}</td></tr></table>`)
+    return blockWrapper(block, `<table class="pwc-two-column" role="presentation" width="100%" cellspacing="0" cellpadding="0"><tr><td class="pwc-column" width="50%" valign="top" style="padding-right:${block.settings.gap / 2}px;color:${color};font-family:${bodyFont};font-size:15px;line-height:1.65;">${paragraphHtml(personalize(content.left, variables))}</td><td class="pwc-column" width="50%" valign="top" style="padding-left:${block.settings.gap / 2}px;color:${color};font-family:${bodyFont};font-size:15px;line-height:1.65;">${paragraphHtml(personalize(content.right, variables))}</td></tr></table>`)
   }
   if (block.type === 'quote') {
     const attribution = content.attribution ? `<p style="margin:12px 0 0;color:${muted};font-family:${bodyFont};font-size:12px;letter-spacing:.08em;text-transform:uppercase;">${escapeHtml(content.attribution)}</p>` : ''
@@ -274,7 +277,7 @@ function renderLetter({ design, subject, previewText = '', variables = {}, unsub
   const settings = normalized.settings
   const rows = normalized.blocks.map((block) => renderBlock(block, { settings, variables, unsubscribeUrl, trackingUrls, assetUrl })).join('')
   const pixel = openPixelUrl ? `<img src="${escapeAttribute(openPixelUrl)}" width="1" height="1" alt="" style="display:block;width:1px;height:1px;border:0;overflow:hidden;">` : ''
-  const html = `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${escapeHtml(personalize(subject, variables))}</title></head><body style="margin:0;padding:0;background:${settings.backgroundColor};"><div style="display:none;max-height:0;overflow:hidden;opacity:0;">${escapeHtml(personalize(previewText, variables))}</div><table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="width:100%;background:${settings.backgroundColor};"><tr><td align="center" style="padding:28px 12px;"><table role="presentation" width="${settings.contentWidth}" cellspacing="0" cellpadding="0" style="width:100%;max-width:${settings.contentWidth}px;background:${settings.contentColor};border:1px solid #eadbd0;border-radius:24px;overflow:hidden;">${rows}</table><p style="margin:16px 0 0;color:${settings.mutedColor};font-family:${settings.bodyFontFamily};font-size:11px;">Power Within Collective</p></td></tr></table>${pixel}</body></html>`
+  const html = `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${escapeHtml(personalize(subject, variables))}</title><style>@media only screen and (max-width:600px){.pwc-two-column,.pwc-two-column tbody,.pwc-two-column tr,.pwc-column{display:block!important;width:100%!important}.pwc-column{box-sizing:border-box!important;padding:0 0 16px!important}.pwc-column:last-child{padding-bottom:0!important}}</style></head><body style="margin:0;padding:0;background:${settings.backgroundColor};"><div style="display:none;max-height:0;overflow:hidden;opacity:0;">${escapeHtml(personalize(previewText, variables))}</div><table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="width:100%;background:${settings.backgroundColor};"><tr><td align="center" style="padding:28px 12px;"><table role="presentation" width="${settings.contentWidth}" cellspacing="0" cellpadding="0" style="width:100%;max-width:${settings.contentWidth}px;background:${settings.contentColor};border:1px solid #eadbd0;border-radius:24px;overflow:hidden;">${rows}</table><p style="margin:16px 0 0;color:${settings.mutedColor};font-family:${settings.bodyFontFamily};font-size:11px;">Power Within Collective</p></td></tr></table>${pixel}</body></html>`
   const text = normalized.blocks.map((block) => {
     const content = block.content || {}
     if (['heading', 'text', 'greeting', 'quote', 'footer'].includes(block.type)) return personalize(content.text, variables)

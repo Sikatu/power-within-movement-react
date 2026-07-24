@@ -5,6 +5,12 @@ const { pool } = require('../db/pool')
 const { requireAuth, requireRole } = require('../middleware/auth.middleware')
 const { enforceTeamPermission } = require('../services/teamManagement.service')
 const {
+  DELIVERY_CHANGE_CUTOFF_MINUTES,
+  assertDeliveryChangeOutsideCutoff,
+  letterCapabilities,
+  requireLetterAction,
+} = require('../services/letterPermissions.service')
+const {
   createLetterBlock,
   normalizeDesign,
   renderLetter,
@@ -13,6 +19,7 @@ const {
 const {
   assertOutgoingEmailAvailable,
   assertProviderConfigured,
+  buildBroadcastPreflight,
   letterPublicBaseUrl,
   normalizeAudienceFilter,
   previewLetterAudience,
@@ -50,6 +57,12 @@ const saveLetterSchema = z.object({
   audienceFilter: audienceFilterSchema.optional(),
   baseRevision: z.number().int().min(0).optional(),
   saveReason: z.enum(['autosave', 'manual']).optional().default('autosave'),
+})
+const renderPreviewSchema = z.object({
+  title: z.string().trim().max(240).optional().default('Preview letter'),
+  subject: z.string().trim().max(250).optional().default(''),
+  previewText: z.string().trim().max(300).optional().default(''),
+  design: z.unknown(),
 })
 const templateSchema = z.object({
   name: z.string().trim().min(1).max(180),
@@ -139,7 +152,15 @@ router.get('/overview', async (req, res, next) => {
       pool.query(`SELECT * FROM letter_templates WHERE status = 'active' ORDER BY updated_at DESC LIMIT 20`),
       pool.query(`SELECT lb.*, COALESCE(NULLIF(lb.title_snapshot, ''), ld.title) AS title, COALESCE(NULLIF(lb.subject_snapshot, ''), ld.subject) AS subject FROM letter_broadcasts lb JOIN letter_documents ld ON ld.id = lb.letter_id ORDER BY lb.created_at DESC LIMIT 20`),
     ])
-    res.json({ ok: true, metrics: metrics.rows[0] || {}, letters: letters.rows, templates: templates.rows, broadcasts: broadcasts.rows })
+    res.json({
+      ok: true,
+      metrics: metrics.rows[0] || {},
+      letters: letters.rows,
+      templates: templates.rows,
+      broadcasts: broadcasts.rows,
+      capabilities: letterCapabilities(req.user, req.teamAccess),
+      deliveryPolicy: { changeCutoffMinutes: DELIVERY_CHANGE_CUTOFF_MINUTES },
+    })
   } catch (error) {
     next(error)
   }
@@ -221,9 +242,9 @@ router.patch('/letters/:letterId', async (req, res, next) => {
       await db.query('ROLLBACK')
       return res.status(404).json({ ok: false, error: 'Letter not found.' })
     }
-    if (['scheduled', 'sent', 'sending', 'archived'].includes(current.status)) {
+    if (current.status === 'archived') {
       await db.query('ROLLBACK')
-      return res.status(409).json({ ok: false, error: 'Scheduled, sending, sent, or archived letters are read-only. Cancel a schedule or duplicate the letter to continue editing.' })
+      return res.status(409).json({ ok: false, error: 'Archived letters are read-only. Restore or duplicate the letter to continue editing.' })
     }
     if (parsed.data.baseRevision !== undefined && parsed.data.baseRevision !== current.autosave_revision) {
       await db.query('ROLLBACK')
@@ -303,9 +324,9 @@ router.post('/letters/:letterId/versions/:versionId/restore', async (req, res, n
       await db.query('ROLLBACK')
       return res.status(404).json({ ok: false, error: 'Letter version not found.' })
     }
-    if (['sent', 'sending', 'archived'].includes(current.status)) {
+    if (current.status === 'archived') {
       await db.query('ROLLBACK')
-      return res.status(409).json({ ok: false, error: 'This letter is read-only.' })
+      return res.status(409).json({ ok: false, error: 'Archived letters are read-only.' })
     }
     const revision = current.autosave_revision + 1
     const snapshot = version.snapshot
@@ -345,7 +366,21 @@ router.post('/letters/:letterId/preview', async (req, res, next) => {
   }
 })
 
-router.post('/letters/:letterId/test-send', async (req, res, _next) => {
+router.post('/render-preview', async (req, res) => {
+  const parsed = renderPreviewSchema.safeParse(req.body)
+  if (!parsed.success) return res.status(400).json({ ok: false, error: issue(parsed, 'The letter preview is invalid.') })
+  const validation = validateLetter(parsed.data)
+  const rendered = renderLetter({
+    design: validation.design,
+    subject: parsed.data.subject,
+    previewText: parsed.data.previewText,
+    variables: { firstName: 'Kim', lastName: '', email: 'preview@powerwithinmovement.com' },
+    unsubscribeUrl: '#unsubscribe-preview',
+  })
+  res.json({ ok: true, validation, html: rendered.html, text: rendered.text })
+})
+
+router.post('/letters/:letterId/test-send', requireLetterAction('test'), async (req, res, _next) => {
   if (unavailable(res)) return
   const parsed = testSendSchema.safeParse(req.body)
   if (!parsed.success) return res.status(400).json({ ok: false, error: issue(parsed, 'A valid test email is required.') })
@@ -439,9 +474,9 @@ router.post('/letters/:letterId/broadcasts/prepare', async (req, res, next) => {
       await db.query('ROLLBACK')
       return res.status(404).json({ ok: false, error: 'Letter not found.' })
     }
-    if (!['draft', 'cancelled'].includes(letter.status)) {
+    if (letter.status === 'archived') {
       await db.query('ROLLBACK')
-      return res.status(409).json({ ok: false, error: 'Only draft letters can choose a new broadcast audience.' })
+      return res.status(409).json({ ok: false, error: 'Archived letters cannot prepare a broadcast. Restore or duplicate the letter first.' })
     }
     const validation = validateLetter({ title: letter.title, subject: letter.subject, design: letter.design })
     if (!validation.ok) {
@@ -506,27 +541,66 @@ router.get('/broadcasts/:broadcastId', async (req, res, next) => {
   }
 })
 
-router.post('/broadcasts/:broadcastId/schedule', async (req, res, _next) => {
+router.get('/broadcasts/:broadcastId/preflight', async (req, res, next) => {
+  if (unavailable(res)) return
+  try {
+    const result = await pool.query(
+      `SELECT lb.*, ld.title AS source_title
+       FROM letter_broadcasts lb
+       JOIN letter_documents ld ON ld.id = lb.letter_id
+       WHERE lb.id = $1 LIMIT 1`,
+      [req.params.broadcastId],
+    )
+    const broadcast = result.rows[0]
+    if (!broadcast) return res.status(404).json({ ok: false, error: 'Broadcast not found.' })
+    const validation = validateLetter({
+      title: broadcast.title_snapshot || broadcast.source_title,
+      subject: broadcast.subject_snapshot,
+      design: broadcast.design_snapshot,
+    })
+    const audience = await previewLetterAudience(pool, broadcast.audience_snapshot)
+    let providerConfigured = true
+    let outgoingEmailAvailable = true
+    try { assertProviderConfigured() } catch { providerConfigured = false }
+    try { await assertOutgoingEmailAvailable(pool) } catch { outgoingEmailAvailable = false }
+    const preflight = buildBroadcastPreflight({
+      broadcast,
+      validation,
+      eligibleRecipients: audience.eligible,
+      providerConfigured,
+      outgoingEmailAvailable,
+    })
+    res.json({ ok: true, preflight })
+  } catch (error) {
+    next(error)
+  }
+})
+
+router.post('/broadcasts/:broadcastId/schedule', requireLetterAction('schedule'), async (req, res, _next) => {
   if (unavailable(res)) return
   const parsed = scheduleSchema.safeParse(req.body)
   if (!parsed.success) return res.status(400).json({ ok: false, error: issue(parsed, 'A valid schedule time is required.') })
   try {
     assertProviderConfigured()
+    await assertOutgoingEmailAvailable(pool)
+    const currentResult = await pool.query(`SELECT * FROM letter_broadcasts WHERE id = $1 LIMIT 1`, [req.params.broadcastId])
+    const current = currentResult.rows[0]
+    if (!current) return res.status(404).json({ ok: false, error: 'Broadcast not found.' })
+    assertDeliveryChangeOutsideCutoff(current)
     const scheduledAt = new Date(parsed.data.scheduledAt)
-    if (scheduledAt <= new Date(Date.now() + 60_000)) return res.status(400).json({ ok: false, error: 'Schedule the broadcast at least one minute in the future.' })
+    if (scheduledAt <= new Date(Date.now() + DELIVERY_CHANGE_CUTOFF_MINUTES * 60_000)) return res.status(400).json({ ok: false, error: `Schedule the broadcast at least ${DELIVERY_CHANGE_CUTOFF_MINUTES} minutes in the future.` })
     if (scheduledAt > new Date(Date.now() + 366 * 24 * 60 * 60 * 1000)) return res.status(400).json({ ok: false, error: 'Broadcasts may be scheduled up to one year ahead.' })
-    const result = await pool.query(`UPDATE letter_broadcasts SET status = 'scheduled', scheduled_at = $2, updated_at = now() WHERE id = $1 AND status = 'draft' RETURNING *`, [req.params.broadcastId, scheduledAt.toISOString()])
+    const result = await pool.query(`UPDATE letter_broadcasts SET status = 'scheduled', scheduled_at = $2, completed_at = NULL, error_message = NULL, updated_at = now() WHERE id = $1 AND status IN ('draft', 'scheduled', 'failed') RETURNING *`, [req.params.broadcastId, scheduledAt.toISOString()])
     const broadcast = result.rows[0]
-    if (!broadcast) return res.status(409).json({ ok: false, error: 'Only prepared draft broadcasts can be scheduled.' })
-    await pool.query(`UPDATE letter_documents SET status = 'scheduled', scheduled_at = $2, updated_at = now() WHERE id = $1`, [broadcast.letter_id, scheduledAt.toISOString()])
-    await writeAudit(pool, req, 'letter_broadcast_scheduled', 'letter_broadcasts', broadcast.id, { scheduledAt: broadcast.scheduled_at, recipientCount: broadcast.recipient_count })
+    if (!broadcast) return res.status(409).json({ ok: false, error: 'Only prepared, scheduled, or failed broadcasts can be scheduled.' })
+    await writeAudit(pool, req, 'letter_broadcast_scheduled', 'letter_broadcasts', broadcast.id, { fromStatus: current.status, toStatus: broadcast.status, scheduledAt: broadcast.scheduled_at, recipientCount: broadcast.recipient_count })
     res.json({ ok: true, broadcast })
   } catch (error) {
     res.status(error.statusCode || 500).json({ ok: false, code: error.code, error: error.message })
   }
 })
 
-router.post('/broadcasts/:broadcastId/send-now', async (req, res) => {
+router.post('/broadcasts/:broadcastId/send-now', requireLetterAction('send'), async (req, res) => {
   if (unavailable(res)) return
   try {
     const broadcast = await processLetterBroadcast(pool, req.params.broadcastId)
@@ -537,21 +611,61 @@ router.post('/broadcasts/:broadcastId/send-now', async (req, res) => {
   }
 })
 
-router.post('/broadcasts/:broadcastId/cancel', async (req, res, next) => {
+router.post('/broadcasts/:broadcastId/cancel', requireLetterAction('cancel'), async (req, res, next) => {
   if (unavailable(res)) return
   try {
+    const currentResult = await pool.query(`SELECT * FROM letter_broadcasts WHERE id = $1 LIMIT 1`, [req.params.broadcastId])
+    const current = currentResult.rows[0]
+    if (!current) return res.status(404).json({ ok: false, error: 'Broadcast not found.' })
+    assertDeliveryChangeOutsideCutoff(current)
     const result = await pool.query(`UPDATE letter_broadcasts SET status = 'cancelled', updated_at = now() WHERE id = $1 AND status IN ('draft', 'scheduled', 'failed') RETURNING *`, [req.params.broadcastId])
     const broadcast = result.rows[0]
     if (!broadcast) return res.status(409).json({ ok: false, error: 'Only draft, scheduled, or failed broadcasts can be cancelled.' })
-    await pool.query(`UPDATE letter_documents SET status = 'cancelled', scheduled_at = NULL, updated_at = now() WHERE id = $1`, [broadcast.letter_id])
-    await writeAudit(pool, req, 'letter_broadcast_cancelled', 'letter_broadcasts', broadcast.id, { letterId: broadcast.letter_id })
+    await writeAudit(pool, req, 'letter_broadcast_cancelled', 'letter_broadcasts', broadcast.id, { letterId: broadcast.letter_id, fromStatus: current.status, toStatus: broadcast.status })
     res.json({ ok: true, broadcast })
   } catch (error) {
     next(error)
   }
 })
 
-router.post('/process-due', async (req, res) => {
+router.post('/broadcasts/:broadcastId/retry-failed', requireLetterAction('retry'), async (req, res, next) => {
+  if (unavailable(res)) return
+  const db = await pool.connect()
+  try {
+    await db.query('BEGIN')
+    const broadcastResult = await db.query(
+      `SELECT * FROM letter_broadcasts WHERE id = $1 AND status IN ('failed', 'partial') FOR UPDATE`,
+      [req.params.broadcastId],
+    )
+    const broadcast = broadcastResult.rows[0]
+    if (!broadcast) {
+      await db.query('ROLLBACK')
+      return res.status(409).json({ ok: false, error: 'Only failed or partially delivered broadcasts can retry failed recipients.' })
+    }
+    const recipients = await db.query(
+      `UPDATE letter_broadcast_recipients SET delivery_status = 'pending', error_message = NULL, updated_at = now() WHERE broadcast_id = $1 AND delivery_status = 'failed' RETURNING id`,
+      [broadcast.id],
+    )
+    if (!recipients.rowCount) {
+      await db.query('ROLLBACK')
+      return res.status(409).json({ ok: false, error: 'This broadcast has no failed recipients to retry.' })
+    }
+    const updated = await db.query(
+      `UPDATE letter_broadcasts SET status = 'scheduled', scheduled_at = now(), completed_at = NULL, error_message = NULL, updated_at = now() WHERE id = $1 RETURNING *`,
+      [broadcast.id],
+    )
+    await writeAudit(db, req, 'letter_broadcast_retry_queued', 'letter_broadcasts', broadcast.id, { failedRecipients: recipients.rowCount })
+    await db.query('COMMIT')
+    res.json({ ok: true, broadcast: updated.rows[0], retryCount: recipients.rowCount })
+  } catch (error) {
+    await db.query('ROLLBACK').catch(() => {})
+    next(error)
+  } finally {
+    db.release()
+  }
+})
+
+router.post('/process-due', requireLetterAction('recovery'), async (req, res) => {
   if (unavailable(res)) return
   try {
     const result = await processDueLetterBroadcasts(pool)

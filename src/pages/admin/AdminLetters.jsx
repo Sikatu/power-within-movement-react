@@ -1,15 +1,21 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { Link, useSearchParams } from 'react-router-dom'
+import { useSearchParams } from 'react-router-dom'
 import AdminFrame from '../../components/admin/AdminFrame.jsx'
 import { useAdminConfirm } from '../../components/admin/AdminConfirmContext.js'
-import LetterBlockSettings from '../../components/admin/LetterBlockSettings.jsx'
-import LetterCanvas from '../../components/admin/LetterCanvas.jsx'
+import {
+  BroadcastAnalytics,
+  DeliveryQueue,
+  LetterEditor,
+  LettersLibrary,
+  LettersWorkspace,
+} from '../../components/admin/letters/LettersWorkspace.jsx'
 import {
   cancelLetterBroadcast,
   createLetter,
   duplicateLetter,
   getLetter,
   getLetterBroadcast,
+  getLetterBroadcastPreflight,
   getLetterBroadcastExportUrl,
   getLetterBuilderOverview,
   getLetterVersions,
@@ -17,7 +23,9 @@ import {
   getNewsletterAudienceSummary,
   prepareLetterBroadcast,
   previewLetterAudience,
+  renderLetterPreview,
   processDueLetterBroadcasts,
+  retryFailedLetterBroadcast,
   restoreLetterVersion,
   saveLetter,
   saveLetterAsTemplate,
@@ -25,12 +33,6 @@ import {
   sendLetterBroadcastNow,
   sendLetterTest,
 } from '../../lib/nativeApi.js'
-
-const workspaceTabs = [
-  ['letters', 'Letters'],
-  ['delivery', 'Delivery'],
-  ['results', 'Results'],
-]
 
 const blockPalette = [
   ['heading', 'Heading', 'H'],
@@ -114,26 +116,40 @@ function clone(value) {
   return JSON.parse(JSON.stringify(value))
 }
 
+function readCachedAdminUser() {
+  try {
+    return JSON.parse(window.sessionStorage.getItem('pwc_admin_user') || 'null')
+  } catch {
+    return null
+  }
+}
+
 export default function AdminLetters() {
   const requestConfirm = useAdminConfirm()
   const [searchParams] = useSearchParams()
+  const [adminUser] = useState(readCachedAdminUser)
   const [activeTab, setActiveTab] = useState('letters')
   const [libraryMode, setLibraryMode] = useState('drafts')
   const [creatingLetter, setCreatingLetter] = useState(false)
   const [deliveryView, setDeliveryView] = useState('scheduled')
-  const [overview, setOverview] = useState({ metrics: {}, letters: [], templates: [], broadcasts: [] })
+  const [overview, setOverview] = useState({ metrics: {}, letters: [], templates: [], broadcasts: [], capabilities: {}, deliveryPolicy: {} })
   const [audience, setAudience] = useState({ metrics: {}, tags: [], segments: [], sources: [] })
   const [audienceMembers, setAudienceMembers] = useState([])
   const [working, setWorking] = useState(null)
   const [selectedBlockId, setSelectedBlockId] = useState('')
   const [versions, setVersions] = useState([])
   const [selectedBroadcast, setSelectedBroadcast] = useState(null)
+  const [compareBroadcastId, setCompareBroadcastId] = useState('')
   const [newLetter, setNewLetter] = useState({ title: '', templateId: '' })
-  const [previewMode, setPreviewMode] = useState('desktop')
+  const [previewMode, setPreviewMode] = useState('edit')
+  const [renderedPreview, setRenderedPreview] = useState({ html: '', text: '' })
+  const [previewLoading, setPreviewLoading] = useState(false)
+  const [previewError, setPreviewError] = useState('')
   const [flowStep, setFlowStep] = useState('design')
   const [audienceFilter, setAudienceFilter] = useState(initialAudienceFilter)
   const [audiencePreview, setAudiencePreview] = useState(0)
   const [preparedBroadcast, setPreparedBroadcast] = useState(null)
+  const [preflight, setPreflight] = useState(null)
   const [testEmail, setTestEmail] = useState('')
   const [scheduleAt, setScheduleAt] = useState('')
   const [templateName, setTemplateName] = useState('')
@@ -182,11 +198,41 @@ export default function AdminLetters() {
     if (audiencePreviewTimerRef.current) window.clearTimeout(audiencePreviewTimerRef.current)
   }, [])
 
+  useEffect(() => {
+    if (!working || previewMode === 'edit') return undefined
+    let active = true
+    const timer = window.setTimeout(async () => {
+      if (active) setPreviewLoading(true)
+      try {
+        const response = await renderLetterPreview({
+          title: working.title,
+          subject: working.subject || '',
+          previewText: working.preview_text || '',
+          design: working.design,
+        })
+        if (active) {
+          setRenderedPreview({ html: response.html || '', text: response.text || '' })
+          setPreviewError('')
+        }
+      } catch (previewFailure) {
+        if (active) setPreviewError(previewFailure.message || 'The production preview could not be rendered.')
+      } finally {
+        if (active) setPreviewLoading(false)
+      }
+    }, 300)
+    return () => {
+      active = false
+      window.clearTimeout(timer)
+    }
+  }, [previewMode, working])
+
   const selectedBlock = useMemo(() => working?.design?.blocks?.find((block) => block.id === selectedBlockId) || null, [selectedBlockId, working])
   const metrics = overview.metrics || {}
+  const capabilities = overview.capabilities || {}
   const scheduledBroadcasts = (overview.broadcasts || []).filter((broadcast) => ['scheduled', 'processing', 'failed'].includes(broadcast.status))
   const sentBroadcasts = (overview.broadcasts || []).filter((broadcast) => ['sent', 'partial'].includes(broadcast.status))
-  const readOnly = ['scheduled', 'sent', 'sending', 'archived'].includes(working?.status)
+  const compareBroadcast = sentBroadcasts.find((broadcast) => broadcast.id === compareBroadcastId) || null
+  const readOnly = working?.status === 'archived' || capabilities.edit === false
 
   const openLetter = useCallback(async (letterId) => {
     setBusy('open-letter')
@@ -291,6 +337,15 @@ export default function AdminLetters() {
     const next = [...blocks]
     next.splice(requiredIndex >= 0 ? requiredIndex : next.length, 0, block)
     updateDesign({ ...working.design, blocks: next })
+    setSelectedBlockId(block.id)
+  }
+
+  function insertBlock(index, type = 'text') {
+    const blocks = [...(working?.design?.blocks || [])]
+    const block = makeBlock(type)
+    const safeIndex = Math.max(0, Math.min(Number(index) || 0, Math.max(0, blocks.length - 1)))
+    blocks.splice(safeIndex, 0, block)
+    updateDesign({ ...working.design, blocks })
     setSelectedBlockId(block.id)
   }
 
@@ -417,6 +472,8 @@ export default function AdminLetters() {
     try {
       const response = await prepareLetterBroadcast(working.id, audienceFilter)
       setPreparedBroadcast(response.broadcast)
+      const preflightResponse = await getLetterBroadcastPreflight(response.broadcast.id)
+      setPreflight(preflightResponse.preflight)
       setAudiencePreview(response.broadcast.recipient_count || 0)
       setFlowStep('review')
       setNotice(`${response.broadcast.recipient_count} eligible recipients locked into the review snapshot.`)
@@ -449,6 +506,11 @@ export default function AdminLetters() {
     setBusy('schedule')
     setError('')
     try {
+      const preflightResponse = await getLetterBroadcastPreflight(preparedBroadcast.id)
+      setPreflight(preflightResponse.preflight)
+      if (!preflightResponse.preflight.ready) {
+        throw new Error(preflightResponse.preflight.blockers.join(' '))
+      }
       const response = await scheduleLetterBroadcast(preparedBroadcast.id, new Date(scheduleAt).toISOString())
       setPreparedBroadcast(response.broadcast)
       setNotice(`Broadcast scheduled for ${formatDate(response.broadcast.scheduled_at)}.`)
@@ -465,6 +527,17 @@ export default function AdminLetters() {
 
   async function handleSendNow() {
     if (!preparedBroadcast) return
+    try {
+      const preflightResponse = await getLetterBroadcastPreflight(preparedBroadcast.id)
+      setPreflight(preflightResponse.preflight)
+      if (!preflightResponse.preflight.ready) {
+        setError(preflightResponse.preflight.blockers.join(' '))
+        return
+      }
+    } catch (preflightError) {
+      setError(preflightError.message || 'Final delivery review could not be completed.')
+      return
+    }
     const accepted = await requestConfirm({
       title: `Send to ${preparedBroadcast.recipient_count} recipients now?`,
       message: 'Every recipient will be checked again for current consent and suppression immediately before delivery. Sending cannot be undone.',
@@ -538,7 +611,7 @@ export default function AdminLetters() {
   }
 
   async function handleCancelBroadcast(broadcast) {
-    const accepted = await requestConfirm({ title: 'Cancel this scheduled broadcast?', message: 'No recipients will be sent this broadcast. The letter can be duplicated into a new draft afterward.', confirmLabel: 'Cancel broadcast', tone: 'danger' })
+    const accepted = await requestConfirm({ title: 'Cancel this scheduled broadcast?', message: 'No recipients will be sent this broadcast. The original letter remains available to edit or use for another broadcast.', confirmLabel: 'Cancel broadcast', tone: 'danger' })
     if (!accepted) return
     try {
       await cancelLetterBroadcast(broadcast.id)
@@ -553,7 +626,12 @@ export default function AdminLetters() {
     setBusy('process-due')
     try {
       const response = await processDueLetterBroadcasts()
-      setNotice(`${response.processed || 0} scheduled broadcast${response.processed === 1 ? '' : 's'} processed.`)
+      const details = [
+        `${response.processed || 0} processed`,
+        `${response.recovered || 0} recovered`,
+        `${response.failed || 0} failed`,
+      ]
+      setNotice(`Delivery worker check complete: ${details.join(', ')}.`)
       await loadWorkspace({ preserveMessages: true })
     } catch (processError) {
       setError(processError.message || 'Scheduled broadcasts could not be processed.')
@@ -562,8 +640,27 @@ export default function AdminLetters() {
     }
   }
 
+  async function handleRetryFailedBroadcast(broadcast) {
+    const accepted = await requestConfirm({
+      title: 'Retry failed recipients?',
+      message: 'Only recipients whose earlier attempt failed will be queued. Already sent, skipped, unsubscribed, or suppressed recipients will not be sent again.',
+      confirmLabel: 'Queue safe retry',
+    })
+    if (!accepted) return
+    setBusy(`retry-${broadcast.id}`)
+    try {
+      const response = await retryFailedLetterBroadcast(broadcast.id)
+      setNotice(`${response.retryCount || 0} failed recipient${response.retryCount === 1 ? '' : 's'} queued for a safe retry.`)
+      await loadWorkspace({ preserveMessages: true })
+    } catch (retryError) {
+      setError(retryError.message || 'Failed recipients could not be queued for retry.')
+    } finally {
+      setBusy('')
+    }
+  }
+
   function renderBroadcastList(items, emptyMessage, allowCancel = false) {
-    return <div className="pwc-letters28-broadcast-list">{items.length ? items.map((broadcast) => <article key={broadcast.id}><div><span className={`pwc-letters28-status is-${broadcast.status}`}>{formatStatus(broadcast.status)}</span><h3>{broadcast.title}</h3><p>{broadcast.subject || 'No subject'} · {broadcast.recipient_count} recipients</p></div><dl><div><dt>Scheduled</dt><dd>{formatDate(broadcast.scheduled_at)}</dd></div><div><dt>Sent</dt><dd>{broadcast.sent_count || 0}</dd></div></dl><footer><button type="button" onClick={() => openBroadcast(broadcast.id)}>View details</button>{allowCancel && <button type="button" className="is-danger" onClick={() => handleCancelBroadcast(broadcast)}>Cancel</button>}</footer></article>) : <p className="pwc-letters28-empty">{emptyMessage}</p>}</div>
+    return <div className="pwc-letters28-broadcast-list">{items.length ? items.map((broadcast) => <article key={broadcast.id}><div><span className={`pwc-letters28-status is-${broadcast.status}`}>{formatStatus(broadcast.status)}</span><h3>{broadcast.title}</h3><p>{broadcast.subject || 'No subject'} · {broadcast.recipient_count} recipients</p>{broadcast.error_message && <small role="status">{broadcast.error_message}</small>}</div><dl><div><dt>Scheduled</dt><dd>{formatDate(broadcast.scheduled_at)}</dd></div><div><dt>Sent</dt><dd>{broadcast.sent_count || 0}</dd></div><div><dt>Failed</dt><dd>{broadcast.failed_count || 0}</dd></div></dl><footer><button type="button" onClick={() => openBroadcast(broadcast.id)}>View details</button>{capabilities.retry !== false && Number(broadcast.failed_count || 0) > 0 && ['failed', 'partial'].includes(broadcast.status) && <button type="button" onClick={() => handleRetryFailedBroadcast(broadcast)} disabled={busy === `retry-${broadcast.id}`}>{busy === `retry-${broadcast.id}` ? 'Queuing…' : 'Retry failures'}</button>}{capabilities.cancel !== false && allowCancel && ['draft', 'scheduled', 'failed'].includes(broadcast.status) && <button type="button" className="is-danger" onClick={() => handleCancelBroadcast(broadcast)}>Cancel</button>}</footer></article>) : <p className="pwc-letters28-empty">{emptyMessage}</p>}</div>
   }
 
   function renderFlowPanel() {
@@ -571,112 +668,93 @@ export default function AdminLetters() {
       return <div className="pwc-letters28-recipient-panel"><header><p className="admin-eyebrow">Choose Recipients</p><h2>Consent-aware audience</h2></header><label><span>Selection mode</span><select value={audienceFilter.mode} onChange={(event) => changeAudienceFilter({ mode: event.target.value, subscriberIds: [] })}><option value="all">All eligible subscribers</option><option value="filtered">Filtered segment</option><option value="selected">Selected people</option></select></label>{audienceFilter.mode === 'filtered' && <><label><span>Tag</span><select value={audienceFilter.tag} onChange={(event) => changeAudienceFilter({ tag: event.target.value })}><option value="">Any tag</option>{(audience.tags || []).map((tag) => <option key={tag.name} value={tag.name}>{tag.name} ({tag.count})</option>)}</select></label><label><span>Segment</span><select value={audienceFilter.segment} onChange={(event) => changeAudienceFilter({ segment: event.target.value })}><option value="">Any segment</option>{(audience.segments || []).map((segment) => <option key={segment.id} value={segment.name}>{segment.name} ({segment.count})</option>)}</select></label><label><span>Source</span><select value={audienceFilter.source} onChange={(event) => changeAudienceFilter({ source: event.target.value })}><option value="">Any source</option>{(audience.sources || []).map((source) => <option key={source.source} value={source.source}>{formatStatus(source.source)} ({source.count})</option>)}</select></label></>}{audienceFilter.mode === 'selected' && <div className="pwc-letters28-recipient-options">{audienceMembers.map((member) => <label key={member.id}><input type="checkbox" checked={audienceFilter.subscriberIds.includes(member.id)} onChange={() => changeAudienceFilter({ subscriberIds: audienceFilter.subscriberIds.includes(member.id) ? audienceFilter.subscriberIds.filter((id) => id !== member.id) : [...audienceFilter.subscriberIds, member.id] })} /><span><strong>{[member.first_name, member.last_name].filter(Boolean).join(' ') || member.email}</strong><small>{member.email}</small></span></label>)}</div>}<aside><span>Eligible recipients</span><strong>{audiencePreview}</strong><small>Unsubscribed, bounced, complained, suppressed, pending, and unconsented addresses excluded.</small></aside><div className="pwc-letters28-panel-actions"><button type="button" className="is-secondary" onClick={() => setFlowStep('design')}>Back to design</button><button type="button" onClick={prepareBroadcast} disabled={busy === 'prepare' || audiencePreview === 0}>{busy === 'prepare' ? 'Preparing…' : 'Continue to review'}</button></div></div>
     }
     if (flowStep === 'review') {
-      return <div className="pwc-letters28-review-panel"><header><p className="admin-eyebrow">Review</p><h2>Ready for a test</h2></header><dl><div><dt>Letter</dt><dd>{working.title}</dd></div><div><dt>Subject</dt><dd>{working.subject || 'Missing subject'}</dd></div><div><dt>Blocks</dt><dd>{working.design.blocks.length}</dd></div><div><dt>Recipients</dt><dd>{preparedBroadcast?.recipient_count || 0}</dd></div><div><dt>Unsubscribe</dt><dd>Required block present</dd></div><div><dt>Pre-send recheck</dt><dd>Enabled</dd></div></dl><p>Recipient eligibility will be checked again at the exact moment of sending.</p><div className="pwc-letters28-panel-actions"><button type="button" className="is-secondary" onClick={() => setFlowStep('recipients')}>Change recipients</button><button type="button" onClick={() => setFlowStep('test')}>Continue to test</button></div></div>
+      return <div className="pwc-letters28-review-panel"><header><p className="admin-eyebrow">Final readiness</p><h2>{preflight?.ready ? 'Ready for a test' : 'Needs attention'}</h2></header><dl><div><dt>Letter</dt><dd>{working.title}</dd></div><div><dt>Subject</dt><dd>{working.subject || 'Missing subject'}</dd></div><div><dt>Blocks</dt><dd>{working.design.blocks.length}</dd></div><div><dt>Recipients now eligible</dt><dd>{preflight?.recipientCount ?? preparedBroadcast?.recipient_count ?? 0}</dd></div><div><dt>Content</dt><dd>{preflight?.checks?.content ? 'Passed' : 'Blocked'}</dd></div><div><dt>Delivery provider</dt><dd>{preflight?.checks?.provider ? 'Ready' : 'Unavailable'}</dd></div><div><dt>Outgoing email</dt><dd>{preflight?.checks?.outgoingEmail ? 'Available' : 'Paused'}</dd></div><div><dt>Audience snapshot</dt><dd>{preflight?.checks?.snapshotFresh ? 'Current' : 'Changed'}</dd></div></dl>{preflight?.blockers?.length ? <ul className="pwc-letters-preflight is-blocked">{preflight.blockers.map((item) => <li key={item}>{item}</li>)}</ul> : null}{preflight?.warnings?.length ? <ul className="pwc-letters-preflight is-warning">{preflight.warnings.map((item) => <li key={item}>{item}</li>)}</ul> : null}<p>Recipient eligibility will be checked again at the exact moment of sending.</p><div className="pwc-letters28-panel-actions"><button type="button" className="is-secondary" onClick={() => setFlowStep('recipients')}>Change recipients</button><button type="button" onClick={() => setFlowStep('test')} disabled={!preflight?.ready}>Continue to test</button></div></div>
     }
     if (flowStep === 'test') {
-      return <form className="pwc-letters28-test-panel" onSubmit={handleTestSend}><header><p className="admin-eyebrow">Test</p><h2>Send a private preview</h2></header><label><span>Test email address</span><input type="email" value={testEmail} onChange={(event) => setTestEmail(event.target.value)} required /></label><p>The subject is prefixed with [TEST]. Test activity is stored separately from broadcast analytics.</p><div className="pwc-letters28-panel-actions"><button type="button" className="is-secondary" onClick={() => setFlowStep('review')}>Back</button><button type="submit" disabled={busy === 'test'}>{busy === 'test' ? 'Sending…' : 'Send test letter'}</button></div></form>
+      return <form className="pwc-letters28-test-panel" onSubmit={handleTestSend}><header><p className="admin-eyebrow">Test</p><h2>Send a private preview</h2></header><label><span>Test email address</span><input type="email" value={testEmail} onChange={(event) => setTestEmail(event.target.value)} required /></label><p>The subject is prefixed with [TEST]. Test activity is stored separately from broadcast analytics.</p>{capabilities.test === false && <p className="pwc-letters-capability-note" role="status">Your account can review this Letter but cannot send test email.</p>}<div className="pwc-letters28-panel-actions"><button type="button" className="is-secondary" onClick={() => setFlowStep('review')}>Back</button><button type="submit" disabled={busy === 'test' || capabilities.test === false}>{busy === 'test' ? 'Sending…' : 'Send test letter'}</button></div></form>
     }
     if (flowStep === 'send') {
-      return <div className="pwc-letters28-send-panel"><header><p className="admin-eyebrow">Schedule or Send</p><h2>Final delivery choice</h2></header><form onSubmit={handleSchedule}><label><span>Schedule date and time</span><input type="datetime-local" value={scheduleAt} onChange={(event) => setScheduleAt(event.target.value)} required /></label><button type="submit" disabled={busy === 'schedule'}>{busy === 'schedule' ? 'Scheduling…' : 'Schedule broadcast'}</button></form><div className="pwc-letters28-send-divider"><span>or</span></div><button type="button" className="is-danger" onClick={handleSendNow} disabled={busy === 'send-now'}>{busy === 'send-now' ? 'Sending safely…' : `Send now to ${preparedBroadcast?.recipient_count || 0}`}</button><p>Immediate sending cannot be undone. Consent and suppressions are rechecked for every recipient.</p></div>
+      return <div className="pwc-letters28-send-panel"><header><p className="admin-eyebrow">Schedule or Send</p><h2>Final delivery choice</h2></header>{capabilities.schedule === false && capabilities.send === false && <p className="pwc-letters-capability-note" role="status">This Letter is ready for an Owner or Administrator to approve delivery.</p>}<form onSubmit={handleSchedule}><label><span>Schedule date and time</span><input type="datetime-local" value={scheduleAt} onChange={(event) => setScheduleAt(event.target.value)} required disabled={capabilities.schedule === false} /></label><button type="submit" disabled={busy === 'schedule' || capabilities.schedule === false}>{busy === 'schedule' ? 'Scheduling…' : 'Schedule broadcast'}</button></form><small>Schedule at least {overview.deliveryPolicy?.changeCutoffMinutes || 5} minutes ahead. Scheduled delivery cannot be changed inside that safety window.</small><div className="pwc-letters28-send-divider"><span>or</span></div><button type="button" className="is-danger" onClick={handleSendNow} disabled={busy === 'send-now' || capabilities.send === false}>{busy === 'send-now' ? 'Sending safely…' : `Send now to ${preparedBroadcast?.recipient_count || 0}`}</button><p>Immediate sending cannot be undone. Consent and suppressions are rechecked for every recipient.</p></div>
     }
-    return <LetterBlockSettings block={selectedBlock} onChange={changeBlock} onDuplicate={duplicateBlock} onDelete={deleteBlock} />
+    return null
   }
 
   return (
     <AdminFrame>
-      <section className="pwc-letters28-page">
-        <header className="pwc-letters28-hero"><div><p className="admin-eyebrow">Power Within Communications</p><h1>Letters & Broadcasts</h1><p>Design thoughtful, branded letters and deliver them only to people whose current consent allows it.</p></div><aside><span>Eligible audience</span><strong>{Number(audience.metrics?.eligible || 0).toLocaleString()}</strong><small>Phase 27 protections active</small></aside></header>
-
-        {error && <div className="pwc-letters28-alert is-error" role="alert">{error}</div>}
-        {notice && <div className="pwc-letters28-alert is-success" role="status">{notice}</div>}
-
-        <nav className="pwc-letters28-tabs pwc-phase35-primary-tabs" aria-label="Letters workspace sections">
-          {workspaceTabs.map(([id, label]) => (
-            <button
-              key={id}
-              type="button"
-              className={activeTab === id ? 'is-active' : ''}
-              aria-current={activeTab === id ? 'page' : undefined}
-              onClick={() => {
-                setActiveTab(id)
-                if (id !== 'letters') setWorking(null)
-              }}
-            >
-              {label}
-              {id === 'delivery' && scheduledBroadcasts.length > 0 ? <span>{scheduledBroadcasts.length}</span> : null}
-            </button>
-          ))}
-        </nav>
-
-        {activeTab === 'letters' && !working && (
-          <section className="pwc-phase35-letter-library">
-            <header className="pwc-phase35-taskbar">
-              <div>
-                <p className="admin-eyebrow">Letter Library</p>
-                <h2>{libraryMode === 'drafts' ? 'Draft and recent work' : 'Reusable designs'}</h2>
-              </div>
-              <div className="pwc-phase35-taskbar__actions">
-                <div className="pwc-phase35-view-switch" role="tablist" aria-label="Letter library view">
-                  <button type="button" role="tab" aria-selected={libraryMode === 'drafts'} className={libraryMode === 'drafts' ? 'is-active' : ''} onClick={() => setLibraryMode('drafts')}>Letters</button>
-                  <button type="button" role="tab" aria-selected={libraryMode === 'templates'} className={libraryMode === 'templates' ? 'is-active' : ''} onClick={() => setLibraryMode('templates')}>Templates</button>
-                </div>
-                <button type="button" className="pwc-phase35-primary-action" onClick={() => setCreatingLetter((current) => !current)}>{creatingLetter ? 'Close' : '+ New letter'}</button>
-              </div>
-            </header>
-
-            {creatingLetter && (
-              <section className="pwc-letters28-panel pwc-letters28-new pwc-phase35-create-panel">
-                <header><div><p className="admin-eyebrow">Create</p><h2>Begin a new letter</h2></div></header>
-                <form onSubmit={handleCreateLetter}>
-                  <label><span>Internal letter title</span><input value={newLetter.title} onChange={(event) => setNewLetter((current) => ({ ...current, title: event.target.value }))} placeholder="July reflection for a new season" required /></label>
-                  <label><span>Starting template</span><select value={newLetter.templateId} onChange={(event) => setNewLetter((current) => ({ ...current, templateId: event.target.value }))}><option value="">Clean Power Within letter</option>{(overview.templates || []).map((template) => <option key={template.id} value={template.id}>{template.name}</option>)}</select></label>
-                  <button type="submit" disabled={busy === 'create'}>{busy === 'create' ? 'Creating…' : 'Create letter'}</button>
-                </form>
-              </section>
-            )}
-
-            {libraryMode === 'drafts' ? (
-              <section className="pwc-letters28-panel pwc-letters28-letter-list">
-                <header><div><p className="admin-eyebrow">Letters</p><h2>Open a letter to continue</h2></div><span>{overview.letters?.length || 0} letters</span></header>
-                <div>{loading ? <p className="pwc-letters28-empty">Loading letters…</p> : (overview.letters || []).length ? overview.letters.map((letter) => <article key={letter.id}><button type="button" onClick={() => openLetter(letter.id)}><span className={`pwc-letters28-status is-${letter.status}`}>{formatStatus(letter.status)}</span><strong>{letter.title}</strong><p>{letter.subject || 'Subject not written yet'}</p><small>Revision {letter.autosave_revision} · {formatDate(letter.updated_at)}</small></button><button type="button" className="is-copy" onClick={() => handleDuplicateLetter(letter.id)}>Duplicate</button></article>) : <p className="pwc-letters28-empty">Create the first visual Power Within letter.</p>}</div>
-              </section>
-            ) : (
-              <section className="pwc-letters28-panel pwc-letters28-templates">
-                <header><div><p className="admin-eyebrow">Templates</p><h2>Start from a reusable design</h2></div><span>{overview.templates?.length || 0} active</span></header>
-                <div>{(overview.templates || []).map((template) => <article key={template.id}><span>{formatStatus(template.category)}</span><h3>{template.name}</h3><p>{template.description || template.preview_text}</p><small>{template.design?.blocks?.length || 0} blocks · Updated {formatDate(template.updated_at)}</small><button type="button" onClick={() => { setNewLetter({ title: `${template.name} letter`, templateId: template.id }); setLibraryMode('drafts'); setCreatingLetter(true) }}>Use template</button></article>)}</div>
-              </section>
-            )}
-          </section>
-        )}
-
-        {activeTab === 'letters' && working && <section className="pwc-letters28-builder"><header className="pwc-letters28-topbar"><button type="button" className="is-back" onClick={() => { setWorking(null); loadWorkspace({ preserveMessages: true }) }}>← Letters</button><div className="pwc-letters28-title-fields"><input aria-label="Internal letter title" value={working.title} onChange={(event) => updateLetter({ title: event.target.value })} /><input aria-label="Email subject" value={working.subject || ''} onChange={(event) => updateLetter({ subject: event.target.value })} placeholder="Email subject" /></div><div className="pwc-letters28-save-state"><span className={`is-${saveState}`}>{saveState === 'saved' ? 'Saved' : saveState === 'saving' ? 'Saving…' : saveState === 'error' ? 'Save error' : 'Unsaved'}</span><small>Revision {working.autosave_revision}</small></div><div className="pwc-letters28-top-actions"><button type="button" onClick={undo} disabled={!undoStack.length || readOnly}>Undo</button><button type="button" onClick={redo} disabled={!redoStack.length || readOnly}>Redo</button><div><button type="button" className={previewMode === 'desktop' ? 'is-active' : ''} onClick={() => setPreviewMode('desktop')}>Desktop</button><button type="button" className={previewMode === 'mobile' ? 'is-active' : ''} onClick={() => setPreviewMode('mobile')}>Mobile</button></div><button type="button" onClick={() => persistWorking('manual')} disabled={readOnly}>Save now</button><button type="button" className="is-primary" onClick={() => { setFlowStep('recipients'); handleAudiencePreview() }} disabled={readOnly || !working.subject}>Choose recipients →</button></div></header><div className="pwc-letters28-flow"><span className={flowStep === 'design' ? 'is-active' : ''}>1 Design</span><span className={flowStep === 'recipients' ? 'is-active' : ''}>2 Recipients</span><span className={flowStep === 'review' ? 'is-active' : ''}>3 Review</span><span className={flowStep === 'test' ? 'is-active' : ''}>4 Test</span><span className={flowStep === 'send' ? 'is-active' : ''}>5 Schedule or send</span></div><div className="pwc-letters28-builder-grid"><aside className="pwc-letters28-blocks"><header><p className="admin-eyebrow">Content Blocks</p><h2>Build your letter</h2></header><div>{blockPalette.map(([type, label, icon]) => <button type="button" key={type} onClick={() => addBlock(type)} disabled={readOnly}><span>{icon}</span><strong>{label}</strong></button>)}</div><section><p className="admin-eyebrow">Global Style</p><label><span>Page color</span><input type="color" value={working.design.settings.backgroundColor} onChange={(event) => updateDesign({ ...working.design, settings: { ...working.design.settings, backgroundColor: event.target.value } })} /></label><label><span>Content color</span><input type="color" value={working.design.settings.contentColor} onChange={(event) => updateDesign({ ...working.design, settings: { ...working.design.settings, contentColor: event.target.value } })} /></label><label><span>Text color</span><input type="color" value={working.design.settings.textColor} onChange={(event) => updateDesign({ ...working.design, settings: { ...working.design.settings, textColor: event.target.value } })} /></label><label><span>Accent color</span><input type="color" value={working.design.settings.accentColor} onChange={(event) => updateDesign({ ...working.design, settings: { ...working.design.settings, accentColor: event.target.value } })} /></label><label><span>Display type</span><select value={working.design.settings.fontFamily} onChange={(event) => updateDesign({ ...working.design, settings: { ...working.design.settings, fontFamily: event.target.value } })}><option value="Georgia, serif">Georgia</option><option value="'Times New Roman', serif">Times New Roman</option></select></label><label><span>Body type</span><select value={working.design.settings.bodyFontFamily} onChange={(event) => updateDesign({ ...working.design, settings: { ...working.design.settings, bodyFontFamily: event.target.value } })}><option value="Arial, sans-serif">Arial</option><option value="Helvetica, Arial, sans-serif">Helvetica</option><option value="'Trebuchet MS', Arial, sans-serif">Trebuchet</option></select></label></section></aside><main className="pwc-letters28-canvas-column"><label className="pwc-letters28-preview-text"><span>Inbox preview text</span><input value={working.preview_text || ''} onChange={(event) => updateLetter({ preview_text: event.target.value })} placeholder="A short line shown beside the subject" /></label><LetterCanvas design={working.design} selectedBlockId={selectedBlockId} onSelect={(blockId) => { setSelectedBlockId(blockId); setFlowStep('design') }} onMove={moveBlock} previewMode={previewMode} readOnly={readOnly} /></main><aside className="pwc-letters28-right-panel">{renderFlowPanel()}{flowStep === 'design' && <><section className="pwc-letters28-version-box"><header><p className="admin-eyebrow">Draft Recovery</p><strong>{versions.length} versions</strong></header><div>{versions.slice(0, 6).map((version) => <button type="button" key={version.id} onClick={() => handleRestoreVersion(version)} disabled={readOnly || busy === 'restore'}><span>Revision {version.revision}</span><small>{formatStatus(version.reason)} · {formatDate(version.created_at)}</small></button>)}</div></section><form className="pwc-letters28-template-save" onSubmit={handleSaveTemplate}><label><span>Save as reusable template</span><input value={templateName} onChange={(event) => setTemplateName(event.target.value)} placeholder="Template name" /></label><button type="submit" disabled={!templateName.trim() || busy === 'template'}>Save template</button></form></>}</aside></div></section>}
-
-        {activeTab === 'delivery' && (
-          <div className="pwc-phase35-delivery-stack">
-            <section className="pwc-letters28-panel pwc-phase35-audience-ready">
-              <div><p className="admin-eyebrow">Audience Readiness</p><h2>{Number(audience.metrics?.eligible || 0).toLocaleString()} eligible recipients</h2><p>Consent and suppression protections are checked again at send time.</p></div>
-              <Link to="/admin/audience">Manage audience →</Link>
-            </section>
-            <section className="pwc-letters28-panel pwc-letters28-broadcasts">
-              <header>
-                <div><p className="admin-eyebrow">Delivery Queue</p><h2>{deliveryView === 'scheduled' ? 'Upcoming broadcasts' : 'Delivered letters'}</h2></div>
-                <div className="pwc-phase35-taskbar__actions">
-                  <div className="pwc-phase35-view-switch" role="tablist" aria-label="Broadcast delivery view">
-                    <button type="button" role="tab" aria-selected={deliveryView === 'scheduled'} className={deliveryView === 'scheduled' ? 'is-active' : ''} onClick={() => setDeliveryView('scheduled')}>Scheduled {scheduledBroadcasts.length}</button>
-                    <button type="button" role="tab" aria-selected={deliveryView === 'sent'} className={deliveryView === 'sent' ? 'is-active' : ''} onClick={() => setDeliveryView('sent')}>Sent {sentBroadcasts.length}</button>
-                  </div>
-                  {deliveryView === 'scheduled' && <button type="button" onClick={runDueBroadcasts} disabled={busy === 'process-due'}>{busy === 'process-due' ? 'Checking…' : 'Process due now'}</button>}
-                </div>
-              </header>
-              {deliveryView === 'scheduled'
-                ? renderBroadcastList(scheduledBroadcasts, 'No broadcasts are scheduled.', true)
-                : renderBroadcastList(sentBroadcasts, 'No broadcasts have been sent yet.')}
-            </section>
-          </div>
-        )}
-
-        {activeTab === 'results' && <section className="pwc-letters28-analytics"><div className="pwc-letters28-metrics">{[['Sent', metrics.delivered_to_provider], ['Opened', metrics.opened], ['Clicked', metrics.clicked], ['Open rate', rate(metrics.opened, metrics.delivered_to_provider)], ['Click rate', rate(metrics.clicked, metrics.delivered_to_provider)], ['Broadcasts', metrics.sent]].map(([label, value]) => <article key={label}><span>{label}</span><strong>{typeof value === 'number' ? value.toLocaleString() : value}</strong></article>)}</div>{selectedBroadcast ? <section className="pwc-letters28-panel pwc-letters28-results"><header><div><p className="admin-eyebrow">Broadcast Results</p><h2>{selectedBroadcast.broadcast.title}</h2><p>{selectedBroadcast.broadcast.subject}</p></div><a href={getLetterBroadcastExportUrl(selectedBroadcast.broadcast.id)}>Export CSV</a></header><div className="pwc-letters28-result-metrics">{[['Recipients', selectedBroadcast.broadcast.recipient_count], ['Sent', selectedBroadcast.broadcast.sent_count], ['Delivered', selectedBroadcast.broadcast.delivered_count], ['Opened', selectedBroadcast.broadcast.opened_count], ['Clicked', selectedBroadcast.broadcast.clicked_count], ['Bounced', selectedBroadcast.broadcast.bounced_count], ['Unsubscribed', selectedBroadcast.broadcast.unsubscribed_count]].map(([label, value]) => <div key={label}><span>{label}</span><strong>{value || 0}</strong></div>)}</div><div className="pwc-letters28-results-grid"><section><h3>Per-link activity</h3>{selectedBroadcast.links.length ? selectedBroadcast.links.map((link) => <article key={link.id}><div><strong>{link.label || 'Tracked link'}</strong><small>{link.destination_url}</small></div><span>{link.click_count} clicks · {link.unique_click_count} unique</span></article>) : <p>No tracked link activity yet.</p>}</section><section><h3>Subscriber activity</h3>{selectedBroadcast.recipients.slice(0, 100).map((recipient) => <article key={recipient.id}><div><strong>{[recipient.first_name, recipient.last_name].filter(Boolean).join(' ') || recipient.email}</strong><small>{recipient.email}</small></div><span className={`pwc-letters28-status is-${recipient.delivery_status}`}>{formatStatus(recipient.delivery_status)}</span></article>)}</section></div></section> : <section className="pwc-letters28-panel pwc-letters28-analytics-list"><header><div><p className="admin-eyebrow">Results</p><h2>Choose a sent broadcast</h2></div></header>{renderBroadcastList(sentBroadcasts, 'Analytics will appear after the first broadcast.')}</section>}</section>}
-      </section>
+      <LettersWorkspace
+        audience={audience}
+        activeTab={activeTab}
+        scheduledCount={scheduledBroadcasts.length}
+        error={error}
+        notice={notice}
+        onTabChange={(tab) => {
+          setActiveTab(tab)
+          if (tab !== 'letters') setWorking(null)
+        }}
+      >
+        {activeTab === 'letters' && !working && <LettersLibrary
+          libraryMode={libraryMode}
+          setLibraryMode={setLibraryMode}
+          creatingLetter={creatingLetter}
+          setCreatingLetter={setCreatingLetter}
+          newLetter={newLetter}
+          setNewLetter={setNewLetter}
+          overview={overview}
+          loading={loading}
+          busy={busy}
+          onCreate={handleCreateLetter}
+          onOpen={openLetter}
+          onDuplicate={handleDuplicateLetter}
+          formatStatus={formatStatus}
+          formatDate={formatDate}
+          onUseTemplate={(template) => {
+            setNewLetter({ title: `${template.name} letter`, templateId: template.id })
+            setLibraryMode('drafts')
+            setCreatingLetter(true)
+          }}
+        />}
+        {activeTab === 'letters' && working && <LetterEditor
+          working={working}
+          readOnly={readOnly}
+          saveState={saveState}
+          undoCount={undoStack.length}
+          redoCount={redoStack.length}
+          previewMode={previewMode}
+          setPreviewMode={setPreviewMode}
+          renderedPreview={renderedPreview}
+          previewLoading={previewLoading}
+          previewError={previewError}
+          flowStep={flowStep}
+          selectedBlockId={selectedBlockId}
+          selectedBlock={selectedBlock}
+          versions={versions}
+          busy={busy}
+          templateName={templateName}
+          setTemplateName={setTemplateName}
+          palette={blockPalette}
+          onBack={() => { setWorking(null); loadWorkspace({ preserveMessages: true }) }}
+          onUpdateLetter={updateLetter}
+          onUpdateDesign={updateDesign}
+          onUndo={undo}
+          onRedo={redo}
+          onSave={() => persistWorking('manual')}
+          onChooseRecipients={() => { setFlowStep('recipients'); handleAudiencePreview() }}
+          onAddBlock={addBlock}
+          onInsertBlock={insertBlock}
+          onSelectBlock={(blockId) => { setSelectedBlockId(blockId); setFlowStep('design') }}
+          onMoveBlock={moveBlock}
+          onChangeBlock={changeBlock}
+          onDuplicateBlock={duplicateBlock}
+          onDeleteBlock={deleteBlock}
+          renderFlowPanel={renderFlowPanel}
+          onRestoreVersion={handleRestoreVersion}
+          onSaveTemplate={handleSaveTemplate}
+          formatStatus={formatStatus}
+          formatDate={formatDate}
+        />}
+        {activeTab === 'delivery' && <DeliveryQueue audience={audience} deliveryView={deliveryView} setDeliveryView={setDeliveryView} scheduled={scheduledBroadcasts} sent={sentBroadcasts} adminUser={adminUser} capabilities={capabilities} busy={busy} onProcessDue={runDueBroadcasts} renderBroadcastList={renderBroadcastList} />}
+        {activeTab === 'results' && <BroadcastAnalytics metrics={metrics} selectedBroadcast={selectedBroadcast} compareBroadcast={compareBroadcast} sentBroadcasts={sentBroadcasts} rate={rate} formatStatus={formatStatus} exportUrl={getLetterBroadcastExportUrl} renderBroadcastList={renderBroadcastList} onCompareChange={setCompareBroadcastId} />}
+      </LettersWorkspace>
     </AdminFrame>
   )
 }

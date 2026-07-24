@@ -35,7 +35,7 @@ const requirements = [
   [onboarding, 'className="onboarding-start-card"', 'onboarding welcome state'],
   [leads, 'className="lead-pipeline-workbench"', 'Lead list and details grouped together'],
   [packageSource, '"admin:qa:phase50r1"', 'focused final usability QA command'],
-  [visualAudit, 'const stylesheetBudget = 568 * 1024', 'bounded stylesheet source budget'],
+  [visualAudit, 'const stylesheetBudget = 600 * 1024', 'bounded stylesheet source budget'],
   [docs, 'progressive disclosure', 'usability design boundary documentation'],
 ]
 

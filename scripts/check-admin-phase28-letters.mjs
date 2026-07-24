@@ -8,7 +8,8 @@ const sources = {
   adminRoutes: read('server/src/routes/letterBuilder.routes.js'),
   publicRoutes: read('server/src/routes/letterPublic.routes.js'),
   appServer: read('server/src/app.js'),
-  page: read('src/pages/admin/AdminLetters.jsx'),
+  page: read('src/pages/admin/AdminLetters.jsx')
+    + read('src/components/admin/letters/LettersWorkspace.jsx'),
   canvas: read('src/components/admin/LetterCanvas.jsx'),
   settings: read('src/components/admin/LetterBlockSettings.jsx'),
   api: read('src/lib/nativeApi.js'),
