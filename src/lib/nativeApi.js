@@ -11,7 +11,11 @@ async function parseResponse(response) {
 
   if (!response.ok) {
     const message = data?.error || data?.message || `Request failed with status ${response.status}`
-    throw new Error(message)
+    const error = new Error(message)
+    error.status = response.status
+    error.code = data?.code || ''
+    error.data = data
+    throw error
   }
 
   return data

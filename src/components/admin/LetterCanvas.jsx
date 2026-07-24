@@ -23,6 +23,8 @@ function BlockPreview({ block, settings, readOnly, onChange }) {
   const blockFont = block.settings?.fontFamily || settings.bodyFontFamily
   const displayFont = block.settings?.fontFamily || settings.fontFamily
   const blockFontSize = block.settings?.fontSize
+  const blockLineHeight = block.settings?.lineHeight
+  const blockLetterSpacing = block.settings?.letterSpacing
   const style = {
     padding: `${block.settings?.padding ?? 16}px`,
     textAlign: block.settings?.align || 'left',
@@ -30,6 +32,8 @@ function BlockPreview({ block, settings, readOnly, onChange }) {
     color: settings.textColor,
     fontFamily: blockFont,
     ...(blockFontSize ? { fontSize: `${blockFontSize}px` } : {}),
+    ...(blockLineHeight ? { lineHeight: blockLineHeight } : {}),
+    ...(blockLetterSpacing !== null && blockLetterSpacing !== undefined ? { letterSpacing: `${blockLetterSpacing}px` } : {}),
   }
 
   if (block.type === 'heading') {
@@ -108,6 +112,8 @@ export default function LetterCanvas({ design, selectedBlockId, onSelect, onMove
           <div className="pwc-letters28-block-wrap" key={block.id}>
           {!readOnly && <button type="button" className="pwc-letters28-insert-control" aria-label={`Insert text before ${getLetterBlockTitle(block)}`} onClick={() => onInsert?.(index, 'text')}>+ Insert</button>}
           <article
+            aria-label={`${getLetterBlockTitle(block)} block${selectedBlockId === block.id ? ', selected' : ''}`}
+            aria-current={selectedBlockId === block.id ? 'true' : undefined}
             className={`${selectedBlockId === block.id ? 'is-selected' : ''}${block.type === 'unsubscribe' ? ' is-required' : ''}`}
             draggable={!readOnly && block.type !== 'unsubscribe'}
             onDragStart={(event) => event.dataTransfer.setData('text/pwc-letter-block', block.id)}
@@ -123,7 +129,7 @@ export default function LetterCanvas({ design, selectedBlockId, onSelect, onMove
             tabIndex="0"
           >
             <span className="pwc-letters28-block-label">{getLetterBlockTitle(block)}</span>
-            {selectedBlockId === block.id && block.type !== 'unsubscribe' && !readOnly && <div className="pwc-letters28-selection-toolbar" aria-label="Selected block actions"><button type="button" onClick={(event) => { event.stopPropagation(); if (index > 0) onMove?.(block.id, blocks[index - 1].id) }}>↑</button><button type="button" onClick={(event) => { event.stopPropagation(); if (index < blocks.length - 2) onMove?.(blocks[index + 1].id, block.id) }}>↓</button><button type="button" onClick={(event) => { event.stopPropagation(); onDuplicate?.(block.id) }}>Duplicate</button><button type="button" onClick={(event) => { event.stopPropagation(); onDelete?.(block.id) }}>Delete</button></div>}
+            {selectedBlockId === block.id && block.type !== 'unsubscribe' && !readOnly && <div className="pwc-letters28-selection-toolbar" aria-label="Selected block actions"><button type="button" aria-label={`Move ${getLetterBlockTitle(block)} up`} disabled={index === 0} onClick={(event) => { event.stopPropagation(); if (index > 0) onMove?.(block.id, blocks[index - 1].id) }}>↑</button><button type="button" aria-label={`Move ${getLetterBlockTitle(block)} down`} disabled={index >= blocks.length - 2} onClick={(event) => { event.stopPropagation(); if (index < blocks.length - 2) onMove?.(blocks[index + 1].id, block.id) }}>↓</button><button type="button" onClick={(event) => { event.stopPropagation(); onDuplicate?.(block.id) }}>Duplicate</button><button type="button" onClick={(event) => { event.stopPropagation(); onDelete?.(block.id) }}>Delete</button></div>}
             <BlockPreview block={block} settings={settings} readOnly={readOnly} onChange={(key, value) => onChangeBlock?.({ ...block, content: { ...(block.content || {}), [key]: value } })} />
           </article>
           </div>

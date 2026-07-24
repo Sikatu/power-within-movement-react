@@ -166,6 +166,7 @@ export default function AdminLetters() {
   const audiencePreviewSequenceRef = useRef(0)
   const audiencePreviewTimerRef = useRef(null)
   const requestedLetterRef = useRef('')
+  const conflictLetterRef = useRef(null)
 
   const loadWorkspace = useCallback(async ({ preserveMessages = false } = {}) => {
     setLoading(true)
@@ -247,6 +248,7 @@ export default function AdminLetters() {
       setRedoStack([])
       setDirty(false)
       setSaveState('saved')
+      conflictLetterRef.current = null
       setFlowStep('design')
       setPreparedBroadcast(letterResponse.letter.latest_broadcast?.status === 'draft' ? letterResponse.letter.latest_broadcast : null)
       setActiveTab('letters')
@@ -300,8 +302,14 @@ export default function AdminLetters() {
     } catch (saveError) {
       if (saveSequenceRef.current === sequence) {
         setDirty(true)
-        setSaveState('error')
-        setError(saveError.message || 'The letter draft could not be saved.')
+        if (saveError.code === 'LETTER_REVISION_CONFLICT') {
+          conflictLetterRef.current = saveError.data?.letter || null
+          setSaveState('conflict')
+          setError('A newer version of this letter was saved elsewhere. Reload the saved version before continuing.')
+        } else {
+          setSaveState('error')
+          setError(saveError.message || 'The letter draft could not be saved.')
+        }
       }
       return null
     }
@@ -312,6 +320,23 @@ export default function AdminLetters() {
     const timer = window.setTimeout(() => persistWorking('autosave'), 900)
     return () => window.clearTimeout(timer)
   }, [dirty, persistWorking, readOnly, working])
+
+  useEffect(() => {
+    if (!dirty) return undefined
+    const warnBeforeLeaving = (event) => {
+      event.preventDefault()
+      event.returnValue = ''
+    }
+    window.addEventListener('beforeunload', warnBeforeLeaving)
+    return () => window.removeEventListener('beforeunload', warnBeforeLeaving)
+  }, [dirty])
+
+  async function reloadConflictedLetter() {
+    if (!working) return
+    conflictLetterRef.current = null
+    await openLetter(working.id)
+    setNotice('The latest saved revision has been reloaded.')
+  }
 
   function updateLetter(patch) {
     if (readOnly) return
@@ -487,10 +512,12 @@ export default function AdminLetters() {
 
   async function handleTestSend(event) {
     event.preventDefault()
+    const saved = await persistWorking('manual')
+    if (!saved) return
     setBusy('test')
     setError('')
     try {
-      const response = await sendLetterTest(working.id, testEmail)
+      const response = await sendLetterTest(saved.id, testEmail)
       setNotice(response.message || 'Test letter sent.')
       setFlowStep('send')
     } catch (testError) {
@@ -738,6 +765,7 @@ export default function AdminLetters() {
           onUndo={undo}
           onRedo={redo}
           onSave={() => persistWorking('manual')}
+          onReloadConflict={reloadConflictedLetter}
           onChooseRecipients={() => { setFlowStep('recipients'); handleAudiencePreview() }}
           onAddBlock={addBlock}
           onInsertBlock={insertBlock}
