@@ -1,23 +1,24 @@
 import { readFileSync } from 'node:fs'
 
-const css = readFileSync('src/pages/admin/AdminFreshUI.css', 'utf8')
+import {
+  parseAdminStylesheet,
+  readAdminStylesheet,
+  ruleHasDeclarations,
+} from './lib/adminStyles.mjs'
+
+const css = readAdminStylesheet()
+const cssRoot = parseAdminStylesheet()
 const clients = readFileSync('src/pages/admin/AdminClients.jsx', 'utf8')
 const packageSource = readFileSync('package.json', 'utf8')
-const compactCss = css.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\s+/g, ' ')
 const failures = []
 
-function escapeRegExp(value) {
-  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-}
-
 function requireRule(selector, declarations) {
-  const rulePattern = new RegExp(`${escapeRegExp(selector)}\\s*\\{([^}]*)\\}`, 'g')
-  const blocks = [...compactCss.matchAll(rulePattern)].map((match) => match[1])
-  const hasCompleteRule = blocks.some((block) =>
-    declarations.every((declaration) => block.includes(declaration)),
-  )
+  const expected = declarations.map((declaration) => {
+    const separator = declaration.indexOf(':')
+    return [declaration.slice(0, separator).trim(), declaration.slice(separator + 1).trim()]
+  })
 
-  if (!hasCompleteRule) {
+  if (!ruleHasDeclarations(cssRoot, selector, expected, { allowSuffix: true })) {
     failures.push(`${selector} is missing: ${declarations.join(', ')}`)
   }
 }

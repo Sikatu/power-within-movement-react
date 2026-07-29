@@ -1,0 +1,61 @@
+{
+  "title": "July reflection",
+  "subject": "A thoughtful note for {{firstName}}",
+  "previewText": "A private reflection from Power Within Collective",
+  "audienceFilter": {
+    "mode": "filtered",
+    "tag": "Reflection",
+    "segment": "",
+    "source": "",
+    "subscriberIds": []
+  },
+  "design": {
+    "version": 1,
+    "settings": {
+      "backgroundColor": "#f6eee9",
+      "contentColor": "#fffdf9",
+      "textColor": "#3f3034",
+      "accentColor": "#7c514b",
+      "contentWidth": 640,
+      "fontFamily": "Georgia, serif",
+      "bodyFontFamily": "Arial, sans-serif"
+    },
+    "blocks": [
+      {
+        "id": "fixture-heading",
+        "type": "heading",
+        "content": {
+          "text": "A quieter way forward",
+          "level": 2
+        },
+        "settings": {
+          "align": "center",
+          "padding": 20,
+          "backgroundColor": "transparent"
+        }
+      },
+      {
+        "id": "fixture-body",
+        "type": "text",
+        "content": {
+          "text": "You are allowed to move at the pace your life requires."
+        },
+        "settings": {
+          "align": "left",
+          "padding": 16,
+          "backgroundColor": "transparent"
+        }
+      },
+      {
+        "id": "fixture-unsubscribe",
+        "type": "unsubscribe",
+        "content": {},
+        "settings": {
+          "align": "center",
+          "padding": 18,
+          "backgroundColor": "transparent"
+        }
+      }
+    ]
+  }
+}

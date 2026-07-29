@@ -1803,6 +1803,13 @@ export async function previewLetter(letterId) {
   return apiRequest(`/api/admin/letters/letters/${letterId}/preview`, { method: 'POST' })
 }
 
+export async function renderLetterPreview(payload) {
+  return apiRequest('/api/admin/letters/render-preview', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  })
+}
+
 export async function sendLetterTest(letterId, email) {
   return apiRequest(`/api/admin/letters/letters/${letterId}/test-send`, { method: 'POST', body: JSON.stringify({ email }) })
 }
@@ -1843,6 +1850,10 @@ export async function getLetterBroadcast(broadcastId) {
   return apiRequest(`/api/admin/letters/broadcasts/${broadcastId}`)
 }
 
+export async function getLetterBroadcastPreflight(broadcastId) {
+  return apiRequest(`/api/admin/letters/broadcasts/${broadcastId}/preflight`)
+}
+
 export async function scheduleLetterBroadcast(broadcastId, scheduledAt) {
   return apiRequest(`/api/admin/letters/broadcasts/${broadcastId}/schedule`, { method: 'POST', body: JSON.stringify({ scheduledAt }) })
 }
@@ -1853,6 +1864,10 @@ export async function sendLetterBroadcastNow(broadcastId) {
 
 export async function cancelLetterBroadcast(broadcastId) {
   return apiRequest(`/api/admin/letters/broadcasts/${broadcastId}/cancel`, { method: 'POST' })
+}
+
+export async function retryFailedLetterBroadcast(broadcastId) {
+  return apiRequest(`/api/admin/letters/broadcasts/${broadcastId}/retry-failed`, { method: 'POST' })
 }
 
 export async function processDueLetterBroadcasts() {

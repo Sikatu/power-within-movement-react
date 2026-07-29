@@ -1,6 +1,8 @@
 import { readFileSync } from 'node:fs'
 
-const lettersSource = readFileSync('src/pages/admin/AdminLetters.jsx', 'utf8')
+const lettersSource =
+  readFileSync('src/pages/admin/AdminLetters.jsx', 'utf8')
+  + readFileSync('src/components/admin/letters/LettersWorkspace.jsx', 'utf8')
 const audienceSource = readFileSync('src/pages/admin/AdminAudience.jsx', 'utf8')
 const sessionChangesSource = readFileSync('src/pages/admin/AdminSessionChangeRequests.jsx', 'utf8')
 const stylesSource = readFileSync('src/pages/admin/AdminFreshUI.css', 'utf8')
@@ -38,7 +40,6 @@ const preservedActions = [
   [lettersSource, 'scheduleLetterBroadcast(', 'schedule a broadcast'],
   [lettersSource, 'sendLetterBroadcastNow(', 'send a broadcast now'],
   [lettersSource, 'cancelLetterBroadcast(', 'cancel a scheduled broadcast'],
-  [lettersSource, 'processDueLetterBroadcasts(', 'process due broadcasts'],
   [audienceSource, 'createNewsletterAudienceSubscriber(', 'add one audience member'],
   [audienceSource, 'createNewsletterAudienceBulk(', 'add multiple audience members'],
   [audienceSource, 'importNewsletterAudienceCsv(', 'import audience CSV data'],
@@ -53,6 +54,10 @@ for (const [source, token, action] of preservedActions) {
   if (!source.includes(token)) failures.push(`Phase 35 no longer exposes the action to ${action}`)
 }
 
+
+if (/\b(?:processDueLetterBroadcasts|runDueBroadcasts)\b/.test(lettersSource)) {
+  failures.push('Letters UI exposes manual broadcast dispatcher execution')
+}
 if (!packageSource.includes('node scripts/check-admin-phase35-communication-workflows.mjs')) {
   failures.push('package.json does not run the Phase 35 Communication workflow audit')
 }

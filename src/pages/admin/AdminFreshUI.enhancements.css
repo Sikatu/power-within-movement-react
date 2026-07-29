@@ -1,0 +1,3332 @@
+/* phase-50r1-final-usability-repair-start */
+/* Shared hierarchy: keep every workspace readable, compact, and action-led. */
+body.admin-app-mode
+  :where(
+    .learning-library-header,
+    .membership-circle-header,
+    .circle-admin-header,
+    .automation-studio-header,
+    .onboarding-studio-header
+  )
+  :where(h1, h2) {
+  margin: 4px 0 8px;
+  color: #fff9f3;
+}
+
+body.admin-app-mode
+  :where(
+    .learning-library-admin,
+    .membership-circle-admin,
+    .circle-admin-page,
+    .automation-studio-page,
+    .onboarding-studio-page
+  ) {
+  padding-top: 22px;
+  padding-bottom: 52px;
+}
+
+body.admin-app-mode
+  :where(
+    .learning-library-header,
+    .membership-circle-header,
+    .circle-admin-header,
+    .automation-studio-header,
+    .onboarding-studio-header,
+    .pwc-assets26-hero,
+    .pwc-letters28-hero,
+    .admin-inbox__header,
+    .lead-pipeline-header
+  ) {
+  min-height: 0;
+  margin-bottom: 14px;
+  border-radius: 20px;
+  padding: clamp(20px, 2.6vw, 30px);
+}
+
+body.admin-app-mode
+  :where(
+    .learning-library-header,
+    .membership-circle-header,
+    .circle-admin-header,
+    .automation-studio-header,
+    .onboarding-studio-header,
+    .pwc-assets26-hero,
+    .pwc-letters28-hero,
+    .admin-inbox__header,
+    .lead-pipeline-header
+  )
+  h1 {
+  font-size: clamp(2.25rem, 4vw, 3.4rem);
+  line-height: 0.96;
+}
+
+body.admin-app-mode
+  :where(
+    .learning-library-header,
+    .membership-circle-header,
+    .circle-admin-header,
+    .automation-studio-header,
+    .onboarding-studio-header,
+    .pwc-assets26-hero,
+    .pwc-letters28-hero,
+    .admin-inbox__header,
+    .lead-pipeline-header
+  )
+  p:not(.eyebrow):not(.admin-eyebrow):not(.pwc-assets26-eyebrow) {
+  max-width: 680px;
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+body.admin-app-mode
+  :where(.learning-library-header__status, .membership-circle-header__status) {
+  min-width: 190px;
+  border-radius: 14px;
+  padding: 12px 14px;
+}
+
+body.admin-app-mode
+  :where(
+    .learning-library-metrics,
+    .membership-metrics,
+    .circle-admin-metrics,
+    .automation-studio-metrics,
+    .onboarding-studio-metrics,
+    .pwc-assets26-metrics,
+    .admin-inbox__metrics,
+    .lead-pipeline-metrics,
+    .pwc-scheduler-metrics,
+    .team-management-stats
+  ) {
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+body.admin-app-mode
+  :where(
+    .learning-library-metrics,
+    .membership-metrics,
+    .circle-admin-metrics,
+    .automation-studio-metrics,
+    .onboarding-studio-metrics,
+    .pwc-assets26-metrics,
+    .admin-inbox__metrics,
+    .lead-pipeline-metrics,
+    .pwc-scheduler-metrics,
+    .team-management-stats
+  )
+  > :where(article, button) {
+  min-height: 78px;
+  border-radius: 15px;
+  padding: 13px 15px;
+}
+
+body.admin-app-mode
+  :where(
+    .learning-library-metrics,
+    .membership-metrics,
+    .circle-admin-metrics,
+    .automation-studio-metrics,
+    .onboarding-studio-metrics,
+    .pwc-assets26-metrics,
+    .admin-inbox__metrics,
+    .lead-pipeline-metrics,
+    .pwc-scheduler-metrics,
+    .team-management-stats
+  )
+  > :where(article, button)
+  > span {
+  margin-bottom: 5px;
+  font-size: 8px;
+}
+
+body.admin-app-mode
+  :where(
+    .learning-library-metrics,
+    .membership-metrics,
+    .circle-admin-metrics,
+    .automation-studio-metrics,
+    .onboarding-studio-metrics,
+    .pwc-assets26-metrics,
+    .admin-inbox__metrics,
+    .lead-pipeline-metrics,
+    .pwc-scheduler-metrics,
+    .team-management-stats
+  )
+  > :where(article, button)
+  > strong {
+  font-size: clamp(1.55rem, 2.2vw, 2rem);
+}
+
+body.admin-app-mode
+  :where(.pwc-assets26-metrics, .pwc-scheduler-metrics, .team-management-stats)
+  small {
+  margin-top: 4px;
+  font-size: 8.5px;
+  line-height: 1.35;
+}
+
+body.admin-app-mode
+  :where(
+    .learning-library-layout,
+    .membership-circle-layout,
+    .circle-admin-layout,
+    .automation-studio-layout,
+    .onboarding-studio-layout
+  ) {
+  grid-template-columns: minmax(235px, 285px) minmax(0, 1fr);
+  gap: 14px;
+}
+
+body.admin-app-mode
+  :where(
+    .learning-library-sidebar,
+    .membership-sidebar,
+    .circle-admin-sidebar,
+    .automation-workflow-list,
+    .onboarding-studio-list,
+    .learning-library-workspace,
+    .membership-workspace,
+    .circle-admin-workspace,
+    .automation-studio-workspace,
+    .onboarding-template-editor
+  ) {
+  border-radius: 17px;
+}
+
+body.admin-app-mode
+  :where(
+    .learning-library-course-list,
+    .membership-plan-list,
+    .circle-admin-post-list,
+    .automation-workflow-list-body
+  ) {
+  max-height: min(56vh, 560px);
+}
+
+body.admin-app-mode
+  :where(
+    .learning-library-empty,
+    .learning-library-empty.is-small,
+    .membership-empty-state,
+    .membership-empty-state.is-large,
+    .membership-empty-state.is-small,
+    .circle-empty-card,
+    .automation-studio-empty,
+    .onboarding-empty
+  ) {
+  min-height: 132px;
+  padding: 24px 18px;
+}
+
+body.admin-app-mode
+  :where(
+    .learning-course-form,
+    .learning-curriculum,
+    .learning-access-panel,
+    .membership-plan-form,
+    .membership-members-panel,
+    .membership-content-grid,
+    .membership-updates-layout,
+    .circle-composer-card,
+    .circle-moderation-layout,
+    .automation-workflow-editor,
+    .automation-enrollment-panel
+  ) {
+  padding: clamp(16px, 2vw, 22px);
+}
+
+body.admin-app-mode
+  :where(
+    .circle-composer-card,
+    .automation-workflow-editor,
+    .onboarding-template-editor,
+    .lead-pipeline-panel
+  )
+  textarea {
+  min-height: 96px;
+}
+
+body.admin-app-mode .circle-composer-card textarea[rows="10"] {
+  min-height: 170px;
+}
+
+body.admin-app-mode .circle-composer-welcome,
+body.admin-app-mode .onboarding-start-card {
+  min-height: 250px;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 14px;
+  padding: 36px;
+  color: var(--admin-muted);
+  text-align: center;
+}
+
+body.admin-app-mode
+  :where(.circle-composer-welcome, .onboarding-start-card)
+  > span {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  place-items: center;
+  border-radius: 50%;
+  background: rgba(200, 169, 106, 0.14);
+  color: var(--admin-gold-deep);
+}
+
+body.admin-app-mode
+  :where(.circle-composer-welcome, .onboarding-start-card)
+  h2 {
+  margin: 4px 0 6px;
+  color: var(--admin-ink);
+  font-size: clamp(1.65rem, 2.4vw, 2.2rem);
+}
+
+body.admin-app-mode
+  :where(.circle-composer-welcome, .onboarding-start-card)
+  p:last-child {
+  max-width: 520px;
+  margin: 0;
+}
+
+body.admin-app-mode
+  :where(.circle-composer-welcome, .onboarding-start-card)
+  > button {
+  border-color: transparent;
+  background: var(--admin-burgundy);
+  color: #fff9f3;
+}
+
+body.admin-app-mode .pwc-assets26-page {
+  padding-top: 22px;
+  padding-bottom: 52px;
+}
+
+body.admin-app-mode .pwc-assets26-workspace {
+  grid-template-columns: minmax(280px, 0.7fr) minmax(0, 1.3fr);
+  gap: 14px;
+}
+
+body.admin-app-mode .pwc-assets26-detail,
+body.admin-app-mode .pwc-assets26-library {
+  border-radius: 17px;
+}
+
+body.admin-app-mode .pwc-assets26-facts {
+  gap: 7px;
+  padding: 12px 14px;
+}
+
+body.admin-app-mode .pwc-assets26-panel {
+  padding: 16px;
+}
+
+body.admin-app-mode .pwc-assets26-bulk-disclosure {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 12px;
+  border-top: 1px solid var(--admin-border);
+  padding-top: 12px;
+}
+
+body.admin-app-mode .pwc-assets26-bulk-disclosure span {
+  color: var(--admin-muted);
+  font-size: 9px;
+}
+
+body.admin-app-mode .pwc-assets26-bulk-workspace {
+  display: grid;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+body.admin-app-mode .pwc-assets26-client-options {
+  max-height: 260px;
+}
+
+body.admin-app-mode .lead-pipeline-workbench {
+  display: grid;
+  grid-template-columns: minmax(290px, 0.42fr) minmax(0, 1.58fr);
+  align-items: start;
+  gap: 14px;
+}
+
+body.admin-app-mode .lead-pipeline-workbench .lead-pipeline-board {
+  position: sticky;
+  top: 18px;
+  display: block;
+  overflow-x: visible;
+  margin: 0;
+  padding: 0;
+}
+
+body.admin-app-mode .lead-pipeline-workbench .lead-pipeline-column {
+  width: 100%;
+}
+
+body.admin-app-mode .lead-pipeline-workbench .lead-pipeline-column-body {
+  max-height: min(64vh, 660px);
+}
+
+body.admin-app-mode .lead-pipeline-workspace {
+  margin-top: 0;
+  border-radius: 18px;
+}
+
+body.admin-app-mode .lead-pipeline-detail-heading,
+body.admin-app-mode .lead-pipeline-panel {
+  padding: 18px;
+}
+
+body.admin-app-mode .lead-pipeline-placeholder {
+  min-height: 280px;
+}
+
+body.admin-app-mode .pwc-scheduler-page {
+  padding-bottom: 52px;
+}
+
+body.admin-app-mode .pwc-scheduler-hero {
+  min-height: 0;
+  border-radius: 20px;
+  padding: 24px 28px;
+}
+
+body.admin-app-mode .pwc-scheduler-section-heading h2 {
+  font-size: clamp(2rem, 3vw, 2.8rem);
+}
+
+body.admin-app-mode .pwc-scheduler-inbox-layout {
+  grid-template-columns: minmax(320px, 0.7fr) minmax(0, 1.3fr);
+  gap: 14px;
+}
+
+body.admin-app-mode .pwc-scheduler-panel {
+  border-radius: 18px;
+}
+
+body.admin-app-mode .pwc-scheduler-request-panel {
+  position: sticky;
+  top: 18px;
+}
+
+body.admin-app-mode .pwc-scheduler-panel-header {
+  min-height: 68px;
+  padding: 16px 18px;
+}
+
+body.admin-app-mode .pwc-scheduler-request-list {
+  max-height: min(65vh, 680px);
+  padding: 10px;
+}
+
+body.admin-app-mode .pwc-scheduler-request-card {
+  grid-template-columns: 40px minmax(0, 1fr);
+  min-height: 72px;
+  gap: 10px;
+  padding: 11px 12px;
+}
+
+body.admin-app-mode .pwc-scheduler-request-meta {
+  grid-column: 2;
+  align-items: center;
+  grid-auto-flow: column;
+  justify-content: start;
+}
+
+body.admin-app-mode .pwc-scheduler-review-body {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  padding: 18px;
+}
+
+body.admin-app-mode .pwc-scheduler-review-intro,
+body.admin-app-mode .pwc-scheduler-detail-grid,
+body.admin-app-mode .pwc-scheduler-notes-form {
+  grid-column: 1 / -1;
+}
+
+/* Inbox no longer creates a full-screen blank canvas when it is empty. */
+body.admin-app-mode .admin-inbox {
+  padding-bottom: 52px;
+}
+
+body.admin-app-mode .admin-inbox__workspace {
+  min-height: 390px;
+  height: min(620px, calc(100vh - 190px));
+  border-radius: 18px;
+}
+
+body.admin-app-mode .admin-inbox__metrics > button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-width: 0;
+  border: 1px solid var(--admin-border);
+  background: rgba(255, 252, 249, 0.82);
+  color: inherit;
+  text-align: left;
+  box-shadow: var(--admin-shadow);
+}
+
+body.admin-app-mode .admin-inbox__metrics > button:hover,
+body.admin-app-mode .admin-inbox__metrics > button.is-attention {
+  border-color: rgba(168, 121, 57, 0.28);
+  background: rgba(200, 169, 106, 0.1);
+  transform: none;
+}
+
+body.admin-app-mode
+  .admin-inbox__workspace:has(.admin-inbox__list .admin-inbox__empty) {
+  height: 390px;
+}
+
+body.admin-app-mode .admin-inbox__empty.is-large {
+  min-height: 260px;
+}
+
+body.admin-app-mode .team-management-page {
+  padding-top: 22px;
+  padding-bottom: 52px;
+}
+
+body.admin-app-mode .team-management-hero {
+  min-height: 0;
+  border-radius: 20px;
+  padding: 24px 28px;
+}
+
+body.admin-app-mode .team-management-layout {
+  grid-template-columns: minmax(270px, 0.65fr) minmax(0, 1.35fr);
+  gap: 14px;
+}
+
+body.admin-app-mode :where(.team-directory-panel, .team-workspace-panel) {
+  border-radius: 18px;
+}
+
+body.admin-app-mode .team-directory-list {
+  max-height: min(60vh, 620px);
+}
+
+body.admin-app-mode .team-member-header,
+body.admin-app-mode .team-member-form,
+body.admin-app-mode .team-workspace-panel > form {
+  padding: 18px;
+}
+
+body.admin-app-mode .automation-step-card {
+  padding: 14px;
+}
+
+body.admin-app-mode .automation-step-card textarea {
+  min-height: 82px;
+}
+
+body.admin-app-mode .pwc-letters28-page {
+  padding-top: 22px;
+  padding-bottom: 52px;
+}
+
+body.admin-app-mode .pwc-phase35-letter-library {
+  gap: 10px;
+}
+
+body.admin-app-mode .pwc-phase35-create-panel {
+  justify-self: stretch;
+  width: 100%;
+}
+
+body.admin-app-mode .pwc-letters28-empty {
+  min-height: 90px;
+}
+
+/* Founder keeps the calm tone while reducing travel and repeated chrome. */
+body.admin-app-mode .founder-home__topbar {
+  min-height: 62px;
+  padding-block: 9px;
+}
+
+body.admin-app-mode .founder-home__shell {
+  padding-top: 32px;
+  padding-bottom: 58px;
+}
+
+body.admin-app-mode .founder-home__intro {
+  margin-bottom: 20px;
+}
+
+body.admin-app-mode .founder-home__intro h1 {
+  font-size: clamp(2.5rem, 4.4vw, 3.55rem);
+}
+
+body.admin-app-mode .founder-home__task-nav {
+  margin-bottom: 12px;
+}
+
+body.admin-app-mode .founder-home__pulse > article {
+  border-radius: 16px;
+  padding: 15px 17px;
+}
+
+body.admin-app-mode .founder-home__panel {
+  border-radius: 18px;
+  padding: 22px;
+}
+
+@media (max-width: 1180px) {
+  body.admin-app-mode .lead-pipeline-workbench,
+  body.admin-app-mode .pwc-scheduler-inbox-layout,
+  body.admin-app-mode .team-management-layout,
+  body.admin-app-mode .pwc-assets26-workspace {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  body.admin-app-mode .lead-pipeline-workbench .lead-pipeline-board,
+  body.admin-app-mode .pwc-scheduler-request-panel {
+    position: relative;
+    top: auto;
+  }
+
+  body.admin-app-mode .lead-pipeline-workbench .lead-pipeline-board {
+    display: grid;
+    grid-auto-columns: minmax(250px, 0.8fr);
+    grid-auto-flow: column;
+    overflow-x: auto;
+    padding-bottom: 8px;
+  }
+}
+
+@media (max-width: 820px) {
+  body.admin-app-mode
+    :where(
+      .learning-library-header,
+      .membership-circle-header,
+      .circle-admin-header,
+      .automation-studio-header,
+      .onboarding-studio-header,
+      .pwc-assets26-hero,
+      .pwc-letters28-hero,
+      .admin-inbox__header,
+      .lead-pipeline-header
+    ) {
+    grid-template-columns: 1fr;
+    align-items: start;
+    gap: 16px;
+  }
+
+  body.admin-app-mode
+    :where(
+      .learning-library-metrics,
+      .membership-metrics,
+      .circle-admin-metrics,
+      .automation-studio-metrics,
+      .onboarding-studio-metrics,
+      .pwc-assets26-metrics,
+      .admin-inbox__metrics,
+      .lead-pipeline-metrics,
+      .pwc-scheduler-metrics,
+      .team-management-stats
+    ) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  body.admin-app-mode
+    :where(
+      .learning-library-layout,
+      .membership-circle-layout,
+      .circle-admin-layout,
+      .automation-studio-layout,
+      .onboarding-studio-layout
+    ) {
+    grid-template-columns: 1fr;
+  }
+
+  body.admin-app-mode
+    :where(
+      .learning-library-sidebar,
+      .membership-sidebar,
+      .circle-admin-sidebar,
+      .automation-workflow-list,
+      .onboarding-studio-list
+    ) {
+    position: relative;
+    top: auto;
+  }
+
+  body.admin-app-mode .admin-inbox__workspace {
+    height: auto;
+    min-height: 0;
+    grid-template-columns: 1fr;
+  }
+
+  body.admin-app-mode .admin-inbox__list {
+    max-height: 320px;
+    border-right: 0;
+    border-bottom: 1px solid var(--admin-border);
+  }
+
+  body.admin-app-mode .pwc-scheduler-review-body {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 560px) {
+  body.admin-app-mode
+    :where(
+      .learning-library-metrics,
+      .membership-metrics,
+      .circle-admin-metrics,
+      .automation-studio-metrics,
+      .onboarding-studio-metrics,
+      .pwc-assets26-metrics,
+      .admin-inbox__metrics,
+      .lead-pipeline-metrics,
+      .pwc-scheduler-metrics,
+      .team-management-stats
+    ) {
+    grid-template-columns: 1fr;
+  }
+
+  body.admin-app-mode .founder-home__shell {
+    width: min(100% - 24px, 1180px);
+  }
+}
+/* phase-50r1-final-usability-repair-end */
+
+/* phase-51-guided-accessibility-start */
+body.admin-app-mode .pwc-nav39-footer-actions {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.pwc-help51-layer {
+  position: fixed;
+  z-index: 2400;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+}
+
+.pwc-help51-backdrop {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  border-radius: 0;
+  background: rgba(32, 20, 24, 0.68);
+  backdrop-filter: blur(9px);
+  cursor: default;
+}
+
+.pwc-help51-dialog {
+  position: relative;
+  width: min(100%, 680px);
+  max-height: min(88vh, 760px);
+  overflow-y: auto;
+  border: 1px solid rgba(200, 169, 106, 0.36);
+  border-radius: 22px;
+  background: #fffaf6;
+  color: var(--admin-ink-soft);
+  box-shadow: 0 34px 90px rgba(31, 19, 23, 0.34);
+}
+
+.pwc-help51-header {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr) 38px;
+  align-items: center;
+  gap: 13px;
+  border-bottom: 1px solid var(--admin-border);
+  padding: 18px 20px;
+}
+
+.pwc-help51-header > span {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--admin-burgundy);
+  color: #fffaf6;
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 24px;
+}
+
+.pwc-help51-header > div {
+  min-width: 0;
+}
+
+.pwc-help51-header small,
+.pwc-help51-steps small {
+  color: var(--admin-gold-deep);
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.pwc-help51-header h2,
+.pwc-help51-steps h3 {
+  margin: 2px 0 0;
+  color: var(--admin-ink);
+}
+
+.pwc-help51-header h2 {
+  overflow-wrap: anywhere;
+  font-size: clamp(1.65rem, 3vw, 2.15rem);
+}
+
+.pwc-help51-header > button {
+  width: 38px;
+  min-height: 38px;
+  border: 1px solid var(--admin-border);
+  border-radius: 50%;
+  background: #fff;
+  color: var(--admin-burgundy);
+  padding: 0;
+  font-size: 18px;
+}
+
+.pwc-help51-description {
+  margin: 0;
+  border-bottom: 1px solid var(--admin-border);
+  padding: 16px 20px;
+  color: var(--admin-muted);
+  font-size: 12px;
+  line-height: 1.65;
+}
+
+.pwc-help51-steps {
+  display: grid;
+  grid-template-columns: 150px minmax(0, 1fr);
+  gap: 20px;
+  padding: 20px;
+}
+
+.pwc-help51-steps h3 {
+  font-size: 1.55rem;
+}
+
+.pwc-help51-steps ol {
+  display: grid;
+  gap: 9px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: help-step;
+}
+
+.pwc-help51-steps li {
+  position: relative;
+  min-height: 38px;
+  border: 1px solid var(--admin-border);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.7);
+  padding: 10px 12px 10px 48px;
+  font-size: 11px;
+  line-height: 1.55;
+  counter-increment: help-step;
+}
+
+.pwc-help51-steps li::before {
+  position: absolute;
+  top: 9px;
+  left: 10px;
+  display: grid;
+  width: 26px;
+  height: 26px;
+  place-items: center;
+  border-radius: 50%;
+  background: rgba(200, 169, 106, 0.16);
+  color: #76582f;
+  content: counter(help-step);
+  font-weight: 800;
+}
+
+.pwc-help51-safety {
+  display: grid;
+  gap: 4px;
+  margin: 0 20px 20px;
+  border: 1px solid rgba(168, 121, 57, 0.24);
+  border-radius: 13px;
+  background: rgba(200, 169, 106, 0.1);
+  padding: 12px 14px;
+}
+
+.pwc-help51-safety strong {
+  color: #6e502c;
+  font-size: 10px;
+}
+
+.pwc-help51-safety p {
+  margin: 0;
+  color: #745f49;
+  font-size: 10px;
+  line-height: 1.55;
+}
+
+.pwc-help51-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  border-top: 1px solid var(--admin-border);
+  background: rgba(247, 242, 236, 0.58);
+  padding: 15px 20px;
+}
+
+.pwc-help51-footer p {
+  max-width: 280px;
+  margin: 0;
+  color: var(--admin-muted);
+  font-size: 9px;
+  line-height: 1.55;
+}
+
+.pwc-help51-footer kbd {
+  border: 1px solid var(--admin-border);
+  border-radius: 5px;
+  background: #fff;
+  padding: 2px 5px;
+  color: var(--admin-ink-soft);
+  font: inherit;
+  font-weight: 800;
+}
+
+.pwc-help51-footer > div {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.pwc-help51-footer button {
+  min-height: 39px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: var(--admin-burgundy);
+  color: #fffaf6;
+  padding: 8px 14px;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.pwc-help51-footer button.is-secondary {
+  border-color: var(--admin-border);
+  background: #fff;
+  color: var(--admin-burgundy);
+}
+
+@media (max-width: 820px) {
+  body.admin-app-mode
+    .pwc-admin-main
+    :where(
+      button,
+      a[role="button"],
+      input:not([type="checkbox"]):not([type="radio"]),
+      select
+    ) {
+    min-height: 44px;
+  }
+
+  .pwc-help51-steps {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+}
+
+@media (max-width: 560px) {
+  .pwc-help51-layer {
+    align-items: end;
+    padding: 0;
+  }
+
+  .pwc-help51-dialog {
+    width: 100%;
+    max-height: 92vh;
+    border-radius: 20px 20px 0 0;
+  }
+
+  .pwc-help51-header,
+  .pwc-help51-description,
+  .pwc-help51-steps,
+  .pwc-help51-footer {
+    padding-inline: 16px;
+  }
+
+  .pwc-help51-safety {
+    margin-inline: 16px;
+  }
+
+  .pwc-help51-footer {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .pwc-help51-footer p {
+    max-width: none;
+  }
+
+  .pwc-help51-footer > div {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pwc-help51-layer *,
+  body.admin-app-mode .pwc-nav39-footer-actions * {
+    scroll-behavior: auto;
+    transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .pwc-help51-dialog,
+  .pwc-help51-steps li,
+  .pwc-help51-safety {
+    border: 1px solid CanvasText;
+  }
+}
+/* phase-51-guided-accessibility-end */
+
+/* phase-52-comfort-view-start */
+.pwc-comfort52-control {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  margin: 0 20px 20px;
+  border: 1px solid var(--admin-border);
+  border-radius: 14px;
+  background: #fff;
+  padding: 13px 14px;
+}
+
+.pwc-comfort52-control > div {
+  display: grid;
+  gap: 3px;
+}
+
+.pwc-comfort52-control strong {
+  color: var(--admin-ink);
+  font-size: 11px;
+}
+
+.pwc-comfort52-control p {
+  margin: 0;
+  color: var(--admin-muted);
+  font-size: 9px;
+  line-height: 1.5;
+}
+
+.pwc-comfort52-control > button {
+  display: inline-flex;
+  min-width: 84px;
+  min-height: 38px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px solid var(--admin-border);
+  border-radius: 999px;
+  background: rgba(247, 242, 236, 0.82);
+  color: var(--admin-muted);
+  padding: 7px 10px;
+  font-size: 9px;
+  font-weight: 800;
+}
+
+.pwc-comfort52-control > button > span {
+  position: relative;
+  width: 30px;
+  height: 18px;
+  border-radius: 999px;
+  background: #c9bdb7;
+  transition: background-color 160ms ease;
+}
+
+.pwc-comfort52-control > button i {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 2px 5px rgba(42, 25, 30, 0.22);
+  transition: transform 160ms ease;
+}
+
+.pwc-comfort52-control > button[aria-checked="true"] {
+  border-color: rgba(85, 113, 93, 0.28);
+  background: rgba(85, 113, 93, 0.09);
+  color: #486151;
+}
+
+.pwc-comfort52-control > button[aria-checked="true"] > span {
+  background: var(--admin-success);
+}
+
+.pwc-comfort52-control > button[aria-checked="true"] i {
+  transform: translateX(12px);
+}
+
+.pwc-comfort52-control em {
+  min-width: 20px;
+  font-style: normal;
+}
+
+body.admin-app-mode.admin-comfort-view
+  .pwc-admin-main
+  :where(p:not(.admin-eyebrow):not(.eyebrow):not([class*="eyebrow"]), li) {
+  font-size: max(12px, 0.75rem);
+  line-height: 1.65;
+}
+
+body.admin-app-mode.admin-comfort-view .pwc-admin-main :where(label, legend) {
+  font-size: max(11.5px, 0.72rem);
+  line-height: 1.5;
+}
+
+body.admin-app-mode.admin-comfort-view .pwc-admin-main :where(small, time) {
+  font-size: max(10.5px, 0.66rem);
+  line-height: 1.5;
+}
+
+body.admin-app-mode.admin-comfort-view
+  .pwc-admin-main
+  :where(input:not([type="checkbox"]):not([type="radio"]), select, textarea) {
+  min-height: 46px;
+  font-size: max(12px, 0.75rem);
+  line-height: 1.5;
+}
+
+body.admin-app-mode.admin-comfort-view .pwc-admin-main button {
+  min-height: 42px;
+  font-size: max(11px, 0.69rem);
+  line-height: 1.35;
+}
+
+body.admin-app-mode.admin-comfort-view .pwc-admin-main :where(th, dt) {
+  font-size: max(10px, 0.625rem);
+  line-height: 1.45;
+}
+
+body.admin-app-mode.admin-comfort-view .pwc-admin-main :where(td, dd) {
+  font-size: max(11.5px, 0.72rem);
+  line-height: 1.55;
+}
+
+body.admin-app-mode.admin-comfort-view
+  .pwc-admin-main
+  :where(.admin-eyebrow, .eyebrow, [class*="eyebrow"]) {
+  font-size: max(9px, 0.56rem);
+}
+
+body.admin-app-mode.admin-comfort-view
+  :where(
+    .pwc-nav33-primary a,
+    .pwc-nav33-group-links a,
+    .pwc-stream31-current a,
+    .pwc-stream31-tools-toggle
+  ) {
+  min-height: 44px;
+  font-size: 11px;
+}
+
+body.admin-app-mode.admin-comfort-view
+  :where(
+    .pwc-nav33-primary a span,
+    .pwc-nav33-group-links a,
+    .pwc-stream31-current strong,
+    .pwc-stream31-tools-toggle strong
+  ) {
+  font-size: 11px;
+}
+
+body.admin-app-mode.admin-comfort-view
+  :where(
+    .pwc-nav33-primary small,
+    .pwc-stream31-current small,
+    .pwc-stream31-tools-toggle small
+  ) {
+  font-size: 9px;
+}
+
+@media (max-width: 560px) {
+  .pwc-comfort52-control {
+    align-items: stretch;
+    flex-direction: column;
+    margin-inline: 16px;
+  }
+
+  .pwc-comfort52-control > button {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pwc-comfort52-control > button :where(span, i) {
+    transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .pwc-comfort52-control,
+  .pwc-comfort52-control > button {
+    border: 1px solid CanvasText;
+  }
+}
+/* phase-52-comfort-view-end */
+
+/* phase-53-visual-acceptance-start */
+
+body.admin-app-mode
+  :where(
+    .learning-library-header,
+    .membership-circle-header,
+    .circle-admin-header,
+    .automation-studio-header,
+    .onboarding-studio-header,
+    .pwc-assets26-hero,
+    .pwc-letters28-hero,
+    .admin-inbox__header,
+    .lead-pipeline-header
+  )
+  :where(h1, h2) {
+  color: #fff9f3;
+  overflow-wrap: anywhere;
+  text-wrap: balance;
+}
+
+body.admin-app-mode
+  :where(
+    .automation-studio-header-actions .pwc-admin-primary-button,
+    .circle-admin-header > div:last-child > button:last-child,
+    .onboarding-studio-header > button,
+    .pwc-assets26-hero-actions > button:not(.is-secondary)
+  ) {
+  border-color: rgba(255, 249, 243, 0.74);
+  background: #fff9f3;
+  color: var(--admin-burgundy);
+  box-shadow: 0 12px 28px -18px rgba(16, 8, 11, 0.8);
+}
+
+body.admin-app-mode
+  :where(
+    .automation-studio-header-actions .pwc-admin-primary-button,
+    .circle-admin-header > div:last-child > button:last-child,
+    .onboarding-studio-header > button,
+    .pwc-assets26-hero-actions > button:not(.is-secondary)
+  ):hover:not(:disabled) {
+  border-color: #fff;
+  background: #fff;
+  color: var(--admin-burgundy-deep);
+}
+
+body.admin-app-mode
+  :where(.automation-studio-metrics, .onboarding-studio-metrics)
+  > article {
+  min-width: 0;
+}
+
+body.admin-app-mode
+  :where(.automation-studio-metrics, .onboarding-studio-metrics)
+  > article
+  strong {
+  overflow-wrap: anywhere;
+}
+
+@media (min-width: 1081px) {
+  body.admin-app-mode
+    :where(.automation-studio-metrics, .onboarding-studio-metrics) {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+}
+
+@media (forced-colors: active) {
+  body.admin-app-mode
+    :where(
+      .automation-studio-header-actions .pwc-admin-primary-button,
+      .circle-admin-header > div:last-child > button:last-child,
+      .onboarding-studio-header > button,
+      .pwc-assets26-hero-actions > button:not(.is-secondary)
+    ) {
+    border: 1px solid ButtonText;
+  }
+}
+/* phase-53-visual-acceptance-end */
+
+/* founder-schedule-contrast-fix-start */
+
+body.admin-app-mode .founder-home__panel--schedule {
+  color: #fff8f3;
+}
+
+body.admin-app-mode
+  .founder-home__panel--schedule
+  .founder-home__panel-heading
+  h2 {
+  color: #fffaf6 !important;
+}
+
+body.admin-app-mode .founder-home__panel--schedule .founder-home__eyebrow,
+body.admin-app-mode
+  .founder-home__panel--schedule
+  .founder-home__panel-heading
+  a {
+  color: #f3c46b;
+}
+
+body.admin-app-mode
+  .founder-home__panel--schedule
+  .founder-home__panel-heading
+  a:hover {
+  color: #ffe1a3;
+}
+
+body.admin-app-mode .founder-home__panel--schedule .founder-home__empty {
+  border-color: rgba(255, 250, 246, 0.24);
+  background: rgba(255, 250, 246, 0.055);
+  color: #fff8f3;
+}
+
+body.admin-app-mode .founder-home__panel--schedule .founder-home__empty strong {
+  color: #fffaf6;
+}
+
+body.admin-app-mode .founder-home__panel--schedule .founder-home__empty p {
+  color: rgba(255, 244, 238, 0.88);
+}
+
+body.admin-app-mode
+  .founder-home__panel--schedule
+  .founder-home__session-time
+  strong,
+body.admin-app-mode
+  .founder-home__panel--schedule
+  .founder-home__session-copy
+  strong {
+  color: #fffaf6;
+}
+
+body.admin-app-mode
+  .founder-home__panel--schedule
+  .founder-home__session-time
+  small,
+body.admin-app-mode
+  .founder-home__panel--schedule
+  .founder-home__session-copy
+  span {
+  color: rgba(255, 244, 238, 0.78);
+}
+
+body.admin-app-mode .founder-home__panel--schedule .founder-home__session em {
+  color: #f3c46b;
+}
+
+/* founder-schedule-contrast-fix-end */
+
+/* founder-final-interaction-fix-start */
+
+/* Dark schedule card typography */
+body.admin-app-mode
+  .founder-home__panel--schedule
+  .founder-home__panel-heading
+  h2 {
+  color: #fffaf6 !important;
+}
+
+body.admin-app-mode .founder-home__panel--schedule .founder-home__empty strong {
+  color: #fffaf6 !important;
+}
+
+body.admin-app-mode .founder-home__panel--schedule .founder-home__empty p {
+  color: rgba(255, 244, 238, 0.9) !important;
+}
+
+/* Smooth, intentional Founder controls */
+body.admin-app-mode .founder-home__task-nav button,
+body.admin-app-mode .founder-home__top-actions button,
+body.admin-app-mode .founder-home__top-actions a,
+body.admin-app-mode .founder-home__primary-actions button,
+body.admin-app-mode .founder-home__primary-actions a {
+  transition:
+    background-color 180ms ease,
+    border-color 180ms ease,
+    color 180ms ease,
+    box-shadow 180ms ease,
+    transform 180ms ease;
+}
+
+/* Inactive controls use warm blush instead of broken-looking white */
+body.admin-app-mode
+  .founder-home__task-nav
+  button:not(.is-active):hover:not(:disabled),
+body.admin-app-mode .founder-home__top-actions button:hover:not(:disabled),
+body.admin-app-mode .founder-home__top-actions a:hover,
+body.admin-app-mode .founder-home__primary-actions button:hover:not(:disabled),
+body.admin-app-mode .founder-home__primary-actions a:hover {
+  border-color: rgba(119, 70, 80, 0.3) !important;
+  background: #eadbd5 !important;
+  color: #4c2831 !important;
+  box-shadow: 0 10px 22px -17px rgba(73, 38, 47, 0.65) !important;
+  transform: translateY(-1px);
+}
+
+/* Active workspace tab stays rich burgundy on hover */
+body.admin-app-mode .founder-home__task-nav button.is-active,
+body.admin-app-mode
+  .founder-home__task-nav
+  button.is-active:hover:not(:disabled) {
+  border-color: rgba(82, 42, 52, 0.9) !important;
+  background: linear-gradient(145deg, #58303a, #43242d) !important;
+  color: #fffaf6 !important;
+  box-shadow: 0 14px 26px -19px rgba(56, 28, 36, 0.92) !important;
+}
+
+body.admin-app-mode .founder-home__task-nav button.is-active strong,
+body.admin-app-mode .founder-home__task-nav button.is-active small {
+  color: inherit !important;
+}
+
+/* Sign-out remains distinct but still warm */
+body.admin-app-mode .founder-home__signout:hover:not(:disabled) {
+  border-color: rgba(150, 72, 85, 0.32) !important;
+  background: #f0dadd !important;
+  color: #823442 !important;
+}
+
+/* Schedule-card link stays gold on burgundy */
+body.admin-app-mode
+  .founder-home__panel--schedule
+  .founder-home__panel-heading
+  a:hover {
+  border-color: rgba(243, 196, 107, 0.42) !important;
+  background: rgba(243, 196, 107, 0.12) !important;
+  color: #ffe3a6 !important;
+  box-shadow: none !important;
+  transform: none;
+}
+
+/* Accessible keyboard focus */
+body.admin-app-mode .founder-home__task-nav button:focus-visible,
+body.admin-app-mode .founder-home__top-actions :is(button, a):focus-visible,
+body.admin-app-mode
+  .founder-home__primary-actions
+  :is(button, a):focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 3px rgba(255, 251, 247, 0.98),
+    0 0 0 6px rgba(190, 143, 79, 0.42) !important;
+}
+
+/* Disabled controls remain visibly disabled */
+body.admin-app-mode .founder-home button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+/* founder-final-interaction-fix-end */
+
+/* letters-broadcast-phase-5-editor-foundation-start */
+.pwc-letters28-production-preview,
+.pwc-letters28-plain-preview {
+  width: 100%;
+  min-height: 38rem;
+  border: 1px solid var(--let-line);
+  border-radius: 1rem;
+  background: #fff;
+  overflow: hidden;
+  box-shadow: 0 20px 55px rgba(54, 34, 41, 0.12);
+}
+.pwc-letters28-production-preview > header,
+.pwc-letters28-plain-preview > header {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.65rem 0.8rem;
+  border-bottom: 1px solid var(--let-line);
+  background: #fffaf6;
+  color: var(--let-body);
+  font-size: 0.58rem;
+}
+.pwc-letters28-production-preview iframe {
+  display: block;
+  width: 100%;
+  height: 44rem;
+  border: 0;
+  background: #f6eee9;
+}
+.pwc-letters28-production-preview.is-mobile {
+  width: min(100%, 27rem);
+  margin-inline: auto;
+}
+.pwc-letters28-production-preview.is-mobile iframe {
+  height: 48rem;
+}
+.pwc-letters28-preview-error {
+  padding: 2rem;
+  color: #813342;
+  font-size: 0.68rem;
+}
+.pwc-letters28-plain-preview pre {
+  min-height: 34rem;
+  margin: 0;
+  padding: 1.25rem;
+  overflow: auto;
+  white-space: pre-wrap;
+  color: var(--let-ink);
+  font:
+    500 0.72rem/1.7 ui-monospace,
+    SFMono-Regular,
+    Consolas,
+    monospace;
+}
+.pwc-letters28-block-wrap {
+  position: relative;
+  padding-top: 0.35rem;
+}
+.pwc-letters28-insert-control {
+  position: absolute;
+  z-index: 4;
+  top: -0.45rem;
+  left: 50%;
+  translate: -50% 0;
+  min-height: 1.55rem !important;
+  padding: 0.2rem 0.5rem !important;
+  border: 1px solid var(--let-gold) !important;
+  border-radius: 999px !important;
+  background: #fff !important;
+  color: var(--let-wine) !important;
+  font-size: 0.5rem !important;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+.pwc-letters28-block-wrap:hover > .pwc-letters28-insert-control,
+.pwc-letters28-insert-control:focus-visible {
+  opacity: 1;
+}
+.pwc-letters28-selection-toolbar {
+  position: absolute;
+  z-index: 5;
+  top: 0.25rem;
+  left: 0.25rem;
+  display: flex;
+  gap: 0.2rem;
+  padding: 0.2rem;
+  border-radius: 0.45rem;
+  background: var(--let-wine);
+  box-shadow: 0 5px 18px rgba(45, 25, 32, 0.24);
+}
+.pwc-letters28-selection-toolbar button {
+  min-height: 1.7rem !important;
+  padding: 0.2rem 0.4rem !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  border-radius: 0.3rem !important;
+  background: transparent !important;
+  color: #fff !important;
+  font-size: 0.48rem !important;
+}
+.pwc-letters28-canvas [contenteditable="true"] {
+  display: inline;
+  min-width: 1ch;
+  outline: 0;
+  white-space: pre-wrap;
+}
+.pwc-letters28-canvas [contenteditable="true"]:focus {
+  border-radius: 0.2rem;
+  box-shadow: 0 0 0 3px rgba(199, 165, 99, 0.25);
+}
+.pwc-letters28-blocks input[type="range"] {
+  min-height: 1.2rem;
+  padding: 0;
+  accent-color: var(--let-wine);
+}
+@media (max-width: 1100px) {
+  .pwc-letters28-production-preview iframe {
+    height: 38rem;
+  }
+}
+/* letters-broadcast-phase-5-editor-foundation-end */
+/* letters-broadcast-phase-6-media-workflows-start */
+.pwc-asset-picker-heading {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 0.4rem;
+}
+.pwc-asset-picker-file {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+}
+.pwc-asset-picker-upload {
+  min-height: 2.7rem;
+  padding: 0.55rem 0.7rem;
+  border: 1px solid var(--admin-burgundy);
+  border-radius: 0.75rem;
+  background: var(--admin-burgundy);
+  color: #fff;
+  font-size: 0.58rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+.pwc-asset-picker-selected {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.55rem;
+  border: 1px solid rgba(64, 130, 91, 0.25);
+  border-radius: 0.75rem;
+  background: #eff8f1;
+}
+.pwc-asset-picker-selected img,
+.pwc-asset-picker-options button > img {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 0.45rem;
+  background: #eee;
+  object-fit: cover;
+}
+.pwc-asset-picker-selected span {
+  display: grid;
+  min-width: 0;
+  gap: 0.08rem;
+}
+.pwc-asset-picker-selected small,
+.pwc-asset-picker-selected em {
+  overflow: hidden;
+  color: var(--admin-body);
+  font-size: 0.54rem;
+  font-style: normal;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.pwc-asset-picker-selected button {
+  padding: 0.35rem 0.45rem;
+  border: 1px solid var(--admin-border);
+  border-radius: 0.5rem;
+  background: #fff;
+  color: var(--admin-burgundy);
+  font-size: 0.54rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+.pwc-asset-picker-options button {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+}
+.pwc-letters28-canvas-image {
+  display: inline-block;
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.45rem;
+}
+.pwc-letters28-canvas .is-caption {
+  margin-top: 0.45rem;
+  color: var(--let-muted);
+  font-size: 0.6rem;
+}
+@media (max-width: 520px) {
+  .pwc-asset-picker-heading {
+    grid-template-columns: 1fr;
+  }
+  .pwc-asset-picker-upload {
+    width: 100%;
+  }
+}
+/* letters-broadcast-phase-6-media-workflows-end */
+
+/* letters-broadcast-image-position-fonts-start */
+.pwc-asset-picker {
+  position: relative;
+  padding: 0.45rem;
+  border: 1px solid transparent;
+  border-radius: 0.9rem;
+  transition:
+    border-color 0.15s,
+    background 0.15s;
+}
+.pwc-asset-picker.is-drag-active {
+  border-color: var(--admin-gold-deep);
+  background: #fbf4e8;
+}
+.pwc-asset-picker-dropzone {
+  display: grid;
+  place-items: center;
+  gap: 0.15rem;
+  min-height: 5.4rem;
+  padding: 0.75rem;
+  border: 1px dashed rgba(77, 40, 50, 0.3);
+  border-radius: 0.75rem;
+  background: #fffaf5;
+  color: var(--admin-burgundy);
+  text-align: center;
+  cursor: pointer;
+}
+.pwc-asset-picker-dropzone span {
+  color: var(--admin-body);
+  font-size: 0.56rem;
+  font-weight: 600;
+}
+.pwc-letters28-image-frame {
+  display: inline-block;
+  max-width: 100%;
+  overflow: hidden;
+  border-radius: 0.75rem;
+  vertical-align: top;
+}
+.pwc-letters28-image-frame img {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  border: 0;
+}
+.pwc-letters28-image-frame.is-cropped img {
+  max-width: none;
+}
+.pwc-letters28-image-with-text {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.1rem;
+  text-align: left;
+}
+.pwc-letters28-image-with-text.is-right {
+  flex-direction: row-reverse;
+}
+.pwc-letters28-image-media {
+  flex: 0 0 auto;
+  min-width: 0;
+  width: var(--pwc-letters-image-width);
+}
+.pwc-letters28-image-side-text {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  font-size: 0.72rem;
+  line-height: 1.72;
+  white-space: pre-wrap;
+}
+@media (max-width: 600px) {
+  .pwc-letters28-image-with-text,
+  .pwc-letters28-image-with-text.is-right {
+    flex-direction: column;
+  }
+  .pwc-letters28-image-media {
+    width: 100%;
+  }
+  .pwc-letters28-image-side-text {
+    width: 100%;
+  }
+}
+.pwc-letters28-image-presets {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.3rem;
+}
+.pwc-letters28-image-presets button {
+  min-height: 2rem;
+  padding: 0.35rem;
+  border: 1px solid var(--let-line);
+  border-radius: 0.55rem;
+  background: #fff;
+  color: var(--let-wine);
+  font-size: 0.52rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+/* letters-broadcast-image-position-fonts-end */
+
+/* letters-broadcast-phase-10-final-refinement-start */
+.pwc-letters10-privacy-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  padding: 0.8rem 1rem;
+  border: 1px solid #b58a3d55;
+  border-radius: 0.85rem;
+  background: #fff9eccc;
+  color: #584b3c;
+  font-size: 0.6rem;
+  line-height: 1.55;
+}
+.pwc-letters10-privacy-note strong {
+  flex: none;
+  color: #512631;
+}
+.pwc-letters10-result-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  flex-wrap: wrap;
+}
+.pwc-letters10-result-actions a {
+  padding: 0.55rem 0.75rem;
+  border: 1px solid #512631;
+  border-radius: 0.7rem;
+  background: #512631;
+  color: #fff;
+  font-size: 0.6rem;
+  font-weight: 800;
+  text-decoration: none;
+}
+.pwc-letters10-result-actions a:first-child {
+  background: #fff;
+  color: #512631;
+}
+.pwc-letters10-compare {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.8rem;
+  border-bottom: 1px solid var(--let-line);
+  background: #fcf8f4;
+}
+.pwc-letters10-compare label {
+  display: grid;
+  gap: 0.25rem;
+  min-width: min(100%, 20rem);
+}
+.pwc-letters10-compare label span {
+  color: var(--let-muted);
+  font-size: 0.54rem;
+  font-weight: 800;
+}
+.pwc-letters10-compare select {
+  min-height: 2.5rem;
+}
+.pwc-letters10-compare p {
+  margin: 0;
+  color: var(--let-muted);
+  font-size: 0.58rem;
+}
+.pwc-letters28-result-metrics small {
+  color: var(--let-muted);
+  font-size: 0.48rem;
+  line-height: 1.3;
+}
+.pwc-letters28-results :is(a, button, select):focus-visible {
+  outline: 3px solid #b58a3d;
+  outline-offset: 2px;
+}
+@media (max-width: 760px) {
+  .pwc-letters10-privacy-note,
+  .pwc-letters10-compare {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .pwc-letters10-result-actions {
+    width: 100%;
+  }
+  .pwc-letters10-result-actions a {
+    flex: 1;
+    text-align: center;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pwc-letters10-result-actions a {
+    scroll-behavior: auto;
+  }
+}
+@media (forced-colors: active) {
+  .pwc-letters10-privacy-note,
+  .pwc-letters10-result-actions a {
+    border: 1px solid CanvasText;
+  }
+}
+/* letters-broadcast-phase-10-final-refinement-end */
+
+/*
+ * Admin Inbox comfort pass
+ * Loaded after AdminFreshUI.css and intentionally scoped to the Inbox only.
+ */
+
+body.admin-app-mode .admin-inbox {
+  width: min(100%, 1380px);
+  margin: 0 auto;
+  padding: clamp(18px, 2.2vw, 34px);
+  display: grid;
+  gap: 16px;
+}
+
+body.admin-app-mode .admin-inbox__header {
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 24px 28px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 24px;
+  background:
+    radial-gradient(
+      circle at 95% 20%,
+      rgba(200, 169, 106, 0.16),
+      transparent 28%
+    ),
+    linear-gradient(135deg, #542b36 0%, #3c252b 72%, #352126 100%);
+  box-shadow: 0 24px 54px -42px rgba(42, 21, 27, 0.82);
+}
+
+body.admin-app-mode .admin-inbox__header > div:first-child {
+  min-width: 0;
+}
+
+body.admin-app-mode .admin-inbox__header .eyebrow {
+  margin: 0 0 5px;
+  color: #e1bf77;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.17em;
+}
+
+body.admin-app-mode .admin-inbox__header h1 {
+  margin: 0;
+  color: #fff9f2;
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: clamp(40px, 4vw, 54px);
+  font-weight: 500;
+  line-height: 0.95;
+}
+
+body.admin-app-mode .admin-inbox__header h1 + p {
+  max-width: 650px;
+  margin: 10px 0 0;
+  color: rgba(255, 249, 242, 0.8);
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+body.admin-app-mode .admin-inbox__header-actions {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+body.admin-app-mode .admin-inbox__header-actions .btn {
+  min-height: 44px;
+  padding: 0 18px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 750;
+}
+
+body.admin-app-mode .admin-inbox__header-actions .btn.primary {
+  border-color: #dec17f;
+  background: #dec17f;
+  color: #352126;
+  box-shadow: none;
+}
+
+body.admin-app-mode .admin-inbox__header-actions .btn.secondary {
+  border-color: rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.11);
+  color: #fff9f2;
+}
+
+body.admin-app-mode .admin-inbox__metrics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+body.admin-app-mode .admin-inbox__metrics > button,
+body.admin-app-mode .admin-inbox__metrics > article {
+  min-height: 94px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 18px 20px;
+  border: 1px solid var(--admin-border);
+  border-radius: 18px;
+  background: rgba(255, 252, 249, 0.9);
+  box-shadow: 0 16px 34px -34px rgba(58, 37, 40, 0.65);
+  text-align: left;
+}
+
+body.admin-app-mode .admin-inbox__metrics > button {
+  cursor: pointer;
+}
+
+body.admin-app-mode .admin-inbox__metrics > button:hover,
+body.admin-app-mode .admin-inbox__metrics > button:focus-visible {
+  border-color: var(--admin-gold-border);
+  background: #fffaf4;
+  transform: translateY(-1px);
+}
+
+body.admin-app-mode .admin-inbox__metrics > .is-attention {
+  border-color: rgba(181, 136, 77, 0.36);
+  background: linear-gradient(145deg, #fffaf4, #f8efe4);
+}
+
+body.admin-app-mode .admin-inbox__metrics > .is-urgent {
+  border-color: rgba(153, 84, 92, 0.28);
+  background: linear-gradient(145deg, #fffaf7, #f8eeee);
+}
+
+body.admin-app-mode .admin-inbox__metrics span {
+  color: var(--admin-body);
+  font-size: 12px;
+  font-weight: 750;
+  letter-spacing: 0.02em;
+}
+
+body.admin-app-mode .admin-inbox__metrics strong {
+  color: var(--admin-ink);
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 36px;
+  font-weight: 600;
+  line-height: 1;
+}
+
+body.admin-app-mode .admin-inbox__toolbar {
+  min-height: 62px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px;
+  border: 1px solid var(--admin-border);
+  border-radius: 17px;
+  background: rgba(255, 252, 249, 0.9);
+}
+
+body.admin-app-mode .admin-inbox__search {
+  flex: 1 1 auto;
+}
+
+body.admin-app-mode .admin-inbox__search input {
+  width: 100%;
+  min-height: 44px;
+  padding: 0 15px;
+  border: 1px solid rgba(124, 81, 75, 0.16);
+  border-radius: 12px;
+  background: #fffefd;
+  color: var(--admin-ink);
+  font-size: 14px;
+}
+
+body.admin-app-mode .admin-inbox__toolbar .btn {
+  min-height: 44px;
+  padding: 0 16px;
+  border-radius: 12px;
+  font-size: 13px;
+}
+
+body.admin-app-mode .admin-inbox__filters {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 260px));
+  gap: 12px;
+  padding: 14px 16px;
+  border: 1px solid var(--admin-border);
+  border-radius: 16px;
+  background: rgba(255, 252, 249, 0.88);
+}
+
+body.admin-app-mode .admin-inbox__filters label,
+body.admin-app-mode .admin-inbox-thread__controls label,
+body.admin-app-mode .admin-inbox-reply label {
+  display: grid;
+  gap: 6px;
+}
+
+body.admin-app-mode .admin-inbox__filters label > span,
+body.admin-app-mode .admin-inbox-thread__controls label > span,
+body.admin-app-mode .admin-inbox-reply label > span {
+  color: var(--admin-muted);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+
+body.admin-app-mode .admin-inbox__filters select,
+body.admin-app-mode .admin-inbox-thread__controls select,
+body.admin-app-mode .admin-inbox-reply input,
+body.admin-app-mode .admin-inbox-reply textarea {
+  border: 1px solid rgba(124, 81, 75, 0.18);
+  background: #fffefd;
+  color: var(--admin-ink);
+  font: inherit;
+}
+
+body.admin-app-mode .admin-inbox__filters select,
+body.admin-app-mode .admin-inbox-thread__controls select,
+body.admin-app-mode .admin-inbox-reply input {
+  min-height: 42px;
+  padding: 0 12px;
+  border-radius: 11px;
+  font-size: 13px;
+}
+
+body.admin-app-mode .admin-inbox__count {
+  margin: -4px 4px 0 0;
+  color: var(--admin-muted);
+  font-size: 11px;
+  font-weight: 750;
+  letter-spacing: 0.08em;
+  text-align: right;
+  text-transform: uppercase;
+}
+
+body.admin-app-mode .admin-inbox__workspace {
+  min-height: 820px;
+  height: clamp(820px, calc(100vh - 170px), 980px);
+  display: grid;
+  grid-template-columns: minmax(320px, 355px) minmax(0, 1fr);
+  overflow: hidden;
+  border: 1px solid var(--admin-border);
+  border-radius: 20px;
+  background: #fffdfb;
+  box-shadow: 0 28px 60px -48px rgba(58, 37, 40, 0.55);
+}
+
+body.admin-app-mode .admin-inbox__list {
+  min-width: 0;
+  overflow-y: auto;
+  border-right: 1px solid var(--admin-border);
+  background: linear-gradient(180deg, #fbf7f2 0%, #f8f1ea 100%);
+  scrollbar-width: thin;
+  scrollbar-color: rgba(125, 86, 80, 0.28) transparent;
+}
+
+body.admin-app-mode .admin-inbox-list-item {
+  width: 100%;
+  min-height: 120px;
+  display: grid;
+  gap: 7px;
+  padding: 17px 18px;
+  border: 0;
+  border-bottom: 1px solid rgba(124, 81, 75, 0.12);
+  border-radius: 0;
+  background: transparent;
+  color: var(--admin-ink);
+  text-align: left;
+  cursor: pointer;
+}
+
+body.admin-app-mode .admin-inbox-list-item:hover {
+  background: rgba(255, 252, 249, 0.72);
+}
+
+body.admin-app-mode .admin-inbox-list-item.is-active {
+  border-left: 4px solid var(--admin-gold-deep);
+  padding-left: 14px;
+  background: linear-gradient(135deg, #fffdf9, #f8edde);
+  box-shadow: inset 0 0 0 1px rgba(200, 169, 106, 0.24);
+}
+
+body.admin-app-mode .admin-inbox-list-item__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+body.admin-app-mode .admin-inbox-list-item__top strong {
+  overflow: hidden;
+  color: var(--admin-ink);
+  font-size: 14px;
+  font-weight: 800;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+body.admin-app-mode .admin-inbox-list-item__top span {
+  min-width: 22px;
+  height: 22px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background: var(--admin-burgundy);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+body.admin-app-mode .admin-inbox-list-item h2 {
+  margin: 0;
+  overflow: hidden;
+  color: var(--admin-ink-soft);
+  font-family: "Manrope", system-ui, sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.35;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+body.admin-app-mode .admin-inbox-list-item > p {
+  display: -webkit-box;
+  margin: 0;
+  overflow: hidden;
+  color: var(--admin-body);
+  font-size: 12px;
+  line-height: 1.45;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+body.admin-app-mode .admin-inbox-list-item > div:last-child {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+body.admin-app-mode .admin-inbox-list-item em {
+  padding: 3px 7px;
+  border: 1px solid rgba(124, 81, 75, 0.15);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.7);
+  color: var(--admin-muted);
+  font-size: 9px;
+  font-style: normal;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+body.admin-app-mode .admin-inbox-list-item em.is-urgent,
+body.admin-app-mode .admin-inbox-list-item em.is-high {
+  border-color: rgba(153, 84, 92, 0.24);
+  color: var(--admin-danger);
+}
+
+body.admin-app-mode .admin-inbox-list-item time {
+  margin-left: auto;
+  overflow: hidden;
+  color: var(--admin-faint);
+  font-size: 10px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+body.admin-app-mode .admin-inbox__thread {
+  min-width: 0;
+  min-height: 0;
+  display: grid;
+  grid-template-rows: auto minmax(430px, 1fr) auto;
+  background: #fffdfb;
+}
+
+body.admin-app-mode .admin-inbox-thread__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 20px 22px;
+  border-bottom: 1px solid var(--admin-border);
+  background: rgba(255, 252, 249, 0.96);
+}
+
+body.admin-app-mode .admin-inbox-thread__header > div:first-child {
+  min-width: 0;
+}
+
+body.admin-app-mode .admin-inbox-thread__header p {
+  margin: 0 0 3px;
+  color: var(--admin-gold-deep);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+
+body.admin-app-mode .admin-inbox-thread__header h2 {
+  margin: 0;
+  overflow: hidden;
+  color: var(--admin-ink);
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 30px;
+  font-weight: 600;
+  line-height: 1.05;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+body.admin-app-mode .admin-inbox-thread__header a,
+body.admin-app-mode .admin-inbox-thread__header > div:first-child > span {
+  display: inline-block;
+  margin-top: 5px;
+  color: var(--admin-muted);
+  font-size: 12px;
+}
+
+body.admin-app-mode .admin-inbox-thread__controls {
+  flex: 0 0 auto;
+  display: grid;
+  grid-template-columns: 150px 210px auto;
+  align-items: end;
+  gap: 10px;
+}
+
+body.admin-app-mode .admin-inbox-thread__controls .btn {
+  min-height: 42px;
+  padding: 0 16px;
+  border-radius: 11px;
+  font-size: 12px;
+}
+
+body.admin-app-mode .admin-inbox-thread__messages {
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+  overflow-y: auto;
+  padding: 28px 30px;
+  background:
+    radial-gradient(
+      circle at 100% 0%,
+      rgba(200, 169, 106, 0.08),
+      transparent 28%
+    ),
+    linear-gradient(180deg, #fffdfb 0%, #faf6f1 100%);
+  scrollbar-width: thin;
+  scrollbar-color: rgba(125, 86, 80, 0.28) transparent;
+}
+
+body.admin-app-mode .admin-inbox-message {
+  width: fit-content;
+  max-width: min(74%, 720px);
+  padding: 13px 15px;
+  border: 1px solid rgba(124, 81, 75, 0.14);
+  border-radius: 17px 17px 17px 5px;
+  background: #fff;
+  box-shadow: 0 12px 30px -30px rgba(58, 37, 40, 0.56);
+}
+
+body.admin-app-mode .admin-inbox-message.is-admin,
+body.admin-app-mode .admin-inbox-message.is-owner,
+body.admin-app-mode .admin-inbox-message.is-staff,
+body.admin-app-mode .admin-inbox-message.is-developer {
+  margin-left: auto;
+  border-color: rgba(200, 169, 106, 0.3);
+  border-radius: 17px 17px 5px 17px;
+  background: #f9efe2;
+}
+
+body.admin-app-mode .admin-inbox-message.is-internal {
+  max-width: 82%;
+  border-color: rgba(181, 136, 77, 0.35);
+  background: #fff8df;
+}
+
+body.admin-app-mode .admin-inbox-message > div:first-child {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+body.admin-app-mode .admin-inbox-message strong {
+  color: var(--admin-ink);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+body.admin-app-mode .admin-inbox-message time {
+  color: var(--admin-faint);
+  font-size: 9px;
+  white-space: nowrap;
+}
+
+body.admin-app-mode .admin-inbox-message p {
+  margin: 7px 0 0;
+  color: var(--admin-ink-soft);
+  font-size: 13px;
+  line-height: 1.55;
+  white-space: pre-wrap;
+}
+
+body.admin-app-mode .admin-inbox-message a {
+  display: inline-flex;
+  margin-top: 9px;
+  color: var(--admin-burgundy);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+body.admin-app-mode .admin-inbox-reply {
+  display: grid;
+  gap: 10px;
+  padding: 14px 18px 16px;
+  border-top: 1px solid var(--admin-border);
+  background: rgba(255, 252, 249, 0.98);
+}
+
+body.admin-app-mode .admin-inbox-reply .admin-inbox__notice {
+  min-height: 0;
+  margin: 0;
+  padding: 9px 11px;
+  border: 1px solid rgba(85, 113, 93, 0.22);
+  border-radius: 10px;
+  background: rgba(85, 113, 93, 0.08);
+  color: #4d6855;
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+body.admin-app-mode .admin-inbox-reply__mode {
+  display: inline-flex;
+  width: fit-content;
+  padding: 3px;
+  border: 1px solid var(--admin-border);
+  border-radius: 999px;
+  background: #f8f2ed;
+}
+
+body.admin-app-mode .admin-inbox-reply__mode button {
+  min-height: 34px;
+  padding: 0 13px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--admin-muted);
+  font-size: 11px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+body.admin-app-mode .admin-inbox-reply__mode button.is-active {
+  background: var(--admin-burgundy);
+  color: #fff;
+}
+
+body.admin-app-mode .admin-inbox-reply textarea {
+  width: 100%;
+  min-height: 104px;
+  resize: vertical;
+  padding: 12px 14px;
+  border-radius: 13px;
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+body.admin-app-mode .admin-inbox-reply__attachments {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(180px, 0.38fr);
+  gap: 11px;
+}
+
+body.admin-app-mode .admin-inbox-reply > .btn.primary {
+  min-width: 150px;
+  min-height: 44px;
+  justify-self: end;
+  padding: 0 20px;
+  border-radius: 12px;
+  font-size: 13px;
+}
+
+body.admin-app-mode .admin-inbox-reply > .btn.primary:disabled {
+  opacity: 0.5;
+}
+
+body.admin-app-mode .admin-inbox__empty {
+  padding: 34px 22px;
+  color: var(--admin-muted);
+  font-size: 13px;
+  text-align: center;
+}
+
+body.admin-app-mode .admin-inbox__empty strong {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--admin-ink);
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 26px;
+  font-weight: 600;
+}
+
+body.admin-app-mode .admin-inbox__empty p {
+  margin: 0;
+}
+
+body.admin-app-mode .admin-inbox input:focus-visible,
+body.admin-app-mode .admin-inbox select:focus-visible,
+body.admin-app-mode .admin-inbox textarea:focus-visible,
+body.admin-app-mode .admin-inbox button:focus-visible,
+body.admin-app-mode .admin-inbox a:focus-visible {
+  outline: none;
+  box-shadow: var(--admin-focus);
+}
+
+@media (max-width: 1180px) {
+  body.admin-app-mode .admin-inbox__workspace {
+    grid-template-columns: minmax(280px, 315px) minmax(0, 1fr);
+  }
+
+  body.admin-app-mode .admin-inbox-thread__header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  body.admin-app-mode .admin-inbox-thread__controls {
+    width: 100%;
+    grid-template-columns: minmax(130px, 0.75fr) minmax(180px, 1fr) auto;
+  }
+}
+
+@media (max-width: 900px) {
+  body.admin-app-mode .admin-inbox__metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  body.admin-app-mode .admin-inbox__workspace {
+    height: auto;
+    min-height: 0;
+    grid-template-columns: 1fr;
+  }
+
+  body.admin-app-mode .admin-inbox__list {
+    max-height: 290px;
+    border-right: 0;
+    border-bottom: 1px solid var(--admin-border);
+  }
+
+  body.admin-app-mode .admin-inbox__thread {
+    min-height: 820px;
+  }
+}
+
+@media (max-width: 680px) {
+  body.admin-app-mode .admin-inbox {
+    padding: 14px;
+  }
+
+  body.admin-app-mode .admin-inbox__header {
+    align-items: flex-start;
+    flex-direction: column;
+    padding: 21px;
+  }
+
+  body.admin-app-mode .admin-inbox__header-actions {
+    width: 100%;
+  }
+
+  body.admin-app-mode .admin-inbox__header-actions .btn {
+    flex: 1 1 0;
+  }
+
+  body.admin-app-mode .admin-inbox__metrics {
+    grid-template-columns: 1fr 1fr;
+    gap: 9px;
+  }
+
+  body.admin-app-mode .admin-inbox__metrics > button,
+  body.admin-app-mode .admin-inbox__metrics > article {
+    min-height: 82px;
+    padding: 14px;
+  }
+
+  body.admin-app-mode .admin-inbox__toolbar {
+    align-items: stretch;
+    flex-wrap: wrap;
+  }
+
+  body.admin-app-mode .admin-inbox__search {
+    flex-basis: 100%;
+  }
+
+  body.admin-app-mode .admin-inbox__filters,
+  body.admin-app-mode .admin-inbox-thread__controls,
+  body.admin-app-mode .admin-inbox-reply__attachments {
+    grid-template-columns: 1fr;
+  }
+
+  body.admin-app-mode .admin-inbox-thread__header,
+  body.admin-app-mode .admin-inbox-thread__messages,
+  body.admin-app-mode .admin-inbox-reply {
+    padding-left: 15px;
+    padding-right: 15px;
+  }
+
+  body.admin-app-mode .admin-inbox-message {
+    max-width: 92%;
+  }
+
+  body.admin-app-mode .admin-inbox-reply > .btn.primary {
+    width: 100%;
+    justify-self: stretch;
+  }
+}
+
+/* admin-inbox-viewport-fit-pass */
+@media (min-width: 901px) {
+  body.admin-app-mode .admin-inbox__workspace {
+    min-height: 500px;
+    height: clamp(500px, calc(100vh - 355px), 720px);
+    height: clamp(500px, calc(100dvh - 355px), 720px);
+  }
+
+  body.admin-app-mode .admin-inbox__thread {
+    min-height: 0;
+    overflow: hidden;
+    grid-template-rows: auto minmax(140px, 1fr) auto;
+  }
+
+  body.admin-app-mode .admin-inbox-thread__messages {
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 24px 28px;
+  }
+
+  body.admin-app-mode .admin-inbox-reply {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 10px 12px;
+    padding: 13px 17px 15px;
+  }
+
+  body.admin-app-mode .admin-inbox-reply .admin-inbox__notice,
+  body.admin-app-mode .admin-inbox-reply__mode,
+  body.admin-app-mode .admin-inbox-reply > label {
+    grid-column: 1 / -1;
+  }
+
+  body.admin-app-mode .admin-inbox-reply__attachments {
+    grid-column: 1;
+    align-self: end;
+  }
+
+  body.admin-app-mode .admin-inbox-reply > .btn.primary {
+    grid-column: 2;
+    align-self: end;
+    margin: 0;
+  }
+
+  body.admin-app-mode .admin-inbox-reply textarea {
+    min-height: 88px;
+    max-height: 160px;
+  }
+}
+
+@media (max-width: 900px) {
+  body.admin-app-mode .admin-inbox__workspace {
+    height: auto;
+    min-height: 0;
+  }
+
+  body.admin-app-mode .admin-inbox__thread {
+    min-height: 680px;
+    grid-template-rows: auto minmax(260px, 1fr) auto;
+  }
+}
+
+/* admin-inbox-collapsible-composer */
+body.admin-app-mode .admin-inbox-reply__dock {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+body.admin-app-mode .admin-inbox-reply.is-collapsed {
+  display: block;
+  padding: 9px 11px;
+  background: rgba(255, 252, 249, 0.99);
+}
+
+body.admin-app-mode .admin-inbox-reply.is-collapsed .admin-inbox-reply__dock {
+  min-height: 48px;
+}
+
+body.admin-app-mode .admin-inbox-reply__preview {
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0 14px;
+  overflow: hidden;
+  border: 1px solid rgba(124, 81, 75, 0.16);
+  border-radius: 11px;
+  background: #fffefd;
+  color: var(--admin-muted);
+  cursor: text;
+  text-align: left;
+}
+
+body.admin-app-mode .admin-inbox-reply__preview:hover,
+body.admin-app-mode .admin-inbox-reply__preview:focus-visible {
+  border-color: var(--admin-gold-border);
+  background: #fffaf4;
+}
+
+body.admin-app-mode .admin-inbox-reply__preview span {
+  overflow: hidden;
+  font-size: 12px;
+  line-height: 1.4;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+body.admin-app-mode .admin-inbox-reply__preview strong {
+  flex: 0 0 auto;
+  color: var(--admin-gold-deep);
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+body.admin-app-mode .admin-inbox-reply__toggle {
+  flex: 0 0 auto;
+  min-height: 40px;
+  padding: 0 14px;
+  border: 1px solid rgba(124, 81, 75, 0.18);
+  border-radius: 11px;
+  background: #fffefd;
+  color: var(--admin-burgundy);
+  font-size: 11px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+body.admin-app-mode .admin-inbox-reply__toggle:hover,
+body.admin-app-mode .admin-inbox-reply__toggle:focus-visible {
+  border-color: var(--admin-gold-border);
+  background: var(--admin-surface-gold);
+}
+
+body.admin-app-mode .admin-inbox-reply__toggle:disabled {
+  cursor: wait;
+  opacity: 0.55;
+}
+
+body.admin-app-mode .admin-inbox-reply.is-expanded .admin-inbox-reply__dock {
+  margin-bottom: 1px;
+}
+
+body.admin-app-mode .admin-inbox-reply.is-expanded .admin-inbox-reply__toggle {
+  margin-left: auto;
+}
+
+@media (min-width: 901px) {
+  body.admin-app-mode .admin-inbox-reply.is-collapsed {
+    position: relative;
+    z-index: 2;
+  }
+
+  body.admin-app-mode .admin-inbox__thread {
+    grid-template-rows: auto minmax(220px, 1fr) auto;
+  }
+}
+
+@media (max-width: 900px) {
+  body.admin-app-mode .admin-inbox-reply {
+    position: sticky;
+    bottom: 0;
+    z-index: 8;
+    box-shadow: 0 -18px 36px -30px rgba(58, 37, 40, 0.75);
+  }
+
+  body.admin-app-mode .admin-inbox-reply.is-expanded {
+    max-height: min(72dvh, 620px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+}
+
+/* admin-inbox-expanded-composer-fit */
+@media (min-width: 901px) {
+  body.admin-app-mode .admin-inbox__thread:has(.admin-inbox-reply.is-expanded) {
+    grid-template-rows: auto minmax(110px, 1fr) minmax(0, 280px);
+  }
+
+  body.admin-app-mode .admin-inbox-reply.is-expanded {
+    min-height: 0;
+    max-height: 280px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-gutter: stable;
+  }
+
+  body.admin-app-mode .admin-inbox-reply.is-expanded .admin-inbox-reply__dock {
+    position: sticky;
+    top: 0;
+    z-index: 4;
+    background: rgba(255, 252, 249, 0.98);
+  }
+}
+
+@media (min-width: 901px) and (min-height: 900px) {
+  body.admin-app-mode .admin-inbox__thread:has(.admin-inbox-reply.is-expanded) {
+    grid-template-rows: auto minmax(150px, 1fr) minmax(0, 340px);
+  }
+
+  body.admin-app-mode .admin-inbox-reply.is-expanded {
+    max-height: 340px;
+  }
+}
+
+/* letters-streamline-phase-a-start */
+
+/*
+ * Letters & Broadcasts
+ * Phase A: compact page header, navigation, command bar,
+ * progress indicator, and editor workspace spacing.
+ */
+
+.pwc-letters28-page {
+  width: min(100%, 1680px);
+  gap: 0.72rem;
+  padding-bottom: 3rem;
+}
+
+.pwc-letters28-hero {
+  min-height: 0;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 1.25rem;
+  padding: 1rem 1.25rem;
+  border-radius: 1.15rem;
+}
+
+.pwc-letters28-hero h1 {
+  margin: 0.18rem 0 0.3rem;
+  font-size: clamp(2rem, 3.1vw, 3.25rem);
+  line-height: 0.98;
+}
+
+.pwc-letters28-hero > div > p:last-child {
+  max-width: 48rem;
+  font-size: 0.68rem;
+  line-height: 1.5;
+}
+
+.pwc-letters28-hero aside {
+  min-width: 11.5rem;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.15rem 0.75rem;
+  padding: 0.65rem 0.8rem;
+  border-radius: 0.85rem;
+}
+
+.pwc-letters28-hero aside span {
+  grid-column: 1;
+}
+
+.pwc-letters28-hero aside strong {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  font-size: 2rem;
+}
+
+.pwc-letters28-hero aside small {
+  grid-column: 1;
+}
+
+.pwc-letters28-tabs.pwc-phase35-primary-tabs {
+  gap: 0.25rem;
+  margin: 0;
+  padding: 0.25rem;
+  border-radius: 0.78rem;
+}
+
+.pwc-letters28-tabs.pwc-phase35-primary-tabs > button {
+  min-height: 2.2rem;
+  padding: 0.4rem 0.7rem;
+  border-radius: 0.58rem;
+  font-size: 0.62rem;
+}
+
+.pwc-letters28-builder {
+  border-radius: 1rem;
+}
+
+.pwc-letters28-topbar {
+  position: sticky;
+  z-index: 20;
+  top: 0;
+  grid-template-columns:
+    auto
+    minmax(20rem, 1fr)
+    auto
+    minmax(0, auto);
+  gap: 0.5rem;
+  padding: 0.5rem;
+  background: rgba(255, 253, 250, 0.985);
+  box-shadow: 0 8px 24px rgba(50, 31, 38, 0.045);
+}
+
+.pwc-letters28-topbar button {
+  min-height: 2.2rem;
+  padding: 0.4rem 0.58rem;
+}
+
+.pwc-letters28-title-fields {
+  grid-template-columns: minmax(9rem, 0.72fr) minmax(15rem, 1.28fr);
+}
+
+.pwc-letters28-title-fields input {
+  min-height: 2.2rem;
+}
+
+.pwc-letters28-save-state {
+  min-width: 4.75rem;
+}
+
+.pwc-letters28-top-actions {
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.pwc-letters28-top-actions > div {
+  flex: none;
+}
+
+.pwc-letters28-flow {
+  justify-content: flex-start;
+  gap: 0.2rem;
+  padding: 0.34rem 0.55rem;
+}
+
+.pwc-letters28-flow span {
+  padding: 0.28rem 0.48rem;
+  font-size: 0.52rem;
+}
+
+.pwc-letters28-builder-grid {
+  grid-template-columns:
+    13rem
+    minmax(36rem, 1fr)
+    18rem;
+  min-height: 40rem;
+}
+
+.pwc-letters28-blocks > header {
+  padding: 0.7rem;
+}
+
+.pwc-letters28-blocks > header h2 {
+  font-size: 1.2rem;
+}
+
+.pwc-letters28-blocks > div {
+  gap: 0.3rem;
+  padding: 0.5rem;
+}
+
+.pwc-letters28-blocks > div button {
+  min-height: 3.55rem;
+  padding: 0.48rem;
+}
+
+.pwc-letters28-blocks > section {
+  gap: 0.45rem;
+  padding: 0.65rem;
+}
+
+.pwc-letters28-canvas-column {
+  gap: 0.5rem;
+  padding: 0.75rem;
+}
+
+.pwc-letters28-preview-text {
+  grid-template-columns: 7rem minmax(0, 1fr);
+}
+
+.pwc-letters28-preview-text input {
+  min-height: 2.3rem;
+}
+
+.pwc-letters28-canvas-shell {
+  min-height: 36rem;
+  padding: 0.85rem;
+  border-radius: 0.8rem;
+}
+
+.pwc-letters28-right-panel {
+  min-width: 0;
+}
+
+.pwc-letters28-settings,
+.pwc-letters28-recipient-panel,
+.pwc-letters28-review-panel,
+.pwc-letters28-test-panel,
+.pwc-letters28-send-panel {
+  gap: 0.65rem;
+  padding: 0.72rem;
+}
+
+.pwc-letters28-version-box > header {
+  padding: 0.58rem 0.72rem;
+}
+
+.pwc-letters28-version-box button {
+  padding: 0.48rem 0.72rem;
+}
+
+.pwc-letters28-template-save {
+  padding: 0.65rem;
+}
+
+@media (max-width: 1450px) {
+  .pwc-letters28-topbar {
+    grid-template-columns: auto minmax(18rem, 1fr) auto;
+  }
+
+  .pwc-letters28-top-actions {
+    grid-column: 1 / -1;
+  }
+
+  .pwc-letters28-builder-grid {
+    grid-template-columns:
+      12.5rem
+      minmax(32rem, 1fr)
+      17.5rem;
+  }
+}
+
+@media (max-width: 1180px) {
+  .pwc-letters28-builder-grid {
+    grid-template-columns: 12rem minmax(28rem, 1fr);
+  }
+
+  .pwc-letters28-right-panel {
+    grid-column: 1 / -1;
+    border-top: 1px solid var(--let-line);
+    border-left: 0;
+  }
+}
+
+@media (max-width: 760px) {
+  .pwc-letters28-hero {
+    grid-template-columns: 1fr;
+  }
+
+  .pwc-letters28-hero aside {
+    width: 100%;
+  }
+
+  .pwc-letters28-topbar {
+    position: static;
+    grid-template-columns: 1fr;
+  }
+
+  .pwc-letters28-title-fields {
+    grid-template-columns: 1fr;
+  }
+
+  .pwc-letters28-top-actions {
+    grid-column: auto;
+    justify-content: flex-start;
+  }
+
+  .pwc-letters28-builder-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* letters-streamline-phase-a-end */
+
+/* Modal dialog polish */
+.founder-calendar__modal-dialog {
+  border: none;
+  background: transparent;
+  padding: 0;
+  margin: auto;
+  max-width: 820px;
+  width: calc(100% - 48px);
+  overflow: visible;
+}
+
+.founder-calendar__modal-dialog::backdrop {
+  background-color: rgba(251, 246, 243, 0.85);
+  backdrop-filter: blur(12px);
+}
+
+.founder-calendar__modal-dialog > .founder-calendar__modal-content {
+  background: #ffffff;
+  border: 1px solid rgba(43, 27, 23, 0.08);
+  border-radius: 24px;
+  box-shadow: 0 32px 64px -16px rgba(43, 27, 23, 0.15),
+              0 16px 32px -12px rgba(43, 27, 23, 0.08),
+              0 0 0 1px rgba(255, 255, 255, 0.5) inset;
+  padding: 48px;
+  margin: 5vh auto;
+  animation: pwc-modal-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.founder-calendar__modal-dialog .founder-hours__weekly-card {
+  /* Override old card styles since the modal content wraps it */
+  border: none;
+  background: transparent;
+  border-radius: 0;
+  box-shadow: none;
+  padding: 0;
+  margin: 0;
+}
+
+@keyframes pwc-modal-in {
+  from { opacity: 0; transform: translateY(24px) scale(0.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+
+/* Modal internal layout polish */
+.founder-calendar__modal-content .founder-hours__card-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 32px;
+  margin-bottom: 32px;
+}
+
+.founder-calendar__modal-content .founder-hours__card-heading > div:first-child {
+  flex: 1;
+}
+
+.founder-calendar__modal-content .founder-hours__copy-action {
+  margin-left: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  text-align: right;
+  gap: 8px;
+}
+
+.founder-calendar__modal-content .founder-calendar__modal-close {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid rgba(43, 27, 23, 0.15);
+  background: transparent;
+  color: #2b1b17;
+  font-size: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+  margin-left: 16px;
+}
+
+.founder-calendar__modal-content .founder-calendar__modal-close:hover {
+  background: rgba(43, 27, 23, 0.05);
+}
+
+.founder-calendar__modal-content .founder-hours__card-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 32px;
+  padding-top: 32px;
+  border-top: 1px solid rgba(43, 27, 23, 0.08);
+}
+
+
+/* WindowEditor aesthetic improvements */
+body.admin-app-mode .founder-hours__editor {
+  margin-top: 24px;
+}
+
+body.admin-app-mode .founder-hours__presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+body.admin-app-mode .founder-hours__presets button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border: 1px solid rgba(43, 27, 23, 0.15);
+  border-radius: 30px;
+  background: #ffffff;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+body.admin-app-mode .founder-hours__presets button:hover {
+  background: #fbf6f3;
+  border-color: rgba(43, 27, 23, 0.3);
+}
+
+body.admin-app-mode .founder-hours__presets button.is-selected {
+  background: #f4eee9;
+  border-color: #2b1b17;
+  box-shadow: 0 0 0 1px #2b1b17 inset;
+}
+
+body.admin-app-mode .founder-hours__presets button strong {
+  font-weight: 600;
+  color: #2b1b17;
+  font-size: 14px;
+}
+
+body.admin-app-mode .founder-hours__presets button small {
+  color: #7c726c;
+  font-size: 13px;
+}
+
+body.admin-app-mode .founder-hours__window-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+body.admin-app-mode .founder-hours__window {
+  display: flex;
+  align-items: flex-end;
+  gap: 16px;
+}
+
+body.admin-app-mode .founder-hours__window label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+body.admin-app-mode .founder-hours__window label span {
+  font-size: 13px;
+  color: #574b46;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+body.admin-app-mode .founder-hours__window input[type="time"],
+body.admin-app-mode .founder-hours__window select {
+  padding: 10px 14px;
+  border: 1px solid rgba(43, 27, 23, 0.2);
+  border-radius: 8px;
+  font-size: 15px;
+  color: #2b1b17;
+  background: #ffffff;
+  min-width: 140px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05) inset;
+  transition: border-color 0.2s;
+}
+
+body.admin-app-mode .founder-hours__window input[type="time"]:focus,
+body.admin-app-mode .founder-hours__window select:focus {
+  outline: none;
+  border-color: #2b1b17;
+}
+
+body.admin-app-mode .founder-hours__window > span {
+  padding-bottom: 12px;
+  color: #7c726c;
+  font-weight: 500;
+}
+
+body.admin-app-mode .founder-hours__remove-window {
+  padding: 10px 16px;
+  border: none;
+  background: transparent;
+  color: #a8423f;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: background 0.2s;
+  width: auto;
+  min-height: auto;
+}
+
+body.admin-app-mode .founder-hours__remove-window:hover:not(:disabled) {
+  background: rgba(168, 66, 63, 0.1);
+}
+
+body.admin-app-mode .founder-hours__remove-window:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+body.admin-app-mode .founder-hours__add-window {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 20px;
+  border: 1px dashed rgba(43, 27, 23, 0.3);
+  border-radius: 30px;
+  background: transparent;
+  color: #2b1b17;
+  font-weight: 500;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+body.admin-app-mode .founder-hours__add-window:hover {
+  background: rgba(43, 27, 23, 0.05);
+  border-style: solid;
+}
+
+
+body.admin-app-mode .is-compact .founder-hours__window {
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+body.admin-app-mode .is-compact .founder-hours__window select {
+  min-width: 100px;
+  flex: 1;
+  padding: 8px 10px;
+}
+
+body.admin-app-mode .is-compact .founder-hours__remove-window {
+  padding: 8px;
+  margin-top: 14px;
+}
+
+body.admin-app-mode .is-compact .founder-hours__add-window {
+  width: 100%;
+  margin: 0;
+  box-sizing: border-box;
+  margin-top: 8px;
+}
+.developer-control-center .developer-tab-bar button.is-active .developer-tab-count {
+  width: auto;
+  min-width: 6.6rem;
+  white-space: nowrap;
+}
+
+.developer-control-center .developer-control-save-bar {
+  grid-column: 1 / -1;
+}
+
+.developer-control-center .developer-control-save-bar > div {
+  gap: 0.12rem;
+  display: grid;
+}
+
+.developer-control-center .developer-controls-layout > .developer-panel-card:nth-child(2) .developer-toggle-list.compact {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+/* phase-25r2-action-layout */
+:is(.developer-audit-workspace, .developer-release-workspace) .pwc-momentum18-actions {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+@media (max-width: 760px) {
+  :is(.developer-audit-workspace, .developer-release-workspace) .pwc-momentum18-actions {
+    grid-template-columns: 1fr;
+  }
+}

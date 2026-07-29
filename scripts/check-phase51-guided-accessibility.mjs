@@ -1,5 +1,7 @@
 import { readFileSync } from 'node:fs'
 
+import { readAdminStylesheet } from './lib/adminStyles.mjs'
+
 import {
   adminPageGuidance,
   guidedAdminPaths,
@@ -9,7 +11,7 @@ const read = (path) => readFileSync(path, 'utf8').replace(/\r\n?/g, '\n')
 const frame = read('src/components/admin/AdminFrame.jsx')
 const help = read('src/components/admin/AdminHelpCenter.jsx')
 const guidance = read('src/components/admin/adminPageGuidance.js')
-const styles = read('src/pages/admin/AdminFreshUI.css')
+const styles = readAdminStylesheet()
 const packageSource = read('package.json')
 const docs = read('docs/phase51-guided-admin-accessibility.md')
 const failures = []

@@ -5,7 +5,7 @@ import {
   getPasswordChangeStatus,
 } from '../../lib/nativeApi'
 
-import './AdminFreshUI.css'
+import './AdminFreshUI.entry.css'
 
 const initialForm = {
   newPassword: '',

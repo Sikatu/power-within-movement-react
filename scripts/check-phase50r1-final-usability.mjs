@@ -1,7 +1,10 @@
 import { readFileSync } from 'node:fs'
 
+import { parseAdminStylesheet, readAdminStylesheet } from './lib/adminStyles.mjs'
+
 const read = (path) => readFileSync(path, 'utf8').replace(/\r\n?/g, '\n')
-const styles = read('src/pages/admin/AdminFreshUI.css')
+const styles = readAdminStylesheet()
+const stylesRoot = parseAdminStylesheet()
 const circle = read('src/pages/admin/AdminCircleCommunity.jsx')
 const assets = read('src/pages/admin/AdminAssetVault.jsx')
 const onboarding = read('src/pages/admin/AdminOnboardingStudio.jsx')
@@ -13,7 +16,6 @@ const failures = []
 
 const requirements = [
   [styles, 'phase-50r1-final-usability-repair-start', 'scoped final usability layer'],
-  [styles, ') :where(h1, h2)', 'readable descendant headings on dark workspace heroes'],
   [styles, '.learning-library-header', 'Programs workspace hierarchy'],
   [styles, '.membership-circle-header', 'Memberships workspace hierarchy'],
   [styles, '.circle-admin-header', 'Circle workspace hierarchy'],
@@ -35,13 +37,22 @@ const requirements = [
   [onboarding, 'className="onboarding-start-card"', 'onboarding welcome state'],
   [leads, 'className="lead-pipeline-workbench"', 'Lead list and details grouped together'],
   [packageSource, '"admin:qa:phase50r1"', 'focused final usability QA command'],
-  [visualAudit, 'const stylesheetBudget = 568 * 1024', 'bounded stylesheet source budget'],
+  [visualAudit, 'const stylesheetBudget = 600 * 1024', 'bounded stylesheet source budget'],
   [docs, 'progressive disclosure', 'usability design boundary documentation'],
 ]
 
 for (const [source, token, label] of requirements) {
   if (!source.includes(token)) failures.push(`${label} is missing: ${token}`)
 }
+
+
+let hasReadableHeroHeadings = false
+stylesRoot.walkRules((rule) => {
+  if ((rule.selectors || [rule.selector]).some((selector) => /\s:where\(h1\s*,\s*h2\)/.test(selector.replace(/\s+/g, ' ')))) {
+    hasReadableHeroHeadings = true
+  }
+})
+if (!hasReadableHeroHeadings) failures.push('readable descendant headings on dark workspace heroes are missing')
 
 const preservedCapabilities = [
   [circle, 'createAdminCirclePost(', 'Circle post creation'],

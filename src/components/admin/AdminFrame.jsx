@@ -45,7 +45,7 @@ import {
   workspacePrimaryItems,
 } from './adminNavigation.js'
 
-import '../../pages/admin/AdminFreshUI.css'
+import '../../pages/admin/AdminFreshUI.entry.css'
 
 function readCachedUser() {
   if (typeof window === 'undefined') return null

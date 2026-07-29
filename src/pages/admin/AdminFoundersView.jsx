@@ -12,7 +12,7 @@ import {
   updateAdminFounderAvailabilityException,
 } from '../../lib/nativeApi'
 
-import './AdminFreshUI.css'
+import './AdminFreshUI.entry.css'
 
 const FOUNDER_TIME_ZONE = 'America/New_York'
 const FOUNDER_VIEWS = [
@@ -150,6 +150,7 @@ export default function AdminFoundersView() {
   const [isSigningOut, setIsSigningOut] = useState(false)
   const [notice, setNotice] = useState('')
   const [error, setError] = useState('')
+  const [displayTimezone, setDisplayTimezone] = useState(null)
   const requestedView = searchParams.get('view') || 'today'
   const activeView = FOUNDER_VIEW_IDS.has(requestedView) ? requestedView : 'today'
 
@@ -322,6 +323,7 @@ export default function AdminFoundersView() {
 
   const primaryTimezone = founderTools?.preferences?.primaryTimezone || 'America/Chicago'
   const schedulingTimezone = founderTools?.scheduling?.timezone || FOUNDER_TIME_ZONE
+  const actualDisplayTimezone = displayTimezone || primaryTimezone
   const effectiveBlockDate = blockDate || getBusinessDateOffset(0, schedulingTimezone)
   const founderFirstName = studioProfile?.displayName?.split(/\s+/).filter(Boolean)[0] || 'Kim'
 
@@ -356,7 +358,7 @@ export default function AdminFoundersView() {
           <Link to="/admin/founders-calendar" className="founder-home__calendar-link">
             Open calendar
           </Link>
-          <Link to="/admin/founders-availability" className="founder-home__calendar-link">
+          <Link to="/admin/founders-calendar" className="founder-home__calendar-link">
             Availability
           </Link>
           <Link to="/admin/dashboard" className="founder-home__studio-link">
@@ -385,17 +387,47 @@ export default function AdminFoundersView() {
           </div>
 
           <div className="founder-home__intro-side">
-            <div className="founder-home__timezone" aria-label="Schedule timezone">
-              <span aria-hidden="true" />
-              <div>
-                <small>Schedule shown in</small>
-                <strong>{schedulingTimezone}</strong>
+            <div className="founder-home__clock-weather-group">
+              <AdminWeatherWidget displayTimezone={actualDisplayTimezone} />
+              <div className="founder-home__large-clock">
+                <div className="founder-home__large-clock-eyebrow">
+                  <select
+                    value={actualDisplayTimezone}
+                    onChange={(e) => setDisplayTimezone(e.target.value)}
+                    className="founder-home__clock-tz-select"
+                  >
+                    <option value="America/New_York">America/New_York</option>
+                    <option value="America/Chicago">America/Chicago</option>
+                    <option value="America/Denver">America/Denver</option>
+                    <option value="America/Los_Angeles">America/Los_Angeles</option>
+                    <option value="Europe/London">Europe/London</option>
+                    <option value="Asia/Manila">Asia/Manila</option>
+                    <option value="UTC">UTC</option>
+                  </select>
+                </div>
+                <div className="founder-home__large-clock-time">
+                  {(() => {
+                    const timeString = currentTime.toLocaleTimeString('en-US', {
+                      hour: 'numeric',
+                      minute: '2-digit',
+                      hour12: true,
+                      timeZone: actualDisplayTimezone
+                    });
+                    const [time, ampm] = timeString.split(' ');
+                    return (
+                      <>
+                        <span className="founder-home__clock-numbers">{time}</span>
+                        {ampm && <span className="founder-home__clock-ampm"> {ampm}</span>}
+                      </>
+                    );
+                  })()}
+                </div>
               </div>
             </div>
 
             <nav className="founder-home__primary-actions" aria-label="Founder controls">
               <Link to="/admin/founders-calendar">Open calendar</Link>
-              <Link to="/admin/founders-availability">Availability</Link>
+
               <Link to="/admin/dashboard">Open The Studio</Link>
               <Link to="/admin/encouragements?view=compose&type=encouragement">Share a message</Link>
               <button
@@ -581,7 +613,7 @@ export default function AdminFoundersView() {
             </p>
 
             <Link
-              to={`/admin/founders-availability?date=${effectiveBlockDate}`}
+              to={`/admin/founders-calendar`}
               className="founder-home__availability-link"
             >
               Customize weekly hours or this date
@@ -684,4 +716,77 @@ export default function AdminFoundersView() {
       </div>
     </main>
   )
+}
+
+function AdminWeatherWidget({ displayTimezone }) {
+  const [weather, setWeather] = useState(null);
+
+  useEffect(() => {
+    let active = true;
+
+    async function fetchWeather() {
+      try {
+        let lat, lon;
+        const knownCoords = {
+          'America/New_York': { lat: 40.71, lon: -74.01 },
+          'America/Chicago': { lat: 41.88, lon: -87.62 },
+          'America/Denver': { lat: 39.74, lon: -104.99 },
+          'America/Los_Angeles': { lat: 34.05, lon: -118.24 },
+          'Europe/London': { lat: 51.51, lon: -0.13 },
+          'Asia/Manila': { lat: 14.60, lon: 120.98 },
+        };
+
+        if (knownCoords[displayTimezone]) {
+          lat = knownCoords[displayTimezone].lat;
+          lon = knownCoords[displayTimezone].lon;
+        } else {
+          const geoRes = await fetch('https://get.geojs.io/v1/ip/geo.json');
+          const geoData = await geoRes.json();
+          lat = geoData.latitude;
+          lon = geoData.longitude;
+        }
+
+        if (!lat || !lon) return;
+
+        const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&temperature_unit=fahrenheit`);
+        const data = await res.json();
+
+        if (active && data.current_weather) {
+          setWeather({
+            temp: Math.round(data.current_weather.temperature),
+            code: data.current_weather.weathercode,
+          });
+        }
+      } catch (err) {
+        console.error('Failed to fetch weather', err);
+      }
+    }
+
+    fetchWeather();
+    return () => { active = false; };
+  }, [displayTimezone]);
+
+  if (!weather) return null;
+
+  function getWeatherDesc(code) {
+    if (code === 0) return 'Clear';
+    if (code === 1) return 'Mostly Clear';
+    if (code === 2) return 'Partly Cloudy';
+    if (code === 3) return 'Overcast';
+    if (code <= 48) return 'Fog';
+    if (code <= 57) return 'Drizzle';
+    if (code <= 67) return 'Rain';
+    if (code <= 77) return 'Snow';
+    if (code <= 82) return 'Showers';
+    if (code <= 86) return 'Snow';
+    if (code >= 95) return 'Storm';
+    return 'Clear';
+  }
+
+  return (
+    <div className="founder-home__weather-widget">
+      <div className="founder-home__weather-temp">{weather.temp}°</div>
+      <div className="founder-home__weather-desc">{getWeatherDesc(weather.code)}</div>
+    </div>
+  );
 }

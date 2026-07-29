@@ -33,10 +33,14 @@ function normalizeComparisonTimeZones(values, maximum = 8) {
 
 function getTranscriptionConfiguration(config = env) {
   const provider = String(config.founderTranscriptionProvider || 'disabled').trim().toLowerCase()
-  const supported = provider === 'generic'
+  const supported = provider === 'generic' || provider === 'mock'
   const missing = []
-  if (supported && !config.founderTranscriptionApiUrl) missing.push('endpoint')
-  if (supported && !config.founderTranscriptionApiKey) missing.push('credential')
+
+  if (provider === 'generic') {
+    if (!config.founderTranscriptionApiUrl) missing.push('endpoint')
+    if (!config.founderTranscriptionApiKey) missing.push('credential')
+  }
+
   const configured = supported && missing.length === 0
 
   return {
@@ -77,6 +81,12 @@ async function transcribeRecording(recording, config = env) {
   const controller = new AbortController()
   const timeout = setTimeout(() => controller.abort(), config.founderTranscriptionTimeoutMs || 120000)
   try {
+    if (state.provider === 'mock') {
+      // Simulate network and processing delay
+      await new Promise(resolve => setTimeout(resolve, 3500))
+      return "This is a simulated transcription of your voice note. The system is currently using the 'mock' provider, which instantly returns this placeholder text so you can test the UI flow. To get real transcriptions, you can configure an AI provider like OpenAI Whisper in your environment variables."
+    }
+
     const response = await fetch(config.founderTranscriptionApiUrl, {
       method: 'POST',
       headers: { Authorization: `Bearer ${config.founderTranscriptionApiKey}` },

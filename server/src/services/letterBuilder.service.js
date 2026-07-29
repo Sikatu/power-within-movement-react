@@ -32,7 +32,7 @@ const DEFAULT_SETTINGS = Object.freeze({
 const BLOCK_DEFAULTS = Object.freeze({
   heading: { content: { text: 'A heading for your letter', level: 2 }, settings: { align: 'center', padding: 20 } },
   text: { content: { text: 'Write your thoughtful message here.' }, settings: { align: 'left', padding: 16 } },
-  image: { content: { assetId: '', alt: 'Power Within newsletter image', caption: '' }, settings: { align: 'center', padding: 12, width: 100 } },
+  image: { content: { assetId: '', alt: 'Power Within newsletter image', caption: '', besideText: '' }, settings: { align: 'center', padding: 12, width: 100, imageFit: 'natural', cropHeight: 280, positionX: 50, positionY: 50, zoom: 100 } },
   button: { content: { text: 'Continue your journey', url: 'https://powerwithinmovement.com' }, settings: { align: 'center', padding: 18 } },
   divider: { content: {}, settings: { padding: 14, color: '#dfcdbf' } },
   spacer: { content: {}, settings: { height: 32, padding: 0 } },
@@ -64,10 +64,18 @@ function safeAlign(value) {
 function safeFontFamily(value, fallback) {
   const allowed = new Set([
     'Georgia, serif',
+    "Garamond, 'Times New Roman', serif",
+    "Baskerville, 'Times New Roman', serif",
     'Arial, sans-serif',
     'Helvetica, Arial, sans-serif',
     "'Trebuchet MS', Arial, sans-serif",
     "'Times New Roman', serif",
+    "'Palatino Linotype', Palatino, Georgia, serif",
+    'Verdana, Geneva, sans-serif',
+    'Tahoma, Geneva, sans-serif',
+    "'Century Gothic', CenturyGothic, AppleGothic, sans-serif",
+    "'Lucida Sans Unicode', 'Lucida Grande', sans-serif",
+    "'Courier New', Courier, monospace",
   ])
   return allowed.has(String(value || '')) ? String(value) : fallback
 }
@@ -127,6 +135,34 @@ function normalizeBlock(block, index = 0) {
   if (normalized.type === 'heading') normalized.content.level = clamp(normalized.content.level, 1, 3, 2)
   if (normalized.type === 'spacer') normalized.settings.height = clamp(normalized.settings.height, 4, 160, 32)
   if (normalized.type === 'image') normalized.settings.width = clamp(normalized.settings.width, 20, 100, 100)
+  normalized.settings.fontFamily = normalized.settings.fontFamily
+    ? safeFontFamily(normalized.settings.fontFamily, '')
+    : ''
+  normalized.settings.fontSize = normalized.settings.fontSize
+    ? clamp(normalized.settings.fontSize, 10, 72, 16)
+    : null
+  normalized.settings.lineHeight = normalized.settings.lineHeight
+    ? clamp(normalized.settings.lineHeight, 1, 2.5, 1.6)
+    : null
+  normalized.settings.letterSpacing = normalized.settings.letterSpacing !== undefined
+    && normalized.settings.letterSpacing !== null
+    && normalized.settings.letterSpacing !== ''
+    ? clamp(normalized.settings.letterSpacing, -1, 8, 0)
+    : null
+  if (normalized.type === 'image') {
+    normalized.content.besideText = String(normalized.content.besideText || '').slice(0, 12000)
+    normalized.settings.imageFit = normalized.settings.imageFit === 'crop' ? 'crop' : 'natural'
+    normalized.settings.cropHeight = clamp(normalized.settings.cropHeight, 120, 520, 280)
+    normalized.settings.positionX = clamp(normalized.settings.positionX, 0, 100, 50)
+    normalized.settings.positionY = clamp(normalized.settings.positionY, 0, 100, 50)
+    normalized.settings.zoom = clamp(normalized.settings.zoom, 100, 200, 100)
+    normalized.settings.besideFontFamily = normalized.settings.besideFontFamily
+      ? safeFontFamily(normalized.settings.besideFontFamily, '')
+      : ''
+    normalized.settings.besideFontSize = normalized.settings.besideFontSize
+      ? clamp(normalized.settings.besideFontSize, 10, 72, 16)
+      : null
+  }
   return normalized
 }
 
@@ -174,6 +210,9 @@ function validateLetter({ title, subject, design }) {
     if (['image', 'resource'].includes(block.type) && !block.content.assetId) {
       warnings.push(`${block.type === 'image' ? 'Image' : 'Resource'} block ${block.id} does not have an Asset Vault selection.`)
     }
+    if (block.type === 'image' && block.content.assetId && !String(block.content.alt || '').trim()) {
+      warnings.push(`Image block ${block.id} needs alternative text for accessibility.`)
+    }
     if (['button', 'video_preview'].includes(block.type) && !safeUrl(block.content.url)) {
       warnings.push(`${block.type === 'button' ? 'Button' : 'Video'} block ${block.id} needs a safe destination URL.`)
     }
@@ -208,23 +247,46 @@ function renderBlock(block, context) {
   const color = settings.textColor
   const accent = settings.accentColor
   const muted = settings.mutedColor
-  const bodyFont = settings.bodyFontFamily
-  const displayFont = settings.fontFamily
+  const bodyFont = block.settings.fontFamily || settings.bodyFontFamily
+  const displayFont = block.settings.fontFamily || settings.fontFamily
+  const fontSize = block.settings.fontSize
+  const lineHeight = block.settings.lineHeight
+  const letterSpacing = block.settings.letterSpacing
+  const typography = `${lineHeight ? `line-height:${lineHeight};` : ''}${letterSpacing !== null ? `letter-spacing:${letterSpacing}px;` : ''}`
 
   if (block.type === 'heading') {
     const level = clamp(content.level, 1, 3, 2)
-    const size = level === 1 ? 42 : level === 2 ? 32 : 24
-    return blockWrapper(block, `<h${level} style="margin:0;color:${color};font-family:${displayFont};font-size:${size}px;font-weight:500;line-height:1.08;">${paragraphHtml(personalize(content.text, variables))}</h${level}>`)
+    const size = fontSize || (level === 1 ? 42 : level === 2 ? 32 : 24)
+    return blockWrapper(block, `<h${level} style="margin:0;color:${color};font-family:${displayFont};font-size:${size}px;font-weight:500;line-height:${lineHeight || 1.08};${letterSpacing !== null ? `letter-spacing:${letterSpacing}px;` : ''}">${paragraphHtml(personalize(content.text, variables))}</h${level}>`)
   }
   if (block.type === 'text' || block.type === 'greeting') {
     const weight = block.type === 'greeting' ? 700 : 400
-    return blockWrapper(block, `<div style="color:${color};font-family:${bodyFont};font-size:16px;font-weight:${weight};line-height:1.72;">${paragraphHtml(personalize(content.text, variables))}</div>`)
+    return blockWrapper(block, `<div style="color:${color};font-family:${bodyFont};font-size:${fontSize || 16}px;font-weight:${weight};line-height:${lineHeight || 1.72};${letterSpacing !== null ? `letter-spacing:${letterSpacing}px;` : ''}">${paragraphHtml(personalize(content.text, variables))}</div>`)
   }
   if (block.type === 'image') {
     const source = context.assetUrl?.(content.assetId, block) || ''
     if (!source) return blockWrapper(block, `<div style="padding:28px;border:1px dashed #d9c8bd;color:${muted};font-family:${bodyFont};font-size:13px;">Image selected from Asset Vault</div>`)
     const caption = content.caption ? `<p style="margin:9px 0 0;color:${muted};font-family:${bodyFont};font-size:12px;">${escapeHtml(content.caption)}</p>` : ''
-    return blockWrapper(block, `<img src="${escapeAttribute(source)}" width="${Math.round(600 * (block.settings.width / 100))}" alt="${escapeAttribute(content.alt || '')}" style="display:inline-block;width:${block.settings.width}%;max-width:100%;height:auto;border:0;border-radius:12px;">${caption}`)
+    const cropped = block.settings.imageFit === 'crop'
+    const imageStyle = cropped
+      ? `display:block;width:${block.settings.zoom}%;max-width:none;height:${block.settings.cropHeight}px;object-fit:cover;object-position:${block.settings.positionX}% ${block.settings.positionY}%;border:0;`
+      : 'display:block;width:100%;max-width:100%;height:auto;border:0;'
+    const image = `<img src="${escapeAttribute(source)}" width="${Math.round(600 * (block.settings.width / 100))}" alt="${escapeAttribute(content.alt || '')}" style="${imageStyle}">`
+    const frame = cropped
+      ? `<div style="display:inline-block;width:${block.settings.width}%;max-width:100%;height:${block.settings.cropHeight}px;overflow:hidden;border-radius:12px;">${image}</div>`
+      : `<div style="display:inline-block;width:${block.settings.width}%;max-width:100%;overflow:hidden;border-radius:12px;">${image}</div>`
+    const besideText = String(content.besideText || '').trim()
+    if (besideText && ['left', 'right'].includes(block.settings.align)) {
+      const imageWidth = Math.min(block.settings.width, 65)
+      const textWidth = 100 - imageWidth
+      const imageCell = `<td class="pwc-image-column" width="${imageWidth}%" valign="top" style="width:${imageWidth}%;${block.settings.align === 'left' ? 'padding-right:18px;' : 'padding-left:18px;'}"><div style="width:100%;max-width:100%;overflow:hidden;border-radius:12px;">${image}</div>${caption}</td>`
+      const besideFont = block.settings.besideFontFamily || settings.bodyFontFamily
+      const besideFontSize = block.settings.besideFontSize || 16
+      const textCell = `<td class="pwc-image-column" width="${textWidth}%" valign="top" style="width:${textWidth}%;color:${color};font-family:${besideFont};font-size:${besideFontSize}px;line-height:1.72;text-align:left;">${paragraphHtml(personalize(besideText, variables))}</td>`
+      const columns = block.settings.align === 'left' ? `${imageCell}${textCell}` : `${textCell}${imageCell}`
+      return blockWrapper(block, `<table class="pwc-image-with-text" role="presentation" width="100%" cellspacing="0" cellpadding="0"><tr>${columns}</tr></table>`)
+    }
+    return blockWrapper(block, `${frame}${caption}`)
   }
   if (block.type === 'button') {
     const url = resolveTrackedUrl(block, content.url, context)
@@ -237,14 +299,14 @@ function renderBlock(block, context) {
     return `<tr><td data-letter-block="${escapeAttribute(block.id)}" height="${block.settings.height}" style="height:${block.settings.height}px;font-size:0;line-height:0;">&nbsp;</td></tr>`
   }
   if (block.type === 'two_column') {
-    return blockWrapper(block, `<table role="presentation" width="100%" cellspacing="0" cellpadding="0"><tr><td width="50%" valign="top" style="padding-right:${block.settings.gap / 2}px;color:${color};font-family:${bodyFont};font-size:15px;line-height:1.65;">${paragraphHtml(personalize(content.left, variables))}</td><td width="50%" valign="top" style="padding-left:${block.settings.gap / 2}px;color:${color};font-family:${bodyFont};font-size:15px;line-height:1.65;">${paragraphHtml(personalize(content.right, variables))}</td></tr></table>`)
+    return blockWrapper(block, `<table class="pwc-two-column" role="presentation" width="100%" cellspacing="0" cellpadding="0"><tr><td class="pwc-column" width="50%" valign="top" style="padding-right:${block.settings.gap / 2}px;color:${color};font-family:${bodyFont};font-size:15px;line-height:1.65;">${paragraphHtml(personalize(content.left, variables))}</td><td class="pwc-column" width="50%" valign="top" style="padding-left:${block.settings.gap / 2}px;color:${color};font-family:${bodyFont};font-size:15px;line-height:1.65;">${paragraphHtml(personalize(content.right, variables))}</td></tr></table>`)
   }
   if (block.type === 'quote') {
     const attribution = content.attribution ? `<p style="margin:12px 0 0;color:${muted};font-family:${bodyFont};font-size:12px;letter-spacing:.08em;text-transform:uppercase;">${escapeHtml(content.attribution)}</p>` : ''
-    return blockWrapper(block, `<blockquote style="margin:0;color:${color};font-family:${displayFont};font-size:27px;font-style:italic;line-height:1.25;">“${escapeHtml(personalize(content.text, variables))}”</blockquote>${attribution}`)
+    return blockWrapper(block, `<blockquote style="margin:0;color:${color};font-family:${displayFont};font-size:${fontSize || 27}px;font-style:italic;line-height:${lineHeight || 1.25};${letterSpacing !== null ? `letter-spacing:${letterSpacing}px;` : ''}">“${escapeHtml(personalize(content.text, variables))}”</blockquote>${attribution}`)
   }
   if (block.type === 'signature') {
-    return blockWrapper(block, `<p style="margin:0;color:${color};font-family:${displayFont};font-size:28px;font-style:italic;">${escapeHtml(content.name)}</p><p style="margin:5px 0 0;color:${muted};font-family:${bodyFont};font-size:12px;">${escapeHtml(content.title)}</p>`)
+    return blockWrapper(block, `<p style="margin:0;color:${color};font-family:${displayFont};font-size:${fontSize || 28}px;font-style:italic;${typography}">${escapeHtml(content.name)}</p><p style="margin:5px 0 0;color:${muted};font-family:${bodyFont};font-size:12px;">${escapeHtml(content.title)}</p>`)
   }
   if (block.type === 'social_links') {
     const links = Object.entries(content).filter(([, url]) => safeUrl(url)).map(([name, url]) => `<a href="${escapeAttribute(safeUrl(url))}" style="margin:0 8px;color:${accent};font-family:${bodyFont};font-size:13px;text-decoration:underline;">${escapeHtml(name.replace(/\b\w/g, (letter) => letter.toUpperCase()))}</a>`).join('')
@@ -261,10 +323,10 @@ function renderBlock(block, context) {
     return blockWrapper(block, `<a href="${escapeAttribute(url)}" style="display:block;padding:18px;border:1px solid #e3d2c5;border-radius:12px;color:${color};font-family:${bodyFont};text-decoration:none;"><strong style="display:block;color:${accent};font-size:15px;">↓ ${escapeHtml(content.title)}</strong><span style="display:block;margin-top:5px;color:${muted};font-size:13px;line-height:1.5;">${escapeHtml(content.description)}</span></a>`)
   }
   if (block.type === 'footer') {
-    return blockWrapper(block, `<p style="margin:0;color:${muted};font-family:${bodyFont};font-size:12px;line-height:1.55;">${paragraphHtml(content.text)}</p>`)
+    return blockWrapper(block, `<p style="margin:0;color:${muted};font-family:${bodyFont};font-size:${fontSize || 12}px;line-height:${lineHeight || 1.55};${letterSpacing !== null ? `letter-spacing:${letterSpacing}px;` : ''}">${paragraphHtml(content.text)}</p>`)
   }
   if (block.type === 'unsubscribe') {
-    return blockWrapper(block, `<a href="${escapeAttribute(context.unsubscribeUrl || '#')}" style="color:${muted};font-family:${bodyFont};font-size:11px;text-decoration:underline;">${escapeHtml(content.text || 'Unsubscribe')}</a>`)
+    return blockWrapper(block, `<a href="${escapeAttribute(context.unsubscribeUrl || '#')}" style="color:${muted};font-family:${bodyFont};font-size:${fontSize || 11}px;line-height:${lineHeight || 1.4};${letterSpacing !== null ? `letter-spacing:${letterSpacing}px;` : ''}text-decoration:underline;">${escapeHtml(content.text || 'Unsubscribe')}</a>`)
   }
   return ''
 }
@@ -274,7 +336,7 @@ function renderLetter({ design, subject, previewText = '', variables = {}, unsub
   const settings = normalized.settings
   const rows = normalized.blocks.map((block) => renderBlock(block, { settings, variables, unsubscribeUrl, trackingUrls, assetUrl })).join('')
   const pixel = openPixelUrl ? `<img src="${escapeAttribute(openPixelUrl)}" width="1" height="1" alt="" style="display:block;width:1px;height:1px;border:0;overflow:hidden;">` : ''
-  const html = `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${escapeHtml(personalize(subject, variables))}</title></head><body style="margin:0;padding:0;background:${settings.backgroundColor};"><div style="display:none;max-height:0;overflow:hidden;opacity:0;">${escapeHtml(personalize(previewText, variables))}</div><table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="width:100%;background:${settings.backgroundColor};"><tr><td align="center" style="padding:28px 12px;"><table role="presentation" width="${settings.contentWidth}" cellspacing="0" cellpadding="0" style="width:100%;max-width:${settings.contentWidth}px;background:${settings.contentColor};border:1px solid #eadbd0;border-radius:24px;overflow:hidden;">${rows}</table><p style="margin:16px 0 0;color:${settings.mutedColor};font-family:${settings.bodyFontFamily};font-size:11px;">Power Within Collective</p></td></tr></table>${pixel}</body></html>`
+  const html = `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${escapeHtml(personalize(subject, variables))}</title><style>@media only screen and (max-width:600px){.pwc-two-column,.pwc-two-column tbody,.pwc-two-column tr,.pwc-column,.pwc-image-with-text,.pwc-image-with-text tbody,.pwc-image-with-text tr,.pwc-image-column{display:block!important;width:100%!important}.pwc-column,.pwc-image-column{box-sizing:border-box!important;padding:0 0 16px!important}.pwc-column:last-child,.pwc-image-column:last-child{padding-bottom:0!important}}</style></head><body style="margin:0;padding:0;background:${settings.backgroundColor};"><div style="display:none;max-height:0;overflow:hidden;opacity:0;">${escapeHtml(personalize(previewText, variables))}</div><table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="width:100%;background:${settings.backgroundColor};"><tr><td align="center" style="padding:28px 12px;"><table role="presentation" width="${settings.contentWidth}" cellspacing="0" cellpadding="0" style="width:100%;max-width:${settings.contentWidth}px;background:${settings.contentColor};border:1px solid #eadbd0;border-radius:24px;overflow:hidden;">${rows}</table><p style="margin:16px 0 0;color:${settings.mutedColor};font-family:${settings.bodyFontFamily};font-size:11px;">Power Within Collective</p></td></tr></table>${pixel}</body></html>`
   const text = normalized.blocks.map((block) => {
     const content = block.content || {}
     if (['heading', 'text', 'greeting', 'quote', 'footer'].includes(block.type)) return personalize(content.text, variables)
@@ -282,6 +344,7 @@ function renderLetter({ design, subject, previewText = '', variables = {}, unsub
     if (block.type === 'signature') return `${content.name}\n${content.title}`
     if (block.type === 'button') return `${personalize(content.text, variables)}: ${safeUrl(content.url)}`
     if (block.type === 'resource') return `${content.title}: ${assetUrl?.(content.assetId, block) || ''}`
+    if (block.type === 'image' && content.besideText) return personalize(content.besideText, variables)
     if (block.type === 'unsubscribe') return `${content.text}: ${unsubscribeUrl}`
     return ''
   }).filter(Boolean).join('\n\n')

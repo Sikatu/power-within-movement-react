@@ -235,11 +235,6 @@ p {
   place-items: center;
 }
 
-.route-loading.is-admin {
-  background:
-    linear-gradient(135deg, rgba(67, 31, 45, 0.98), rgba(82, 42, 57, 0.95) 34%, #f7f2ec 34.2%);
-}
-
 .route-loading__card {
   width: min(100%, 520px);
   padding: clamp(30px, 6vw, 52px);
@@ -314,12 +309,7 @@ p {
   }
 }
 
-@media (max-width: 680px) {
-  .route-loading.is-admin {
-    background:
-      linear-gradient(180deg, #4b2635 0 24%, #f7f2ec 24.2%);
-  }
-
+@media (max-width: 768px) {
   .route-loading__card {
     border-radius: 24px;
   }

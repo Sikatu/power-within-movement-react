@@ -8,7 +8,7 @@ import {
   updateAdminFounderWeeklyAvailability,
 } from '../../lib/nativeApi'
 
-import './AdminFreshUI.css'
+import './AdminFreshUI.entry.css'
 
 const FOUNDER_TIME_ZONE = 'America/New_York'
 const WEEKDAYS = [

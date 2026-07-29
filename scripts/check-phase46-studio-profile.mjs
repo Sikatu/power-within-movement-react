@@ -7,7 +7,11 @@ const app = read('src/App.jsx')
 const navigation = read('src/components/admin/adminNavigation.js')
 const preloaders = read('src/components/admin/adminRoutePreloaders.js')
 const api = read('src/lib/nativeApi.js')
-const routes = read('server/src/routes/admin.routes.js')
+const routes = [
+  read('server/src/routes/admin.routes.js'),
+  read('server/src/routes/admin.studioProfile.routes.js'),
+].join('\n')
+const serverApp = read('server/src/app.js')
 const migration = read('server/scripts/ensure-studio-profile.cjs')
 const ordered = read('server/scripts/run-ordered-migrations.cjs')
 const packageSource = read('package.json')
@@ -26,6 +30,8 @@ const requirements = [
   [navigation, "to: '/admin/studio-profile'", 'Client Experience navigation'],
   [preloaders, 'loadAdminStudioProfile', 'route preloading'],
   [api, "apiRequest('/api/admin/studio-profile'", 'native Studio Profile API client'],
+  [serverApp, "require('./routes/admin.studioProfile.routes')", 'extracted Studio Profile route registration'],
+  [serverApp, "app.use('/api/admin', sensitiveResponseHeaders, enforceTrustedMutation, adminStudioProfileRoutes)", 'protected Studio Profile route mounting'],
   [routes, "router.get('/studio-profile', requireAdmin", 'authenticated profile reading'],
   [routes, "router.patch('/studio-profile', requireAdmin", 'authenticated profile saving'],
   [routes, 'isUsableProfileImage', 'image safety enforcement'],

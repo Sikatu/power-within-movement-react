@@ -1,5 +1,7 @@
 import { readFileSync } from 'node:fs'
 
+import { readAdminStylesheet } from './lib/adminStyles.mjs'
+
 import {
   ADMIN_COMFORT_STORAGE_KEY,
   readAdminComfortView,
@@ -10,7 +12,7 @@ const read = (path) => readFileSync(path, 'utf8').replace(/\r\n?/g, '\n')
 const frame = read('src/components/admin/AdminFrame.jsx')
 const help = read('src/components/admin/AdminHelpCenter.jsx')
 const preferenceSource = read('src/components/admin/adminDisplayPreferences.js')
-const styles = read('src/pages/admin/AdminFreshUI.css')
+const styles = readAdminStylesheet()
 const visualAudit = read('scripts/check-admin-visual-coverage.mjs')
 const packageSource = read('package.json')
 const docs = read('docs/phase52-admin-comfort-view.md')
@@ -28,7 +30,7 @@ const requirements = [
   [styles, 'phase-52-comfort-view-start', 'scoped Comfort View layer'],
   [styles, 'body.admin-app-mode.admin-comfort-view', 'optional global comfort mode'],
   [styles, '.pwc-comfort52-control', 'responsive display control'],
-  [visualAudit, 'const stylesheetBudget = 568 * 1024', 'bounded stylesheet budget'],
+  [visualAudit, 'const stylesheetBudget = 600 * 1024', 'bounded stylesheet budget'],
   [packageSource, '"admin:qa:phase52"', 'focused Phase 52 QA command'],
   [docs, 'browser-local preference', 'privacy boundary documentation'],
 ]

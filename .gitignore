@@ -1,4 +1,4 @@
-﻿node_modules/
+node_modules/
 dist/
 .env
 .env.local
@@ -23,3 +23,5 @@ phase-*-inspection.zip
 *.diff
 *.zip
 *.APPEND_AT_END.txt
+server/check_db.js
+weather.txt

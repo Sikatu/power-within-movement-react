@@ -348,10 +348,18 @@ export default function AdminWeekPlanner() {
   }
 
   function moveTask(task, nextDate) {
+    if (nextDate === '') return
+
+    let payloadDate = null
+    if (nextDate && nextDate !== 'unscheduled') {
+      const [y, m, d] = nextDate.split('-').map(Number)
+      payloadDate = new Date(y, m - 1, d).toISOString()
+    }
+
     return updateTask(
       task,
-      { dueAt: nextDate || null },
-      nextDate ? 'Attention item moved to the selected day.' : 'Attention item moved to the unscheduled queue.',
+      { dueAt: payloadDate },
+      payloadDate ? 'Attention item moved to the selected day.' : 'Attention item moved to the unscheduled queue.',
     )
   }
 

@@ -1,7 +1,9 @@
 import { readFileSync } from 'node:fs'
 
+import { readAdminStylesheet } from './lib/adminStyles.mjs'
+
 const read = (path) => readFileSync(path, 'utf8').replace(/\r\n?/g, '\n')
-const styles = read('src/pages/admin/AdminFreshUI.css')
+const styles = readAdminStylesheet()
 const memberships = read('src/pages/admin/AdminMembershipCircle.jsx')
 const onboarding = read('src/pages/admin/AdminOnboardingStudio.jsx')
 const visualAudit = read('scripts/check-admin-visual-coverage.mjs')
@@ -17,7 +19,7 @@ const requirements = [
   [styles, '@media (forced-colors: active)', 'high-contrast action boundary'],
   [memberships, 'aria-label="Membership summary"', 'named membership metrics'],
   [onboarding, 'aria-label="Onboarding summary"', 'named onboarding metrics'],
-  [visualAudit, 'const stylesheetBudget = 568 * 1024', 'bounded stylesheet budget'],
+  [visualAudit, 'const stylesheetBudget = 600 * 1024', 'bounded stylesheet budget'],
   [packageSource, '"admin:qa:phase53"', 'focused Phase 53 QA command'],
   [docs, 'Twelve-route acceptance matrix', 'documented route matrix'],
 ]

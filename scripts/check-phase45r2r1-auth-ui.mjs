@@ -1,8 +1,15 @@
 import { readFileSync } from 'node:fs'
 
+import {
+  parseAdminStylesheet,
+  readAdminStylesheet,
+  ruleHasDeclarations,
+} from './lib/adminStyles.mjs'
+
 const read = (path) => readFileSync(path, 'utf8').replace(/\r\n?/g, '\n')
 const loginSource = read('src/pages/admin/AdminLogin.jsx')
-const stylesSource = read('src/pages/admin/AdminFreshUI.css')
+const stylesSource = readAdminStylesheet()
+const stylesRoot = parseAdminStylesheet()
 const packageSource = read('package.json')
 const failures = []
 
@@ -12,14 +19,26 @@ const requiredTokens = [
   [loginSource, 'autoComplete="email"', 'email autocomplete'],
   [loginSource, 'autoComplete="current-password"', 'password autocomplete'],
   [loginSource, "status.loading ? 'Opening The Studio…' : 'Enter The Studio'", 'clear loading action'],
-  [stylesSource, 'isolation: isolate;', 'contained login card layering'],
-  [stylesSource, 'background: linear-gradient(155deg, rgba(255, 253, 250, 0.96), rgba(255, 250, 246, 0.88));', 'single premium card surface'],
-  [stylesSource, 'inset 0 1px 0 rgba(255, 255, 255, 0.74);', 'subtle card edge highlight'],
 ]
 
 for (const [source, token, label] of requiredTokens) {
   if (!source.includes(token)) failures.push(`${label} is missing: ${token}`)
 }
+
+if (!ruleHasDeclarations(stylesRoot, '.pwc-admin-auth-card', [
+  ['isolation', 'isolate'],
+  ['background', 'linear-gradient(155deg, rgba(255, 253, 250, 0.96), rgba(255, 250, 246, 0.88))'],
+], { allowSuffix: true })) {
+  failures.push('single premium authentication card surface or contained layering is missing')
+}
+
+let hasEdgeHighlight = false
+stylesRoot.walkDecls('box-shadow', (declaration) => {
+  if (declaration.value.replace(/\s+/g, ' ').includes('inset 0 1px 0 rgba(255, 255, 255, 0.74)')) {
+    hasEdgeHighlight = true
+  }
+})
+if (!hasEdgeHighlight) failures.push('subtle card edge highlight is missing')
 
 const duplicateFramePatterns = [
   /\.pwc-admin-auth-card::after/,
