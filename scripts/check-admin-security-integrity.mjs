@@ -9,6 +9,11 @@ const preloadSource = readFileSync('src/components/admin/adminRoutePreloaders.js
 const apiSource = readFileSync('src/lib/nativeApi.js', 'utf8')
 const serverAppSource = readFileSync('server/src/app.js', 'utf8')
 const routeSource = readFileSync('server/src/routes/admin.routes.js', 'utf8')
+const notificationRouteSource = readFileSync(
+  'server/src/routes/admin.notifications.routes.js',
+  'utf8',
+)
+const protectedAdminRouteSource = routeSource + notificationRouteSource
 const authSource = readFileSync('server/src/middleware/auth.middleware.js', 'utf8')
 const authRouteSource = readFileSync('server/src/routes/auth.routes.js', 'utf8')
 const middlewareSource = readFileSync('server/src/middleware/securityIntegrity.middleware.js', 'utf8')
@@ -118,9 +123,9 @@ for (const selector of reusedVisualSelectors) {
   if (!stylesheet.includes(selector)) failures.push(`AdminFreshUI.css is missing reused security-integrity selector: ${selector}`)
 }
 
-const mutationRoutes = [...routeSource.matchAll(/router\.(post|put|patch|delete)\(\s*['"`]([^'"`]+)['"`]/g)]
+const mutationRoutes = [...protectedAdminRouteSource.matchAll(/router\.(post|put|patch|delete)\(\s*['"`]([^'"`]+)['"`]/g)]
 for (const mutation of mutationRoutes) {
-  const routeWindow = routeSource.slice(mutation.index, mutation.index + 500)
+  const routeWindow = protectedAdminRouteSource.slice(mutation.index, mutation.index + 500)
   if (!/require(?:Admin|Developer|FounderAccess)/.test(routeWindow)) {
     failures.push(`Admin mutation route lacks an explicit protected middleware chain: ${mutation[1].toUpperCase()} ${mutation[2]}`)
   }
@@ -131,6 +136,9 @@ if (!serverAppSource.includes("app.use('/api/auth', sensitiveResponseHeaders, en
 }
 if (!serverAppSource.includes("app.use('/api/admin', sensitiveResponseHeaders, enforceTrustedMutation, adminRoutes)")) {
   failures.push('Admin routes are not mounted behind no-store and trusted-mutation middleware')
+}
+if (!serverAppSource.includes("app.use('/api/admin', sensitiveResponseHeaders, enforceTrustedMutation, adminNotificationRoutes)")) {
+  failures.push('Admin notification routes are not mounted behind no-store and trusted-mutation middleware')
 }
 if (!serverAppSource.includes("app.use('/api/public/client-portal', sensitiveResponseHeaders, enforceTrustedMutation)")) {
   failures.push('Client portal routes are not mounted behind no-store and trusted-mutation middleware')

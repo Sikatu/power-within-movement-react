@@ -21,6 +21,7 @@ const frontendErrorRoutes = require('./routes/frontendError.routes')
 const developerErrorRoutes = require('./routes/developerErrors.routes')
 const adminStudioProfileRoutes = require('./routes/admin.studioProfile.routes')
 const adminOverviewRoutes = require('./routes/admin.overview.routes')
+const adminNotificationRoutes = require('./routes/admin.notifications.routes')
 const { requestErrorContext } = require('./middleware/errorMonitoring.middleware')
 const {
   enforceTrustedMutation,
@@ -92,6 +93,7 @@ app.use('/api/admin/founder-tools', sensitiveResponseHeaders, enforceTrustedMuta
 app.use('/api/admin/developer/release-readiness', sensitiveResponseHeaders, releaseReadinessRoutes)
 app.use('/api/admin', sensitiveResponseHeaders, enforceTrustedMutation, adminStudioProfileRoutes)
 app.use('/api/admin', sensitiveResponseHeaders, enforceTrustedMutation, adminOverviewRoutes)
+app.use('/api/admin', sensitiveResponseHeaders, enforceTrustedMutation, adminNotificationRoutes)
 app.use('/api/admin', sensitiveResponseHeaders, enforceTrustedMutation, adminRoutes)
 app.use('/api/public/error-reports', frontendErrorRoutes)
 app.use('/api/public/letters', letterPublicRoutes)
