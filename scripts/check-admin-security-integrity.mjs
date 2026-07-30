@@ -13,7 +13,11 @@ const notificationRouteSource = readFileSync(
   'server/src/routes/admin.notifications.routes.js',
   'utf8',
 )
-const protectedAdminRouteSource = routeSource + notificationRouteSource
+const automationRouteSource = readFileSync(
+  'server/src/routes/admin.automationStudio.routes.js',
+  'utf8',
+)
+const protectedAdminRouteSource = routeSource + notificationRouteSource + automationRouteSource
 const authSource = readFileSync('server/src/middleware/auth.middleware.js', 'utf8')
 const authRouteSource = readFileSync('server/src/routes/auth.routes.js', 'utf8')
 const middlewareSource = readFileSync('server/src/middleware/securityIntegrity.middleware.js', 'utf8')
@@ -139,6 +143,9 @@ if (!serverAppSource.includes("app.use('/api/admin', sensitiveResponseHeaders, e
 }
 if (!serverAppSource.includes("app.use('/api/admin', sensitiveResponseHeaders, enforceTrustedMutation, adminNotificationRoutes)")) {
   failures.push('Admin notification routes are not mounted behind no-store and trusted-mutation middleware')
+}
+if (!serverAppSource.includes("app.use('/api/admin', sensitiveResponseHeaders, enforceTrustedMutation, adminAutomationStudioRoutes)")) {
+  failures.push('Admin Automation Studio routes are not mounted behind no-store and trusted-mutation middleware')
 }
 if (!serverAppSource.includes("app.use('/api/public/client-portal', sensitiveResponseHeaders, enforceTrustedMutation)")) {
   failures.push('Client portal routes are not mounted behind no-store and trusted-mutation middleware')

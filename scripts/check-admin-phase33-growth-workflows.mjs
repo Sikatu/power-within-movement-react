@@ -3,6 +3,8 @@ import { readFileSync } from 'node:fs'
 const leadsSource = readFileSync('src/pages/admin/AdminLeadPipeline.jsx', 'utf8')
 const onboardingSource = readFileSync('src/pages/admin/AdminOnboardingStudio.jsx', 'utf8')
 const automationsSource = readFileSync('src/pages/admin/AdminAutomationStudio.jsx', 'utf8')
+const automationRouteSource = readFileSync('server/src/routes/admin.automationStudio.routes.js', 'utf8')
+const serverAppSource = readFileSync('server/src/app.js', 'utf8')
 const packageSource = readFileSync('package.json', 'utf8')
 const failures = []
 
@@ -51,6 +53,24 @@ for (const token of automationTokens) {
   if (!automationsSource.includes(token)) failures.push(`Automations is missing: ${token}`)
 }
 
+const automationBackendTokens = [
+  "router.get('/automation-studio', requireAdmin",
+  "router.post('/automation-studio/workflows', requireAdmin",
+  "router.put('/automation-studio/workflows/:workflowId', requireAdmin",
+  "router.post('/automation-studio/workflows/:workflowId/enroll', requireAdmin",
+  "router.post('/automation-studio/enrollments/:enrollmentId/action', requireAdmin",
+  "router.post('/automation-studio/run-due', requireAdmin",
+  'verifyAutomationClientAccess',
+  'processDueAutomationEnrollments({ limit: 50 })',
+  "app.use('/api/admin', sensitiveResponseHeaders, enforceTrustedMutation, adminAutomationStudioRoutes)",
+]
+
+for (const token of automationBackendTokens) {
+  if (!(automationRouteSource + serverAppSource).includes(token)) {
+    failures.push(`Automation backend is missing: ${token}`)
+  }
+}
+
 const preservedActions = [
   [leadsSource, 'updateAdminLead(', 'save a lead'],
   [leadsSource, 'createAdminLeadFollowUp(', 'schedule a follow-up'],
@@ -79,5 +99,5 @@ if (failures.length) {
 }
 
 console.log(
-  'Admin Phase 33 Growth workflow audit passed (focused lead stages, progressive lead detail, client-first onboarding, focused automation activity, and preserved backend actions).',
+  'Admin Phase 33 Growth workflow audit passed (focused lead stages, progressive lead detail, client-first onboarding, focused automation activity, owned backend routes, and preserved actions).',
 )
