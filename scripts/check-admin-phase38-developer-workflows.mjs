@@ -9,6 +9,8 @@ const errorsSource = read('src/pages/admin/AdminDeveloperErrors.jsx')
 const integritySource = read('src/pages/admin/AdminSecurityIntegrity.jsx')
 const releaseSource = read('src/pages/admin/AdminReleaseQa.jsx')
 const teamSource = read('src/pages/admin/AdminTeamManagement.jsx')
+const teamRouteSource = read('server/src/routes/admin.teamManagement.routes.js')
+const serverAppSource = read('server/src/app.js')
 const stylesSource = read('src/pages/admin/AdminFreshUI.css')
 const packageSource = read('package.json')
 const failures = []
@@ -67,6 +69,24 @@ for (const [source, token, capability] of preservedCapabilities) {
   if (!source.includes(token)) failures.push(`Phase 38 no longer preserves ${capability}`)
 }
 
+const teamBackendTokens = [
+  "router.get('/developer/team', requireDeveloper",
+  "router.patch('/developer/team/:userId', requireDeveloper",
+  "router.put('/developer/team/:userId/client-assignments', requireDeveloper",
+  "requireRole(['developer'])",
+  'getTeamManagementSnapshot',
+  "user.role === 'admin'",
+  "'team_member_access_updated'",
+  "'team_client_assignments_replaced'",
+  "app.use('/api/admin', sensitiveResponseHeaders, enforceTrustedMutation, adminTeamManagementRoutes)",
+]
+
+for (const token of teamBackendTokens) {
+  if (!(teamRouteSource + serverAppSource).includes(token)) {
+    failures.push(`Team Management backend is missing: ${token}`)
+  }
+}
+
 if (!packageSource.includes('node scripts/check-admin-phase38-developer-workflows.mjs')) {
   failures.push('package.json does not run the Phase 38 Developer workflow audit')
 }
@@ -78,5 +98,5 @@ if (failures.length) {
 }
 
 console.log(
-  'Admin Phase 38 Developer workflow audit passed (two sidebar entries, four technical modes, focused team editing, legacy routes, permission locks, and preserved protected actions).',
+  'Admin Phase 38 Developer workflow audit passed (two sidebar entries, four technical modes, focused team editing, owned team routes, permission locks, and preserved protected actions).',
 )

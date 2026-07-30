@@ -24,6 +24,7 @@ const adminOverviewRoutes = require('./routes/admin.overview.routes')
 const adminNotificationRoutes = require('./routes/admin.notifications.routes')
 const adminOperationalInsightsRoutes = require('./routes/admin.operationalInsights.routes')
 const adminAutomationStudioRoutes = require('./routes/admin.automationStudio.routes')
+const adminTeamManagementRoutes = require('./routes/admin.teamManagement.routes')
 const { requestErrorContext } = require('./middleware/errorMonitoring.middleware')
 const {
   enforceTrustedMutation,
@@ -98,6 +99,7 @@ app.use('/api/admin', sensitiveResponseHeaders, enforceTrustedMutation, adminOve
 app.use('/api/admin', sensitiveResponseHeaders, enforceTrustedMutation, adminNotificationRoutes)
 app.use('/api/admin', sensitiveResponseHeaders, enforceTrustedMutation, adminOperationalInsightsRoutes)
 app.use('/api/admin', sensitiveResponseHeaders, enforceTrustedMutation, adminAutomationStudioRoutes)
+app.use('/api/admin', sensitiveResponseHeaders, enforceTrustedMutation, adminTeamManagementRoutes)
 app.use('/api/admin', sensitiveResponseHeaders, enforceTrustedMutation, adminRoutes)
 app.use('/api/public/error-reports', frontendErrorRoutes)
 app.use('/api/public/letters', letterPublicRoutes)
