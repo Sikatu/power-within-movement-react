@@ -104,17 +104,22 @@ export default function AdminInbox() {
     setMetrics(result.metrics || {})
 
     const currentSelectedId = selectedIdRef.current
+    const requestedClientConversation = requestedClientId
+      ? nextConversations.find((item) => item.client_profile_id === requestedClientId)
+      : null
     const nextId =
       preferredId && nextConversations.some((item) => item.id === preferredId)
         ? preferredId
         : currentSelectedId && nextConversations.some((item) => item.id === currentSelectedId)
           ? currentSelectedId
-          : nextConversations[0]?.id || ''
+          : requestedClientConversation?.id
+            ? requestedClientConversation.id
+            : nextConversations[0]?.id || ''
 
     selectedIdRef.current = nextId
     setSelectedId(nextId)
     await loadConversation(nextId)
-  }, [filters, loadConversation])
+  }, [filters, loadConversation, requestedClientId])
 
   useEffect(() => {
     let mounted = true

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import AdminFrame from '../../components/admin/AdminFrame'
 import {
   createAdminIntakeTemplate,
@@ -97,6 +98,8 @@ function onboardingToForm(record) {
 }
 
 export default function AdminOnboardingStudio() {
+  const [searchParams] = useSearchParams()
+  const requestedClientId = searchParams.get('client') || ''
   const [studio, setStudio] = useState(null)
   const [activeTab, setActiveTab] = useState('clients')
   const [selectedTemplateId, setSelectedTemplateId] = useState('')
@@ -157,6 +160,26 @@ export default function AdminOnboardingStudio() {
           setSelectedTemplateId(firstTemplate.id)
           setTemplateForm(templateToForm(firstTemplate))
         }
+        if (requestedClientId) {
+          const requestedRecord = response.onboardingRecords?.find(
+            (record) => record.clientProfileId === requestedClientId,
+          )
+          if (requestedRecord) {
+            setSelectedRecordId(requestedRecord.id)
+            setOnboardingForm(onboardingToForm(requestedRecord))
+          } else if (response.clients?.some((client) => client.id === requestedClientId)) {
+            setSelectedRecordId('')
+            setOnboardingForm({
+              ...emptyOnboarding,
+              clientId: requestedClientId,
+              templateId: response.templates?.find(
+                (template) => template.formScope === 'onboarding' && template.status === 'active',
+              )?.id || '',
+              assignedToUserId: response.team?.[0]?.id || '',
+            })
+          }
+          setIsOnboardingEditorOpen(true)
+        }
       })
       .catch((loadError) => {
         if (active) setError(loadError.message || 'Unable to open Booking & Onboarding.')
@@ -165,7 +188,7 @@ export default function AdminOnboardingStudio() {
         if (active) setIsLoading(false)
       })
     return () => { active = false }
-  }, [])
+  }, [requestedClientId])
 
   function selectTemplate(template) {
     setSelectedTemplateId(template.id)
