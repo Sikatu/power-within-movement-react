@@ -243,6 +243,22 @@ function AdminSessionFollowThrough() {
     navigate(`/admin/encouragements?${params.toString()}`)
   }
 
+  function inviteNextSession(session) {
+    if (!session.clientProfileId) {
+      navigate('/admin/inbox')
+      return
+    }
+
+    const params = new URLSearchParams({
+      compose: 'new',
+      client: session.clientProfileId,
+      session: session.id,
+      subject: 'Planning your next session',
+      body: 'When you are ready, please open Sessions in your Client Portal to request your next appointment. You will be able to choose from the currently available times.',
+    })
+    navigate(`/admin/inbox?${params.toString()}`)
+  }
+
   return (
     <AdminFrame>
       <div className="pwc-week16-page pwc-momentum18-page">
@@ -453,6 +469,9 @@ function AdminSessionFollowThrough() {
                     <button type="button" onClick={() => openPrivateMessage(selectedSession)}>Send private message</button>
                     <button type="button" onClick={() => openPortalMessage(selectedSession)}>Share portal encouragement</button>
                     <button type="button" onClick={() => chooseSecureResource(selectedSession)}>Choose secure resource</button>
+                    {!selectedSession.nextSessionAt && (
+                      <button type="button" onClick={() => inviteNextSession(selectedSession)}>Invite next-session request</button>
+                    )}
                     <button type="button" onClick={() => openClientResources(selectedSession)}>Open client resources</button>
                   </section>
                 </>

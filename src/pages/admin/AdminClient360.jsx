@@ -717,7 +717,20 @@ function AdminClient360() {
                   </Link>
                 </>
               ) : (
-                <p>No upcoming confirmed or requested session is connected to this client.</p>
+                <>
+                  <p>No upcoming confirmed or requested session is connected to this client.</p>
+                  <Link
+                    className="client-360-text-link"
+                    to={`/admin/inbox?${new URLSearchParams({
+                      compose: 'new',
+                      client: client.id,
+                      subject: 'Planning your next session',
+                      body: 'When you are ready, please open Sessions in your Client Portal to request your next appointment. You will be able to choose from the currently available times.',
+                    }).toString()}`}
+                  >
+                    Invite a next-session request
+                  </Link>
+                </>
               )}
             </section>
 
