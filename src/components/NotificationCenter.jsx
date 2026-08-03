@@ -260,6 +260,13 @@ export default function NotificationCenter({ mode = 'admin' }) {
 
   async function openNotification(notification) {
     setError('')
+    setNotice('')
+
+    const actionPath = safeNotificationPath(notification.actionUrl, mode)
+    if (notification.actionUrl && !actionPath) {
+      setError('This update was kept unread because its portal destination is unavailable.')
+      return
+    }
 
     try {
       if (!notification.readAt) await api.markRead(notification.id)
@@ -280,20 +287,16 @@ export default function NotificationCenter({ mode = 'admin' }) {
         ),
       }))
 
-      const actionPath = safeNotificationPath(notification.actionUrl, mode)
       if (!notification.actionUrl) {
         setNotice('Update marked as read.')
-        return
-      }
-      if (!actionPath) {
-        setError('This update does not have a safe portal destination.')
         return
       }
 
       closeCenter(false)
       navigate(actionPath)
     } catch (actionError) {
-      setError(actionError.message || 'This notification could not be opened.')
+      const reason = actionError.message || 'This update could not be opened.'
+      setError(`${reason} It remains unread so you can retry.`)
     }
   }
 
@@ -439,7 +442,12 @@ export default function NotificationCenter({ mode = 'admin' }) {
 
             {(error || notice) && (
               <div className={`pwc-notification-message${error ? ' is-error' : ''}`} role="status">
-                {error || notice}
+                <span>{error || notice}</span>
+                {error && view === 'notifications' && (
+                  <button type="button" onClick={refreshNotifications} disabled={loading}>
+                    {loading ? 'Retrying…' : 'Retry updates'}
+                  </button>
+                )}
               </div>
             )}
 
