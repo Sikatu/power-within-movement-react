@@ -134,6 +134,7 @@ function metricValue(value) {
 
 export default function AdminEncouragements() {
   const [searchParams, setSearchParams] = useSearchParams()
+  const requestedClientId = searchParams.get('client') || ''
   const confirmAction = useAdminConfirm()
   const composerRef = useRef(null)
   const [clients, setClients] = useState([])
@@ -144,6 +145,8 @@ export default function AdminEncouragements() {
     ...emptyForm,
     messageType:
       searchParams.get('type') === 'announcement' ? 'announcement' : 'encouragement',
+    visibility: requestedClientId ? 'single_client' : 'all_members',
+    clientProfileId: requestedClientId,
   }))
   const [editingId, setEditingId] = useState('')
   const [workspaceView, setWorkspaceView] = useState(

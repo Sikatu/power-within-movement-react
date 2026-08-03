@@ -200,6 +200,36 @@ function AdminSessionFollowThrough() {
     }
   }
 
+  function openPrivateMessage(session) {
+    if (!session.clientProfileId) {
+      navigate('/admin/inbox')
+      return
+    }
+
+    const params = new URLSearchParams({
+      compose: 'new',
+      client: session.clientProfileId,
+      session: session.id,
+      subject: `Follow-up after ${session.appointmentTypeName || 'your session'}`,
+    })
+    navigate(`/admin/inbox?${params.toString()}`)
+  }
+
+  function openPortalMessage(session) {
+    if (!session.clientProfileId) {
+      navigate('/admin/encouragements?view=compose&type=encouragement')
+      return
+    }
+
+    const params = new URLSearchParams({
+      view: 'compose',
+      type: 'encouragement',
+      client: session.clientProfileId,
+      session: session.id,
+    })
+    navigate(`/admin/encouragements?${params.toString()}`)
+  }
+
   return (
     <AdminFrame>
       <div className="pwc-week16-page pwc-momentum18-page">
@@ -407,7 +437,8 @@ function AdminSessionFollowThrough() {
                     </button>
                     <button type="button" onClick={() => openSession(selectedSession)}>Open exact session</button>
                     <button type="button" onClick={() => openAttention(selectedSession)}>Open client attention</button>
-                    <button type="button" onClick={() => navigate('/admin/inbox')}>Open Secure Inbox</button>
+                    <button type="button" onClick={() => openPrivateMessage(selectedSession)}>Send private message</button>
+                    <button type="button" onClick={() => openPortalMessage(selectedSession)}>Share portal encouragement</button>
                     <button type="button" onClick={() => openClientResources(selectedSession)}>Open client resources</button>
                   </section>
                 </>
