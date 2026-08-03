@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import AdminAdvancedFilterToggle from '../../components/admin/AdminAdvancedFilterToggle.jsx'
 import AdminFrame from '../../components/admin/AdminFrame.jsx'
 import { getAdminSessionFollowThrough } from '../../lib/nativeApi.js'
@@ -80,6 +80,8 @@ function cardTone(band) {
 
 function AdminSessionFollowThrough() {
   const navigate = useNavigate()
+  const [searchParams, setSearchParams] = useSearchParams()
+  const requestedSessionId = searchParams.get('session') || ''
   const [adminUser] = useState(readCachedUser)
   const [snapshot, setSnapshot] = useState({ summary: {}, sessions: [], viewer: {}, horizonDays: 30 })
   const [selectedId, setSelectedId] = useState('')
@@ -101,7 +103,9 @@ function AdminSessionFollowThrough() {
       const response = await getAdminSessionFollowThrough(days)
       setSnapshot(response)
       setSelectedId((current) => (
-        response.sessions?.some((session) => session.id === current)
+        response.sessions?.some((session) => String(session.id) === String(requestedSessionId))
+          ? requestedSessionId
+          : response.sessions?.some((session) => session.id === current)
           ? current
           : response.sessions?.[0]?.id || ''
       ))
@@ -111,7 +115,7 @@ function AdminSessionFollowThrough() {
       setLoading(false)
       setRefreshing(false)
     }
-  }, [days])
+  }, [days, requestedSessionId])
 
   useEffect(() => {
     const timer = window.setTimeout(loadFollowThrough, 0)
@@ -163,6 +167,37 @@ function AdminSessionFollowThrough() {
   function openClientResources(session) {
     if (session.clientProfileId) navigate(`/admin/clients/${session.clientProfileId}/resources`)
     else navigate('/admin/clients')
+  }
+
+  function selectSession(session) {
+    setSelectedId(session.id)
+    setSearchParams((current) => {
+      const next = new URLSearchParams(current)
+      next.set('session', session.id)
+      if (session.clientProfileId) next.set('client', session.clientProfileId)
+      else next.delete('client')
+      return next
+    }, { replace: true })
+  }
+
+  function openSession(session) {
+    const clientQuery = session.clientProfileId
+      ? `&client=${encodeURIComponent(session.clientProfileId)}`
+      : ''
+    navigate(`/admin/scheduler?booking=${encodeURIComponent(session.id)}${clientQuery}`)
+  }
+
+  function openCareRecord(session) {
+    if (session.clientProfileId) navigate(`/admin/clients/${session.clientProfileId}/care`)
+    else openSession(session)
+  }
+
+  function openAttention(session) {
+    if (session.clientProfileId) {
+      navigate(`/admin/attention?client=${encodeURIComponent(session.clientProfileId)}`)
+    } else {
+      navigate('/admin/attention')
+    }
   }
 
   return (
@@ -290,7 +325,7 @@ function AdminSessionFollowThrough() {
                       className={`pwc-capacity17-card pwc-momentum18-card is-${tone}${selected ? ' is-selected' : ''}`}
                       key={session.id}
                       type="button"
-                      onClick={() => setSelectedId(session.id)}
+                      onClick={() => selectSession(session)}
                     >
                       <span className="pwc-capacity17-card-heading">
                         <span>
@@ -367,8 +402,11 @@ function AdminSessionFollowThrough() {
 
                   <section className="pwc-momentum18-actions">
                     <button type="button" onClick={() => openClient(selectedSession)}>Open client context</button>
-                    <button type="button" onClick={() => navigate('/admin/scheduler')}>Open Sessions</button>
-                    <button type="button" onClick={() => navigate('/admin/attention')}>Open Attention Queue</button>
+                    <button type="button" onClick={() => openCareRecord(selectedSession)}>
+                      {selectedSession.sessionRecord ? 'Update care record' : 'Record session notes'}
+                    </button>
+                    <button type="button" onClick={() => openSession(selectedSession)}>Open exact session</button>
+                    <button type="button" onClick={() => openAttention(selectedSession)}>Open client attention</button>
                     <button type="button" onClick={() => navigate('/admin/inbox')}>Open Secure Inbox</button>
                     <button type="button" onClick={() => openClientResources(selectedSession)}>Open client resources</button>
                   </section>

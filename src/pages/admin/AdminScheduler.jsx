@@ -85,26 +85,37 @@ const sessionCareActions = [
     status: 'approved',
     note: 'Reviewed and approved inside The Studio.',
     tone: 'approve',
+    availableFrom: ['requested'],
   },
   {
     label: 'Mark confirmed',
     status: 'confirmed',
     note: 'Session confirmed and ready for follow-up.',
     tone: 'confirm',
+    availableFrom: ['approved'],
   },
   {
     label: 'Complete session',
     status: 'completed',
     note: 'Session completed.',
     tone: 'complete',
+    availableFrom: ['confirmed'],
   },
   {
     label: 'Cancel request',
     status: 'cancelled',
     note: 'Request cancelled.',
     tone: 'cancel',
+    availableFrom: ['requested', 'approved', 'confirmed'],
   },
 ]
+
+const bookingStatusRank = {
+  requested: 0,
+  approved: 1,
+  confirmed: 2,
+  completed: 3,
+}
 
 function centsToDisplay(value, currency = 'USD') {
   const amount = Number(value || 0) / 100
@@ -614,6 +625,23 @@ function AdminScheduler() {
       if (!confirmed) return
     }
 
+    const isMovingBackward =
+      bookingStatusRank[nextStatus] !== undefined &&
+      bookingStatusRank[selectedBooking.status] !== undefined &&
+      bookingStatusRank[nextStatus] < bookingStatusRank[selectedBooking.status]
+
+    if (isMovingBackward) {
+      const confirmed = await confirmAction({
+        title: 'Move this session backward?',
+        message: `This changes the session from ${readableStatus(selectedBooking.status)} to ${readableStatus(nextStatus)}.`,
+        detail: 'Use this only to correct an inaccurate status. Existing private notes will remain.',
+        confirmLabel: 'Change status',
+        tone: 'warning',
+      })
+
+      if (!confirmed) return
+    }
+
     setStatus((current) => ({ ...current, saving: true, error: '', message: '' }))
 
     try {
@@ -943,7 +971,9 @@ function AdminScheduler() {
                       <h4>Move the request forward</h4>
                     </div>
                     <div className="pwc-scheduler-care-actions">
-                      {sessionCareActions.map((action) => (
+                      {sessionCareActions
+                        .filter((action) => action.availableFrom.includes(selectedBooking.status))
+                        .map((action) => (
                         <button
                           className={`pwc-scheduler-care-button ${action.tone}`}
                           type="button"
@@ -953,7 +983,12 @@ function AdminScheduler() {
                         >
                           {action.label}
                         </button>
-                      ))}
+                        ))}
+                      {!sessionCareActions.some((action) => (
+                        action.availableFrom.includes(selectedBooking.status)
+                      )) && (
+                        <p>This session has no pending quick status action.</p>
+                      )}
                     </div>
                   </section>
 
@@ -969,9 +1004,19 @@ function AdminScheduler() {
                     </div>
                     <div className="pwc-scheduler-client-circle-actions">
                       {selectedBookingIsClient && selectedBooking.client_profile_id ? (
-                        <Link className="btn secondary" to={`/admin/client-360/${selectedBooking.client_profile_id}`}>
-                          Open Client 360
-                        </Link>
+                        <>
+                          <Link className="btn secondary" to={`/admin/client-360/${selectedBooking.client_profile_id}`}>
+                            Open Client 360
+                          </Link>
+                          {selectedBooking.status === 'completed' && (
+                            <Link
+                              className="btn primary"
+                              to={`/admin/follow-through?session=${encodeURIComponent(selectedBooking.id)}&client=${encodeURIComponent(selectedBooking.client_profile_id)}`}
+                            >
+                              Review follow-through
+                            </Link>
+                          )}
+                        </>
                       ) : (
                         <button
                           className="btn primary"
