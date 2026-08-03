@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import AdminFrame from '../../components/admin/AdminFrame'
 import { useAdminConfirm } from '../../components/admin/AdminConfirmContext'
 import {
@@ -199,6 +200,10 @@ function ModuleEditor({ module, onSave, onDelete, onAddLesson, onEditLesson }) {
 
 export default function AdminLearningLibrary() {
   const confirmAction = useAdminConfirm()
+  const [searchParams] = useSearchParams()
+  const requestedCourseId = searchParams.get('course') || ''
+  const requestedClientId = searchParams.get('client') || ''
+  const requestedMode = searchParams.get('mode') || ''
   const [courses, setCourses] = useState([])
   const [clients, setClients] = useState([])
   const [featureEnabled, setFeatureEnabled] = useState(true)
@@ -231,6 +236,10 @@ export default function AdminLearningLibrary() {
         .some((value) => String(value).toLowerCase().includes(normalizedSearch))
     })
   }, [courses, search, statusFilter])
+
+  const orderedAccessClients = useMemo(() => [...clients].sort((left, right) => (
+    Number(right.id === requestedClientId) - Number(left.id === requestedClientId)
+  )), [clients, requestedClientId])
 
   const metrics = useMemo(
     () => ({
@@ -293,7 +302,8 @@ export default function AdminLearningLibrary() {
     async function start() {
       try {
         setIsLoading(true)
-        await loadLibrary('')
+        await loadLibrary(requestedCourseId)
+        if (['access', 'curriculum', 'overview'].includes(requestedMode)) setActiveTab(requestedMode)
       } catch (loadError) {
         if (mounted) setError(loadError.message || 'The Learning Library could not load.')
       } finally {
@@ -1011,8 +1021,11 @@ export default function AdminLearningLibrary() {
                           </button>
                         </div>
                         <div className="learning-client-picker__list">
-                          {clients.map((client) => (
-                            <label key={client.id}>
+                          {orderedAccessClients.map((client) => (
+                            <label
+                              aria-current={client.id === requestedClientId ? 'true' : undefined}
+                              key={client.id}
+                            >
                               <input
                                 type="checkbox"
                                 checked={selectedClientIds.includes(client.id)}
