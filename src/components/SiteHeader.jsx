@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
 import logo from '../assets/images/logo.webp'
+import { preloadPrimaryPublicRoutes, preloadPublicRoute } from '../lib/publicRoutePreloaders.js'
 import './SiteHeader.css'
 
 const navigation = [
@@ -35,6 +36,21 @@ function SiteHeader() {
     }
   }, [isOpen])
 
+  useEffect(() => {
+    const preload = () => preloadPrimaryPublicRoutes()
+    const idleId = typeof window.requestIdleCallback === 'function'
+      ? window.requestIdleCallback(preload, { timeout: 2500 })
+      : window.setTimeout(preload, 1800)
+
+    return () => {
+      if (typeof window.cancelIdleCallback === 'function') {
+        window.cancelIdleCallback(idleId)
+      } else {
+        window.clearTimeout(idleId)
+      }
+    }
+  }, [])
+
   const closeMenu = () => setIsOpen(false)
 
   return (
@@ -53,6 +69,9 @@ function SiteHeader() {
                 to={item.to}
                 end={item.to === '/'}
                 onClick={closeMenu}
+                onMouseEnter={() => preloadPublicRoute(item.to)}
+                onFocus={() => preloadPublicRoute(item.to)}
+                onTouchStart={() => preloadPublicRoute(item.to)}
                 className={({ isActive }) => (isActive || item.relatedPaths?.includes(pathname) ? 'is-active' : undefined)}
               >
                 {item.label}
@@ -60,12 +79,25 @@ function SiteHeader() {
             </li>
           ))}
           <li className="site-nav-mobile-portal">
-            <NavLink to="/client-portal/login" onClick={closeMenu}>Client Portal</NavLink>
+            <NavLink
+              to="/client-portal/login"
+              onClick={closeMenu}
+              onMouseEnter={() => preloadPublicRoute('/client-portal/login')}
+              onFocus={() => preloadPublicRoute('/client-portal/login')}
+              onTouchStart={() => preloadPublicRoute('/client-portal/login')}
+            >Client Portal</NavLink>
           </li>
         </ul>
 
         <div className="site-header-actions">
-          <NavLink className="portal-link" to="/client-portal/login" aria-label="Client portal login">K</NavLink>
+          <NavLink
+            className="portal-link"
+            to="/client-portal/login"
+            aria-label="Client portal login"
+            onMouseEnter={() => preloadPublicRoute('/client-portal/login')}
+            onFocus={() => preloadPublicRoute('/client-portal/login')}
+            onTouchStart={() => preloadPublicRoute('/client-portal/login')}
+          >K</NavLink>
           <button
             className="menu-button"
             type="button"
