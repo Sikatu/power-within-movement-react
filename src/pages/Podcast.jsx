@@ -100,7 +100,7 @@ function Podcast() {
           <p>The podcast gives language to the things girls and women are already carrying: comparison, confidence, communication, identity, beauty pressure, self-trust, and the need to feel deeply known.</p>
           <p>It is a companion to the Teen Programs, The Vault, and the larger Power Within Collective ecosystem.</p>
         </div>
-        <img src={podcastConversationImage} alt="Mother and daughter in a warm supportive conversation" />
+        <img src={podcastConversationImage} alt="Mother and daughter in a warm supportive conversation" loading="lazy" decoding="async" />
       </section>
 
       <section className="podcast-listeners section-shell">
@@ -132,7 +132,7 @@ function Podcast() {
 
       <section className="podcast-vault section-shell">
         <article>
-          <img src={vaultImage} alt="Reflection tools and conversation resources" />
+          <img src={vaultImage} alt="Reflection tools and conversation resources" loading="lazy" decoding="async" />
           <div>
             <p className="eyebrow">Continue the Conversation</p>
             <h2>Pair the podcast with reflection tools from The Vault.</h2>

@@ -131,7 +131,7 @@ function Professionals() {
         </header>
         <div className="professionals-build-showcase">
           <figure>
-            <img src={professionalToolsImage} alt="Professional tools, swatches, notes, and refined client experience materials" />
+            <img src={professionalToolsImage} alt="Professional tools, swatches, notes, and refined client experience materials" loading="lazy" decoding="async" />
             <figcaption>Intentional standards. Clearer language. Lasting impact.</figcaption>
           </figure>
           <div>
@@ -178,7 +178,7 @@ function Professionals() {
             ))}
           </div>
         </div>
-        <img src={professionalConsultationImage} alt="Professional consultation with a client in a calm refined studio" />
+        <img src={professionalConsultationImage} alt="Professional consultation with a client in a calm refined studio" loading="lazy" decoding="async" />
       </section>
 
       <section className="professionals-wellness section-shell">
