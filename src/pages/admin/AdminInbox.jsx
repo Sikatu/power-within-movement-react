@@ -57,6 +57,9 @@ function clientName(conversation) {
 export default function AdminInbox() {
   const [searchParams] = useSearchParams()
   const requestedConversationId = searchParams.get('conversation') || ''
+  const requestedClientId = searchParams.get('client') || ''
+  const requestedSubject = searchParams.get('subject') || ''
+  const requestedNewConversation = searchParams.get('compose') === 'new'
   const [conversations, setConversations] = useState([])
   const [clients, setClients] = useState([])
   const [teamUsers, setTeamUsers] = useState([])
@@ -66,8 +69,12 @@ export default function AdminInbox() {
   const [selectedConversation, setSelectedConversation] = useState(null)
   const [filters, setFilters] = useState({ status: 'all', priority: 'all', search: '' })
   const [showFilters, setShowFilters] = useState(false)
-  const [showNew, setShowNew] = useState(false)
-  const [newConversation, setNewConversation] = useState(emptyNewConversation)
+  const [showNew, setShowNew] = useState(requestedNewConversation)
+  const [newConversation, setNewConversation] = useState(() => ({
+    ...emptyNewConversation,
+    clientProfileId: requestedClientId,
+    subject: requestedSubject.slice(0, 180),
+  }))
   const [reply, setReply] = useState(emptyReply)
   const [composerExpanded, setComposerExpanded] = useState(false)
   const replyTextareaRef = useRef(null)
