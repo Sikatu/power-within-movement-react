@@ -38,6 +38,7 @@ const scripts = [
   'scripts/check-workflow-phase4-session-handoff.mjs',
   'scripts/check-workflow-phase5-session-follow-through.mjs',
   'scripts/check-workflow-phase6-session-communication.mjs',
+  'scripts/check-workflow-phase7-resource-delivery.mjs',
   'scripts/check-admin-phase31-streamlining.mjs',
   'scripts/check-admin-phase32-daily-workflows.mjs',
   'scripts/check-admin-phase33-growth-workflows.mjs',

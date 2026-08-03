@@ -169,6 +169,19 @@ function AdminSessionFollowThrough() {
     else navigate('/admin/clients')
   }
 
+  function chooseSecureResource(session) {
+    if (!session.clientProfileId) {
+      navigate('/admin/assets')
+      return
+    }
+
+    const params = new URLSearchParams({
+      client: session.clientProfileId,
+      session: session.id,
+    })
+    navigate(`/admin/assets?${params.toString()}`)
+  }
+
   function selectSession(session) {
     setSelectedId(session.id)
     setSearchParams((current) => {
@@ -439,6 +452,7 @@ function AdminSessionFollowThrough() {
                     <button type="button" onClick={() => openAttention(selectedSession)}>Open client attention</button>
                     <button type="button" onClick={() => openPrivateMessage(selectedSession)}>Send private message</button>
                     <button type="button" onClick={() => openPortalMessage(selectedSession)}>Share portal encouragement</button>
+                    <button type="button" onClick={() => chooseSecureResource(selectedSession)}>Choose secure resource</button>
                     <button type="button" onClick={() => openClientResources(selectedSession)}>Open client resources</button>
                   </section>
                 </>
