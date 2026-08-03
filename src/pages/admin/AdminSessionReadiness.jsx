@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import AdminAdvancedFilterToggle from '../../components/admin/AdminAdvancedFilterToggle.jsx'
 import AdminFrame from '../../components/admin/AdminFrame.jsx'
 import { getAdminSessionReadiness } from '../../lib/nativeApi.js'
@@ -61,6 +61,8 @@ function cardTone(band) {
 
 function AdminSessionReadiness() {
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const requestedSessionId = searchParams.get('session') || ''
   const [adminUser] = useState(readCachedUser)
   const [snapshot, setSnapshot] = useState({ summary: {}, sessions: [], viewer: {}, horizonDays: 14 })
   const [selectedId, setSelectedId] = useState('')
@@ -81,18 +83,18 @@ function AdminSessionReadiness() {
     try {
       const response = await getAdminSessionReadiness(days)
       setSnapshot(response)
-      setSelectedId((current) => (
-        response.sessions?.some((session) => session.id === current)
-          ? current
-          : response.sessions?.[0]?.id || ''
-      ))
+      setSelectedId((current) => {
+        if (response.sessions?.some((session) => session.id === current)) return current
+        if (response.sessions?.some((session) => session.id === requestedSessionId)) return requestedSessionId
+        return response.sessions?.[0]?.id || ''
+      })
     } catch (loadError) {
       setError(loadError.message || 'Session readiness could not be loaded.')
     } finally {
       setLoading(false)
       setRefreshing(false)
     }
-  }, [days])
+  }, [days, requestedSessionId])
 
   useEffect(() => {
     const timer = window.setTimeout(loadReadiness, 0)
@@ -136,6 +138,14 @@ function AdminSessionReadiness() {
   function openClient(session) {
     if (session.clientProfileId) navigate(`/admin/client-360/${session.clientProfileId}`)
     else navigate('/admin/scheduler')
+  }
+
+  function clientParams(session, extra = {}) {
+    return new URLSearchParams({
+      ...extra,
+      ...(session.clientProfileId ? { client: session.clientProfileId } : {}),
+      ...(session.clientName ? { clientName: session.clientName } : {}),
+    }).toString()
   }
 
   return (
@@ -357,10 +367,10 @@ function AdminSessionReadiness() {
                   <button type="button" onClick={() => openClient(selectedSession)}>
                     {selectedSession.clientProfileId ? 'Open Client 360' : 'Open booking request'}
                   </button>
-                  <button type="button" onClick={() => navigate('/admin/scheduler')}>Open Sessions</button>
-                  <button type="button" onClick={() => navigate('/admin/onboarding')}>Review onboarding</button>
-                  <button type="button" onClick={() => navigate('/admin/attention')}>Open attention work</button>
-                  <button type="button" onClick={() => navigate('/admin/inbox')}>Open Secure Inbox</button>
+                  <button type="button" onClick={() => navigate(`/admin/scheduler?${clientParams(selectedSession, { booking: selectedSession.id })}`)}>Open Sessions</button>
+                  <button type="button" onClick={() => navigate(`/admin/onboarding?${clientParams(selectedSession)}`)}>Review onboarding</button>
+                  <button type="button" onClick={() => navigate(`/admin/attention?${clientParams(selectedSession)}`)}>Open attention work</button>
+                  <button type="button" onClick={() => navigate(`/admin/inbox?${clientParams(selectedSession)}`)}>Open Secure Inbox</button>
                 </div>
               </aside>
             ) : (

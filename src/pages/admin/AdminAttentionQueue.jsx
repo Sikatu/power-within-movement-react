@@ -5,7 +5,7 @@ import {
   useRef,
   useState,
 } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import AdminAdvancedFilterToggle from '../../components/admin/AdminAdvancedFilterToggle.jsx'
 import AdminFrame from '../../components/admin/AdminFrame.jsx'
 import { useAdminConfirm } from '../../components/admin/AdminConfirmContext.js'
@@ -119,6 +119,9 @@ function draftFromTask(task) {
 
 export default function AdminAttentionQueue() {
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const requestedClientId = searchParams.get('client') || ''
+  const requestedClientName = searchParams.get('clientName') || ''
   const confirmAction = useAdminConfirm()
   const [adminUser] = useState(readCachedUser)
   const [teamAccess, setTeamAccess] = useState(null)
@@ -132,7 +135,7 @@ export default function AdminAttentionQueue() {
     inProgress: 0,
   })
   const [teamUsers, setTeamUsers] = useState([])
-  const [query, setQuery] = useState('')
+  const [query, setQuery] = useState(requestedClientName)
   const [source, setSource] = useState('all')
   const [ownership, setOwnership] = useState('all')
   const [timing, setTiming] = useState('all')
@@ -159,6 +162,7 @@ export default function AdminAttentionQueue() {
 
     const currentKey = selectedKeyRef.current
     const nextSelected = nextTasks.find((task) => taskKey(task) === currentKey)
+      || nextTasks.find((task) => task.clientProfileId === requestedClientId)
       || nextTasks[0]
       || null
     const nextKey = nextSelected ? taskKey(nextSelected) : ''
@@ -166,7 +170,7 @@ export default function AdminAttentionQueue() {
     selectedKeyRef.current = nextKey
     setSelectedKey(nextKey)
     setDraft(nextSelected ? draftFromTask(nextSelected) : null)
-  }, [])
+  }, [requestedClientId])
 
   const loadQueue = useCallback(async ({ quiet = false } = {}) => {
     if (quiet) setRefreshing(true)

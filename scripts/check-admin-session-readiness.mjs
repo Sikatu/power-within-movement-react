@@ -31,9 +31,9 @@ const pageTokens = [
   'aria-label="Session readiness board"',
   'This is a preparation signal for the Studio team',
   "navigate('/admin/scheduler')",
-  "navigate('/admin/onboarding')",
-  "navigate('/admin/attention')",
-  "navigate('/admin/inbox')",
+  '`/admin/onboarding?${clientParams(selectedSession)}`',
+  '`/admin/attention?${clientParams(selectedSession)}`',
+  '`/admin/inbox?${clientParams(selectedSession)}`',
   'selectedSession.readiness?.reasons',
 ]
 
