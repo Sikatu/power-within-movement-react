@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import contactImage from '../assets/images/contact.webp'
 import { submitPublicContactInquiry } from '../lib/nativeApi.js'
@@ -55,6 +55,11 @@ const contactQueryMap = {
     interest: 'Podcast / Collaboration',
     message: 'I would like to connect about the podcast or a collaboration.',
   },
+  'portal-access': {
+    label: 'Client Portal Access',
+    interest: 'General Question',
+    message: 'I need help accessing my private client portal.',
+  },
 }
 
 const interestOptions = [
@@ -72,11 +77,21 @@ const interestOptions = [
 ]
 
 const pathways = [
-  { title: 'Book a Clarity Session', text: 'For women who know something has shifted and want a grounded place to begin.' },
-  { title: 'Ask About Radiance Reclaimed™', text: 'For women ready for a deeper whole-person transformation experience.' },
-  { title: 'Join the Professional Interest List', text: 'For professionals interested in education, mentorship, color, style, or client experience training.' },
-  { title: 'Book Kim to Speak', text: 'For conversations around confidence, presence, image, identity, and the next era of women’s leadership.' },
+  { title: 'Book a Clarity Session', text: 'For women who know something has shifted and want a grounded place to begin.', interest: 'Book a Clarity Session', message: 'I would like to learn more about booking a clarity session.' },
+  { title: 'Ask About Radiance Reclaimed™', text: 'For women ready for a deeper whole-person transformation experience.', interest: 'Ask About Radiance Reclaimed™', message: 'I would like to learn more about Radiance Reclaimed™.' },
+  { title: 'Join the Professional Interest List', text: 'For professionals interested in education, mentorship, color, style, or client experience training.', interest: 'Join the Professional Interest List', message: 'I would like to learn more about professional education or mentorship.' },
+  { title: 'Book Kim to Speak', text: 'For conversations around confidence, presence, image, identity, and the next era of women’s leadership.', interest: 'Book Kim to Speak', message: 'I would like to inquire about booking Kim to speak.' },
 ]
+
+function getFriendlyContactError(message) {
+  const normalized = String(message || '').toLowerCase()
+
+  if (normalized.includes('failed to fetch') || normalized.includes('network') || normalized.includes('load failed')) {
+    return 'We could not connect for a moment. Please check your connection and try again.'
+  }
+
+  return 'We could not send your message into the Power Within admin system. Please try again in a moment.'
+}
 
 function createInitialForm(queryContext) {
   return {
@@ -97,6 +112,7 @@ function Contact() {
   }, [search])
   const [form, setForm] = useState(() => createInitialForm(queryContext))
   const [status, setStatus] = useState({ state: 'idle', message: '' })
+  const formPanelRef = useRef(null)
 
   const handleChange = (event) => {
     const { name, value } = event.target
@@ -118,12 +134,23 @@ function Contact() {
         sourcePath: `${window.location.pathname}${window.location.search}`,
       })
       setStatus({ state: 'success', message: '' })
-    } catch {
+    } catch (error) {
       setStatus({
         state: 'error',
-        message: 'We could not send your message into the Power Within admin system. Please try again in a moment.',
+        message: getFriendlyContactError(error.message),
       })
     }
+  }
+
+  const choosePathway = (pathway) => {
+    setForm((current) => ({
+      ...current,
+      interest: pathway.interest,
+      message: current.message.trim() ? current.message : pathway.message,
+    }))
+    setStatus({ state: 'idle', message: '' })
+    formPanelRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    window.requestAnimationFrame(() => formPanelRef.current?.querySelector('input[name="firstName"]')?.focus())
   }
 
   const resetForm = () => {
@@ -140,7 +167,7 @@ function Contact() {
       </section>
 
       <section className="contact-layout section-shell">
-        <article className="contact-form-panel">
+        <article className="contact-form-panel" ref={formPanelRef}>
           <p className="eyebrow">Start Here</p>
           <h2>Start with the right support.</h2>
           <p>Choose the option closest to what you need, then share a few details. We will guide your message to the right next step.</p>
@@ -206,6 +233,9 @@ function Contact() {
               <article key={pathway.title}>
                 <h3>{pathway.title}</h3>
                 <p>{pathway.text}</p>
+                <button className="button button-secondary" type="button" onClick={() => choosePathway(pathway)}>
+                  Choose This Path
+                </button>
               </article>
             ))}
           </div>

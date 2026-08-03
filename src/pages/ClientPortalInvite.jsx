@@ -121,6 +121,11 @@ function ClientPortalInvite() {
   const clientName = invite?.client?.name || 'there'
   const heroTitle = invite?.status === 'pending' ? `Welcome, ${clientName}.` : statusCopy.title
 
+  const updatePassword = (setter) => (event) => {
+    setter(event.target.value)
+    if (status.state === 'error') setStatus({ state: 'idle', message: '' })
+  }
+
   const handleSubmit = async (event) => {
     event.preventDefault()
 
@@ -181,13 +186,13 @@ function ClientPortalInvite() {
                 <form className="portal-entry-form" onSubmit={handleSubmit}>
                   <label>
                     <span>Create Password</span>
-                    <input type="password" value={password} onChange={(event) => setPassword(event.target.value)} minLength="12" pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{12,}" title="Use at least 12 characters with uppercase, lowercase, a number, and a symbol." autoComplete="new-password" required />
+                    <input type="password" value={password} onChange={updatePassword(setPassword)} minLength="12" pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{12,}" title="Use at least 12 characters with uppercase, lowercase, a number, and a symbol." aria-describedby="portal-password-requirements" autoComplete="new-password" required />
                   </label>
                   <label>
                     <span>Confirm Password</span>
-                    <input type="password" value={confirmPassword} onChange={(event) => setConfirmPassword(event.target.value)} minLength="12" pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{12,}" title="Use at least 12 characters with uppercase, lowercase, a number, and a symbol." autoComplete="new-password" required />
+                    <input type="password" value={confirmPassword} onChange={updatePassword(setConfirmPassword)} minLength="12" pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{12,}" title="Use at least 12 characters with uppercase, lowercase, a number, and a symbol." aria-describedby="portal-password-requirements" autoComplete="new-password" required />
                   </label>
-                  <p className="portal-password-help">Use at least 12 characters with an uppercase letter, lowercase letter, number, and symbol.</p>
+                  <p className="portal-password-help" id="portal-password-requirements">Use at least 12 characters with an uppercase letter, lowercase letter, number, and symbol.</p>
                   <button type="submit" disabled={status.state === 'saving'}>{status.state === 'saving' ? 'Creating Access…' : 'Create My Portal Access'}</button>
                 </form>
               ) : (
@@ -196,7 +201,7 @@ function ClientPortalInvite() {
                   <p>{statusCopy.body}</p>
                   <div>
                     {statusCopy.canLogin && <Link className="button button-primary" to="/client-portal/login">Go to Client Portal Login</Link>}
-                    {statusCopy.canContact && <Link className="button button-secondary" to="/contact">Contact Power Within</Link>}
+                    {statusCopy.canContact && <Link className="button button-secondary" to="/contact?interest=portal-access">Contact Power Within</Link>}
                   </div>
                 </div>
               )}
