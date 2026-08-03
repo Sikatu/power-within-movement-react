@@ -4,7 +4,7 @@ import {
   useMemo,
   useState,
 } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import AdminAdvancedFilterToggle from '../../components/admin/AdminAdvancedFilterToggle.jsx'
 import AdminFrame from '../../components/admin/AdminFrame.jsx'
 import {
@@ -79,6 +79,8 @@ function taskKey(task) {
 
 export default function AdminCapacityCenter() {
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const requestedMemberId = searchParams.get('member') || ''
   const [adminUser] = useState(readCachedUser)
   const [teamAccess, setTeamAccess] = useState(null)
   const [snapshot, setSnapshot] = useState({
@@ -118,18 +120,18 @@ export default function AdminCapacityCenter() {
 
       setSnapshot(workloadResponse)
       setTeamAccess(accessResponse?.access || null)
-      setSelectedMemberId((current) => (
-        workloadResponse.members?.some((member) => member.id === current)
-          ? current
-          : workloadResponse.members?.[0]?.id || ''
-      ))
+      setSelectedMemberId((current) => {
+        if (workloadResponse.members?.some((member) => member.id === current)) return current
+        if (workloadResponse.members?.some((member) => member.id === requestedMemberId)) return requestedMemberId
+        return workloadResponse.members?.[0]?.id || ''
+      })
     } catch (loadError) {
       setError(loadError.message || 'Studio capacity could not be loaded.')
     } finally {
       setLoading(false)
       setRefreshing(false)
     }
-  }, [isStaff])
+  }, [isStaff, requestedMemberId])
 
   useEffect(() => {
     const timer = window.setTimeout(loadCapacity, 0)
@@ -194,16 +196,22 @@ export default function AdminCapacityCenter() {
   }
 
   function openTask(task) {
-    navigate(task.actionUrl || '/admin/attention')
+    const params = new URLSearchParams({
+      source: task.sourceType,
+      item: String(task.id),
+      ...(task.clientProfileId ? { client: task.clientProfileId } : {}),
+      ...(task.clientName ? { clientName: task.clientName } : {}),
+    })
+    navigate(`/admin/attention?${params}`)
   }
 
   function openSession(session) {
-    if (session.clientProfileId) {
-      navigate(`/admin/client-360/${session.clientProfileId}`)
-      return
-    }
-
-    navigate('/admin/scheduler')
+    const params = new URLSearchParams({
+      booking: String(session.id),
+      ...(session.clientProfileId ? { client: session.clientProfileId } : {}),
+      ...(session.clientName ? { clientName: session.clientName } : {}),
+    })
+    navigate(`/admin/scheduler?${params}`)
   }
 
   async function assignTask(task, ownerUserId) {

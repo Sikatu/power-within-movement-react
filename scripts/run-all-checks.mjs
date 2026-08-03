@@ -43,6 +43,7 @@ const scripts = [
   'scripts/check-workflow-phase9-session-readiness-context.mjs',
   'scripts/check-workflow-phase10-client-care-context.mjs',
   'scripts/check-workflow-phase11-daily-planning-handoffs.mjs',
+  'scripts/check-workflow-phase12-capacity-ownership.mjs',
   'scripts/check-admin-phase31-streamlining.mjs',
   'scripts/check-admin-phase32-daily-workflows.mjs',
   'scripts/check-admin-phase33-growth-workflows.mjs',

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import AdminFrame from '../../components/admin/AdminFrame'
 import {
   getDeveloperTeamManagement,
@@ -68,6 +68,11 @@ function initialForm(member) {
 }
 
 export default function AdminTeamManagement() {
+  const [searchParams] = useSearchParams()
+  const requestedMemberId = searchParams.get('member') || ''
+  const requestedClientId = searchParams.get('client') || ''
+  const requestedClientName = searchParams.get('clientName') || ''
+  const requestedMode = searchParams.get('mode') || ''
   const [snapshot, setSnapshot] = useState(null)
   const [selectedMemberId, setSelectedMemberId] = useState('')
   const [form, setForm] = useState(initialForm(null))
@@ -92,7 +97,9 @@ export default function AdminTeamManagement() {
       const members = result.members || []
       const nextMemberId = preserveSelection && members.some((member) => member.id === selectedMemberId)
         ? selectedMemberId
-        : members.find((member) => member.status === 'active')?.id || members[0]?.id || ''
+        : members.some((member) => member.id === requestedMemberId)
+          ? requestedMemberId
+          : members.find((member) => member.status === 'active')?.id || members[0]?.id || ''
 
       setSelectedMemberId(nextMemberId)
     } catch (loadError) {
@@ -100,7 +107,7 @@ export default function AdminTeamManagement() {
     } finally {
       setIsLoading(false)
     }
-  }, [selectedMemberId])
+  }, [requestedMemberId, selectedMemberId])
 
   useEffect(() => {
     const timeoutId = window.setTimeout(() => {
@@ -120,14 +127,16 @@ export default function AdminTeamManagement() {
     const timeoutId = window.setTimeout(() => {
       setForm(initialForm(selectedMember))
       setAssignmentDraft(selectedMember?.clientAssignments || [])
-      setClientSearch('')
-      setWorkspaceMode('profile')
+      setClientSearch(requestedClientName)
+      setWorkspaceMode(['profile', 'permissions', 'assignments'].includes(requestedMode)
+        ? requestedMode
+        : 'profile')
       setError('')
       setNotice('')
     }, 0)
 
     return () => window.clearTimeout(timeoutId)
-  }, [selectedMemberId, selectedMember])
+  }, [requestedClientName, requestedMode, selectedMemberId, selectedMember])
 
   const filteredMembers = useMemo(() => {
     const query = memberSearch.trim().toLowerCase()
@@ -498,7 +507,11 @@ export default function AdminTeamManagement() {
                       const assignment = assignmentMap.get(client.id)
 
                       return (
-                        <article className={`team-client-assignment${assignment ? ' is-assigned' : ''}`} key={client.id}>
+                        <article
+                          className={`team-client-assignment${assignment ? ' is-assigned' : ''}`}
+                          key={client.id}
+                          aria-current={client.id === requestedClientId ? 'true' : undefined}
+                        >
                           <label>
                             <input
                               type="checkbox"
