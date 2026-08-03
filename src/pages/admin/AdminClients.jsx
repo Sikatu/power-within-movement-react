@@ -2028,6 +2028,22 @@ export default function AdminClients() {
                 role="menuitem"
                 onClick={() =>
                   runClientAction(() =>
+                    navigate(`/admin/inbox?client=${clientActionMenu.client.id}`),
+                  )
+                }
+              >
+                <span className="client-action-menu-icon-v3" aria-hidden="true">✉</span>
+                <span>
+                  <strong>Secure message</strong>
+                  <small>Open this client’s Inbox</small>
+                </span>
+              </button>
+
+              <button
+                type="button"
+                role="menuitem"
+                onClick={() =>
+                  runClientAction(() =>
                     navigate(`/admin/client-360/${clientActionMenu.client.id}`),
                   )
                 }
@@ -2072,6 +2088,14 @@ export default function AdminClients() {
                     onClick={() => navigate(`/admin/client-360/${selectedClient.id}`)}
                   >
                     Open Client 360
+                  </button>
+
+                  <button
+                    type="button"
+                    className="client-detail-edit-shortcut-v2"
+                    onClick={() => navigate(`/admin/inbox?client=${selectedClient.id}`)}
+                  >
+                    Secure Message
                   </button>
 
                   <button
