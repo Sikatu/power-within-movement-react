@@ -49,6 +49,7 @@ const scripts = [
   'scripts/check-workflow-phase15-communication-continuity.mjs',
   'scripts/check-workflow-phase16-client-portal-continuity.mjs',
   'scripts/check-workflow-phase17-notification-recovery.mjs',
+  'scripts/check-workflow-phase18-end-to-end-acceptance.mjs',
   'scripts/check-admin-phase31-streamlining.mjs',
   'scripts/check-admin-phase32-daily-workflows.mjs',
   'scripts/check-admin-phase33-growth-workflows.mjs',
