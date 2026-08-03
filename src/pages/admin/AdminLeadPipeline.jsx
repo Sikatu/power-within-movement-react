@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import AdminFrame from '../../components/admin/AdminFrame'
+import { useAdminConfirm } from '../../components/admin/AdminConfirmContext'
 import {
   addAdminLeadNote,
   createAdminLeadFollowUp,
@@ -73,6 +74,22 @@ const emptyFollowUp = {
   dueAt: '',
 }
 
+function leadMatchesFilters(lead, search, priority) {
+  if (priority !== 'all' && lead.priority !== priority) return false
+
+  const query = search.trim().toLowerCase()
+  if (!query) return true
+
+  return [
+    lead.name,
+    lead.email,
+    lead.phone,
+    lead.interest,
+    lead.source,
+    lead.ownerName,
+  ].some((value) => String(value || '').toLowerCase().includes(query))
+}
+
 function LeadCard({ lead, isSelected, onSelect }) {
   return (
     <button
@@ -100,6 +117,7 @@ function LeadCard({ lead, isSelected, onSelect }) {
 }
 
 export default function AdminLeadPipeline() {
+  const confirmAction = useAdminConfirm()
   const [pipeline, setPipeline] = useState(null)
   const [selectedLeadId, setSelectedLeadId] = useState('')
   const [detail, setDetail] = useState(null)
@@ -179,21 +197,7 @@ export default function AdminLeadPipeline() {
   }, [selectedLeadId, loadDetail])
 
   const filteredLeads = useMemo(() => {
-    const query = search.trim().toLowerCase()
-
-    return (pipeline?.leads || []).filter((lead) => {
-      if (priorityFilter !== 'all' && lead.priority !== priorityFilter) return false
-      if (!query) return true
-
-      return [
-        lead.name,
-        lead.email,
-        lead.phone,
-        lead.interest,
-        lead.source,
-        lead.ownerName,
-      ].some((value) => String(value || '').toLowerCase().includes(query))
-    })
+    return (pipeline?.leads || []).filter((lead) => leadMatchesFilters(lead, search, priorityFilter))
   }, [pipeline?.leads, priorityFilter, search])
 
   const leadsByStage = useMemo(() => Object.fromEntries(
@@ -216,6 +220,32 @@ export default function AdminLeadPipeline() {
     event.preventDefault()
     if (!selectedLeadId) return
 
+    const previousStage = detail?.lead?.pipelineStage
+
+    if (leadForm.pipelineStage === 'converted' && previousStage !== 'converted') {
+      const confirmed = await confirmAction({
+        title: `Convert ${detail?.lead?.name || 'this lead'} to an active client?`,
+        message: 'This changes the client status, records the conversion, and may start configured client-conversion automations.',
+        detail: 'The lead history and follow-ups will remain available after conversion.',
+        confirmLabel: 'Convert to client',
+        tone: 'warning',
+      })
+
+      if (!confirmed) return
+    }
+
+    if (leadForm.pipelineStage === 'not_a_fit' && previousStage !== 'not_a_fit') {
+      const confirmed = await confirmAction({
+        title: `Close ${detail?.lead?.name || 'this lead'} as not a fit?`,
+        message: 'This changes the profile to inactive and removes it from the active lead workload.',
+        detail: 'Record a respectful reason before continuing. The history will remain available.',
+        confirmLabel: 'Mark as not a fit',
+        tone: 'warning',
+      })
+
+      if (!confirmed) return
+    }
+
     setIsSaving(true)
     setError('')
     setNotice('')
@@ -235,6 +265,11 @@ export default function AdminLeadPipeline() {
       setDetail(result.detail || detail)
       setLeadForm(initialLeadForm(result.detail?.lead))
 
+      if (previousStage !== leadForm.pipelineStage) {
+        setPipelineStageView(leadForm.pipelineStage)
+        setLeadWorkspaceView('profile')
+      }
+
       if (leadForm.pipelineStage === 'converted') {
         await loadPipeline({ preserveSelection: true })
       }
@@ -248,6 +283,32 @@ export default function AdminLeadPipeline() {
   function selectLead(clientId) {
     setSelectedLeadId(clientId)
     setLeadWorkspaceView('profile')
+  }
+
+  function clearFilters() {
+    setSearch('')
+    setPriorityFilter('all')
+    ensureFilteredSelection('', 'all')
+  }
+
+  function ensureFilteredSelection(nextSearch, nextPriority) {
+    const candidates = (pipeline?.leads || [])
+      .filter((lead) => leadMatchesFilters(lead, nextSearch, nextPriority))
+      .filter((lead) => pipelineStageView === 'all' || lead.pipelineStage === pipelineStageView)
+
+    if (!candidates.some((lead) => lead.id === selectedLeadId)) {
+      setSelectedLeadId(candidates[0]?.id || '')
+    }
+  }
+
+  function updateSearch(value) {
+    setSearch(value)
+    ensureFilteredSelection(value, priorityFilter)
+  }
+
+  function updatePriorityFilter(value) {
+    setPriorityFilter(value)
+    ensureFilteredSelection(search, value)
   }
 
   async function handleFollowUpCreate(event) {
@@ -351,7 +412,7 @@ export default function AdminLeadPipeline() {
           <label>
             <span>Search leads</span>
             <input
-              onChange={(event) => setSearch(event.target.value)}
+              onChange={(event) => updateSearch(event.target.value)}
               placeholder="Name, email, interest, source, or owner"
               type="search"
               value={search}
@@ -359,13 +420,18 @@ export default function AdminLeadPipeline() {
           </label>
           <label>
             <span>Priority</span>
-            <select onChange={(event) => setPriorityFilter(event.target.value)} value={priorityFilter}>
+            <select onChange={(event) => updatePriorityFilter(event.target.value)} value={priorityFilter}>
               <option value="all">All priorities</option>
               {Object.entries(priorityLabels).map(([value, label]) => (
                 <option key={value} value={value}>{label}</option>
               ))}
             </select>
           </label>
+          {(search || priorityFilter !== 'all') && (
+            <button className="button secondary" onClick={clearFilters} type="button">
+              Clear filters
+            </button>
+          )}
         </section>
 
         <nav className="onboarding-studio-tabs" aria-label="Lead pipeline stages">
@@ -551,6 +617,7 @@ export default function AdminLeadPipeline() {
                       <textarea
                         onChange={(event) => setLeadForm((current) => ({ ...current, lostReason: event.target.value }))}
                         placeholder="Capture the reason respectfully for future learning."
+                        required
                         rows="3"
                         value={leadForm.lostReason}
                       />
