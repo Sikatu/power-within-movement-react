@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import AdminFrame from '../../components/admin/AdminFrame'
+import { useAdminConfirm } from '../../components/admin/AdminConfirmContext'
 import {
   createAdminClientCareAction,
   getAdminClient360,
@@ -73,6 +74,7 @@ function planToForm(plan) {
 
 function AdminClient360() {
   const { clientId } = useParams()
+  const confirmAction = useAdminConfirm()
   const [snapshot, setSnapshot] = useState(null)
   const [planForm, setPlanForm] = useState(emptyPlan)
   const [actionForm, setActionForm] = useState(emptyAction)
@@ -198,6 +200,18 @@ function AdminClient360() {
 
   async function changeActionStatus(action, status) {
     if (!canManage) return
+
+    if (status === 'cancelled') {
+      const confirmed = await confirmAction({
+        title: 'Cancel this care action?',
+        message: `“${action.title}” will leave the active follow-through queue.`,
+        detail: 'The cancelled action remains in the complete Client 360 history.',
+        confirmLabel: 'Cancel action',
+        tone: 'warning',
+      })
+
+      if (!confirmed) return
+    }
 
     setUpdatingActionId(action.id)
     setError('')

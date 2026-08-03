@@ -1,6 +1,7 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { useNavigate, useParams } from 'react-router-dom'
+import { useAdminConfirm } from '../../components/admin/AdminConfirmContext'
 import AdminFrame from '../../components/admin/AdminFrame'
 import ClientProfileTabs from '../../components/admin/ClientProfileTabs'
 import {
@@ -435,6 +436,8 @@ function serviceRecordToForm(record) {
 export default function AdminClients() {
   const navigate = useNavigate()
   const { clientId, section } = useParams()
+  const confirmAction = useAdminConfirm()
+  const activeClientIdRef = useRef('')
   const [clients, setClients] = useState([])
   const [clientSearchTerm, setClientSearchTerm] = useState('')
   const [clientStatusFilter, setClientStatusFilter] = useState('all')
@@ -549,8 +552,10 @@ export default function AdminClients() {
 
     try {
       const response = await getAdminClientPortalEmailLogs(client.id)
+      if (activeClientIdRef.current !== String(client.id)) return
       setPortalEmailLogs(response.emailLogs || [])
     } catch {
+      if (activeClientIdRef.current !== String(client.id)) return
       setPortalEmailLogs([])
     }
   }
@@ -565,11 +570,15 @@ export default function AdminClients() {
 
     try {
       const response = await getAdminClientPortalInvites(client.id)
+      if (activeClientIdRef.current !== String(client.id)) return
       setPortalInvites(response.invites || [])
     } catch {
+      if (activeClientIdRef.current !== String(client.id)) return
       setPortalInvites([])
     } finally {
-      setIsLoadingPortalInvites(false)
+      if (activeClientIdRef.current === String(client.id)) {
+        setIsLoadingPortalInvites(false)
+      }
     }
   }
 
@@ -581,8 +590,10 @@ export default function AdminClients() {
 
     try {
       const response = await getAdminClientPortalResources(client.id)
+      if (activeClientIdRef.current !== String(client.id)) return
       setPortalResources(response.resources || [])
     } catch {
+      if (activeClientIdRef.current !== String(client.id)) return
       setPortalResources([])
     }
   }
@@ -597,8 +608,10 @@ export default function AdminClients() {
 
     try {
       const response = await getAdminClientCareTimeline(client.id)
+      if (activeClientIdRef.current !== String(client.id)) return
       setCareTimeline(response)
     } catch (timelineError) {
+      if (activeClientIdRef.current !== String(client.id)) return
       setCareTimeline({
         timeline: [],
         bookings: [],
@@ -608,7 +621,9 @@ export default function AdminClients() {
           'Unable to load the care timeline for this client.',
       })
     } finally {
-      setIsTimelineLoading(false)
+      if (activeClientIdRef.current === String(client.id)) {
+        setIsTimelineLoading(false)
+      }
     }
   }
 
@@ -646,6 +661,7 @@ export default function AdminClients() {
     if (clientId) return undefined
 
     const directorySyncTimer = window.setTimeout(() => {
+      activeClientIdRef.current = ''
       setSelectedClient(null)
       setEditingClient(null)
       setIsClientFormOpen(false)
@@ -677,6 +693,7 @@ export default function AdminClients() {
 
       const normalizedSection = normalizeClientProfileSection(section)
       const canonicalPath = `/admin/clients/${routeClient.id}/${normalizedSection}`
+      activeClientIdRef.current = String(routeClient.id)
 
       if (!section || section !== normalizedSection) {
         navigate(canonicalPath, { replace: true })
@@ -782,7 +799,6 @@ export default function AdminClients() {
 
   const selectedClientIsHiddenByFilters =
     selectedClient &&
-    filteredClients.length > 0 &&
     !filteredClients.some((client) => client.id === selectedClient.id)
   const portalAccessIsActive = isPortalAccessActive(
     latestPortalInvite,
@@ -858,6 +874,7 @@ export default function AdminClients() {
   }
 
   async function handleViewClient(client) {
+    activeClientIdRef.current = String(client.id)
     navigate(`/admin/clients/${client.id}/overview`)
     setSelectedClient(client)
     setIsClientFormOpen(false)
@@ -878,6 +895,7 @@ export default function AdminClients() {
   }
 
   async function handleEditClient(client) {
+    activeClientIdRef.current = String(client.id)
     navigate(`/admin/clients/${client.id}/overview`)
     setSelectedClient(client)
     setIsClientFormOpen(true)
@@ -1011,6 +1029,7 @@ export default function AdminClients() {
   }
 
   function handleOpenNewClientForm() {
+    activeClientIdRef.current = ''
     navigate('/admin/clients')
     setSelectedClient(null)
     setEditingClient(null)
@@ -1049,6 +1068,7 @@ export default function AdminClients() {
     setPortalStatusFilter(status)
   }
   function handleNewProfile() {
+    activeClientIdRef.current = ''
     navigate('/admin/clients')
     setSelectedClient(null)
     setClientDetailSection('overview')
@@ -1072,6 +1092,23 @@ export default function AdminClients() {
 
   async function handleSubmit(event) {
     event.preventDefault()
+
+    const isArchivingClient =
+      editingClient &&
+      normalizeStatusValue(editingClient.clientStatus) !== 'archived' &&
+      normalizeStatusValue(form.clientStatus) === 'archived'
+
+    if (isArchivingClient) {
+      const confirmed = await confirmAction({
+        title: `Archive ${editingClient.name}?`,
+        message: 'This removes the profile from the active client workflow.',
+        detail: 'The client record and care history remain available in the Archived filter.',
+        confirmLabel: 'Archive client',
+        tone: 'warning',
+      })
+
+      if (!confirmed) return
+    }
 
     setIsSaving(true)
     setNotice('')
@@ -1140,6 +1177,18 @@ export default function AdminClients() {
 
   async function handleQuickServiceStatus(record, nextStatus) {
     if (!selectedClient?.id || !record?.id) return
+
+    if (nextStatus === 'archived') {
+      const confirmed = await confirmAction({
+        title: 'Archive this service record?',
+        message: `This hides “${record.title || 'Untitled service record'}” from the active care record view.`,
+        detail: 'You can restore it later from the Archived filter.',
+        confirmLabel: 'Archive record',
+        tone: 'warning',
+      })
+
+      if (!confirmed) return
+    }
 
     setIsSavingService(true)
     setNotice('')
@@ -1384,6 +1433,16 @@ export default function AdminClients() {
 
   async function handleRevokePortalInvite(invite) {
     if (!invite?.id) return
+
+    const confirmed = await confirmAction({
+      title: 'Revoke this portal invitation?',
+      message: `The pending access link for ${selectedClient?.name || 'this client'} will stop working.`,
+      detail: 'You can create a new invitation afterward if access is still needed.',
+      confirmLabel: 'Revoke invitation',
+      tone: 'warning',
+    })
+
+    if (!confirmed) return
 
     setIsRevokingPortalInvite(true)
     setNotice('')
