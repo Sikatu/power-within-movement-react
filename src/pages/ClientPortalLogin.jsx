@@ -24,6 +24,11 @@ function ClientPortalLogin() {
   const [password, setPassword] = useState('')
   const [status, setStatus] = useState({ state: 'idle', message: '' })
 
+  const updateField = (setter) => (event) => {
+    setter(event.target.value)
+    if (status.state === 'error') setStatus({ state: 'idle', message: '' })
+  }
+
   useEffect(() => {
     document.body.classList.add('portal-entry-mode')
     return () => document.body.classList.remove('portal-entry-mode')
@@ -49,7 +54,7 @@ function ClientPortalLogin() {
 
     try {
       await loginClientPortal({ email: email.trim().toLowerCase(), password })
-      navigate('/client-portal/home')
+      navigate('/client-portal/home', { replace: true })
     } catch (error) {
       setStatus({ state: 'error', message: getFriendlyLoginError(error.message) })
     }
@@ -95,11 +100,11 @@ function ClientPortalLogin() {
           <form className="portal-entry-form" onSubmit={handleSubmit}>
             <label>
               <span>Email</span>
-              <input type="email" value={email} onChange={(event) => setEmail(event.target.value)} autoComplete="email" placeholder="you@email.com" required />
+              <input type="email" value={email} onChange={updateField(setEmail)} autoComplete="email" placeholder="you@email.com" required />
             </label>
             <label>
               <span>Password</span>
-              <input type="password" value={password} onChange={(event) => setPassword(event.target.value)} autoComplete="current-password" placeholder="Your private password" required />
+              <input type="password" value={password} onChange={updateField(setPassword)} autoComplete="current-password" placeholder="Your private password" required />
             </label>
             <button type="submit" disabled={status.state === 'loading'}>
               {status.state === 'loading' ? 'Signing In…' : 'Enter My Portal'}
@@ -108,7 +113,7 @@ function ClientPortalLogin() {
 
           <div className="portal-entry-support">
             <button type="button" onClick={handleForgotPassword}>Forgot password?</button>
-            <Link to="/contact">Need help accessing your portal?</Link>
+            <Link to="/contact?interest=portal-access">Need help accessing your portal?</Link>
           </div>
 
           <p className="portal-entry-new-client">New here? Your portal begins through a private invitation link from Power Within.</p>
