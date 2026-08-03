@@ -3,15 +3,18 @@ import { Link, useNavigate } from 'react-router-dom'
 import FounderDeveloperBanner from '../../components/admin/FounderDeveloperBanner'
 import {
   getAdminFounderCalendar,
+  getAdminFounderAvailability,
   logoutAdmin,
   updateAdminFounderDateAvailability,
 } from '../../lib/nativeApi'
+import AdminFounderWeeklySchedule from '../../components/admin/AdminFounderWeeklySchedule'
+import WindowEditor from '../../components/admin/WindowEditor'
+import { validateTimeWindows, createWeeklySchedule, WEEKDAYS } from '../../components/admin/windowHelpers'
 
 import './AdminFreshUI.css'
 
 const FOUNDER_TIME_ZONE = 'America/New_York'
 const FOUNDER_TIME_ZONE_LABEL = 'Eastern Time'
-const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 
 function getTimeZoneParts(value = new Date()) {
   const parts = new Intl.DateTimeFormat('en-US', {
@@ -168,6 +171,14 @@ export default function AdminFounderCalendar() {
   const [notice, setNotice] = useState('')
   const [error, setError] = useState('')
 
+  const [isWeeklyModalOpen, setIsWeeklyModalOpen] = useState(false)
+  const [weeklySchedule, setWeeklySchedule] = useState([])
+  const [workspaceSettings, setWorkspaceSettings] = useState(null)
+
+  const [isEditingDate, setIsEditingDate] = useState(false)
+  const [dateWindows, setDateWindows] = useState([])
+  const [dateNotes, setDateNotes] = useState('')
+
   const bookings = useMemo(() => calendar?.bookings || [], [calendar?.bookings])
   const availabilityExceptions = useMemo(
     () => calendar?.availabilityExceptions || [],
@@ -252,6 +263,27 @@ export default function AdminFounderCalendar() {
     }
   }, [])
 
+  const loadWeeklyAvailability = useCallback(async () => {
+    try {
+      const response = await getAdminFounderAvailability()
+      setWorkspaceSettings(response.settings || {
+        timezone: FOUNDER_TIME_ZONE,
+        slotIntervalMinutes: 60,
+        minimumNoticeMinutes: 0,
+        bookingWindowDays: 90,
+        scheduleEnabled: false,
+      })
+      setWeeklySchedule(
+        createWeeklySchedule(
+          response.availabilityBlocks || [],
+          Boolean(response.settings?.scheduleEnabled),
+        ),
+      )
+    } catch (err) {
+      console.error('Failed to load availability settings', err)
+    }
+  }, [])
+
   useEffect(() => {
     document.body.classList.add('admin-app-mode')
     document.body.classList.add('founder-calendar-mode')
@@ -265,16 +297,18 @@ export default function AdminFounderCalendar() {
   useEffect(() => {
     const timer = window.setTimeout(() => {
       loadCalendar(month)
+      loadWeeklyAvailability()
     }, 0)
 
     return () => window.clearTimeout(timer)
-  }, [loadCalendar, month])
+  }, [loadCalendar, loadWeeklyAvailability, month])
 
   function changeMonth(amount) {
     const nextMonth = offsetMonth(month, amount)
     setMonth(nextMonth)
     setSelectedDate(`${nextMonth}-01`)
     setNotice('')
+    setIsEditingDate(false)
   }
 
   function goToToday() {
@@ -282,6 +316,36 @@ export default function AdminFounderCalendar() {
     setMonth(today.slice(0, 7))
     setSelectedDate(today)
     setNotice('')
+    setIsEditingDate(false)
+  }
+
+  async function handleSaveDate(event) {
+    if (event) event.preventDefault()
+    setNotice('')
+    setError('')
+
+    const validationError = validateTimeWindows(dateWindows, formatSelectedDate(selectedDate))
+    if (validationError) {
+      setError(validationError + ' Please adjust the times and try again.')
+      return
+    }
+
+    setIsUpdating(true)
+
+    try {
+      await updateAdminFounderDateAvailability(selectedDate, {
+        mode: 'custom',
+        windows: dateWindows,
+        notes: dateNotes,
+      })
+      await loadCalendar(month)
+      setNotice(dateWindows.length > 0 ? `${formatSelectedDate(selectedDate)} updated with custom hours.` : `${formatSelectedDate(selectedDate)} is now unavailable.`)
+      setIsEditingDate(false)
+    } catch (saveError) {
+      setError(saveError.message || 'Unable to save this date override.')
+    } finally {
+      setIsUpdating(false)
+    }
   }
 
   async function handleProtectDate() {
@@ -341,6 +405,23 @@ export default function AdminFounderCalendar() {
 
   return (
     <main className="founder-calendar">
+      <AdminFounderWeeklySchedule
+        isOpen={isWeeklyModalOpen}
+        onClose={() => setIsWeeklyModalOpen(false)}
+        initialWeeklySchedule={weeklySchedule}
+        settings={workspaceSettings}
+        availableDayCount={weeklySchedule.filter((d) => d.isAvailable).length}
+        onSaved={(response) => {
+          setWorkspaceSettings(response.settings || workspaceSettings)
+          setWeeklySchedule(
+            createWeeklySchedule(
+              response.availabilityBlocks || [],
+              Boolean(response.settings?.scheduleEnabled),
+            ),
+          )
+          loadCalendar(month)
+        }}
+      />
       <FounderDeveloperBanner />
       <header className="founder-calendar__header">
         <Link to="/admin/founders-view" className="founder-calendar__brand">
@@ -352,9 +433,7 @@ export default function AdminFounderCalendar() {
         </Link>
 
         <nav className="founder-calendar__header-actions" aria-label="Founder navigation">
-          <Link to="/admin/founders-view">Founder’s View</Link>
           <Link to="/admin/founders-calendar" aria-current="page">Calendar</Link>
-          <Link to="/admin/founders-availability">Availability</Link>
           <Link to="/admin/dashboard">Open The Studio</Link>
           <button type="button" onClick={handleLogout} disabled={isSigningOut}>
             {isSigningOut ? 'Signing out…' : 'Sign out'}
@@ -378,9 +457,14 @@ export default function AdminFounderCalendar() {
             <h1>Your time, clearly held.</h1>
             <span>Sessions and protected dates shown in {FOUNDER_TIME_ZONE_LABEL}.</span>
           </div>
-          <button type="button" className="founder-calendar__today" onClick={goToToday}>
-            Today
-          </button>
+          <div className="founder-calendar__intro-actions">
+            <button type="button" className="founder-calendar__manage-weekly" onClick={() => setIsWeeklyModalOpen(true)}>
+              Manage Weekly Schedule
+            </button>
+            <button type="button" className="founder-calendar__today" onClick={goToToday}>
+              Today
+            </button>
+          </div>
         </section>
 
         <section className="founder-calendar__summary" aria-label={`${formatMonthTitle(month)} overview`}>
@@ -419,7 +503,7 @@ export default function AdminFounderCalendar() {
             </div>
 
             <div className="founder-calendar__weekdays" aria-hidden="true">
-              {WEEKDAYS.map((weekday) => <span key={weekday}>{weekday}</span>)}
+              {WEEKDAYS.map((weekday) => <span key={weekday.value} title={weekday.label}>{weekday.short}</span>)}
             </div>
 
             <div className="founder-calendar__grid" aria-label={formatMonthTitle(month)}>
@@ -444,7 +528,10 @@ export default function AdminFounderCalendar() {
                       dayCustomHours.length > 0 ? 'is-custom' : '',
                     ].filter(Boolean).join(' ')}
                     key={dateKey}
-                    onClick={() => setSelectedDate(dateKey)}
+                    onClick={() => {
+                      setSelectedDate(dateKey)
+                      setIsEditingDate(false)
+                    }}
                     aria-pressed={dateKey === selectedDate}
                     aria-label={`${formatSelectedDate(dateKey)}, ${dayBookings.length} sessions${dayBlocks.length ? ', protected' : ''}${dayCustomHours.length ? ', custom hours' : ''}`}
                   >
@@ -495,7 +582,7 @@ export default function AdminFounderCalendar() {
               </strong>
             </div>
 
-            {selectedCustomHours.length > 0 && (
+            {selectedCustomHours.length > 0 && !isEditingDate && (
               <div className="founder-calendar__custom-hours-list">
                 {selectedCustomHours.map((window) => (
                   <span key={window.id}>
@@ -505,58 +592,83 @@ export default function AdminFounderCalendar() {
               </div>
             )}
 
-            <div className="founder-calendar__session-list">
-              {selectedBookings.length === 0 ? (
-                <div className="founder-calendar__empty-state">
-                  <strong>No sessions scheduled.</strong>
-                  <span>This day has room to breathe.</span>
+            {!isEditingDate && (
+              <div className="founder-calendar__session-list">
+                {selectedBookings.length === 0 ? (
+                  <div className="founder-calendar__empty-state">
+                    <strong>No sessions scheduled.</strong>
+                    <span>This day has room to breathe.</span>
+                  </div>
+                ) : (
+                  selectedBookings.map((booking) => {
+                    const clientName = getClientName(booking)
+                    return (
+                      <article key={booking.id}>
+                        <div className="founder-calendar__avatar" aria-hidden="true">
+                          {getInitials(clientName)}
+                        </div>
+                        <div>
+                          <strong>{clientName}</strong>
+                          <span>{formatTime(booking.starts_at)} · {booking.status || 'Scheduled'}</span>
+                        </div>
+                      </article>
+                    )
+                  })
+                )}
+              </div>
+            )}
+
+            {!isEditingDate ? (
+              <div className="founder-calendar__day-actions">
+                <button
+                  type="button"
+                  className="founder-calendar__customize"
+                  onClick={() => {
+                    setDateWindows(selectedCustomHours.length ? selectedCustomHours.map(w => ({ startTime: String(w.start_time).slice(0,5), endTime: String(w.end_time).slice(0,5) })) : [{ startTime: '09:00', endTime: '17:00' }])
+                    setDateNotes('')
+                    setIsEditingDate(true)
+                  }}
+                >
+                  Edit hours
+                </button>
+
+                {selectedBlocks.length > 0 ? (
+                  <button
+                    type="button"
+                    className="founder-calendar__reopen"
+                    onClick={handleReopenDate}
+                    disabled={isUpdating}
+                  >
+                    {isUpdating ? 'Reopening…' : 'Reopen this date'}
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    className="founder-calendar__protect"
+                    onClick={handleProtectDate}
+                    disabled={isUpdating}
+                  >
+                    {isUpdating ? 'Protecting…' : 'Protect this date'}
+                  </button>
+                )}
+              </div>
+            ) : (
+              <form className="founder-calendar__date-editor" onSubmit={handleSaveDate}>
+                <WindowEditor
+                  windows={dateWindows}
+                  compact
+                  onChange={setDateWindows}
+                />
+                <div className="founder-calendar__editor-actions">
+                  <button type="submit" disabled={isUpdating} className="founder-hours__save-weekly">
+                    {isUpdating ? 'Saving...' : 'Save'}
+                  </button>
+                  <button type="button" onClick={() => setIsEditingDate(false)} disabled={isUpdating} className="founder-hours__cancel-weekly">
+                    Cancel
+                  </button>
                 </div>
-              ) : (
-                selectedBookings.map((booking) => {
-                  const clientName = getClientName(booking)
-                  return (
-                    <article key={booking.id}>
-                      <div className="founder-calendar__avatar" aria-hidden="true">
-                        {getInitials(clientName)}
-                      </div>
-                      <div>
-                        <strong>{clientName}</strong>
-                        <span>{formatTime(booking.starts_at)} · {booking.status || 'Scheduled'}</span>
-                      </div>
-                    </article>
-                  )
-                })
-              )}
-            </div>
-
-            <div className="founder-calendar__day-actions">
-              <Link
-                to={`/admin/founders-availability?date=${selectedDate}`}
-                className="founder-calendar__customize"
-              >
-                Customize hours
-              </Link>
-
-              {selectedBlocks.length > 0 ? (
-                <button
-                  type="button"
-                  className="founder-calendar__reopen"
-                  onClick={handleReopenDate}
-                  disabled={isUpdating}
-                >
-                  {isUpdating ? 'Reopening…' : 'Reopen this date'}
-                </button>
-              ) : (
-                <button
-                  type="button"
-                  className="founder-calendar__protect"
-                  onClick={handleProtectDate}
-                  disabled={isUpdating}
-                >
-                  {isUpdating ? 'Protecting…' : 'Protect this date'}
-                </button>
-              )}
-            </div>
+              </form>
+            )}
           </aside>
         </section>
       </div>

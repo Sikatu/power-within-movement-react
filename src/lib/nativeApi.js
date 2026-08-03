@@ -528,6 +528,7 @@ export async function getFounderCommandCenter(filters = {}) {
   const search = new URLSearchParams()
   if (filters.search) search.set('search', filters.search)
   if (filters.status) search.set('status', filters.status)
+  if (filters.clientProfileId) search.set('clientProfileId', filters.clientProfileId)
   const query = search.toString()
   return apiRequest(`/api/admin/founder-tools/overview${query ? `?${query}` : ''}`)
 }
@@ -550,6 +551,19 @@ export async function saveFounderRecording(recordingId, payload) {
   })
 }
 
+export async function assignFounderRecording(recordingId, clientProfileId) {
+  return apiRequest(`/api/admin/founder-tools/recordings/${recordingId}/assignments`, {
+    method: 'POST',
+    body: JSON.stringify({ clientProfileId }),
+  })
+}
+
+export async function unassignFounderRecording(recordingId, assignmentId) {
+  return apiRequest(`/api/admin/founder-tools/recordings/${recordingId}/assignments/${assignmentId}`, {
+    method: 'DELETE',
+  })
+}
+
 export async function requestFounderTranscription(recordingId) {
   return apiRequest(`/api/admin/founder-tools/recordings/${recordingId}/transcription`, { method: 'POST' })
 }
@@ -562,16 +576,6 @@ export async function getFounderRecordingAccess(recordingId, purpose) {
   return { ...response, url: `${API_BASE_URL}${response.path}` }
 }
 
-export async function assignFounderRecording(recordingId, clientProfileId) {
-  return apiRequest(`/api/admin/founder-tools/recordings/${recordingId}/assignments`, {
-    method: 'POST',
-    body: JSON.stringify({ clientProfileId }),
-  })
-}
-
-export async function unassignFounderRecording(recordingId, assignmentId) {
-  return apiRequest(`/api/admin/founder-tools/recordings/${recordingId}/assignments/${assignmentId}`, { method: 'DELETE' })
-}
 
 export async function reuseFounderTranscriptInLetter(recordingId) {
   return apiRequest(`/api/admin/founder-tools/recordings/${recordingId}/reuse-letter`, { method: 'POST' })

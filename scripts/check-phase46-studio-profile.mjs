@@ -7,7 +7,10 @@ const app = read('src/App.jsx')
 const navigation = read('src/components/admin/adminNavigation.js')
 const preloaders = read('src/components/admin/adminRoutePreloaders.js')
 const api = read('src/lib/nativeApi.js')
-const routes = read('server/src/routes/admin.routes.js')
+const routes = [
+  read('server/src/routes/admin.routes.js'),
+  read('server/src/routes/admin.studioProfile.routes.js'),
+].join('\n')
 const migration = read('server/scripts/ensure-studio-profile.cjs')
 const ordered = read('server/scripts/run-ordered-migrations.cjs')
 const packageSource = read('package.json')

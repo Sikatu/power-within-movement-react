@@ -155,15 +155,7 @@ async function assertOutgoingEmailAvailable(db) {
   }
 }
 
-async function sendLetterEmail({
-  to,
-  subject,
-  html,
-  text,
-  headers = {},
-  idempotencyKey = '',
-  replyTo = '',
-}) {
+async function sendLetterEmail({ to, subject, html, text, headers = {}, idempotencyKey = '', replyTo = '' }) {
   const config = assertProviderConfigured()
   const resolvedReplyTo = String(replyTo || config.replyTo || '').trim()
   const response = await fetch('https://api.resend.com/emails', {

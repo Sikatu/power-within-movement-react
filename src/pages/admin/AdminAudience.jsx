@@ -54,7 +54,7 @@ function clientName(client) {
 
 function splitManualEmails(value) {
   return [...new Set(String(value || '')
-    .split(/[\n;]+/)
+    .split(/[\n;,]+/)
     .map((email) => email.trim().toLowerCase())
     .filter(Boolean))]
 }
