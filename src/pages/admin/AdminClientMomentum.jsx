@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import AdminAdvancedFilterToggle from '../../components/admin/AdminAdvancedFilterToggle.jsx'
 import AdminFrame from '../../components/admin/AdminFrame.jsx'
 import { getAdminClientMomentum } from '../../lib/nativeApi.js'
@@ -89,6 +89,9 @@ function taskKey(task) {
 
 function AdminClientMomentum() {
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const requestedClientId = searchParams.get('client') || ''
+  const requestedClientName = searchParams.get('clientName') || ''
   const [adminUser] = useState(readCachedUser)
   const [snapshot, setSnapshot] = useState({
     summary: {},
@@ -96,7 +99,7 @@ function AdminClientMomentum() {
     viewer: {},
   })
   const [selectedClientId, setSelectedClientId] = useState('')
-  const [query, setQuery] = useState('')
+  const [query, setQuery] = useState(requestedClientName)
   const [signal, setSignal] = useState('all')
   const [stage, setStage] = useState('all')
   const [ownership, setOwnership] = useState('all')
@@ -115,18 +118,18 @@ function AdminClientMomentum() {
     try {
       const response = await getAdminClientMomentum()
       setSnapshot(response)
-      setSelectedClientId((current) => (
-        response.clients?.some((client) => client.id === current)
-          ? current
-          : response.clients?.[0]?.id || ''
-      ))
+      setSelectedClientId((current) => {
+        if (response.clients?.some((client) => client.id === current)) return current
+        if (response.clients?.some((client) => client.id === requestedClientId)) return requestedClientId
+        return response.clients?.[0]?.id || ''
+      })
     } catch (loadError) {
       setError(loadError.message || 'Client momentum could not be loaded.')
     } finally {
       setLoading(false)
       setRefreshing(false)
     }
-  }, [])
+  }, [requestedClientId])
 
   useEffect(() => {
     const timer = window.setTimeout(loadMomentum, 0)
@@ -177,8 +180,12 @@ function AdminClientMomentum() {
     navigate(`/admin/client-360/${clientId}`)
   }
 
-  function openClientTasks(clientId) {
-    navigate(`/admin/attention?client=${encodeURIComponent(clientId)}`)
+  function clientParams(client) {
+    return new URLSearchParams({ client: client.id, clientName: client.name }).toString()
+  }
+
+  function openClientTasks(client) {
+    navigate(`/admin/attention?${clientParams(client)}`)
   }
 
   return (
@@ -398,7 +405,7 @@ function AdminClientMomentum() {
                         className="pwc-capacity17-session pwc-momentum18-task"
                         key={taskKey(task)}
                         type="button"
-                        onClick={() => openClientTasks(selectedClient.id)}
+                        onClick={() => openClientTasks(selectedClient)}
                       >
                         <span>{task.sourceLabel} · {task.priority}</span>
                         <strong>{task.title}</strong>
@@ -411,8 +418,8 @@ function AdminClientMomentum() {
 
                 <div className="pwc-momentum18-actions">
                   <button type="button" onClick={() => openClient(selectedClient.id)}>Open Client 360</button>
-                  <button type="button" onClick={() => openClientTasks(selectedClient.id)}>Open attention work</button>
-                  <button type="button" onClick={() => navigate('/admin/scheduler')}>Review sessions</button>
+                  <button type="button" onClick={() => openClientTasks(selectedClient)}>Open attention work</button>
+                  <button type="button" onClick={() => navigate(`/admin/scheduler?${clientParams(selectedClient)}`)}>Review sessions</button>
                 </div>
               </aside>
             ) : (

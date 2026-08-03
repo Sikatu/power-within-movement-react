@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import AdminAdvancedFilterToggle from '../../components/admin/AdminAdvancedFilterToggle.jsx'
 import AdminFrame from '../../components/admin/AdminFrame.jsx'
 import { getAdminClientCoverage } from '../../lib/nativeApi.js'
@@ -88,10 +88,13 @@ function sessionWindow(value) {
 
 function AdminClientCoverage() {
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const requestedClientId = searchParams.get('client') || ''
+  const requestedClientName = searchParams.get('clientName') || ''
   const [adminUser] = useState(readCachedUser)
   const [snapshot, setSnapshot] = useState({ summary: {}, clients: [], viewer: {} })
   const [selectedClientId, setSelectedClientId] = useState('')
-  const [query, setQuery] = useState('')
+  const [query, setQuery] = useState(requestedClientName)
   const [signal, setSignal] = useState('all')
   const [availability, setAvailability] = useState('all')
   const [session, setSession] = useState('all')
@@ -110,18 +113,18 @@ function AdminClientCoverage() {
     try {
       const response = await getAdminClientCoverage()
       setSnapshot(response)
-      setSelectedClientId((current) => (
-        response.clients?.some((client) => client.id === current)
-          ? current
-          : response.clients?.[0]?.id || ''
-      ))
+      setSelectedClientId((current) => {
+        if (response.clients?.some((client) => client.id === current)) return current
+        if (response.clients?.some((client) => client.id === requestedClientId)) return requestedClientId
+        return response.clients?.[0]?.id || ''
+      })
     } catch (loadError) {
       setError(loadError.message || 'Client coverage could not be loaded.')
     } finally {
       setLoading(false)
       setRefreshing(false)
     }
-  }, [])
+  }, [requestedClientId])
 
   useEffect(() => {
     const timer = window.setTimeout(loadCoverage, 0)
@@ -170,6 +173,19 @@ function AdminClientCoverage() {
     setSignal('all')
     setAvailability('all')
     setSession('all')
+  }
+
+  function clientParams(client, extra = {}) {
+    return new URLSearchParams({
+      ...extra,
+      client: client.id,
+      clientName: client.name,
+    }).toString()
+  }
+
+  function openClientInbox(client) {
+    const extra = client.openConversations ? {} : { compose: 'new' }
+    navigate(`/admin/inbox?${clientParams(client, extra)}`)
   }
 
   return (
@@ -400,10 +416,10 @@ function AdminClientCoverage() {
 
                   <section className="pwc-momentum18-actions">
                     <button type="button" onClick={() => navigate(`/admin/client-360/${selectedClient.id}`)}>Open client context</button>
-                    <button type="button" onClick={() => navigate(`/admin/attention?client=${encodeURIComponent(selectedClient.id)}`)}>Open Attention Queue</button>
+                    <button type="button" onClick={() => navigate(`/admin/attention?${clientParams(selectedClient)}`)}>Open Attention Queue</button>
                     <button type="button" onClick={() => navigate('/admin/capacity')}>Open Studio Capacity</button>
-                    <button type="button" onClick={() => navigate('/admin/scheduler')}>Open Sessions</button>
-                    <button type="button" onClick={() => navigate('/admin/inbox')}>Open Secure Inbox</button>
+                    <button type="button" onClick={() => navigate(`/admin/scheduler?${clientParams(selectedClient)}`)}>Open Sessions</button>
+                    <button type="button" onClick={() => openClientInbox(selectedClient)}>Open Secure Inbox</button>
                     {role === 'developer' && (
                       <button type="button" onClick={() => navigate('/admin/team')}>Manage client assignments</button>
                     )}

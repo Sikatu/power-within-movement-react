@@ -31,8 +31,8 @@ const pageTokens = [
   'aria-label="Client coverage board"',
   'This is an operational continuity signal',
   "navigate('/admin/capacity')",
-  "navigate('/admin/scheduler')",
-  "navigate('/admin/inbox')",
+  '`/admin/scheduler?${clientParams(selectedClient)}`',
+  'openClientInbox(selectedClient)',
   'selectedClient.coverage?.reasons',
   "navigate('/admin/team')",
 ]
