@@ -35,6 +35,7 @@
     "workflow:qa:phase5": "node scripts/check-workflow-phase5-session-follow-through.mjs",
     "workflow:qa:phase6": "node scripts/check-workflow-phase6-session-communication.mjs",
     "workflow:qa:phase7": "node scripts/check-workflow-phase7-resource-delivery.mjs",
+    "workflow:qa:phase8": "node scripts/check-workflow-phase8-next-session-continuity.mjs",
     "admin:qa:phase31": "node scripts/check-admin-routes.mjs && node scripts/check-admin-command-center.mjs && node scripts/check-admin-phase31-streamlining.mjs && npm run build",
     "admin:qa:phase32": "node scripts/check-admin-phase31-streamlining.mjs && node scripts/check-admin-phase32-daily-workflows.mjs && npm run build",
     "admin:qa:phase33": "node scripts/check-admin-phase32-daily-workflows.mjs && node scripts/check-admin-phase33-growth-workflows.mjs && npm run build",

@@ -59,6 +59,7 @@ export default function AdminInbox() {
   const requestedConversationId = searchParams.get('conversation') || ''
   const requestedClientId = searchParams.get('client') || ''
   const requestedSubject = searchParams.get('subject') || ''
+  const requestedBody = searchParams.get('body') || ''
   const requestedNewConversation = searchParams.get('compose') === 'new'
   const [conversations, setConversations] = useState([])
   const [clients, setClients] = useState([])
@@ -74,6 +75,7 @@ export default function AdminInbox() {
     ...emptyNewConversation,
     clientProfileId: requestedClientId,
     subject: requestedSubject.slice(0, 180),
+    body: requestedBody.slice(0, 4000),
   }))
   const [reply, setReply] = useState(emptyReply)
   const [composerExpanded, setComposerExpanded] = useState(false)
