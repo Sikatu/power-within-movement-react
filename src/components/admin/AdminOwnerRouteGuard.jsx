@@ -1,10 +1,13 @@
 import { useEffect, useState } from 'react'
 import { Link, Navigate, useLocation } from 'react-router-dom'
-import { checkFounderAccess } from '../../lib/nativeApi'
+import { checkFounderAccess, hasFreshAdminAccess } from '../../lib/nativeApi'
+import AdminAccessScreen from './AdminAccessScreen.jsx'
 
 export default function AdminOwnerRouteGuard({ children }) {
   const location = useLocation()
-  const [status, setStatus] = useState('checking')
+  const [status, setStatus] = useState(() => (
+    hasFreshAdminAccess('founder') ? 'allowed' : 'checking'
+  ))
   const [message, setMessage] = useState('')
 
   useEffect(() => {
@@ -57,13 +60,11 @@ export default function AdminOwnerRouteGuard({ children }) {
 
   if (status === 'checking') {
     return (
-      <main className="pwc-admin-auth-screen">
-        <section className="pwc-admin-auth-card">
-          <p className="eyebrow">Founder Workspace</p>
-          <h1>Checking permission...</h1>
-          <p>Opening the live Founder workspace securely.</p>
-        </section>
-      </main>
+      <AdminAccessScreen
+        eyebrow="Founder Workspace"
+        title="Checking permission..."
+        message="Opening the live Founder workspace securely."
+      />
     )
   }
 
@@ -73,20 +74,15 @@ export default function AdminOwnerRouteGuard({ children }) {
 
   if (status === 'blocked') {
     return (
-      <main className="pwc-admin-auth-screen">
-        <section className="pwc-admin-auth-card">
-          <p className="eyebrow">Restricted Workspace</p>
-          <h1>Owner or developer access required.</h1>
-          <p>
-            {message ||
-              'The live Founder workspace is available only to the owner and developer accounts.'}
-          </p>
-
-          <Link className="pwc-admin-back-link" to="/admin/dashboard">
-            Return to The Studio
-          </Link>
-        </section>
-      </main>
+      <AdminAccessScreen
+        eyebrow="Restricted Workspace"
+        title="Owner or developer access required."
+        message={message || 'The live Founder workspace is available only to the owner and developer accounts.'}
+      >
+        <Link className="pwc-admin-back-link" to="/admin/dashboard">
+          Return to The Studio
+        </Link>
+      </AdminAccessScreen>
     )
   }
 

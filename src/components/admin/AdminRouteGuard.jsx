@@ -1,10 +1,13 @@
 import { useEffect, useState } from 'react'
 import { Navigate, useLocation } from 'react-router-dom'
-import { checkAdminAccess } from '../../lib/nativeApi'
+import { checkAdminAccess, hasFreshAdminAccess } from '../../lib/nativeApi'
+import AdminAccessScreen from './AdminAccessScreen.jsx'
 
 function AdminRouteGuard({ children }) {
   const location = useLocation()
-  const [status, setStatus] = useState('checking')
+  const [status, setStatus] = useState(() => (
+    hasFreshAdminAccess() ? 'allowed' : 'checking'
+  ))
 
   useEffect(() => {
     let isMounted = true
@@ -33,13 +36,11 @@ function AdminRouteGuard({ children }) {
 
   if (status === 'checking') {
     return (
-      <main className="pwc-admin-auth-page">
-        <section className="pwc-admin-auth-card">
-          <p className="eyebrow">Studio Access</p>
-          <h1>Opening The Studio</h1>
-          <p>Confirming private access before continuing.</p>
-        </section>
-      </main>
+      <AdminAccessScreen
+        eyebrow="Studio Access"
+        title="Opening The Studio"
+        message="Confirming private access before continuing."
+      />
     )
   }
 

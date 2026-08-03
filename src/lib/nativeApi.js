@@ -4,6 +4,51 @@ const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL ||
   (import.meta.env.PROD ? '' : 'http://localhost:8787')
 
+const ACCESS_CACHE_TTL = 15_000
+const accessChecks = {
+  admin: { promise: null, result: null, verifiedAt: 0 },
+  founder: { promise: null, result: null, verifiedAt: 0 },
+  developer: { promise: null, result: null, verifiedAt: 0 },
+}
+
+function clearAccessChecks() {
+  Object.values(accessChecks).forEach((entry) => {
+    entry.promise = null
+    entry.result = null
+    entry.verifiedAt = 0
+  })
+}
+
+function cachedAccessCheck(type, path, force = false) {
+  const entry = accessChecks[type]
+  const fresh = entry.result && Date.now() - entry.verifiedAt < ACCESS_CACHE_TTL
+
+  if (!force && fresh) return Promise.resolve(entry.result)
+  if (!force && entry.promise) return entry.promise
+
+  entry.promise = apiRequest(path)
+    .then((result) => {
+      entry.result = result
+      entry.verifiedAt = Date.now()
+      return result
+    })
+    .catch((error) => {
+      entry.result = null
+      entry.verifiedAt = 0
+      throw error
+    })
+    .finally(() => {
+      entry.promise = null
+    })
+
+  return entry.promise
+}
+
+export function hasFreshAdminAccess(type = 'admin') {
+  const entry = accessChecks[type]
+  return Boolean(entry?.result && Date.now() - entry.verifiedAt < ACCESS_CACHE_TTL)
+}
+
 async function parseResponse(response) {
   const contentType = response.headers.get('content-type') || ''
   const isJson = contentType.includes('application/json')
@@ -72,13 +117,16 @@ export async function apiRequest(path, options = {}) {
 }
 
 export async function loginAdmin({ email, password }) {
-  return apiRequest('/api/auth/login', {
+  clearAccessChecks()
+  const result = await apiRequest('/api/auth/login', {
     method: 'POST',
     body: JSON.stringify({
       email,
       password,
     }),
   })
+  clearAccessChecks()
+  return result
 }
 
 export async function getPasswordChangeStatus() {
@@ -99,22 +147,25 @@ export async function getCurrentUser() {
   return apiRequest('/api/auth/me')
 }
 
-export async function checkAdminAccess() {
-  return apiRequest('/api/auth/admin-check')
+export async function checkAdminAccess({ force = false } = {}) {
+  return cachedAccessCheck('admin', '/api/auth/admin-check', force)
 }
 
-export async function checkFounderAccess() {
-  return apiRequest('/api/auth/founder-check')
+export async function checkFounderAccess({ force = false } = {}) {
+  return cachedAccessCheck('founder', '/api/auth/founder-check', force)
 }
 
-export async function checkDeveloperAccess() {
-  return apiRequest('/api/auth/developer-check')
+export async function checkDeveloperAccess({ force = false } = {}) {
+  return cachedAccessCheck('developer', '/api/auth/developer-check', force)
 }
 
 export async function logoutAdmin() {
-  return apiRequest('/api/auth/logout', {
-    method: 'POST',
-  })
+  clearAccessChecks()
+  try {
+    return await apiRequest('/api/auth/logout', { method: 'POST' })
+  } finally {
+    clearAccessChecks()
+  }
 }
 
 export async function getAdminOverview() {

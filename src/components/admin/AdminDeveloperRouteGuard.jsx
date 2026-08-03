@@ -1,9 +1,12 @@
 import { useEffect, useState } from 'react'
 import { Link, Navigate } from 'react-router-dom'
-import { checkDeveloperAccess } from '../../lib/nativeApi'
+import { checkDeveloperAccess, hasFreshAdminAccess } from '../../lib/nativeApi'
+import AdminAccessScreen from './AdminAccessScreen.jsx'
 
 export default function AdminDeveloperRouteGuard({ children }) {
-  const [status, setStatus] = useState('checking')
+  const [status, setStatus] = useState(() => (
+    hasFreshAdminAccess('developer') ? 'allowed' : 'checking'
+  ))
   const [message, setMessage] = useState('')
 
   useEffect(() => {
@@ -49,13 +52,11 @@ export default function AdminDeveloperRouteGuard({ children }) {
 
   if (status === 'checking') {
     return (
-      <main className="pwc-admin-auth-screen">
-        <section className="pwc-admin-auth-card">
-          <p className="eyebrow">Developer Access</p>
-          <h1>Opening the Control Center</h1>
-          <p>Confirming protected developer access.</p>
-        </section>
-      </main>
+      <AdminAccessScreen
+        eyebrow="Developer Access"
+        title="Opening the Control Center"
+        message="Confirming protected developer access."
+      />
     )
   }
 
@@ -65,17 +66,15 @@ export default function AdminDeveloperRouteGuard({ children }) {
 
   if (status === 'blocked') {
     return (
-      <main className="pwc-admin-auth-screen">
-        <section className="pwc-admin-auth-card">
-          <p className="eyebrow">Restricted Area</p>
-          <h1>Developer access only.</h1>
-          <p>{message || 'This control center is reserved for the developer account.'}</p>
-
-          <Link className="pwc-admin-back-link" to="/admin/dashboard">
-            Return to The Studio
-          </Link>
-        </section>
-      </main>
+      <AdminAccessScreen
+        eyebrow="Restricted Area"
+        title="Developer access only."
+        message={message || 'This control center is reserved for the developer account.'}
+      >
+        <Link className="pwc-admin-back-link" to="/admin/dashboard">
+          Return to The Studio
+        </Link>
+      </AdminAccessScreen>
     )
   }
 

@@ -6,6 +6,7 @@ const scripts = [
   'scripts/check-admin-routes.mjs',
   'scripts/check-admin-dialogs.mjs',
   'scripts/check-admin-resilience.mjs',
+  'scripts/check-admin-navigation-performance.mjs',
   'scripts/check-admin-command-center.mjs',
   'scripts/check-admin-pinned-workspaces.mjs',
   'scripts/check-admin-activity-center.mjs',
