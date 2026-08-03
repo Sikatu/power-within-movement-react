@@ -92,6 +92,25 @@ function formatDayLabel(value) {
   }).format(value)
 }
 
+function attentionUrl(task) {
+  const params = new URLSearchParams({
+    source: task.sourceType,
+    item: String(task.id),
+    ...(task.clientProfileId ? { client: task.clientProfileId } : {}),
+    ...(task.clientName ? { clientName: task.clientName } : {}),
+  })
+  return `/admin/attention?${params}`
+}
+
+function bookingUrl(booking) {
+  const params = new URLSearchParams({
+    booking: String(booking.id),
+    ...(booking.clientProfileId ? { client: booking.clientProfileId } : {}),
+    ...(booking.guestName ? { clientName: booking.guestName } : {}),
+  })
+  return `/admin/scheduler?${params}`
+}
+
 function formatTime(value) {
   if (!value) return 'Time not set'
 
@@ -301,26 +320,11 @@ export default function AdminWeekPlanner() {
   }
 
   function openTaskContext(task) {
-    if (task.sourceType === 'lead_follow_up') {
-      navigate('/admin/leads')
-      return
-    }
-
-    if (task.clientProfileId) {
-      navigate(`/admin/client-360/${task.clientProfileId}`)
-      return
-    }
-
-    navigate('/admin/attention')
+    navigate(attentionUrl(task))
   }
 
   function openSession(booking) {
-    if (booking.clientProfileId) {
-      navigate(`/admin/client-360/${booking.clientProfileId}`)
-      return
-    }
-
-    navigate('/admin/scheduler')
+    navigate(bookingUrl(booking))
   }
 
   async function updateTask(task, payload, successMessage) {

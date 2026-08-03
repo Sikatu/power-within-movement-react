@@ -90,6 +90,25 @@ function endOfDay(value) {
   return date
 }
 
+function attentionUrl(task) {
+  const params = new URLSearchParams({
+    source: task.sourceType,
+    item: String(task.id),
+    ...(task.clientProfileId ? { client: task.clientProfileId } : {}),
+    ...(task.clientName ? { clientName: task.clientName } : {}),
+  })
+  return `/admin/attention?${params}`
+}
+
+function bookingUrl(booking) {
+  const params = new URLSearchParams({
+    booking: String(booking.id),
+    ...(booking.clientProfileId ? { client: booking.clientProfileId } : {}),
+    ...(booking.guestName ? { clientName: booking.guestName } : {}),
+  })
+  return `/admin/scheduler?${params}`
+}
+
 function taskScore(task, now) {
   const priority = {
     urgent: 60,
@@ -402,7 +421,7 @@ export default function AdminDailyBrief() {
                         <h3>{task.title}</h3>
                         <p>{task.clientName} · {task.ownerName || 'Unassigned'}</p>
                       </div>
-                      <button type="button" onClick={() => navigate(task.actionUrl || '/admin/attention')}>
+                      <button type="button" onClick={() => navigate(attentionUrl(task))}>
                         Open
                       </button>
                     </article>
@@ -438,9 +457,7 @@ export default function AdminDailyBrief() {
                     <button
                       type="button"
                       key={booking.id}
-                      onClick={() => navigate(booking.clientProfileId
-                        ? `/admin/client-360/${booking.clientProfileId}`
-                        : '/admin/scheduler')}
+                      onClick={() => navigate(bookingUrl(booking))}
                     >
                       <time dateTime={booking.startsAt}>{formatTime(booking.startsAt)}</time>
                       <span>
