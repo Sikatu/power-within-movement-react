@@ -746,7 +746,7 @@ function AdminClient360() {
               </div>
               <Link to={`/admin/clients/${client.id}/care`}>Care records</Link>
               <Link to={`/admin/clients/${client.id}/portal`}>Portal access</Link>
-              <Link to="/admin/inbox">Secure Inbox</Link>
+              <Link to={`/admin/inbox?client=${client.id}`}>Secure Inbox for {client.firstName || client.name}</Link>
               <Link
                 to={`/admin/scheduler?client=${encodeURIComponent(client.id)}&clientName=${encodeURIComponent(client.name)}`}
               >

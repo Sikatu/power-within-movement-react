@@ -60,6 +60,7 @@ export default function AdminInbox() {
   const requestedClientId = searchParams.get('client') || ''
   const requestedSubject = searchParams.get('subject') || ''
   const requestedBody = searchParams.get('body') || ''
+  const requestedSearch = searchParams.get('search') || ''
   const requestedNewConversation = searchParams.get('compose') === 'new'
   const [conversations, setConversations] = useState([])
   const [clients, setClients] = useState([])
@@ -68,7 +69,11 @@ export default function AdminInbox() {
   const [selectedId, setSelectedId] = useState(requestedConversationId)
   const selectedIdRef = useRef(requestedConversationId)
   const [selectedConversation, setSelectedConversation] = useState(null)
-  const [filters, setFilters] = useState({ status: 'all', priority: 'all', search: '' })
+  const [filters, setFilters] = useState(() => ({
+    status: 'all',
+    priority: 'all',
+    search: requestedSearch.slice(0, 180),
+  }))
   const [showFilters, setShowFilters] = useState(false)
   const [showNew, setShowNew] = useState(requestedNewConversation)
   const [newConversation, setNewConversation] = useState(() => ({
