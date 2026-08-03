@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import AdminFrame from '../../components/admin/AdminFrame.jsx'
 import { useAdminConfirm } from '../../components/admin/AdminConfirmContext.js'
 import AssetVaultPicker from '../../components/admin/AssetVaultPicker.jsx'
@@ -81,6 +82,8 @@ function scanLabel(asset) {
 }
 
 function AdminAssetVault() {
+  const [searchParams] = useSearchParams()
+  const requestedClientId = searchParams.get('client') || ''
   const requestConfirm = useAdminConfirm()
   const fileInputRef = useRef(null)
   const versionInputRef = useRef(null)
@@ -96,7 +99,11 @@ function AdminAssetVault() {
   const [assetDetailView, setAssetDetailView] = useState('clients')
   const [filters, setFilters] = useState({ search: '', folderId: '', type: '', status: 'active', tag: '' })
   const [metadataDraft, setMetadataDraft] = useState({ title: '', description: '', folderId: '', tags: '' })
-  const [assignmentDraft, setAssignmentDraft] = useState({ clientProfileId: '', title: '', description: '' })
+  const [assignmentDraft, setAssignmentDraft] = useState({
+    clientProfileId: requestedClientId,
+    title: '',
+    description: '',
+  })
   const [uploadDraft, setUploadDraft] = useState({ title: '', folderId: '', tags: '' })
   const [newFolderName, setNewFolderName] = useState('')
   const [versionNotes, setVersionNotes] = useState('')

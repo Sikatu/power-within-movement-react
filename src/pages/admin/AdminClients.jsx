@@ -2606,6 +2606,12 @@ export default function AdminClients() {
                   className="client-portal-resource-form-v2"
                   onSubmit={handleCreatePortalResource}
                 >
+                  <button
+                    type="button"
+                    onClick={() => navigate(`/admin/assets?client=${encodeURIComponent(selectedClient.id)}`)}
+                  >
+                    Choose secure Vault resource
+                  </button>
                   <label>
                     <span>Resource Title</span>
                     <input
