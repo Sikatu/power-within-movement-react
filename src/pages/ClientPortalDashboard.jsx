@@ -168,7 +168,6 @@ function ClientPortalDashboard() {
   const studioIdentity = dashboard?.studioIdentity
   const firstName = client?.firstName || client?.name?.split(' ')[0] || 'there'
   const featuredResource = resources[0]
-  const featuredResourceUrl = getSafeResourceUrl(featuredResource?.resource_url)
   const nextBooking = upcomingBookings[0]
   const nextFollowUp = sortedFollowUps[0]
 
@@ -193,9 +192,9 @@ function ClientPortalDashboard() {
           }
 
   const focusAction = nextBooking
-    ? { to: '/client-portal/sessions', label: 'Manage session' }
-    : featuredResourceUrl
-      ? { href: featuredResourceUrl, label: 'Open resource' }
+    ? { to: `/client-portal/sessions?booking=${encodeURIComponent(nextBooking.id)}`, label: 'Manage session' }
+    : featuredResource
+      ? { to: `/client-portal/resources?resource=${encodeURIComponent(featuredResource.id)}`, label: 'Open resource' }
       : visibleNotes[0]
         ? { to: '/client-portal/journey', label: 'Read reflection' }
         : { to: '/client-portal/resources', label: 'Open library' }
@@ -207,12 +206,12 @@ function ClientPortalDashboard() {
       detail: nextFollowUp ? 'Review your next step' : 'Reflections and care notes',
     },
     {
-      to: '/client-portal/resources',
+      to: featuredResource ? `/client-portal/resources?resource=${encodeURIComponent(featuredResource.id)}` : '/client-portal/resources',
       label: 'My Library',
       detail: resources.length ? `${resources.length} saved resource${resources.length === 1 ? '' : 's'}` : 'Guides and private resources',
     },
     {
-      to: '/client-portal/sessions',
+      to: nextBooking ? `/client-portal/sessions?booking=${encodeURIComponent(nextBooking.id)}` : '/client-portal/sessions',
       label: 'Sessions',
       detail: nextBooking ? formatDateTime(nextBooking.starts_at) : 'Book or manage a session',
     },
@@ -312,8 +311,8 @@ function ClientPortalDashboard() {
           <div>
             <span>{formatLabel(featuredResource?.resource_type || 'Resource')}</span>
             {featuredResource && <time>{formatDate(featuredResource.created_at)}</time>}
-            {featuredResourceUrl ? (
-              <a href={featuredResourceUrl} target="_blank" rel="noreferrer">Open Resource</a>
+            {featuredResource ? (
+              <Link to={`/client-portal/resources?resource=${encodeURIComponent(featuredResource.id)}`}>Open Resource</Link>
             ) : featuredResource ? (
               <em>Saved as a private note</em>
             ) : (
@@ -364,7 +363,7 @@ function ClientPortalDashboard() {
                           {resource.description && <p>{resource.description}</p>}
                           <div>
                             <time>{formatDate(resource.created_at)}</time>
-                            {safeUrl ? <a href={safeUrl} target="_blank" rel="noreferrer">Open</a> : <em>Private note</em>}
+                            <Link to={`/client-portal/resources?resource=${encodeURIComponent(resource.id)}`}>{safeUrl ? 'Review' : 'Read note'}</Link>
                           </div>
                         </section>
                       )

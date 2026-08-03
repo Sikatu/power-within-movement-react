@@ -43,6 +43,7 @@
     "workflow:qa:phase13": "node scripts/check-workflow-phase13-automation-continuity.mjs",
     "workflow:qa:phase14": "node scripts/check-workflow-phase14-program-access-continuity.mjs",
     "workflow:qa:phase15": "node scripts/check-workflow-phase15-communication-continuity.mjs",
+    "workflow:qa:phase16": "node scripts/check-workflow-phase16-client-portal-continuity.mjs",
     "admin:qa:phase31": "node scripts/check-admin-routes.mjs && node scripts/check-admin-command-center.mjs && node scripts/check-admin-phase31-streamlining.mjs && npm run build",
     "admin:qa:phase32": "node scripts/check-admin-phase31-streamlining.mjs && node scripts/check-admin-phase32-daily-workflows.mjs && npm run build",
     "admin:qa:phase33": "node scripts/check-admin-phase32-daily-workflows.mjs && node scripts/check-admin-phase33-growth-workflows.mjs && npm run build",
