@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import { Link, useSearchParams } from 'react-router-dom'
 import AdminFrame from '../../components/admin/AdminFrame'
 import {
   createAdminAutomationWorkflow,
@@ -117,6 +118,11 @@ function stepLabel(step) {
 }
 
 export default function AdminAutomationStudio() {
+  const [searchParams] = useSearchParams()
+  const requestedWorkflowId = searchParams.get('workflow') || ''
+  const requestedEnrollmentId = searchParams.get('enrollment') || ''
+  const requestedClientId = searchParams.get('client') || ''
+  const requestedMode = searchParams.get('mode') || ''
   const [studio, setStudio] = useState(null)
   const [selectedWorkflowId, setSelectedWorkflowId] = useState('')
   const [workflowForm, setWorkflowForm] = useState({ ...emptyWorkflow, steps: [] })
@@ -136,8 +142,10 @@ export default function AdminAutomationStudio() {
   const workflowEnrollments = useMemo(
     () => (studio?.enrollments || []).filter((item) => (
       !selectedWorkflowId || item.workflowId === selectedWorkflowId
+    )).filter((item) => (
+      !requestedClientId || item.clientProfileId === requestedClientId
     )),
-    [selectedWorkflowId, studio?.enrollments],
+    [requestedClientId, selectedWorkflowId, studio?.enrollments],
   )
 
   const loadStudio = useCallback(async ({ preserveSelection = true } = {}) => {
@@ -148,21 +156,27 @@ export default function AdminAutomationStudio() {
       const response = await getAdminAutomationStudio()
       const nextStudio = response.studio || null
       const workflows = nextStudio?.workflows || []
-      const nextWorkflowId = preserveSelection && workflows.some((item) => item.id === selectedWorkflowId)
-        ? selectedWorkflowId
-        : workflows[0]?.id || ''
+      const requestedEnrollment = nextStudio?.enrollments?.find((item) => item.id === requestedEnrollmentId)
+      const requestedWorkflow = requestedEnrollment?.workflowId || requestedWorkflowId
+      const nextWorkflowId = workflows.some((item) => item.id === requestedWorkflow)
+        ? requestedWorkflow
+        : preserveSelection && workflows.some((item) => item.id === selectedWorkflowId)
+          ? selectedWorkflowId
+          : workflows[0]?.id || ''
+      const requestedClient = nextStudio?.clients?.find((item) => item.id === requestedClientId)
 
       setStudio(nextStudio)
       setSelectedWorkflowId(nextWorkflowId)
       setWorkflowForm(workflowToForm(workflows.find((item) => item.id === nextWorkflowId)))
-      setEnrollmentClientId((current) => current || nextStudio?.clients?.[0]?.id || '')
+      setEnrollmentClientId(requestedClient?.id || nextStudio?.clients?.[0]?.id || '')
+      if (['activity', 'builder'].includes(requestedMode)) setWorkspaceView(requestedMode)
       if (!workflows.length) setWorkspaceView('builder')
     } catch (loadError) {
       setError(loadError.message || 'Unable to load Automation Studio.')
     } finally {
       setIsLoading(false)
     }
-  }, [selectedWorkflowId])
+  }, [requestedClientId, requestedEnrollmentId, requestedMode, requestedWorkflowId, selectedWorkflowId])
 
   useEffect(() => {
     const timer = window.setTimeout(() => loadStudio({ preserveSelection: false }), 0)
@@ -663,7 +677,11 @@ export default function AdminAutomationStudio() {
 
                 <div className="automation-enrollment-list">
                   {workflowEnrollments.map((enrollment) => (
-                    <article className="automation-enrollment-card" key={enrollment.id}>
+                    <article
+                      aria-current={enrollment.id === requestedEnrollmentId ? 'true' : undefined}
+                      className="automation-enrollment-card"
+                      key={enrollment.id}
+                    >
                       <div>
                         <span className={`automation-status automation-status-${enrollment.status}`}>
                           {statusLabels[enrollment.status] || enrollment.status}
@@ -678,6 +696,7 @@ export default function AdminAutomationStudio() {
                       </dl>
                       {enrollment.lastError && <p className="automation-enrollment-error">{enrollment.lastError}</p>}
                       <div className="automation-enrollment-actions">
+                        <Link to={`/admin/client-360/${enrollment.clientProfileId}`}>Open client context</Link>
                         {enrollment.status === 'active' && (
                           <>
                             <button onClick={() => enrollmentAction(enrollment.id, 'run_now')} type="button">Run now</button>

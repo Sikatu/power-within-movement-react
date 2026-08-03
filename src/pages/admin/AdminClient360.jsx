@@ -280,6 +280,9 @@ function AdminClient360() {
             <Link className="btn secondary" to={`/admin/clients/${client.id}/overview`}>
               Edit profile
             </Link>
+            <Link className="btn secondary" to={`/admin/automations?client=${client.id}&mode=activity`}>
+              Client automations
+            </Link>
             <button className="btn primary" type="button" onClick={() => loadSnapshot()}>
               Refresh workspace
             </button>

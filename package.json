@@ -40,6 +40,7 @@
     "workflow:qa:phase10": "node scripts/check-workflow-phase10-client-care-context.mjs",
     "workflow:qa:phase11": "node scripts/check-workflow-phase11-daily-planning-handoffs.mjs",
     "workflow:qa:phase12": "node scripts/check-workflow-phase12-capacity-ownership.mjs",
+    "workflow:qa:phase13": "node scripts/check-workflow-phase13-automation-continuity.mjs",
     "admin:qa:phase31": "node scripts/check-admin-routes.mjs && node scripts/check-admin-command-center.mjs && node scripts/check-admin-phase31-streamlining.mjs && npm run build",
     "admin:qa:phase32": "node scripts/check-admin-phase31-streamlining.mjs && node scripts/check-admin-phase32-daily-workflows.mjs && npm run build",
     "admin:qa:phase33": "node scripts/check-admin-phase32-daily-workflows.mjs && node scripts/check-admin-phase33-growth-workflows.mjs && npm run build",

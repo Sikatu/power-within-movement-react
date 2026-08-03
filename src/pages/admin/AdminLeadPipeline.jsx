@@ -515,6 +515,9 @@ export default function AdminLeadPipeline() {
                   <Link className="button secondary" to={`/admin/clients/${selectedLead.id}`}>
                     Full profile
                   </Link>
+                  <Link className="button secondary" to={`/admin/automations?client=${selectedLead.id}&mode=activity`}>
+                    Client automations
+                  </Link>
                 </div>
               </div>
 
