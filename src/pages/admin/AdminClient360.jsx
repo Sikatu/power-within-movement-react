@@ -709,7 +709,12 @@ function AdminClient360() {
                 <>
                   <strong>{formatDate(nextSession.starts_at, { weekday: 'long', hour: 'numeric', minute: '2-digit' })}</strong>
                   <p>{titleCase(nextSession.status)} · {nextSession.timezone}</p>
-                  <Link className="client-360-text-link" to="/admin/scheduler">Open Session Studio</Link>
+                  <Link
+                    className="client-360-text-link"
+                    to={`/admin/scheduler?booking=${encodeURIComponent(nextSession.id)}&client=${encodeURIComponent(client.id)}`}
+                  >
+                    Open this session in Session Studio
+                  </Link>
                 </>
               ) : (
                 <p>No upcoming confirmed or requested session is connected to this client.</p>
@@ -724,7 +729,11 @@ function AdminClient360() {
               <Link to={`/admin/clients/${client.id}/care`}>Care records</Link>
               <Link to={`/admin/clients/${client.id}/portal`}>Portal access</Link>
               <Link to="/admin/inbox">Secure Inbox</Link>
-              <Link to="/admin/scheduler">Sessions</Link>
+              <Link
+                to={`/admin/scheduler?client=${encodeURIComponent(client.id)}&clientName=${encodeURIComponent(client.name)}`}
+              >
+                Sessions for {client.firstName || client.name}
+              </Link>
               <Link to="/admin/courses">Learning Library</Link>
               <Link to="/admin/memberships">Memberships</Link>
             </section>

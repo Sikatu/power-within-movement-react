@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
+import { useAdminConfirm } from '../../components/admin/AdminConfirmContext'
 import AdminFrame from '../../components/admin/AdminFrame'
 import {
   checkAdminAccess,
@@ -227,6 +228,14 @@ function bookingMatchesFilter(booking, filter) {
   return true
 }
 
+function bookingFilterForStatus(status) {
+  if (['requested', 'approved'].includes(status)) return 'needs-care'
+  if (status === 'confirmed') return 'confirmed'
+  if (status === 'completed') return 'completed'
+  if (['cancelled', 'no_show'].includes(status)) return 'closed'
+  return 'all'
+}
+
 function SectionHeading({ eyebrow, title, description, action }) {
   return (
     <div className="pwc-scheduler-section-heading">
@@ -241,6 +250,11 @@ function SectionHeading({ eyebrow, title, description, action }) {
 }
 
 function AdminScheduler() {
+  const confirmAction = useAdminConfirm()
+  const [searchParams, setSearchParams] = useSearchParams()
+  const requestedBookingId = searchParams.get('booking') || ''
+  const requestedClientId = searchParams.get('client') || ''
+  const requestedClientName = searchParams.get('clientName') || ''
   const [workspaceView, setWorkspaceView] = useState('requests')
   const [appointmentTypes, setAppointmentTypes] = useState([])
   const [availabilityBlocks, setAvailabilityBlocks] = useState([])
@@ -349,9 +363,20 @@ function AdminScheduler() {
         const loadedTypes = typesResult.appointmentTypes || []
         const loadedAvailability = availabilityResult.availabilityBlocks || []
         const loadedBookings = bookingsResult.bookings || []
-        const firstBooking = loadedBookings.find((booking) => ['requested', 'approved'].includes(booking.status))
-          || loadedBookings[0]
-          || null
+        const requestedBooking = loadedBookings.find(
+          (booking) => String(booking.id) === String(requestedBookingId),
+        )
+        const requestedClientBooking = loadedBookings.find(
+          (booking) => String(booking.client_profile_id) === String(requestedClientId),
+        )
+        const hasRequestedContext = Boolean(requestedBookingId || requestedClientId)
+        const firstBooking = requestedBooking
+          || requestedClientBooking
+          || (hasRequestedContext
+            ? null
+            : loadedBookings.find((booking) => ['requested', 'approved'].includes(booking.status))
+              || loadedBookings[0]
+              || null)
 
         setAppointmentTypes(loadedTypes)
         setAvailabilityBlocks(loadedAvailability)
@@ -359,10 +384,14 @@ function AdminScheduler() {
         setSelectedBooking(firstBooking)
 
         if (firstBooking) {
+          setBookingFilter(bookingFilterForStatus(firstBooking.status))
           setBookingForm({
             status: firstBooking.status || 'requested',
             adminNotes: firstBooking.admin_notes || '',
           })
+        } else if (requestedClientName) {
+          setBookingFilter('all')
+          setBookingSearch(requestedClientName)
         }
 
         setStatus({
@@ -392,7 +421,21 @@ function AdminScheduler() {
     return () => {
       isMounted = false
     }
-  }, [])
+  }, [requestedBookingId, requestedClientId, requestedClientName])
+
+  useEffect(() => {
+    if (status.loading) return
+    if (filteredBookings.some((booking) => booking.id === selectedBooking?.id)) return
+
+    const nextBooking = filteredBookings[0] || null
+    setSelectedBooking(nextBooking)
+    setBookingForm(nextBooking
+      ? {
+          status: nextBooking.status || 'requested',
+          adminNotes: nextBooking.admin_notes || '',
+        }
+      : defaultBookingForm)
+  }, [filteredBookings, selectedBooking?.id, status.loading])
 
   const handleTypeChange = (event) => {
     const { name, value, type, checked } = event.target
@@ -445,6 +488,14 @@ function AdminScheduler() {
       status: booking.status || 'requested',
       adminNotes: booking.admin_notes || '',
     })
+    setSearchParams((current) => {
+      const next = new URLSearchParams(current)
+      next.set('booking', booking.id)
+      if (booking.client_profile_id) next.set('client', booking.client_profile_id)
+      else next.delete('client')
+      next.delete('clientName')
+      return next
+    }, { replace: true })
     setStatus((current) => ({ ...current, error: '', message: '' }))
   }
 
@@ -548,6 +599,21 @@ function AdminScheduler() {
   const saveBookingStatus = async (nextStatus, note = bookingForm.adminNotes) => {
     if (!selectedBooking?.id) return
 
+    if (
+      nextStatus !== selectedBooking.status &&
+      ['cancelled', 'no_show'].includes(nextStatus)
+    ) {
+      const confirmed = await confirmAction({
+        title: nextStatus === 'no_show' ? 'Mark this session as a no-show?' : 'Cancel this session request?',
+        message: `${selectedBooking.guest_name || 'This guest'} will leave the active session workflow.`,
+        detail: 'The request and private Studio notes remain available in the Closed view.',
+        confirmLabel: nextStatus === 'no_show' ? 'Mark no-show' : 'Cancel request',
+        tone: 'warning',
+      })
+
+      if (!confirmed) return
+    }
+
     setStatus((current) => ({ ...current, saving: true, error: '', message: '' }))
 
     try {
@@ -558,6 +624,7 @@ function AdminScheduler() {
 
       setBookings(result.bookings || [])
       setSelectedBooking(result.booking || null)
+      setBookingFilter(bookingFilterForStatus(result.booking?.status || nextStatus))
       setBookingForm({
         status: result.booking?.status || nextStatus,
         adminNotes: result.booking?.admin_notes || note || '',
@@ -600,6 +667,16 @@ function AdminScheduler() {
   const handleWelcomeIntoClientCircle = async () => {
     if (!selectedBooking?.id) return
 
+    const confirmed = await confirmAction({
+      title: `Create a client profile for ${selectedBooking.guest_name || 'this guest'}?`,
+      message: 'This converts the session request into a private Client Circle record.',
+      detail: 'Confirm the guest identity and email before creating the profile.',
+      confirmLabel: 'Create client profile',
+      tone: 'warning',
+    })
+
+    if (!confirmed) return
+
     setStatus((current) => ({ ...current, saving: true, error: '', message: '' }))
 
     try {
@@ -617,6 +694,15 @@ function AdminScheduler() {
 
       setBookings(result.bookings || [])
       setSelectedBooking(welcomedBooking)
+      setSearchParams((current) => {
+        const next = new URLSearchParams(current)
+        next.set('booking', welcomedBooking.id)
+        if (welcomedBooking.client_profile_id) {
+          next.set('client', welcomedBooking.client_profile_id)
+        }
+        next.delete('clientName')
+        return next
+      }, { replace: true })
       setWelcomedBookingIds((current) => (
         current.includes(selectedBooking.id) ? current : [...current, selectedBooking.id]
       ))
