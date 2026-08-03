@@ -1,4 +1,4 @@
-import { pipeline, env } from '@xenova/transformers';
+import { pipeline, env } from '@huggingface/transformers';
 
 // Disable local models to fetch from Hugging Face hub
 env.allowLocalModels = false;
