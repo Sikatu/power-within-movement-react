@@ -107,6 +107,7 @@ export default function AdminInbox() {
     const requestedClientConversation = requestedClientId
       ? nextConversations.find((item) => item.client_profile_id === requestedClientId)
       : null
+    if (requestedClientId && !requestedClientConversation) setShowNew(true)
     const nextId =
       preferredId && nextConversations.some((item) => item.id === preferredId)
         ? preferredId

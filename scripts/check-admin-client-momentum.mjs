@@ -31,8 +31,8 @@ const pageTokens = [
   'aria-label="Client momentum board"',
   'This is an operational care signal, not a rating',
   'openClient(clientId)',
-  'openClientTasks(clientId)',
-  "navigate('/admin/scheduler')",
+  'openClientTasks(client)',
+  '`/admin/scheduler?${clientParams(selectedClient)}`',
   'selectedClient.signal?.reasons',
   'assignedMembers',
 ]
