@@ -34,7 +34,7 @@ const pageTokens = [
   '`/admin/scheduler?${clientParams(selectedClient)}`',
   'openClientInbox(selectedClient)',
   'selectedClient.coverage?.reasons',
-  "navigate('/admin/team')",
+  'navigate(assignmentUrl(selectedClient))',
 ]
 
 const navigationTokens = [

@@ -188,6 +188,19 @@ function AdminClientCoverage() {
     navigate(`/admin/inbox?${clientParams(client, extra)}`)
   }
 
+  function assignmentUrl(client) {
+    const preferredMember = client.assignments?.find(
+      (member) => member.assignmentRole === 'primary',
+    ) || client.assignments?.[0]
+    const params = new URLSearchParams({
+      mode: 'assignments',
+      client: client.id,
+      clientName: client.name,
+      ...(preferredMember ? { member: preferredMember.id } : {}),
+    })
+    return `/admin/team?${params}`
+  }
+
   return (
     <AdminFrame>
       <div className="pwc-week16-page pwc-momentum18-page">
@@ -421,7 +434,7 @@ function AdminClientCoverage() {
                     <button type="button" onClick={() => navigate(`/admin/scheduler?${clientParams(selectedClient)}`)}>Open Sessions</button>
                     <button type="button" onClick={() => openClientInbox(selectedClient)}>Open Secure Inbox</button>
                     {role === 'developer' && (
-                      <button type="button" onClick={() => navigate('/admin/team')}>Manage client assignments</button>
+                      <button type="button" onClick={() => navigate(assignmentUrl(selectedClient))}>Manage client assignments</button>
                     )}
                   </section>
                 </>
