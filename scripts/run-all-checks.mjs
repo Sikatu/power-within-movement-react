@@ -34,6 +34,7 @@ const scripts = [
   'scripts/check-admin-phase30r2-clients-layout.mjs',
   'scripts/check-admin-phase30r4-client-actions.mjs',
   'scripts/check-admin-phase30r6-client-tabs.mjs',
+  'scripts/check-workflow-phase3-client-management.mjs',
   'scripts/check-admin-phase31-streamlining.mjs',
   'scripts/check-admin-phase32-daily-workflows.mjs',
   'scripts/check-admin-phase33-growth-workflows.mjs',
