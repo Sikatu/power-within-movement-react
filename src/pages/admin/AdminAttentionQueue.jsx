@@ -122,6 +122,8 @@ export default function AdminAttentionQueue() {
   const [searchParams] = useSearchParams()
   const requestedClientId = searchParams.get('client') || ''
   const requestedClientName = searchParams.get('clientName') || ''
+  const requestedSourceType = searchParams.get('source') || ''
+  const requestedItemId = searchParams.get('item') || ''
   const confirmAction = useAdminConfirm()
   const [adminUser] = useState(readCachedUser)
   const [teamAccess, setTeamAccess] = useState(null)
@@ -162,6 +164,9 @@ export default function AdminAttentionQueue() {
 
     const currentKey = selectedKeyRef.current
     const nextSelected = nextTasks.find((task) => taskKey(task) === currentKey)
+      || nextTasks.find((task) => (
+        task.sourceType === requestedSourceType && String(task.id) === requestedItemId
+      ))
       || nextTasks.find((task) => task.clientProfileId === requestedClientId)
       || nextTasks[0]
       || null
@@ -170,7 +175,7 @@ export default function AdminAttentionQueue() {
     selectedKeyRef.current = nextKey
     setSelectedKey(nextKey)
     setDraft(nextSelected ? draftFromTask(nextSelected) : null)
-  }, [requestedClientId])
+  }, [requestedClientId, requestedItemId, requestedSourceType])
 
   const loadQueue = useCallback(async ({ quiet = false } = {}) => {
     if (quiet) setRefreshing(true)
