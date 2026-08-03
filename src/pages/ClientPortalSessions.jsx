@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import ClientPortalChrome from '../components/ClientPortalChrome.jsx'
 import {
   createClientPortalBooking,
@@ -84,6 +84,8 @@ function friendlyError(error) {
 
 function ClientPortalSessions() {
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const requestedBookingId = searchParams.get('booking') || ''
   const [dashboard, setDashboard] = useState(null)
   const [appointmentTypes, setAppointmentTypes] = useState([])
   const [selectedTypeId, setSelectedTypeId] = useState('')
@@ -175,6 +177,7 @@ function ClientPortalSessions() {
       return Number.isFinite(startsAt) && (startsAt < portalNow || ['cancelled', 'completed', 'no_show'].includes(String(booking.status || '').toLowerCase()))
     })
     .sort((a, b) => new Date(b.starts_at).getTime() - new Date(a.starts_at).getTime()), [bookings, portalNow])
+  const requestedBooking = bookings.find((booking) => String(booking.id) === requestedBookingId) || null
 
   const selectedDay = availability.find((day) => day.date === selectedDate)
   const changeDay = changeAvailability.find((day) => day.date === changeDate)
@@ -285,6 +288,9 @@ function ClientPortalSessions() {
             {status.error || status.message}
           </div>
         )}
+        {!status.loading && requestedBookingId && !requestedBooking && (
+          <div className="portal-notice" role="status">That session is no longer available. Your current sessions are shown below.</div>
+        )}
 
         {status.loading ? (
           <div className="portal-loading" role="status">Preparing your sessions…</div>
@@ -349,7 +355,7 @@ function ClientPortalSessions() {
                   ) : upcomingBookings.map((booking) => {
                     const pending = pendingRequestForBooking(booking.id)
                     return (
-                      <article className="session-upcoming-item" key={booking.id}>
+                      <article className={`session-upcoming-item${requestedBooking?.id === booking.id ? ' is-selected' : ''}`} id={`booking-${booking.id}`} key={booking.id}>
                         <span className="portal-status-pill">{readable(booking.status)}</span>
                         <h3>{booking.appointment_type_name || 'Private Session'}</h3>
                         <p>{formatDateTime(booking.starts_at)} Eastern Time</p>

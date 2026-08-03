@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import ClientPortalChrome from '../components/ClientPortalChrome.jsx'
 import { getClientPortalDashboard, getClientPortalResources, logoutClientPortal } from '../lib/nativeApi.js'
 import './ClientPortalWorkspace.css'
@@ -65,6 +65,8 @@ function friendlyError(error) {
 
 function ClientPortalResources() {
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const requestedResourceId = searchParams.get('resource') || ''
   const [client, setClient] = useState(null)
   const [resources, setResources] = useState([])
   const [activeType, setActiveType] = useState('all')
@@ -115,7 +117,8 @@ function ClientPortalResources() {
     })
   }, [activeType, resources, search])
 
-  const featuredResource = resources[0] || null
+  const requestedResource = resources.find((resource) => String(resource.id) === requestedResourceId) || null
+  const featuredResource = requestedResource || resources[0] || null
   const activeTypeLabel = resourceTypes.find((type) => type.id === activeType)?.label || 'All Resources'
 
   async function handleLogout() {
@@ -139,6 +142,9 @@ function ClientPortalResources() {
         </header>
 
         {error && <div className="portal-notice is-error" role="alert">{error}</div>}
+        {!loading && requestedResourceId && !requestedResource && (
+          <div className="portal-notice" role="status">That resource is no longer available. Your current library is shown below.</div>
+        )}
 
         {loading ? (
           <div className="portal-loading" role="status">Gathering your private resources…</div>
@@ -191,7 +197,7 @@ function ClientPortalResources() {
                     const type = resource.resource_type || 'note'
                     const url = safeUrl(resource.resource_url)
                     return (
-                      <article className={`resource-card is-${type}`} key={resource.id}>
+                      <article className={`resource-card is-${type}${requestedResource?.id === resource.id ? ' is-selected' : ''}`} id={`resource-${resource.id}`} key={resource.id}>
                         <div className="resource-card-top"><span>{String(index + 1).padStart(2, '0')}</span><em>{resourceTypes.find((item) => item.id === type)?.short || 'Resource'}</em></div>
                         <div><p>{resourceTypeCopy[type] || 'Selected for your care'}</p><h3>{resource.title}</h3>{resource.description && <span>{resource.description}</span>}</div>
                         <footer><time>{formatDate(resource.created_at)}</time>{url ? <a href={url} target="_blank" rel="noreferrer">Open <span aria-hidden="true">↗</span></a> : <em>Private note</em>}</footer>
