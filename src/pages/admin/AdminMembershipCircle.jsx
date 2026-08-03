@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import AdminFrame from '../../components/admin/AdminFrame'
 import { useAdminConfirm } from '../../components/admin/AdminConfirmContext'
 import {
@@ -121,7 +122,7 @@ function formatMoney(cents, currency = 'USD', interval = null) {
   }
 }
 
-function MemberRow({ enrollment, onSave, onRemove, isBusy }) {
+function MemberRow({ enrollment, onSave, onRemove, isBusy, isRequested }) {
   const [draft, setDraft] = useState({
     status: enrollment.status || 'active',
     startedAt: dateInputValue(enrollment.started_at),
@@ -141,7 +142,7 @@ function MemberRow({ enrollment, onSave, onRemove, isBusy }) {
   }
 
   return (
-    <article className="membership-member-row">
+    <article aria-current={isRequested ? 'true' : undefined} className="membership-member-row">
       <div className="membership-member-identity">
         <strong>{clientName(enrollment)}</strong>
         <span>{enrollment.email || 'No portal email'}</span>
@@ -226,6 +227,10 @@ function MemberRow({ enrollment, onSave, onRemove, isBusy }) {
 
 export default function AdminMembershipCircle() {
   const confirmAction = useAdminConfirm()
+  const [searchParams] = useSearchParams()
+  const requestedMembershipId = searchParams.get('membership') || ''
+  const requestedClientId = searchParams.get('client') || ''
+  const requestedMode = searchParams.get('mode') || ''
   const [memberships, setMemberships] = useState([])
   const [clients, setClients] = useState([])
   const [courses, setCourses] = useState([])
@@ -301,6 +306,7 @@ export default function AdminMembershipCircle() {
       billingInterval: membership.billing_interval || 'monthly',
     })
     setSelectedCourseIds((membership.courses || []).map((course) => course.course_id))
+    return membership
   }
 
   async function loadCircle(preferredMembershipId = selectedMembershipId) {
@@ -308,7 +314,8 @@ export default function AdminMembershipCircle() {
     const nextMemberships = response.memberships || []
 
     setMemberships(nextMemberships)
-    setClients(response.clients || [])
+    const nextClients = response.clients || []
+    setClients(nextClients)
     setCourses(response.courses || [])
     setFeatureEnabled(response.featureEnabled !== false)
 
@@ -321,7 +328,15 @@ export default function AdminMembershipCircle() {
     setSelectedMembershipId(nextSelectedId)
 
     if (nextSelectedId) {
-      await loadMembership(nextSelectedId)
+      const membership = await loadMembership(nextSelectedId)
+      const clientAvailable = nextClients.some((client) => client.id === requestedClientId)
+      const alreadyEnrolled = (membership.enrollments || []).some((item) => (
+        item.client_profile_id === requestedClientId
+      ))
+      setMemberForm((current) => ({
+        ...current,
+        clientProfileId: clientAvailable && !alreadyEnrolled ? requestedClientId : '',
+      }))
     } else {
       setSelectedMembership(null)
       setPlanForm(emptyPlanForm)
@@ -334,7 +349,8 @@ export default function AdminMembershipCircle() {
     async function start() {
       try {
         setIsLoading(true)
-        await loadCircle('')
+        await loadCircle(requestedMembershipId)
+        if (['members', 'content', 'updates', 'overview'].includes(requestedMode)) setActiveTab(requestedMode)
       } catch (loadError) {
         if (mounted) setError(loadError.message || 'Memberships could not load.')
       } finally {
@@ -789,6 +805,10 @@ export default function AdminMembershipCircle() {
       (selectedMembership?.enrollments || []).map((item) => item.client_profile_id),
     )
     const availableClients = clients.filter((client) => !enrolledClientIds.has(client.id))
+    const orderedEnrollments = [...(selectedMembership?.enrollments || [])].sort((left, right) => (
+      Number(right.client_profile_id === requestedClientId)
+      - Number(left.client_profile_id === requestedClientId)
+    ))
 
     return (
       <div className="membership-members-panel">
@@ -892,16 +912,17 @@ export default function AdminMembershipCircle() {
         </form>
 
         <div className="membership-member-list">
-          {(selectedMembership?.enrollments || []).length === 0 ? (
+          {orderedEnrollments.length === 0 ? (
             <div className="membership-empty-state">
               <strong>No members have been added yet.</strong>
               <p>Choose a client above to give her access to this membership.</p>
             </div>
           ) : (
-            selectedMembership.enrollments.map((enrollment) => (
+            orderedEnrollments.map((enrollment) => (
               <MemberRow
                 key={enrollment.id}
                 enrollment={enrollment}
+                isRequested={enrollment.client_profile_id === requestedClientId}
                 onSave={handleUpdateEnrollment}
                 onRemove={handleRemoveEnrollment}
                 isBusy={busyId === enrollment.id || isSaving}

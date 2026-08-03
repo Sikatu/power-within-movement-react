@@ -637,6 +637,7 @@ function AdminClient360() {
                       <div><strong>{course.title}</strong><span>{titleCase(course.access_status)}</span></div>
                       <div className="client-360-progress"><span style={{ width: `${course.progressPercent}%` }} /></div>
                       <small>{course.completed_lessons} of {course.lesson_count} lessons · {course.progressPercent}%</small>
+                      <Link to={`/admin/courses?course=${course.course_id}&client=${client.id}&mode=access`}>Manage learning access</Link>
                     </article>
                   ))}
                   {!snapshot.learning?.length && <p className="client-360-muted">No learning assignments yet.</p>}
@@ -649,6 +650,7 @@ function AdminClient360() {
                       <div><strong>{membership.name}</strong><span>{titleCase(membership.status)}</span></div>
                       <p>{membership.tagline || 'Power Within membership experience'}</p>
                       <small>Started {formatDate(membership.started_at)}{membership.renewal_at ? ` · Renews ${formatDate(membership.renewal_at)}` : ''}</small>
+                      <Link to={`/admin/memberships?membership=${membership.membership_id}&client=${client.id}&mode=members`}>Manage membership</Link>
                     </article>
                   ))}
                   {!snapshot.memberships?.length && <p className="client-360-muted">No membership enrollment yet.</p>}
@@ -750,8 +752,8 @@ function AdminClient360() {
               >
                 Sessions for {client.firstName || client.name}
               </Link>
-              <Link to="/admin/courses">Learning Library</Link>
-              <Link to="/admin/memberships">Memberships</Link>
+              <Link to={`/admin/courses?client=${client.id}&mode=access`}>Learning access for {client.firstName || client.name}</Link>
+              <Link to={`/admin/memberships?client=${client.id}&mode=members`}>Memberships for {client.firstName || client.name}</Link>
             </section>
           </aside>
         </div>
