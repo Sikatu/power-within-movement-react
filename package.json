@@ -31,6 +31,7 @@
     "admin:qa:phase30r5": "node scripts/check-admin-phase30r2-clients-layout.mjs && node scripts/check-admin-phase30r4-client-actions.mjs",
     "admin:qa:phase30r6": "node scripts/check-admin-phase30r2-clients-layout.mjs && node scripts/check-admin-phase30r4-client-actions.mjs && node scripts/check-admin-phase30r6-client-tabs.mjs",
     "workflow:qa:phase3": "node scripts/check-workflow-phase3-client-management.mjs",
+    "workflow:qa:phase4": "node scripts/check-workflow-phase4-session-handoff.mjs",
     "admin:qa:phase31": "node scripts/check-admin-routes.mjs && node scripts/check-admin-command-center.mjs && node scripts/check-admin-phase31-streamlining.mjs && npm run build",
     "admin:qa:phase32": "node scripts/check-admin-phase31-streamlining.mjs && node scripts/check-admin-phase32-daily-workflows.mjs && npm run build",
     "admin:qa:phase33": "node scripts/check-admin-phase32-daily-workflows.mjs && node scripts/check-admin-phase33-growth-workflows.mjs && npm run build",
