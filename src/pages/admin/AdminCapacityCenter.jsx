@@ -77,7 +77,7 @@ function taskKey(task) {
   return `${task.sourceType}:${task.id}`
 }
 
-export default function AdminCapacityCenter() {
+export default function AdminCapacityCenter({ embedded = false }) {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const requestedMemberId = searchParams.get('member') || ''
@@ -244,9 +244,8 @@ export default function AdminCapacityCenter() {
     ))
   }
 
-  return (
-    <AdminFrame>
-      <div className="pwc-week16-page pwc-capacity17-page">
+  const content = (
+      <div className={`pwc-week16-page pwc-capacity17-page${embedded ? ' is-embedded' : ''}`}>
         <header className="pwc-week16-hero pwc-capacity17-hero">
           <div>
             <p className="admin-eyebrow">Studio Capacity</p>
@@ -527,6 +526,7 @@ export default function AdminCapacityCenter() {
           </div>
         )}
       </div>
-    </AdminFrame>
   )
+
+  return embedded ? content : <AdminFrame>{content}</AdminFrame>
 }

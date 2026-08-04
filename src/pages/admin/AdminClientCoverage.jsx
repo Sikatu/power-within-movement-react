@@ -86,7 +86,7 @@ function sessionWindow(value) {
   return 'later'
 }
 
-function AdminClientCoverage() {
+function AdminClientCoverage({ embedded = false }) {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const requestedClientId = searchParams.get('client') || ''
@@ -201,9 +201,8 @@ function AdminClientCoverage() {
     return `/admin/team?${params}`
   }
 
-  return (
-    <AdminFrame>
-      <div className="pwc-week16-page pwc-momentum18-page">
+  const content = (
+      <div className={`pwc-week16-page pwc-momentum18-page${embedded ? ' is-embedded' : ''}`}>
         <header className="pwc-week16-hero pwc-momentum18-hero">
           <div>
             <p className="admin-eyebrow">Studio Coverage & Handoffs</p>
@@ -448,8 +447,9 @@ function AdminClientCoverage() {
           </div>
         )}
       </div>
-    </AdminFrame>
   )
+
+  return embedded ? content : <AdminFrame>{content}</AdminFrame>
 }
 
 export default AdminClientCoverage

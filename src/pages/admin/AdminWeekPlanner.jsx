@@ -169,7 +169,7 @@ function taskIsOverdue(task, today) {
   return Number.isFinite(due) && due < today.getTime()
 }
 
-export default function AdminWeekPlanner() {
+export default function AdminWeekPlanner({ embedded = false }) {
   const navigate = useNavigate()
   const [adminUser] = useState(readCachedUser)
   const [teamAccess, setTeamAccess] = useState(null)
@@ -371,9 +371,8 @@ export default function AdminWeekPlanner() {
     return updateTask(task, { status: 'completed' }, 'Attention item completed.')
   }
 
-  return (
-    <AdminFrame>
-      <div className="pwc-week16-page">
+  const content = (
+      <div className={`pwc-week16-page${embedded ? ' is-embedded' : ''}`}>
         <header className="pwc-week16-hero">
           <div>
             <p className="admin-eyebrow">Studio Week Planner</p>
@@ -663,6 +662,7 @@ export default function AdminWeekPlanner() {
           </div>
         )}
       </div>
-    </AdminFrame>
   )
+
+  return embedded ? content : <AdminFrame>{content}</AdminFrame>
 }

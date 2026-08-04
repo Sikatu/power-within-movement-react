@@ -169,7 +169,7 @@ function matchesSearch(notification, query) {
   return haystack.includes(query)
 }
 
-export default function AdminActivityCenter() {
+export default function AdminActivityCenter({ embedded = false }) {
   const navigate = useNavigate()
   const confirmAction = useAdminConfirm()
   const [adminUser] = useState(readCachedUser)
@@ -395,9 +395,8 @@ export default function AdminActivityCenter() {
     setImportance('all')
   }
 
-  return (
-    <AdminFrame>
-      <div className="pwc-activity13-page">
+  const content = (
+      <div className={`pwc-activity13-page${embedded ? ' is-embedded' : ''}`}>
         <header className="pwc-activity13-hero">
           <div className="pwc-activity13-hero-copy">
             <p className="admin-eyebrow">Studio Activity Center</p>
@@ -630,6 +629,7 @@ export default function AdminActivityCenter() {
           )}
         </section>
       </div>
-    </AdminFrame>
   )
+
+  return embedded ? content : <AdminFrame>{content}</AdminFrame>
 }

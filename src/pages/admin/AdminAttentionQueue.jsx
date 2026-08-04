@@ -117,7 +117,7 @@ function draftFromTask(task) {
   }
 }
 
-export default function AdminAttentionQueue() {
+export default function AdminAttentionQueue({ embedded = false }) {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const requestedClientId = searchParams.get('client') || ''
@@ -360,9 +360,8 @@ export default function AdminAttentionQueue() {
     await saveTask({ status: 'cancelled' })
   }
 
-  return (
-    <AdminFrame>
-      <div className="pwc-attention14-page">
+  const content = (
+      <div className={`pwc-attention14-page${embedded ? ' is-embedded' : ''}`}>
         <header className="pwc-attention14-hero">
           <div>
             <p className="admin-eyebrow">Studio Attention Queue</p>
@@ -726,6 +725,7 @@ export default function AdminAttentionQueue() {
           )}
         </section>
       </div>
-    </AdminFrame>
   )
+
+  return embedded ? content : <AdminFrame>{content}</AdminFrame>
 }
