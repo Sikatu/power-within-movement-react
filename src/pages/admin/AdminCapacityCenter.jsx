@@ -377,6 +377,14 @@ export default function AdminCapacityCenter({ embedded = false }) {
                       className={`pwc-capacity17-card is-${member.band}${selected ? ' is-selected' : ''}`}
                       type="button"
                       key={member.id}
+                      style={{
+                        minHeight: 0,
+                        aspectRatio: 'auto',
+                        alignContent: 'start',
+                        gap: '12px',
+                        padding: '18px',
+                        borderRadius: '22px',
+                      }}
                       aria-pressed={selected}
                       onClick={() => setSelectedMemberId(member.id)}
                     >
@@ -386,7 +394,7 @@ export default function AdminCapacityCenter({ embedded = false }) {
                           <strong>{member.displayName}</strong>
                           <em>{availabilityLabel(member.availabilityStatus)}</em>
                         </span>
-                        <b>{member.loadPercent}%</b>
+                        <b><small>Current workload</small> {member.loadPercent}%</b>
                       </span>
 
                       <span className="pwc-capacity17-meter" aria-label={`${loadLabel(member.band)} at ${member.loadPercent} percent`}>
