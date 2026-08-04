@@ -168,7 +168,7 @@ function notificationMark(category) {
   }[category] || '•'
 }
 
-export default function AdminDailyBrief() {
+export default function AdminDailyBrief({ embedded = false }) {
   const navigate = useNavigate()
   const [adminUser] = useState(readCachedUser)
   const [teamAccess, setTeamAccess] = useState(null)
@@ -318,9 +318,8 @@ export default function AdminDailyBrief() {
     }
   }
 
-  return (
-    <AdminFrame>
-      <div className="pwc-brief15-page">
+  const content = (
+      <div className={`pwc-brief15-page${embedded ? ' is-embedded' : ''}`}>
         <header className="pwc-brief15-hero">
           <div className="pwc-brief15-hero-copy">
             <p className="admin-eyebrow">Today in The Studio</p>
@@ -535,6 +534,7 @@ export default function AdminDailyBrief() {
           </div>
         )}
       </div>
-    </AdminFrame>
   )
+
+  return embedded ? content : <AdminFrame>{content}</AdminFrame>
 }

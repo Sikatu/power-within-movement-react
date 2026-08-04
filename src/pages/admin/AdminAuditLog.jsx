@@ -45,7 +45,7 @@ function summarizeData(data) {
     .join('  ')
 }
 
-function AdminAuditLog() {
+function AdminAuditLog({ embedded = false }) {
   const [auditLogs, setAuditLogs] = useState([])
   const [status, setStatus] = useState({
     loading: true,
@@ -96,9 +96,8 @@ function AdminAuditLog() {
     }
   }, [])
 
-  return (
-    <AdminFrame>
-      <div className="operations-audit-page">
+  const content = (
+      <div className={`operations-audit-page${embedded ? ' is-embedded' : ''}`}>
         <div className="pwc-admin-page-header pwc-admin-page-header-balanced">
         <div>
           <p className="eyebrow">Studio Memory</p>
@@ -193,8 +192,9 @@ function AdminAuditLog() {
         </section>
       )}
       </div>
-    </AdminFrame>
   )
+
+  return embedded ? content : <AdminFrame>{content}</AdminFrame>
 }
 
 export default AdminAuditLog

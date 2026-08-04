@@ -87,7 +87,7 @@ function taskKey(task) {
   return `${task.sourceType}:${task.id}`
 }
 
-function AdminClientMomentum() {
+function AdminClientMomentum({ embedded = false }) {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const requestedClientId = searchParams.get('client') || ''
@@ -188,9 +188,8 @@ function AdminClientMomentum() {
     navigate(`/admin/attention?${clientParams(client)}`)
   }
 
-  return (
-    <AdminFrame>
-      <div className="pwc-week16-page pwc-momentum18-page">
+  const content = (
+      <div className={`pwc-week16-page pwc-momentum18-page${embedded ? ' is-embedded' : ''}`}>
         <header className="pwc-week16-hero pwc-momentum18-hero">
           <div>
             <p className="admin-eyebrow">Client Momentum</p>
@@ -432,8 +431,9 @@ function AdminClientMomentum() {
           </div>
         )}
       </div>
-    </AdminFrame>
   )
+
+  return embedded ? content : <AdminFrame>{content}</AdminFrame>
 }
 
 export default AdminClientMomentum

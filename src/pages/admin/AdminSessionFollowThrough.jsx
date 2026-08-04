@@ -78,7 +78,7 @@ function cardTone(band) {
   return 'steady'
 }
 
-function AdminSessionFollowThrough() {
+function AdminSessionFollowThrough({ embedded = false }) {
   const navigate = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams()
   const requestedSessionId = searchParams.get('session') || ''
@@ -259,9 +259,8 @@ function AdminSessionFollowThrough() {
     navigate(`/admin/inbox?${params.toString()}`)
   }
 
-  return (
-    <AdminFrame>
-      <div className="pwc-week16-page pwc-momentum18-page">
+  const content = (
+      <div className={`pwc-week16-page pwc-momentum18-page${embedded ? ' is-embedded' : ''}`}>
         <header className="pwc-week16-hero pwc-momentum18-hero">
           <div>
             <p className="admin-eyebrow">Session Follow-Through</p>
@@ -485,8 +484,9 @@ function AdminSessionFollowThrough() {
           </div>
         )}
       </div>
-    </AdminFrame>
   )
+
+  return embedded ? content : <AdminFrame>{content}</AdminFrame>
 }
 
 export default AdminSessionFollowThrough
