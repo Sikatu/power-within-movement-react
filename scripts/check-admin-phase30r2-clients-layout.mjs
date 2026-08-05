@@ -40,7 +40,7 @@ requireRule('.client-records-card-v2', [
 requireRule('.client-records-card-v2 > .client-card-header-v2', [
   'display: flex',
   'justify-content: space-between',
-  'border-bottom: 1px solid var(--admin-border)',
+  'border-bottom: 1px solid var(--color-border)',
 ])
 requireRule('.client-circle-filter-bar-v2', [
   'display: grid',
@@ -80,7 +80,7 @@ requireRule('.client-record-table-v2 thead th', [
 ])
 requireRule('.client-record-instruction-v2', [
   'margin: 8px 0 0',
-  'color: var(--admin-muted)',
+  'color: var(--color-muted)',
   'font-size: 11px',
 ])
 

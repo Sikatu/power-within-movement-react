@@ -8,6 +8,7 @@ const lockSource = readFileSync('src/components/admin/adminScrollLock.js', 'utf8
 const circleSource = readFileSync('src/pages/admin/AdminCircleCommunity.jsx', 'utf8')
 const momentumSource = readFileSync('src/pages/admin/AdminClientMomentum.jsx', 'utf8')
 const stylesheet = readFileSync('src/pages/admin/AdminFreshUI.css', 'utf8')
+const tokensSheet = readFileSync('src/styles/tokens.css', 'utf8')
 const packageSource = readFileSync('package.json', 'utf8')
 const checklist = readFileSync('docs/admin-phase24-visual-stability.md', 'utf8')
 
@@ -60,7 +61,6 @@ for (const token of ['pwc-momentum18-list-panel', 'pwc-momentum18-list-heading',
 }
 
 const visualSafeguards = [
-  '--admin-content: 1440px',
   'html.admin-app-root.admin-scroll-locked',
   'body.admin-app-mode .circle-admin-sidebar-heading',
   'body.admin-app-mode .circle-composer-fields',
@@ -82,6 +82,10 @@ const sidebarSafeguards = [
 ]
 for (const token of visualSafeguards) {
   if (!stylesheet.includes(token)) failures.push(`Phase 24 stylesheet is missing: ${token}`)
+}
+
+if (!tokensSheet.includes('--content-admin-max: 1440px')) {
+  failures.push(`Tokens stylesheet is missing: --content-admin-max: 1440px`)
 }
 
 for (const token of sidebarSafeguards) {

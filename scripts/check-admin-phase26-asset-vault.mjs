@@ -110,7 +110,7 @@ if (!ordered.includes("'db:migrate-asset-vault'")) failures.push('ordered migrat
 if (!releaseQa.includes("id: 'asset-vault'")) failures.push('release QA does not include the Asset Vault contract')
 if (!packageSource.includes('node scripts/check-admin-phase26-asset-vault.mjs')) failures.push('admin lint does not run the Phase 26 audit')
 if (!packageSource.includes('server/tests/asset-vault.test.cjs')) failures.push('Phase 26 focused tests are not wired')
-if (!css.includes(".developer-audit-workspace .pwc-momentum18-actions button:first-child") || !css.includes('background:var(--admin-burgundy)')) failures.push('non-status Developer primary actions are not returned to burgundy')
+if (!css.includes(".developer-audit-workspace .pwc-momentum18-actions button:first-child") || !css.includes('background:var(--color-burgundy)')) failures.push('non-status Developer primary actions are not returned to burgundy')
 if (/\b(?:window\.)?(?:alert|confirm|prompt)\s*\(/.test(page)) failures.push('Asset Vault uses a native browser dialog')
 
 if (failures.length) {
