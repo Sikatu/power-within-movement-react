@@ -8,7 +8,7 @@ const briefSource = readFileSync(
 const stylesheetSource = readFileSync(
   'src/pages/admin/AdminFreshUI.css',
   'utf8',
-)
+).replace(/\r\n?/g, '\n')
 
 const packageSource = readFileSync(
   'package.json',
