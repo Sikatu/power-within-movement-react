@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs'
 const appSource = readFileSync('src/App.jsx', 'utf8')
 const frameSource = readFileSync('src/components/admin/AdminFrame.jsx', 'utf8')
   + readFileSync('src/components/admin/adminNavigation.js', 'utf8')
+const hubSource = readFileSync('src/pages/admin/AdminSessionsHub.jsx', 'utf8')
 const pageSource = readFileSync('src/pages/admin/AdminSessionReadiness.jsx', 'utf8')
 const preloadSource = readFileSync('src/components/admin/adminRoutePreloaders.js', 'utf8')
 const apiSource = readFileSync('src/lib/nativeApi.js', 'utf8')
@@ -37,10 +38,11 @@ const pageTokens = [
   'selectedSession.readiness?.reasons',
 ]
 
-const navigationTokens = [
-  "to: '/admin/readiness'",
-  "label: 'Session Readiness'",
-  "module: 'sessions'",
+const hubTokens = [
+  "id: 'readiness'",
+  "label: 'Prepare'",
+  "to: '/admin/scheduler?view=readiness'",
+  '<AdminSessionReadiness embedded />',
 ]
 
 const backendTokens = [
@@ -82,8 +84,10 @@ for (const token of pageTokens) {
   if (!pageSource.includes(token)) failures.push(`AdminSessionReadiness is missing safeguard: ${token}`)
 }
 
-for (const token of navigationTokens) {
-  if (!frameSource.includes(token)) failures.push(`AdminFrame is missing readiness navigation token: ${token}`)
+for (const token of hubTokens) {
+  if (!hubSource.includes(token)) {
+    failures.push('Sessions Hub is missing readiness token: ' + token)
+  }
 }
 
 for (const token of backendTokens) {

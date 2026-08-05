@@ -48,6 +48,7 @@ export const workspacePrimaryItems = {
       description: 'Requests, bookings, and availability',
       module: 'sessions',
       icon: 'sessions',
+      match: ['/admin/scheduler', '/admin/readiness', '/admin/follow-through', '/admin/session-changes'],
     },
     {
       id: 'inbox',
@@ -231,21 +232,6 @@ export const studioGroups = [
         to: '/admin/attention',
         label: 'Attention Queue',
         module: 'clients',
-      },
-      {
-        to: '/admin/readiness',
-        label: 'Session Readiness',
-        module: 'sessions',
-      },
-      {
-        to: '/admin/follow-through',
-        label: 'Session Follow-Through',
-        module: 'sessions',
-      },
-      {
-        to: '/admin/session-changes',
-        label: 'Session Changes',
-        module: 'sessions',
       },
       {
         to: '/admin/activity',
