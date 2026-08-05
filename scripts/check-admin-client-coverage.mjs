@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs'
 const appSource = readFileSync('src/App.jsx', 'utf8')
 const frameSource = readFileSync('src/components/admin/AdminFrame.jsx', 'utf8')
   + readFileSync('src/components/admin/adminNavigation.js', 'utf8')
+const hubSource = readFileSync('src/pages/admin/AdminClientsHub.jsx', 'utf8')
 const pageSource = readFileSync('src/pages/admin/AdminClientCoverage.jsx', 'utf8')
 const preloadSource = readFileSync('src/components/admin/adminRoutePreloaders.js', 'utf8')
 const apiSource = readFileSync('src/lib/nativeApi.js', 'utf8')
@@ -37,10 +38,11 @@ const pageTokens = [
   'navigate(assignmentUrl(selectedClient))',
 ]
 
-const navigationTokens = [
-  "to: '/admin/coverage'",
-  "label: 'Coverage & Handoffs'",
-  "module: 'clients'",
+const hubTokens = [
+  "id: 'coverage'",
+  "label: 'Coverage'",
+  "to: '/admin/clients?view=coverage'",
+  '<AdminClientCoverage embedded />',
 ]
 
 const backendTokens = [
@@ -82,8 +84,8 @@ for (const token of pageTokens) {
   if (!pageSource.includes(token)) failures.push(`AdminClientCoverage is missing safeguard: ${token}`)
 }
 
-for (const token of navigationTokens) {
-  if (!frameSource.includes(token)) failures.push(`AdminFrame is missing coverage navigation token: ${token}`)
+for (const token of hubTokens) {
+  if (!hubSource.includes(token)) failures.push(`Clients Hub is missing coverage token: ${token}`)
 }
 
 for (const token of backendTokens) {

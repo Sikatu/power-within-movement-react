@@ -47,7 +47,7 @@ const expectedDailyPaths = [
 ]
 
 if (JSON.stringify(studioPrimaryPaths) !== JSON.stringify(expectedDailyPaths)) {
-  failures.push('The Studio daily navigation is not limited to Overview, Clients, Sessions, and Inbox')
+  failures.push('The Studio daily navigation is not limited to Today, Clients, Sessions, and Messages')
 }
 
 const founderPaths = workspacePrimaryItems.founder.map((item) => item.to)

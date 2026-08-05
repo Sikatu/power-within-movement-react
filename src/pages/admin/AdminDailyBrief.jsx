@@ -36,8 +36,26 @@ function roleLabel(role) {
 }
 
 function firstName(user) {
-  const candidate = user?.displayName || user?.name || user?.email || ''
-  return candidate.split(/[\s@]/).filter(Boolean)[0] || 'there'
+  const explicitName = String(
+    user?.displayName || user?.name || '',
+  ).trim()
+
+  if (explicitName) {
+    return explicitName.split(/\s+/).filter(Boolean)[0]
+  }
+
+  const emailLocalPart = String(user?.email || '')
+    .split('@')[0]
+    .trim()
+
+  const emailFirstName = emailLocalPart
+    .split(/[._+-]+/)
+    .filter(Boolean)[0]
+
+  if (!emailFirstName) return 'there'
+
+  return emailFirstName.charAt(0).toUpperCase()
+    + emailFirstName.slice(1)
 }
 
 function formatDay(value) {
@@ -229,9 +247,9 @@ export default function AdminDailyBrief({ embedded = false }) {
     setBriefClock(Date.now())
 
     if (failures.length === 3) {
-      setError('Today’s Studio brief could not be loaded. Please refresh and try again.')
+      setError('Today could not be loaded. Please refresh and try again.')
     } else if (failures.length) {
-      setNotice(`The brief loaded with limited ${failures.join(', ')} information.`)
+      setNotice(`Today loaded with limited ${failures.join(', ')} information.`)
     }
 
     setLoading(false)
@@ -322,16 +340,16 @@ export default function AdminDailyBrief({ embedded = false }) {
       <div className={`pwc-brief15-page${embedded ? ' is-embedded' : ''}`}>
         <header className="pwc-brief15-hero">
           <div className="pwc-brief15-hero-copy">
-            <p className="admin-eyebrow">Today in The Studio</p>
+            <p className="admin-eyebrow">Today</p>
             <h1>Good day, {firstName(adminUser)}.</h1>
             <p className="pwc-brief15-date">{formatDay(briefClock)}</p>
             <p>
-              Begin with the clearest next steps across client care, sessions,
-              and recent Studio activity—without opening every workspace.
+              See what needs attention, what is happening next, and where
+              to continue—without opening every Studio tool.
             </p>
             <div className="pwc-brief15-hero-actions">
               <button type="button" onClick={() => navigate('/admin/attention')}>
-                Open attention queue
+                Review priorities
               </button>
               <button
                 className="is-secondary"
@@ -339,7 +357,7 @@ export default function AdminDailyBrief({ embedded = false }) {
                 disabled={refreshing}
                 onClick={() => loadBrief({ quiet: true })}
               >
-                {refreshing ? 'Refreshing…' : 'Refresh brief'}
+                {refreshing ? 'Refreshing…' : 'Refresh Today'}
               </button>
             </div>
           </div>
@@ -391,7 +409,7 @@ export default function AdminDailyBrief({ embedded = false }) {
         </section>
 
         {loading ? (
-          <div className="pwc-brief15-loading" aria-label="Loading today’s Studio brief">
+          <div className="pwc-brief15-loading" aria-label="Loading Today">
             <span />
             <span />
             <span />
@@ -402,9 +420,9 @@ export default function AdminDailyBrief({ embedded = false }) {
               <div className="pwc-brief15-panel-heading">
                 <div>
                   <p className="admin-eyebrow">Priority focus</p>
-                  <h2 id="brief-focus-title">The next five meaningful actions</h2>
+                  <h2 id="brief-focus-title">Your next five actions</h2>
                 </div>
-                <button type="button" onClick={() => navigate('/admin/attention')}>View all</button>
+                <button type="button" onClick={() => navigate('/admin/attention')}>View priorities</button>
               </div>
 
               {focusTasks.length ? (
@@ -475,6 +493,35 @@ export default function AdminDailyBrief({ embedded = false }) {
                 </div>
               )}
             </section>
+            <section className="pwc-brief15-panel pwc-brief15-start" aria-labelledby="brief-start-title">
+              <div className="pwc-brief15-panel-heading">
+                <div>
+                  <p className="admin-eyebrow">Start here</p>
+                  <h2 id="brief-start-title">Move directly into the work</h2>
+                </div>
+              </div>
+              <div className="pwc-brief15-shortcuts">
+                <button type="button" onClick={() => navigate('/admin/clients')}>
+                  <span>C</span><strong>Clients</strong><small>Open client care records</small>
+                </button>
+                <button type="button" onClick={() => navigate('/admin/inbox')}>
+                  <span>M</span><strong>Messages</strong><small>Continue client conversations</small>
+                </button>
+                <button type="button" onClick={() => navigate('/admin/scheduler')}>
+                  <span>S</span><strong>Sessions</strong><small>Review requests and calendar</small>
+                </button>
+                <button type="button" onClick={() => navigate('/admin/readiness')}>
+                  <span>R</span><strong>Prepare Sessions</strong><small>Review upcoming session readiness</small>
+                </button>
+                <button type="button" onClick={() => navigate('/admin/follow-through')}>
+                  <span>F</span><strong>Follow-Through</strong><small>Complete recent session care</small>
+                </button>
+                <button type="button" onClick={() => navigate('/admin/leads')}>
+                  <span>L</span><strong>Leads & Intake</strong><small>Move inquiries forward</small>
+                </button>
+              </div>
+            </section>
+
 
             <section className="pwc-brief15-panel pwc-brief15-activity" aria-labelledby="brief-activity-title">
               <div className="pwc-brief15-panel-heading">
@@ -482,7 +529,7 @@ export default function AdminDailyBrief({ embedded = false }) {
                   <p className="admin-eyebrow">Recent movement</p>
                   <h2 id="brief-activity-title">Unread Studio activity</h2>
                 </div>
-                <button type="button" onClick={() => navigate('/admin/activity')}>Activity center</button>
+                <button type="button" onClick={() => navigate('/admin/activity')}>History</button>
               </div>
 
               {priorityActivity.length ? (
@@ -507,29 +554,6 @@ export default function AdminDailyBrief({ embedded = false }) {
                   <p>No unread Studio activity is waiting.</p>
                 </div>
               )}
-            </section>
-
-            <section className="pwc-brief15-panel pwc-brief15-start" aria-labelledby="brief-start-title">
-              <div className="pwc-brief15-panel-heading">
-                <div>
-                  <p className="admin-eyebrow">Start here</p>
-                  <h2 id="brief-start-title">Move directly into the work</h2>
-                </div>
-              </div>
-              <div className="pwc-brief15-shortcuts">
-                <button type="button" onClick={() => navigate('/admin/clients')}>
-                  <span>C</span><strong>Client Circle</strong><small>Open client care records</small>
-                </button>
-                <button type="button" onClick={() => navigate('/admin/inbox')}>
-                  <span>M</span><strong>Secure Inbox</strong><small>Continue conversations</small>
-                </button>
-                <button type="button" onClick={() => navigate('/admin/scheduler')}>
-                  <span>S</span><strong>Sessions</strong><small>Review the calendar</small>
-                </button>
-                <button type="button" onClick={() => navigate('/admin/leads')}>
-                  <span>L</span><strong>Leads & Intake</strong><small>Move inquiries forward</small>
-                </button>
-              </div>
             </section>
           </div>
         )}

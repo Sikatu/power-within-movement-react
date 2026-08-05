@@ -34,7 +34,7 @@ function clientName(request) {
   )
 }
 
-export default function AdminSessionChangeRequests() {
+export default function AdminSessionChangeRequests({ embedded = false }) {
   const confirmAction = useAdminConfirm()
   const [requests, setRequests] = useState([])
   const [activeView, setActiveView] = useState('pending')
@@ -121,8 +121,7 @@ export default function AdminSessionChangeRequests() {
     }
   }
 
-  return (
-    <AdminFrame>
+  const content = (
       <div className="session-change-admin">
         <header className="session-change-admin__header">
           <div>
@@ -133,7 +132,9 @@ export default function AdminSessionChangeRequests() {
             </p>
           </div>
           <div className="session-change-admin__header-actions">
-            <Link className="btn secondary" to="/admin/scheduler">Open Sessions</Link>
+            {!embedded && (
+              <Link className="btn secondary" to="/admin/scheduler">Open Sessions</Link>
+            )}
             <button className="btn secondary" type="button" onClick={loadRequests} disabled={status.loading}>
               {status.loading ? 'Refreshing…' : 'Refresh'}
             </button>
@@ -263,6 +264,9 @@ export default function AdminSessionChangeRequests() {
         )}
         </section>
       </div>
-    </AdminFrame>
   )
+
+  return embedded
+    ? content
+    : <AdminFrame>{content}</AdminFrame>
 }

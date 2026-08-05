@@ -428,7 +428,7 @@ function AdminClientCoverage({ embedded = false }) {
                   </section>
 
                   <section className="pwc-momentum18-actions">
-                    <button type="button" onClick={() => navigate(`/admin/client-360/${selectedClient.id}`)}>Open client context</button>
+                    <button type="button" onClick={() => navigate(`/admin/clients/${selectedClient.id}/context`)}>Open client context</button>
                     <button type="button" onClick={() => navigate(`/admin/attention?${clientParams(selectedClient)}`)}>Open Attention Queue</button>
                     <button type="button" onClick={() => navigate('/admin/capacity')}>Open Studio Capacity</button>
                     <button type="button" onClick={() => navigate(`/admin/scheduler?${clientParams(selectedClient)}`)}>Open Sessions</button>

@@ -177,7 +177,7 @@ function AdminClientMomentum({ embedded = false }) {
   }
 
   function openClient(clientId) {
-    navigate(`/admin/client-360/${clientId}`)
+    navigate(`/admin/clients/${clientId}/context`)
   }
 
   function clientParams(client) {

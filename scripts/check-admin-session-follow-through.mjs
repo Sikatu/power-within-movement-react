@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs'
 const appSource = readFileSync('src/App.jsx', 'utf8')
 const frameSource = readFileSync('src/components/admin/AdminFrame.jsx', 'utf8')
   + readFileSync('src/components/admin/adminNavigation.js', 'utf8')
+const hubSource = readFileSync('src/pages/admin/AdminSessionsHub.jsx', 'utf8')
 const pageSource = readFileSync('src/pages/admin/AdminSessionFollowThrough.jsx', 'utf8')
 const preloadSource = readFileSync('src/components/admin/adminRoutePreloaders.js', 'utf8')
 const apiSource = readFileSync('src/lib/nativeApi.js', 'utf8')
@@ -37,10 +38,11 @@ const pageTokens = [
   'openClientResources(selectedSession)',
 ]
 
-const navigationTokens = [
-  "to: '/admin/follow-through'",
-  "label: 'Session Follow-Through'",
-  "module: 'sessions'",
+const hubTokens = [
+  "id: 'follow-through'",
+  "label: 'Follow-Through'",
+  "to: '/admin/scheduler?view=follow-through'",
+  '<AdminSessionFollowThrough embedded />',
 ]
 
 const backendTokens = [
@@ -82,8 +84,10 @@ for (const token of pageTokens) {
   if (!pageSource.includes(token)) failures.push(`AdminSessionFollowThrough is missing safeguard: ${token}`)
 }
 
-for (const token of navigationTokens) {
-  if (!frameSource.includes(token)) failures.push(`AdminFrame is missing follow-through navigation token: ${token}`)
+for (const token of hubTokens) {
+  if (!hubSource.includes(token)) {
+    failures.push('Sessions Hub is missing follow-through token: ' + token)
+  }
 }
 
 for (const token of backendTokens) {

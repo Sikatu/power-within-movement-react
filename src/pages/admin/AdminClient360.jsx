@@ -72,7 +72,16 @@ function planToForm(plan) {
   }
 }
 
-function AdminClient360() {
+function Client360Container({
+  embedded,
+  children,
+}) {
+  return embedded
+    ? children
+    : <AdminFrame>{children}</AdminFrame>
+}
+
+function AdminClient360({ embedded = false }) {
   const { clientId } = useParams()
   const confirmAction = useAdminConfirm()
   const [snapshot, setSnapshot] = useState(null)
@@ -230,22 +239,22 @@ function AdminClient360() {
 
   if (isLoading) {
     return (
-      <AdminFrame>
+      <Client360Container embedded={embedded}>
         <div className="client-360-loading">Loading the complete client workspace…</div>
-      </AdminFrame>
+      </Client360Container>
     )
   }
 
   if (!snapshot) {
     return (
-      <AdminFrame>
+      <Client360Container embedded={embedded}>
         <div className="client-360-error-state">
           <p className="admin-eyebrow">Client 360</p>
           <h1>Client workspace unavailable</h1>
           <p>{error || 'The selected client profile could not be found.'}</p>
           <Link className="btn primary" to="/admin/clients">Return to Clients</Link>
         </div>
-      </AdminFrame>
+      </Client360Container>
     )
   }
 
@@ -256,7 +265,7 @@ function AdminClient360() {
     .sort((a, b) => new Date(a.starts_at) - new Date(b.starts_at))[0]
 
   return (
-    <AdminFrame>
+    <Client360Container embedded={embedded}>
       <div className="client-360-page">
         <header className="client-360-hero">
           <div>
@@ -758,7 +767,7 @@ function AdminClient360() {
           </aside>
         </div>
       </div>
-    </AdminFrame>
+    </Client360Container>
   )
 }
 

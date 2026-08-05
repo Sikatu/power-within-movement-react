@@ -433,7 +433,7 @@ function serviceRecordToForm(record) {
   }
 }
 
-export default function AdminClients() {
+export default function AdminClients({ embedded = false }) {
   const navigate = useNavigate()
   const { clientId, section } = useParams()
   const confirmAction = useAdminConfirm()
@@ -642,7 +642,7 @@ export default function AdminClients() {
       } catch (loadError) {
         if (!isMounted) return
 
-        setError(loadError.message || 'Unable to load Client Circle records.')
+        setError(loadError.message || 'Unable to load client records.')
       } finally {
         if (isMounted) {
           setIsLoading(false)
@@ -1557,17 +1557,15 @@ export default function AdminClients() {
     .filter(Boolean)
     .join(' ')
 
-  return (
-    <AdminFrame>
+  const content = (
       <div className={clientCirclePageClassName}>
         <header className="client-circle-hero-v2">
           <div>
-            <p className="admin-eyebrow">Client Circle</p>
-            <h1>Client Circle</h1>
+            <p className="admin-eyebrow">Clients</p>
+            <h1>Clients</h1>
             <p>
-              Care for private client records, notes, and access with clarity.
-              This is the foundation for portal access, service history, notes,
-              tags, and future course assignments.
+              Find a client, review care history, manage portal access, and
+              continue the next meaningful action.
             </p>
           </div>
 
@@ -3085,30 +3083,7 @@ export default function AdminClients() {
           ) : null}
         </section>
       </div>
-    </AdminFrame>
   )
+
+  return embedded ? content : <AdminFrame>{content}</AdminFrame>
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

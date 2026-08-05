@@ -27,8 +27,8 @@ export const workspacePrimaryItems = {
     {
       id: 'overview',
       to: '/admin/dashboard',
-      label: 'Overview',
-      description: 'Daily priorities and Studio health',
+      label: 'Today',
+      description: 'Priorities, sessions, and next actions',
       module: 'dashboard',
       icon: 'overview',
     },
@@ -39,7 +39,7 @@ export const workspacePrimaryItems = {
       description: 'Client records, care, and access',
       module: 'clients',
       icon: 'clients',
-      match: ['/admin/clients', '/admin/client-360'],
+      match: ['/admin/clients', '/admin/client-360', '/admin/momentum', '/admin/coverage'],
     },
     {
       id: 'sessions',
@@ -48,14 +48,17 @@ export const workspacePrimaryItems = {
       description: 'Requests, bookings, and availability',
       module: 'sessions',
       icon: 'sessions',
+      match: ['/admin/scheduler', '/admin/readiness', '/admin/follow-through', '/admin/session-changes'],
     },
     {
       id: 'inbox',
       to: '/admin/inbox',
-      label: 'Inbox',
+      label: 'Messages',
       description: 'Client conversations and follow-up',
       module: 'inbox',
+      modules: ['inbox', 'encouragements', 'communications'],
       icon: 'inbox',
+      match: ['/admin/inbox', '/admin/encouragements', '/admin/email-studio', '/admin/letters', '/admin/audience'],
     },
   ],
   founder: [
@@ -142,58 +145,110 @@ export const studioGroups = [
     label: 'Growth',
     description: 'Leads, onboarding, and nurture',
     items: [
-      { to: '/admin/leads', label: 'Leads & Intake', module: 'clients' },
-      { to: '/admin/onboarding', label: 'Booking & Onboarding', module: 'clients' },
-      { to: '/admin/automations', label: 'Automations', module: 'communications' },
+      {
+        to: '/admin/leads',
+        label: 'Leads & Intake',
+        module: 'clients',
+      },
+      {
+        to: '/admin/onboarding',
+        label: 'Booking & Onboarding',
+        module: 'clients',
+      },
+      {
+        to: '/admin/automations',
+        label: 'Automations',
+        module: 'communications',
+      },
     ],
   },
   {
-    id: 'client-experience',
-    label: 'Client Experience',
-    description: 'Programs, assets, and community',
+    id: 'programs',
+    label: 'Programs & Community',
+    description: 'Learning, resources, memberships, and community',
     items: [
-      { to: '/admin/encouragements', label: 'Client Messages', module: 'encouragements' },
-      { to: '/admin/studio-profile', label: 'Studio Profile', roles: ['developer', 'owner', 'admin'] },
-      { to: '/admin/courses', label: 'Learning Library', module: 'learning' },
-      { to: '/admin/assets', label: 'Asset Vault' },
-      { to: '/admin/memberships', label: 'Membership Circle', module: 'memberships' },
-      { to: '/admin/circle', label: 'The Circle', module: 'circle' },
-    ],
-  },
-  {
-    id: 'communication',
-    label: 'Communication',
-    description: 'Letters and session updates',
-    items: [
-      { to: '/admin/letters', label: 'Letters & Broadcasts', module: 'communications' },
-      { to: '/admin/audience', label: 'Newsletter Audience', module: 'communications' },
-      { to: '/admin/session-changes', label: 'Session Changes', module: 'sessions' },
+      {
+        to: '/admin/courses',
+        label: 'Learning Library',
+        module: 'learning',
+      },
+      {
+        to: '/admin/assets',
+        label: 'Asset Vault',
+      },
+      {
+        to: '/admin/memberships',
+        label: 'Memberships',
+        module: 'memberships',
+      },
+      {
+        to: '/admin/circle',
+        label: 'The Circle',
+        module: 'circle',
+      },
     ],
   },
   {
     id: 'operations',
     label: 'Operations',
-    description: 'Focus, accountability, and care quality',
+    description: 'Planning, care continuity, and accountable history',
     items: [
-      { to: '/admin/operations', label: 'Operations Center', module: 'dashboard' },
-      { to: '/admin/brief', label: 'Today in The Studio', module: 'dashboard', hiddenInSidebar: true },
-      { to: '/admin/week', label: 'Studio Week Planner', module: 'dashboard', hiddenInSidebar: true },
-      { to: '/admin/capacity', label: 'Studio Capacity', module: 'dashboard', hiddenInSidebar: true },
-      { to: '/admin/momentum', label: 'Client Momentum', module: 'clients', hiddenInSidebar: true },
-      { to: '/admin/coverage', label: 'Coverage & Handoffs', module: 'clients', hiddenInSidebar: true },
-      { to: '/admin/readiness', label: 'Session Readiness', module: 'sessions', hiddenInSidebar: true },
-      { to: '/admin/follow-through', label: 'Session Follow-Through', module: 'sessions', hiddenInSidebar: true },
-      { to: '/admin/attention', label: 'Attention Queue', module: 'clients', hiddenInSidebar: true },
-      { to: '/admin/activity', label: 'Studio Activity', module: 'dashboard', hiddenInSidebar: true },
-      { to: '/admin/audit-log', label: 'Activity Journal', module: 'audit', hiddenInSidebar: true },
+      {
+        to: '/admin/operations',
+        label: 'Operations Center',
+        module: 'dashboard',
+      },
+      {
+        to: '/admin/week',
+        label: 'Week Planner',
+        module: 'dashboard',
+      },
+      {
+        to: '/admin/capacity',
+        label: 'Studio Capacity',
+        module: 'dashboard',
+      },
+      {
+        to: '/admin/attention',
+        label: 'Attention Queue',
+        module: 'clients',
+      },
+      {
+        to: '/admin/activity',
+        label: 'History',
+        module: 'dashboard',
+      },
+      {
+        to: '/admin/audit-log',
+        label: 'Activity Journal',
+        module: 'audit',
+        hiddenInSidebar: true,
+      },
+    ],
+  },
+  {
+    id: 'settings',
+    label: 'Settings',
+    description: 'Studio identity and private configuration',
+    items: [
+      {
+        to: '/admin/studio-profile',
+        label: 'Studio Profile',
+        roles: ['developer', 'owner', 'admin'],
+      },
     ],
   },
 ]
 
 export function workspaceForPath(pathname) {
-  if (pathname === '/admin/team' || pathname.startsWith('/admin/developer')) {
+  if (
+    pathname === '/admin/team'
+    || pathname.startsWith('/admin/developer')
+  ) {
     return 'developer'
   }
+
   if (pathname.startsWith('/admin/founders')) return 'founder'
+
   return 'studio'
 }

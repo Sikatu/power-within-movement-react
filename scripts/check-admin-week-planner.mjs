@@ -34,7 +34,7 @@ const plannerTokens = [
 
 const navigationTokens = [
   "to: '/admin/week'",
-  "label: 'Studio Week Planner'",
+  "label: 'Week Planner'",
   "module: 'dashboard'",
 ]
 

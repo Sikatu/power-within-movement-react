@@ -260,7 +260,7 @@ function SectionHeading({ eyebrow, title, description, action }) {
   )
 }
 
-function AdminScheduler() {
+function AdminScheduler({ embedded = false }) {
   const confirmAction = useAdminConfirm()
   const [searchParams, setSearchParams] = useSearchParams()
   const requestedBookingId = searchParams.get('booking') || ''
@@ -760,8 +760,7 @@ function AdminScheduler() {
     selectedBooking?.client_profile_id || welcomedBookingIds.includes(selectedBooking?.id),
   )
 
-  return (
-    <AdminFrame>
+  const content = (
       <main className="pwc-scheduler-page">
         <header className="pwc-scheduler-hero">
           <div className="pwc-scheduler-hero-copy">
@@ -1458,8 +1457,11 @@ function AdminScheduler() {
         </section>
         )}
       </main>
-    </AdminFrame>
   )
+
+  return embedded
+    ? content
+    : <AdminFrame>{content}</AdminFrame>
 }
 
 export default AdminScheduler

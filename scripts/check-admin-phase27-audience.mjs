@@ -11,7 +11,8 @@ const sources = {
   api: read('src/lib/nativeApi.js'),
   app: read('src/App.jsx'),
   nav: read('src/components/admin/AdminFrame.jsx')
-    + read('src/components/admin/adminNavigation.js'),
+    + read('src/components/admin/adminNavigation.js')
+    + read('src/components/admin/AdminMessagesSwitcher.jsx'),
   tests: read('server/tests/newsletter-audience.test.cjs'),
   package: read('package.json'),
 }
@@ -66,7 +67,7 @@ const requirements = {
   home: ['subscribePublicNewsletter', 'newsletter-consent'],
   api: ['/api/admin/audience', '/api/public/newsletter/subscribe'],
   app: ['/admin/audience', 'AdminAudience'],
-  nav: ['/admin/audience', 'Newsletter Audience'],
+  nav: ["to: '/admin/audience'", "label: 'Audience'"],
   tests: ['case-insensitive duplicate recipients', 'delivery eligibility requires'],
   package: ['check-admin-phase27-audience.mjs', 'admin:qa:phase27'],
 }

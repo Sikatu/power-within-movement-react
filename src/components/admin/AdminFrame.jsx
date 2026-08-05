@@ -254,6 +254,11 @@ function AdminFrame({ children }) {
       if (item.roles && !item.roles.includes(role)) return false
       if (item.developerOnly) return isDeveloper
       if (!isStaff) return true
+      if (item.modules?.length) {
+        return item.modules.some((module) => (
+          (teamAccess?.permissions?.[module] || 'none') !== 'none'
+        ))
+      }
       if (!item.module) return false
 
       return (teamAccess?.permissions?.[item.module] || 'none') !== 'none'
@@ -528,13 +533,6 @@ function AdminFrame({ children }) {
     }))),
   ], [accessibleGroups, allAccessiblePrimaryItems, accessibleWorkspaces])
 
-  const pinnedItems = useMemo(() => {
-    const uniqueItems = new Map(commandItems.map((item) => [item.to, item]))
-
-    return pinnedPaths
-      .map((path) => uniqueItems.get(path))
-      .filter(Boolean)
-  }, [commandItems, pinnedPaths])
 
   const currentNavigationItem = useMemo(
     () => searchableItems.find((item) => routeMatches(location.pathname, item)),
@@ -562,8 +560,17 @@ function AdminFrame({ children }) {
     || currentStudioTool?.groupDescription
     || activeWorkspace.description
 
-  const currentTeamAccessLevel = isStaff && currentNavigationItem?.module
-    ? teamAccess?.permissions?.[currentNavigationItem.module] || 'none'
+  const currentTeamAccessLevel = isStaff && currentNavigationItem
+    ? (
+      currentNavigationItem.modules
+        ?.map((module) => (
+          teamAccess?.permissions?.[module] || 'none'
+        ))
+        .find((level) => level !== 'none')
+      || (currentNavigationItem.module
+        ? teamAccess?.permissions?.[currentNavigationItem.module] || 'none'
+        : null)
+    )
     : null
 
   function handleTogglePinned(pathname) {
@@ -745,7 +752,7 @@ function AdminFrame({ children }) {
           ) : (
             <>
               <div className="pwc-stream31-nav-heading">
-                {activeWorkspace.id === 'studio' ? 'Daily work' : 'Workspace tools'}
+                {activeWorkspace.id === 'studio' ? 'Main' : 'Workspace tools'}
               </div>
 
               <section className="pwc-nav33-primary" aria-label={`${activeWorkspace.label} primary destinations`}>
@@ -764,57 +771,8 @@ function AdminFrame({ children }) {
                 ))}
               </section>
 
-              {pinnedItems.length > 0 && (
-                <section className="pwc-nav33-pinned" aria-label="Pinned destinations">
-                  <div className="pwc-nav33-pinned-heading">
-                    <span>✦</span>
-                    <strong>Pinned</strong>
-                    <small>{pinnedItems.length}</small>
-                  </div>
-                  <div className="pwc-nav33-pinned-links">
-                    {pinnedItems.map((item) => (
-                      <div className="pwc-nav33-pinned-row" key={`pinned-${item.to}`}>
-                        <NavLink
-                          className={routeMatches(location.pathname, item) ? 'is-active' : undefined}
-                          to={item.to}
-                          aria-current={routeMatches(location.pathname, item) ? 'page' : undefined}
-                          {...preloadInteractionProps(item.to)}
-                          onClick={prepareForNavigation}
-                        >
-                          <span>{item.label}</span>
-                        </NavLink>
-                        <button
-                          type="button"
-                          aria-label={`Unpin ${item.label}`}
-                          title={`Unpin ${item.label}`}
-                          onClick={() => handleTogglePinned(item.to)}
-                        >
-                          ×
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                </section>
-              )}
-
               {activeWorkspace.id === 'studio' && (
                 <>
-                  {currentStudioTool && !allToolsOpen && (
-                    <section className="pwc-stream31-current" aria-label="Current Studio tool">
-                      <span>Current tool</span>
-                      <NavLink
-                        className="is-active"
-                        to={currentStudioTool.to}
-                        aria-current="page"
-                        {...preloadInteractionProps(currentStudioTool.to)}
-                        onClick={prepareForNavigation}
-                      >
-                        <strong>{currentStudioTool.label}</strong>
-                        <small>{currentStudioTool.groupLabel}</small>
-                      </NavLink>
-                    </section>
-                  )}
-
                   <div className="pwc-nav33-divider" />
 
                   <button
@@ -825,8 +783,8 @@ function AdminFrame({ children }) {
                     onClick={() => setAllToolsOpen((current) => !current)}
                   >
                     <span>
-                      <strong>{allToolsOpen ? 'Hide all tools' : 'Browse all tools'}</strong>
-                      <small>{accessibleGroups.reduce((total, group) => total + group.items.length, 0)} tools available</small>
+                      <strong>{allToolsOpen ? 'Hide More' : 'More'}</strong>
+                      <small>{accessibleGroups.reduce((total, group) => total + group.items.length, 0)} specialized tools available</small>
                     </span>
                     <svg viewBox="0 0 24 24" aria-hidden="true">
                       <path d="m9 6 6 6-6 6" />

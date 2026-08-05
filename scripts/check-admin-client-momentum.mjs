@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs'
 const appSource = readFileSync('src/App.jsx', 'utf8')
 const frameSource = readFileSync('src/components/admin/AdminFrame.jsx', 'utf8')
   + readFileSync('src/components/admin/adminNavigation.js', 'utf8')
+const hubSource = readFileSync('src/pages/admin/AdminClientsHub.jsx', 'utf8')
 const pageSource = readFileSync('src/pages/admin/AdminClientMomentum.jsx', 'utf8')
 const preloadSource = readFileSync('src/components/admin/adminRoutePreloaders.js', 'utf8')
 const apiSource = readFileSync('src/lib/nativeApi.js', 'utf8')
@@ -37,10 +38,11 @@ const pageTokens = [
   'assignedMembers',
 ]
 
-const navigationTokens = [
-  "to: '/admin/momentum'",
-  "label: 'Client Momentum'",
-  "module: 'clients'",
+const hubTokens = [
+  "id: 'momentum'",
+  "label: 'Momentum'",
+  "to: '/admin/clients?view=momentum'",
+  '<AdminClientMomentum embedded />',
 ]
 
 const backendTokens = [
@@ -82,8 +84,8 @@ for (const token of pageTokens) {
   if (!pageSource.includes(token)) failures.push(`AdminClientMomentum is missing safeguard: ${token}`)
 }
 
-for (const token of navigationTokens) {
-  if (!frameSource.includes(token)) failures.push(`AdminFrame is missing momentum navigation token: ${token}`)
+for (const token of hubTokens) {
+  if (!hubSource.includes(token)) failures.push(`Clients Hub is missing momentum token: ${token}`)
 }
 
 for (const token of backendTokens) {
