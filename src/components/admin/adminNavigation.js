@@ -39,7 +39,7 @@ export const workspacePrimaryItems = {
       description: 'Client records, care, and access',
       module: 'clients',
       icon: 'clients',
-      match: ['/admin/clients', '/admin/client-360'],
+      match: ['/admin/clients', '/admin/client-360', '/admin/momentum', '/admin/coverage'],
     },
     {
       id: 'sessions',
@@ -233,11 +233,6 @@ export const studioGroups = [
         module: 'clients',
       },
       {
-        to: '/admin/coverage',
-        label: 'Coverage & Handoffs',
-        module: 'clients',
-      },
-      {
         to: '/admin/readiness',
         label: 'Session Readiness',
         module: 'sessions',
@@ -256,12 +251,6 @@ export const studioGroups = [
         to: '/admin/activity',
         label: 'History',
         module: 'dashboard',
-      },
-      {
-        to: '/admin/momentum',
-        label: 'Client Momentum',
-        module: 'clients',
-        hiddenInSidebar: true,
       },
       {
         to: '/admin/audit-log',

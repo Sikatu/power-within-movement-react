@@ -91,12 +91,10 @@ const expectedToolPaths = [
   '/admin/week',
   '/admin/capacity',
   '/admin/attention',
-  '/admin/coverage',
   '/admin/readiness',
   '/admin/follow-through',
   '/admin/session-changes',
   '/admin/activity',
-  '/admin/momentum',
   '/admin/audit-log',
   '/admin/studio-profile',
 ]

@@ -106,8 +106,6 @@ const expectedNavigation = [
   '/admin/session-changes',
   '/admin/week',
   '/admin/capacity',
-  '/admin/momentum',
-  '/admin/coverage',
   '/admin/readiness',
   '/admin/follow-through',
   '/admin/activity',
