@@ -246,8 +246,8 @@ const routeMetadata = {
     description: 'Private access to The Studio, Founder’s View, and Developer Operations.',
   },
   '/admin/dashboard': {
-    title: 'The Studio | Power Within Collective',
-    description: 'Private studio operations for client care, sessions, and communications.',
+    title: 'Today | The Studio',
+    description: 'A clear daily workspace for priorities, client care, sessions, and next actions.',
   },
   '/admin/change-password': {
     title: 'Secure Account Setup | Power Within Collective',
@@ -274,8 +274,8 @@ const routeMetadata = {
     description: 'Review client cancellation and rescheduling requests.',
   },
   '/admin/inbox': {
-    title: 'Secure Inbox | The Studio',
-    description: 'Manage private Power Within Collective client conversations.',
+    title: 'Messages | The Studio',
+    description: 'Manage private client conversations, replies, and internal care notes.',
   },
   '/admin/email-studio': {
     title: 'Mail Studio | The Studio',

@@ -1,23 +1,41 @@
 import { readFileSync } from 'node:fs'
 
-const frameSource = readFileSync('src/components/admin/AdminFrame.jsx', 'utf8')
-const paletteSource = readFileSync('src/components/admin/AdminCommandPalette.jsx', 'utf8')
-const pinnedSource = readFileSync('src/components/admin/adminPinnedDestinations.js', 'utf8')
-const stylesheet = readFileSync('src/pages/admin/AdminFreshUI.css', 'utf8')
-const packageSource = readFileSync('package.json', 'utf8')
+const frameSource = readFileSync(
+  'src/components/admin/AdminFrame.jsx',
+  'utf8',
+)
 
+const paletteSource = readFileSync(
+  'src/components/admin/AdminCommandPalette.jsx',
+  'utf8',
+)
+
+const pinnedSource = readFileSync(
+  'src/components/admin/adminPinnedDestinations.js',
+  'utf8',
+)
+
+const stylesheet = readFileSync(
+  'src/pages/admin/AdminFreshUI.css',
+  'utf8',
+)
+
+const packageSource = readFileSync('package.json', 'utf8')
 const failures = []
 
 const frameTokens = [
   'PINNED_STORAGE_KEY,',
   'const [pinnedPaths, setPinnedPaths] = useState(readPinnedDestinations)',
-  'const pinnedItems = useMemo',
   'setPinnedPaths(togglePinnedDestination(pathname))',
-  'window.addEventListener(\'storage\', syncPinnedDestinations)',
-  'className="pwc-nav33-pinned"',
-  'className="pwc-nav33-pinned-row"',
+  "window.addEventListener('storage', syncPinnedDestinations)",
   'pinnedPaths={pinnedPaths}',
   'onTogglePinned={handleTogglePinned}',
+]
+
+const retiredSidebarTokens = [
+  'const pinnedItems = useMemo',
+  'className="pwc-nav33-pinned"',
+  'className="pwc-nav33-pinned-row"',
 ]
 
 const paletteTokens = [
@@ -41,53 +59,82 @@ const storageTokens = [
 ]
 
 const stylesheetSelectors = [
-  '.pwc-nav33-pinned',
-  '.pwc-nav33-pinned-heading',
-  '.pwc-nav33-pinned-row',
-  '.pwc-nav33-pinned-links',
   '.pwc-command12-toggle',
   '.pwc-command11-option.is-pinned',
 ]
 
 for (const token of frameTokens) {
-  if (!frameSource.includes(token)) failures.push(`AdminFrame is missing pinned-workspace token: ${token}`)
+  if (!frameSource.includes(token)) {
+    failures.push(
+      `AdminFrame is missing command-palette pinning token: ${token}`,
+    )
+  }
+}
+
+for (const token of retiredSidebarTokens) {
+  if (frameSource.includes(token)) {
+    failures.push(
+      `Retired visible pinned sidebar UI is still present: ${token}`,
+    )
+  }
 }
 
 for (const token of paletteTokens) {
-  if (!paletteSource.includes(token)) failures.push(`AdminCommandPalette is missing pinning token: ${token}`)
+  if (!paletteSource.includes(token)) {
+    failures.push(
+      `AdminCommandPalette is missing pinning token: ${token}`,
+    )
+  }
 }
 
 for (const token of storageTokens) {
-  if (!pinnedSource.includes(token)) failures.push(`Pinned destination storage is missing token: ${token}`)
+  if (!pinnedSource.includes(token)) {
+    failures.push(
+      `Pinned destination storage is missing token: ${token}`,
+    )
+  }
 }
 
 for (const selector of stylesheetSelectors) {
-  if (!stylesheet.includes(selector)) failures.push(`AdminFreshUI.css is missing pinned-workspace selector: ${selector}`)
+  if (!stylesheet.includes(selector)) {
+    failures.push(
+      `AdminFreshUI.css is missing command-palette selector: ${selector}`,
+    )
+  }
 }
 
-if (/\b(?:window\.)?(?:alert|confirm|prompt)\s*\(/.test(`${frameSource}\n${paletteSource}`)) {
-  failures.push('Pinned workspace UI uses a native browser dialog')
+if (
+  /\b(?:window\.)?(?:alert|confirm|prompt)\s*\(/.test(
+    `${frameSource}\n${paletteSource}`,
+  )
+) {
+  failures.push(
+    'Pinned destination UI uses a native browser dialog',
+  )
 }
 
-const pinnedSection = frameSource.slice(
-  frameSource.indexOf('className="pwc-nav33-pinned"'),
-  frameSource.indexOf('<div className="pwc-nav33-divider" />', frameSource.indexOf('className="pwc-nav33-pinned"')),
-)
-
-if (/<NavLink\b(?:(?!<\/NavLink>).)*<button/s.test(pinnedSection)) {
-  failures.push('Pinned sidebar navigation nests a button inside a link')
-}
-
-if (!packageSource.includes('node scripts/check-admin-pinned-workspaces.mjs')) {
-  failures.push('package.json lint command does not run the pinned-workspace audit')
+if (
+  !packageSource.includes(
+    'node scripts/check-admin-pinned-workspaces.mjs',
+  )
+) {
+  failures.push(
+    'package.json lint command does not run the pinned-destination audit',
+  )
 }
 
 if (failures.length) {
-  console.error('\nAdmin pinned-workspace audit failed:\n')
-  for (const failure of failures) console.error(`- ${failure}`)
+  console.error(
+    '\nAdmin pinned-destination audit failed:\n',
+  )
+
+  for (const failure of failures) {
+    console.error(`- ${failure}`)
+  }
+
   process.exit(1)
 }
 
 console.log(
-  `Admin pinned-workspace audit passed (${frameTokens.length} frame safeguards, ${paletteTokens.length} command safeguards, ${storageTokens.length} storage safeguards, ${stylesheetSelectors.length} visual selectors).`,
+  `Admin pinned-destination audit passed (${frameTokens.length} frame safeguards, ${paletteTokens.length} command safeguards, ${storageTokens.length} storage safeguards, command-only pinning, and no visible pinned sidebar section).`,
 )

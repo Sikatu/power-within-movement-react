@@ -37,7 +37,7 @@ const activityTokens = [
 
 const navigationTokens = [
   "to: '/admin/activity'",
-  "label: 'Studio Activity'",
+  "label: 'History'",
   "module: 'dashboard'",
 ]
 

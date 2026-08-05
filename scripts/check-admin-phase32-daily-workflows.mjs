@@ -46,7 +46,7 @@ const inboxTokens = [
 ]
 
 for (const token of inboxTokens) {
-  if (!inboxSource.includes(token)) failures.push(`Inbox is missing: ${token}`)
+  if (!inboxSource.includes(token)) failures.push(`Messages is missing: ${token}`)
 }
 
 const dashboardTokens = [
@@ -57,11 +57,11 @@ const dashboardTokens = [
 ]
 
 for (const token of dashboardTokens) {
-  if (!dashboardSource.includes(token)) failures.push(`Overview is missing: ${token}`)
+  if (!dashboardSource.includes(token)) failures.push(`Today is missing: ${token}`)
 }
 
 if (dashboardSource.includes('<section className="studio-rooms-v3">')) {
-  failures.push('Overview still renders the redundant room directory')
+  failures.push('Today still renders the redundant room directory')
 }
 
 const stylesheetSelectors = [
@@ -88,5 +88,5 @@ if (failures.length) {
 }
 
 console.log(
-  'Admin Phase 32 daily workflow audit passed (3 focused session modes, compact Client and Inbox filters, actionable Overview metrics, and preserved workflow controls).',
+  'Admin Phase 32 daily workflow audit passed (3 focused session modes, compact Client and Messages filters, actionable Today metrics, and preserved workflow controls).',
 )

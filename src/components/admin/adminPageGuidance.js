@@ -10,9 +10,9 @@ const DEFAULT_GUIDE = {
 const PAGE_GUIDES = {
   '/admin/dashboard': {
     steps: [
-      'Start with Needs attention instead of opening every tool.',
+      'Start with Today instead of opening every tool.',
       'Choose the most important client, session, or message.',
-      'Return here after the task to confirm the queue has moved forward.',
+      'Return to Today after the task to confirm the queue has moved forward.',
     ],
     safety: 'The overview summarizes work; it does not change client records by itself.',
   },
@@ -34,7 +34,7 @@ const PAGE_GUIDES = {
   },
   '/admin/inbox': {
     steps: [
-      'Use the attention filters to find conversations waiting for a reply.',
+      'Open Messages and use the attention filters to find conversations waiting for a reply.',
       'Select one conversation and read its recent context.',
       'Send a client reply or leave a private team note, then move to the next item.',
     ],

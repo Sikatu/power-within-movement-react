@@ -14,8 +14,11 @@ const requiredTokens = [
   [appSource, 'path="/admin/operations"', 'Operations Center route'],
   [appSource, 'lazy(loadAdminOperationsCenter)', 'Operations Center lazy loading'],
   [preloadersSource, "path === '/admin/operations'", 'Operations Center route preloader'],
-  [navigationSource, "to: '/admin/operations', label: 'Operations Center'", 'single Operations sidebar entry'],
-  [navigationSource, "label: 'Attention Queue', module: 'clients', hiddenInSidebar: true", 'searchable hidden Operations tools'],
+  [navigationSource, "to: '/admin/operations'", 'Operations Center route in More'],
+  [navigationSource, "label: 'Operations Center'", 'Operations Center label'],
+  [navigationSource, "to: '/admin/attention'", 'Attention Queue route in More'],
+  [navigationSource, "label: 'Attention Queue'", 'Attention Queue label'],
+  [navigationSource, "module: 'clients'", 'client-care module boundary'],
   [frameSource, 'filter((item) => !item.hiddenInSidebar)', 'compact sidebar rendering'],
   [operationsSource, "label: 'Plan the work'", 'planning lane'],
   [operationsSource, "label: 'Protect client care'", 'client-care lane'],
@@ -66,7 +69,7 @@ for (const action of [
   'dismissAdminNotification(',
   'clearReadAdminNotifications(',
 ]) {
-  if (!activitySource.includes(action)) failures.push(`Studio Activity no longer preserves ${action}`)
+  if (!activitySource.includes(action)) failures.push(`History no longer preserves ${action}`)
 }
 
 if (!packageSource.includes('node scripts/check-admin-phase36-operations-workflows.mjs')) {
