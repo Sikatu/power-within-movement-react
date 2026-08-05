@@ -265,6 +265,7 @@ function AdminSessionReadiness({ embedded = false }) {
                   return (
                     <button
                       className={`pwc-capacity17-card pwc-momentum18-card is-${tone}${selected ? ' is-selected' : ''}`}
+                      style={{ borderRadius: '22px' }}
                       key={session.id}
                       type="button"
                       onClick={() => setSelectedId(session.id)}

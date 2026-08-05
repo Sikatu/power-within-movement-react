@@ -260,7 +260,7 @@ function AdminSessionFollowThrough({ embedded = false }) {
   }
 
   const content = (
-      <div className={`pwc-week16-page pwc-momentum18-page${embedded ? ' is-embedded' : ''}`}>
+      <div className={`pwc-week16-page pwc-momentum18-page pwc-followthrough-page${embedded ? ' is-embedded' : ''}`}>
         <header className="pwc-week16-hero pwc-momentum18-hero">
           <div>
             <p className="admin-eyebrow">Session Follow-Through</p>
@@ -380,7 +380,7 @@ function AdminSessionFollowThrough({ embedded = false }) {
 
                   return (
                     <button
-                      className={`pwc-capacity17-card pwc-momentum18-card is-${tone}${selected ? ' is-selected' : ''}`}
+                      className={`pwc-capacity17-card pwc-momentum18-card pwc-followthrough-card is-${tone}${selected ? ' is-selected' : ''}`}
                       key={session.id}
                       type="button"
                       onClick={() => selectSession(session)}
@@ -421,7 +421,7 @@ function AdminSessionFollowThrough({ embedded = false }) {
                       <h2>{selectedSession.clientName}</h2>
                       <p>{selectedSession.appointmentTypeName} · {formatDateTime(selectedSession.startsAt, selectedSession.timezone)}</p>
                     </div>
-                    <span>{selectedSession.followThrough?.score || 0}</span>
+                    <span className="pwc-followthrough-score">{selectedSession.followThrough?.score || 0}<small>score</small></span>
                   </header>
 
                   <dl className="pwc-momentum18-facts">
@@ -434,13 +434,13 @@ function AdminSessionFollowThrough({ embedded = false }) {
                   </dl>
 
                   <section className="pwc-momentum18-focus">
-                    <header><h3>Session context</h3><span>{selectedSession.assignedMembers?.length || 0}</span></header>
+                    <header><h3>Session context</h3><span>{selectedSession.assignedMembers?.length || 0} assigned</span></header>
                     <strong>{selectedSession.sessionRecord?.title || selectedSession.primaryGoal || 'Session context needs documentation'}</strong>
-                    <p>
-                      {selectedSession.sessionRecord?.summary
-                        || selectedSession.adminNotes
-                        || 'Use Client 360 or Sessions to record what happened and what the client needs next.'}
-                    </p>
+                    {(selectedSession.sessionRecord?.summary || selectedSession.adminNotes)
+                      && (selectedSession.sessionRecord?.summary || selectedSession.adminNotes)
+                        !== (selectedSession.sessionRecord?.title || selectedSession.primaryGoal) && (
+                      <p>{selectedSession.sessionRecord?.summary || selectedSession.adminNotes}</p>
+                    )}
                     <small>
                       {(selectedSession.assignedMembers || []).map((member) => member.displayName).join(', ')
                         || 'No Studio team member assigned'}
@@ -448,7 +448,7 @@ function AdminSessionFollowThrough({ embedded = false }) {
                   </section>
 
                   <section className="pwc-momentum18-reasons">
-                    <header><h3>Continuity review</h3><span>{selectedSession.followThrough?.reasons?.length || 0}</span></header>
+                    <header><h3>Continuity review</h3><span>{selectedSession.followThrough?.reasons?.length || 0} signals</span></header>
                     {(selectedSession.followThrough?.reasons || []).length ? (
                       <ul>
                         {selectedSession.followThrough.reasons.map((reason) => <li key={reason}>{reason}</li>)}
@@ -460,7 +460,7 @@ function AdminSessionFollowThrough({ embedded = false }) {
 
                   <section className="pwc-momentum18-actions">
                     <button type="button" onClick={() => openClient(selectedSession)}>Open client context</button>
-                    <button type="button" onClick={() => openCareRecord(selectedSession)}>
+                    <button className="is-primary" type="button" onClick={() => openCareRecord(selectedSession)}>
                       {selectedSession.sessionRecord ? 'Update care record' : 'Record session notes'}
                     </button>
                     <button type="button" onClick={() => openSession(selectedSession)}>Open exact session</button>

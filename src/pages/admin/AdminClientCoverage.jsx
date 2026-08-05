@@ -323,6 +323,7 @@ function AdminClientCoverage({ embedded = false }) {
                   return (
                     <button
                       className={`pwc-capacity17-card pwc-momentum18-card is-${client.coverage?.band || 'watch'}${selected ? ' is-selected' : ''}`}
+                      style={{ borderRadius: '22px' }}
                       key={client.id}
                       type="button"
                       onClick={() => setSelectedClientId(client.id)}

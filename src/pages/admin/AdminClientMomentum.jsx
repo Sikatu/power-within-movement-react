@@ -318,6 +318,7 @@ function AdminClientMomentum({ embedded = false }) {
                   return (
                     <button
                       className={`pwc-capacity17-card pwc-momentum18-card is-${client.signal?.band || 'watch'}${selected ? ' is-selected' : ''}`}
+                      style={{ borderRadius: '22px' }}
                       key={client.id}
                       type="button"
                       onClick={() => setSelectedClientId(client.id)}
