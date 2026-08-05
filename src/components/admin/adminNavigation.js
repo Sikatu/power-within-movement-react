@@ -56,7 +56,9 @@ export const workspacePrimaryItems = {
       label: 'Messages',
       description: 'Client conversations and follow-up',
       module: 'inbox',
+      modules: ['inbox', 'encouragements', 'communications'],
       icon: 'inbox',
+      match: ['/admin/inbox', '/admin/encouragements', '/admin/email-studio', '/admin/letters', '/admin/audience'],
     },
   ],
   founder: [
@@ -183,28 +185,6 @@ export const studioGroups = [
         to: '/admin/circle',
         label: 'The Circle',
         module: 'circle',
-      },
-    ],
-  },
-  {
-    id: 'messages',
-    label: 'Message Tools',
-    description: 'Portal updates, letters, and audiences',
-    items: [
-      {
-        to: '/admin/encouragements',
-        label: 'Portal Messages',
-        module: 'encouragements',
-      },
-      {
-        to: '/admin/letters',
-        label: 'Letters & Broadcasts',
-        module: 'communications',
-      },
-      {
-        to: '/admin/audience',
-        label: 'Newsletter Audience',
-        module: 'communications',
       },
     ],
   },

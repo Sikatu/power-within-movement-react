@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import AdminFrame from '../../components/admin/AdminFrame'
+import AdminMessagesSwitcher from '../../components/admin/AdminMessagesSwitcher.jsx'
 import {
   createAdminMailStudioEmailDraft,
   createAdminMailStudioTemplate,
@@ -326,6 +327,7 @@ export default function AdminMailStudio() {
 
   return (
     <AdminFrame>
+      <AdminMessagesSwitcher />
       <section className="mail-studio-page-v1">
         <div className="admin-page-heading">
           <p className="admin-eyebrow">Letters & Broadcasts</p>

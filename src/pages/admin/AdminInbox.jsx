@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import AdminFrame from '../../components/admin/AdminFrame'
+import AdminMessagesSwitcher from '../../components/admin/AdminMessagesSwitcher.jsx'
 import {
   createAdminInboxConversation,
   getAdminInbox,
@@ -259,6 +260,7 @@ export default function AdminInbox() {
 
   return (
     <AdminFrame>
+      <AdminMessagesSwitcher />
       <div className="admin-inbox">
         <header className="admin-inbox__header">
           <div>

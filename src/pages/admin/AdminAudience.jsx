@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import AdminFrame from '../../components/admin/AdminFrame'
+import AdminMessagesSwitcher from '../../components/admin/AdminMessagesSwitcher.jsx'
 import {
   addClientToNewsletterAudience,
   bulkUpdateNewsletterAudienceSegments,
@@ -297,6 +298,7 @@ export default function AdminAudience() {
 
   return (
     <AdminFrame>
+      <AdminMessagesSwitcher />
       <section className="pwc-audience27-page">
         <header className="pwc-audience27-hero">
           <div>

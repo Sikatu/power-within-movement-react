@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import AdminFrame from '../../components/admin/AdminFrame'
+import AdminMessagesSwitcher from '../../components/admin/AdminMessagesSwitcher.jsx'
 import { useAdminConfirm } from '../../components/admin/AdminConfirmContext'
 import {
   archiveAdminEncouragement,
@@ -408,6 +409,7 @@ export default function AdminEncouragements() {
 
   return (
     <AdminFrame>
+      <AdminMessagesSwitcher />
       <div className="encouragement-studio">
         <header className="encouragement-studio__header">
           <div>

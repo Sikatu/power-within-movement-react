@@ -254,6 +254,11 @@ function AdminFrame({ children }) {
       if (item.roles && !item.roles.includes(role)) return false
       if (item.developerOnly) return isDeveloper
       if (!isStaff) return true
+      if (item.modules?.length) {
+        return item.modules.some((module) => (
+          (teamAccess?.permissions?.[module] || 'none') !== 'none'
+        ))
+      }
       if (!item.module) return false
 
       return (teamAccess?.permissions?.[item.module] || 'none') !== 'none'
@@ -555,8 +560,17 @@ function AdminFrame({ children }) {
     || currentStudioTool?.groupDescription
     || activeWorkspace.description
 
-  const currentTeamAccessLevel = isStaff && currentNavigationItem?.module
-    ? teamAccess?.permissions?.[currentNavigationItem.module] || 'none'
+  const currentTeamAccessLevel = isStaff && currentNavigationItem
+    ? (
+      currentNavigationItem.modules
+        ?.map((module) => (
+          teamAccess?.permissions?.[module] || 'none'
+        ))
+        .find((level) => level !== 'none')
+      || (currentNavigationItem.module
+        ? teamAccess?.permissions?.[currentNavigationItem.module] || 'none'
+        : null)
+    )
     : null
 
   function handleTogglePinned(pathname) {

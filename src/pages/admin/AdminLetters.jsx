@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import AdminFrame from '../../components/admin/AdminFrame.jsx'
+import AdminMessagesSwitcher from '../../components/admin/AdminMessagesSwitcher.jsx'
 import { useAdminConfirm } from '../../components/admin/AdminConfirmContext.js'
 import {
   BroadcastAnalytics,
@@ -708,6 +709,7 @@ export default function AdminLetters() {
 
   return (
     <AdminFrame>
+      <AdminMessagesSwitcher />
       <LettersWorkspace
         audience={audience}
         activeTab={activeTab}

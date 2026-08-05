@@ -15,7 +15,8 @@ const sources = {
   api: read('src/lib/nativeApi.js'),
   app: read('src/App.jsx'),
   nav: read('src/components/admin/AdminFrame.jsx')
-    + read('src/components/admin/adminNavigation.js'),
+    + read('src/components/admin/adminNavigation.js')
+    + read('src/components/admin/AdminMessagesSwitcher.jsx'),
   tests: read('server/tests/letter-builder.test.cjs'),
   package: read('package.json'),
 }
@@ -93,7 +94,7 @@ const requirements = {
   settings: ['AssetVaultPicker', 'Personalization fields', 'cannot be deleted or duplicated'],
   api: ['/api/admin/letters', 'prepareLetterBroadcast', 'sendLetterBroadcastNow'],
   app: ['/admin/letters', 'AdminLetters'],
-  nav: ['/admin/letters', 'Letters & Broadcasts'],
+  nav: ["to: '/admin/letters'", "label: 'Letters'"],
   tests: ['one final unsubscribe block', 'signed letter tokens', 'audience modes discard stale filters'],
   package: ['check-admin-phase28-letters.mjs', 'admin:qa:phase28'],
 }

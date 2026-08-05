@@ -60,7 +60,6 @@ if (
 const expectedGroups = [
   'growth',
   'programs',
-  'messages',
   'operations',
   'settings',
 ]
@@ -72,7 +71,7 @@ if (
   !== JSON.stringify(expectedGroups)
 ) {
   failures.push(
-    'The More directory is not grouped into Growth, Programs, Messages, Operations, and Settings.',
+    'The More directory is not grouped into Growth, Programs, Operations, and Settings.',
   )
 }
 
@@ -84,9 +83,6 @@ const expectedToolPaths = [
   '/admin/assets',
   '/admin/memberships',
   '/admin/circle',
-  '/admin/encouragements',
-  '/admin/letters',
-  '/admin/audience',
   '/admin/operations',
   '/admin/week',
   '/admin/capacity',
