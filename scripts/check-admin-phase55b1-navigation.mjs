@@ -96,7 +96,6 @@ const expectedToolPaths = [
   '/admin/follow-through',
   '/admin/session-changes',
   '/admin/activity',
-  '/admin/brief',
   '/admin/momentum',
   '/admin/audit-log',
   '/admin/studio-profile',
@@ -226,5 +225,5 @@ if (failures.length) {
 }
 
 console.log(
-  `Admin Phase 55B.1 navigation audit passed (4 primary destinations, one progressive More directory, ${actualToolPaths.length} preserved specialist tools, command-only pinning, unchanged paths, and simplified user language).`,
+  `Admin Phase 55B.1 navigation audit passed (4 primary destinations, one progressive More directory, ${actualToolPaths.length} discoverable specialist tools, command-only pinning, unchanged paths, and simplified user language).`,
 )

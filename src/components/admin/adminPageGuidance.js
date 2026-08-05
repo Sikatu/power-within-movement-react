@@ -131,6 +131,7 @@ const PAGE_GUIDES = {
 }
 
 export function adminPageGuidance(pathname) {
+  if (pathname === '/admin/brief') return PAGE_GUIDES['/admin/dashboard']
   if (PAGE_GUIDES[pathname]) return PAGE_GUIDES[pathname]
   if (pathname.startsWith('/admin/clients/')) return PAGE_GUIDES['/admin/clients']
   if (pathname.startsWith('/admin/client-360/')) return PAGE_GUIDES['/admin/clients']

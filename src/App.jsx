@@ -322,8 +322,8 @@ const routeMetadata = {
     description: 'Choose a clear Studio Operations lane for planning, client care, session continuity, or accountable history.',
   },
   '/admin/brief': {
-    title: 'Today in The Studio | Power Within Collective',
-    description: 'Begin the day with a role-aware summary of priority attention, upcoming sessions, and unread Studio activity.',
+    title: 'Today | The Studio',
+    description: 'A clear daily workspace for priorities, client care, sessions, and next actions.',
   },
   '/admin/week': {
     title: 'Studio Week Planner | Power Within Collective',

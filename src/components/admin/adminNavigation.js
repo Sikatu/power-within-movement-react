@@ -258,12 +258,6 @@ export const studioGroups = [
         module: 'dashboard',
       },
       {
-        to: '/admin/brief',
-        label: 'Today in The Studio',
-        module: 'dashboard',
-        hiddenInSidebar: true,
-      },
-      {
         to: '/admin/momentum',
         label: 'Client Momentum',
         module: 'clients',
