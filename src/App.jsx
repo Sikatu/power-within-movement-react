@@ -111,6 +111,7 @@ const Resources = lazy(() => import('./pages/Resources.jsx'))
 const SignatureExperiencePage = lazy(() => import('./pages/SignatureExperiencePage.jsx'))
 const TeenPrograms = lazy(() => import('./pages/TeenPrograms.jsx'))
 const TermsAndConditions = lazy(() => import('./pages/TermsAndConditions.jsx'))
+const StudioApp = lazy(() => import('./studio/StudioApp.jsx'))
 
 const routeMetadata = {
   '/': {
@@ -240,6 +241,34 @@ const routeMetadata = {
   '/client-portal/messages': {
     title: 'Private Messages | Power Within Collective',
     description: 'Secure private client communication with the Power Within Collective team.',
+  },
+  '/studio': {
+    title: 'Today | The New Studio',
+    description: 'A lighter operational workspace for Power Within Collective.',
+  },
+  '/studio/today': {
+    title: 'Today | The New Studio',
+    description: 'Priorities, people, and next actions in one calm workspace.',
+  },
+  '/studio/pipeline': {
+    title: 'Pipeline | The New Studio',
+    description: 'Guide new inquiries through consultation, recommendation, and conversion.',
+  },
+  '/studio/clients': {
+    title: 'Clients | The New Studio',
+    description: 'One complete relationship record for every Power Within client.',
+  },
+  '/studio/sessions': {
+    title: 'Sessions | The New Studio',
+    description: 'Manage requests, preparation, completion, and follow-through.',
+  },
+  '/studio/inbox': {
+    title: 'Inbox | The New Studio',
+    description: 'Lead and client communication in one connected workspace.',
+  },
+  '/studio/more': {
+    title: 'More | The New Studio',
+    description: 'Secondary Power Within tools without crowding daily work.',
   },
   '/admin/login': {
     title: 'The Studio Login | Power Within Collective',
@@ -412,7 +441,10 @@ function RouteMetadata() {
 
   useEffect(() => {
     const metadata = resolveRouteMetadata(pathname)
-    const themeColor = pathname.startsWith('/admin') ? '#2f2024' : '#faf3ec'
+    const themeColor = (
+      pathname.startsWith('/admin')
+      || pathname.startsWith('/studio')
+    ) ? '#2f2024' : '#faf3ec'
     let themeColorMeta = document.querySelector('meta[name="theme-color"]')
 
     if (!themeColorMeta) {
@@ -496,7 +528,10 @@ function RouteLoadingFallback({ internal }) {
 
 function AppShell() {
   const { pathname } = useLocation()
-  const isInternalRoute = pathname.startsWith('/admin')
+  const isInternalRoute = (
+    pathname.startsWith('/admin')
+    || pathname.startsWith('/studio')
+  )
 
   return (
     <>
@@ -540,6 +575,10 @@ function AppShell() {
         <Route path="/client-portal/sessions" element={<ClientPortalSessions />} />
         <Route path="/client-portal/messages" element={<ClientPortalMessages />} />
         <Route path="/client-portal/messages/:conversationId" element={<ClientPortalMessages />} />
+        <Route
+          path="/studio/*"
+          element={<AdminRouteGuard><StudioApp /></AdminRouteGuard>}
+        />
         <Route path="/admin" element={<Navigate to="/admin/login" replace />} />
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/admin/change-password" element={<AdminChangePassword />} />
