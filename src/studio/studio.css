@@ -1531,3 +1531,41 @@ body.studio-v2-mode {
 }
 
 /* PHASE 56C.1 PIPELINE END */
+/* PHASE 56C.1R COMPACT BOARD START */
+
+.studio-pipeline-board {
+  align-items: start;
+}
+
+.studio-pipeline-column {
+  height: clamp(480px, 64dvh, 720px);
+  min-height: 0;
+  align-self: start;
+  overflow: hidden;
+}
+
+.studio-pipeline-column-list {
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+}
+
+@media (max-width: 1220px) {
+  .studio-pipeline-column {
+    height: clamp(460px, 60dvh, 680px);
+  }
+}
+
+@media (max-width: 620px) {
+  .studio-pipeline-column {
+    height: auto;
+    max-height: none;
+  }
+
+  .studio-pipeline-column-list {
+    max-height: 60dvh;
+  }
+}
+
+/* PHASE 56C.1R COMPACT BOARD END */
