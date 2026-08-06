@@ -5,6 +5,7 @@ import {
 } from 'react-router-dom'
 import StudioShell from './StudioShell.jsx'
 import StudioMore from './pages/StudioMore.jsx'
+import StudioPipeline from './pages/StudioPipeline.jsx'
 import StudioToday from './pages/StudioToday.jsx'
 import StudioWorkspacePage from './pages/StudioWorkspacePage.jsx'
 import './studio.css'
@@ -15,10 +16,7 @@ export default function StudioApp() {
       <Routes>
         <Route index element={<Navigate replace to="/studio/today" />} />
         <Route path="today" element={<StudioToday />} />
-        <Route
-          path="pipeline"
-          element={<StudioWorkspacePage workspaceId="pipeline" />}
-        />
+        <Route path="pipeline" element={<StudioPipeline />} />
         <Route
           path="clients"
           element={<StudioWorkspacePage workspaceId="clients" />}
