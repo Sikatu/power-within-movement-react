@@ -2734,3 +2734,15 @@ body.studio-v2-mode {
 }
 
 /* PHASE 56D.1 CLIENTS END */
+/* PHASE 56D.1R JOURNEY EMPTY START */
+
+.studio-client-journey li.studio-clients-empty {
+  width: 100%;
+  min-height: 120px;
+  grid-template-columns: minmax(0, 1fr);
+  place-items: center;
+  padding: 28px 18px;
+  text-align: center;
+}
+
+/* PHASE 56D.1R JOURNEY EMPTY END */
