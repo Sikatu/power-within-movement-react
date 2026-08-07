@@ -3204,3 +3204,35 @@ body.studio-v2-mode {
 @media (max-width:980px) { .studio-sessions-layout{grid-template-columns:1fr} .studio-sessions-directory{height:430px} .studio-session-detail-header{align-items:flex-start;flex-direction:column} .studio-session-detail-actions{width:100%;justify-content:flex-start} }
 @media (max-width:760px) { .studio-sessions-header-actions,.studio-sessions-readonly-note,.studio-sessions-toolbar,.studio-session-signal-hero,.studio-session-change-hero,.studio-session-reasons>header{align-items:stretch;grid-template-columns:1fr;flex-direction:column} .studio-sessions-metrics{grid-template-columns:repeat(2,minmax(0,1fr))} .studio-sessions-metrics article{border-bottom:1px solid var(--studio-border)} .studio-sessions-metrics article:nth-child(even){border-right:0} .studio-sessions-metrics article:last-child{border-bottom:0} .studio-session-detail-actions{flex-direction:column} .studio-session-detail-actions .studio-v2-button{width:100%} .studio-session-signal-hero>strong{width:auto;height:auto;min-height:58px;border-radius:12px} .studio-session-facts,.studio-session-detail-grid,.studio-session-team,.studio-session-legacy-action-note{grid-template-columns:1fr} .studio-session-facts>div{border-right:0;border-bottom:1px solid var(--studio-border)} .studio-session-facts>div:last-child{border-bottom:0} }
 /* PHASE 56E.1 SESSIONS END */
+/* PHASE 56E.1R EMPTY STATE START */
+
+.studio-sessions-layout.is-empty {
+  align-items: start;
+}
+
+.studio-sessions-layout.is-empty .studio-sessions-directory {
+  height: auto;
+  min-height: 0;
+}
+
+.studio-sessions-layout.is-empty .studio-sessions-directory-list {
+  min-height: 150px;
+  overflow: visible;
+}
+
+.studio-sessions-layout.is-empty .studio-session-detail {
+  min-height: 0;
+}
+
+.studio-sessions-layout.is-empty .studio-sessions-empty.is-detail {
+  min-height: 215px;
+}
+
+@media (max-width: 980px) {
+  .studio-sessions-layout.is-empty .studio-sessions-directory-list,
+  .studio-sessions-layout.is-empty .studio-sessions-empty.is-detail {
+    min-height: 140px;
+  }
+}
+
+/* PHASE 56E.1R EMPTY STATE END */

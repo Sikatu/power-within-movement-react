@@ -548,7 +548,9 @@ export default function StudioSessions() {
         </nav>
       </section>
 
-      <div className="studio-sessions-layout">
+      <div
+        className={`studio-sessions-layout${!loading && visibleRecords.length === 0 ? ' is-empty' : ''}`}
+      >
         <section className="studio-sessions-directory" aria-label="Session list">
           <header>
             <div><p className="studio-v2-eyebrow">{mode === 'upcoming' ? 'Upcoming sessions' : mode === 'follow-through' ? 'Recent sessions' : 'Client requests'}</p><h2>{visibleRecords.length} shown</h2></div>
