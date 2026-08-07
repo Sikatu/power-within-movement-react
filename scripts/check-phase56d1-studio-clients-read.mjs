@@ -29,7 +29,7 @@ assert(
   !studioApp.includes(
     'element={<StudioWorkspacePage workspaceId="clients" />}',
   ),
-  'The temporary Clients placeholder must be retired.',
+  'The temporary Clients placeholder must remain retired.',
 )
 
 for (const apiName of [
@@ -38,21 +38,18 @@ for (const apiName of [
 ]) {
   assert(
     clients.includes(apiName),
-    `Missing read-only Clients API integration: ${apiName}`,
+    `Missing real-data Clients API integration: ${apiName}`,
   )
 }
 
-for (const forbiddenWrite of [
-  'createAdminClient',
-  'updateAdminClient',
-  'updateAdminClientCarePlan',
-  'createAdminClientCareAction',
-  'updateAdminClientCareAction',
-  'createAdminClientPortalInvite',
+for (const forbiddenBroadWrite of [
+  'createAdminClient(',
+  'updateAdminClient(',
+  'createAdminClientPortalInvite(',
 ]) {
   assert(
-    !clients.includes(forbiddenWrite),
-    `Phase 56D.1 must remain read-only: ${forbiddenWrite}`,
+    !clients.includes(forbiddenBroadWrite),
+    `Clients workspace broadened beyond care actions: ${forbiddenBroadWrite}`,
   )
 }
 
@@ -67,11 +64,10 @@ for (const capability of [
   'Recent journey activity',
   'Open Client 360',
   'Legacy profile',
-  'Real client data connected',
 ]) {
   assert(
     clients.includes(capability),
-    `Missing Clients workspace capability: ${capability}`,
+    `Missing Clients foundation capability: ${capability}`,
   )
 }
 
@@ -97,18 +93,18 @@ assert(
     && css.includes('.studio-client-journey')
     && css.includes('@media (max-width: 980px)')
     && css.includes('@media (max-width: 700px)'),
-  'The Clients workspace responsive styles are incomplete.',
+  'The Clients workspace responsive foundation is incomplete.',
 )
 
 assert(
-  css.includes('PHASE 56C.2 ACTIONS END')
+  css.includes('PHASE 56D.1R JOURNEY EMPTY END')
+    && css.includes('PHASE 56C.2 ACTIONS END')
     && css.includes('PHASE 56C.1R COMPACT BOARD END'),
-  'The verified Pipeline styles must remain intact.',
+  'Previously verified New Studio styles must remain intact.',
 )
 
 console.log(
-  'Phase 56D.1 real-data Clients audit passed '
-  + '(directory, relationship filters, care pulse, plans, sessions, '
-  + 'actions, journey activity, Legacy fallbacks, isolation, '
-  + 'read-only safeguards, and responsive behavior).',
+  'Phase 56D.1 Clients foundation regression audit passed '
+  + '(route, real data, directory, care pulse, actions view, journey, '
+  + 'Legacy fallbacks, Pipeline separation, isolation, and responsive layout).',
 )

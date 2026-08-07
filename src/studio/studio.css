@@ -2746,3 +2746,368 @@ body.studio-v2-mode {
 }
 
 /* PHASE 56D.1R JOURNEY EMPTY END */
+/* PHASE 56D.2 CLIENT CARE ACTIONS START */
+
+.studio-clients-actions-note {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 13px 16px;
+  color: var(--studio-muted);
+  background: rgba(53, 95, 76, 0.07);
+  border: 1px solid rgba(53, 95, 76, 0.18);
+  border-radius: var(--studio-radius-sm);
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.studio-clients-actions-note strong {
+  flex: 0 0 auto;
+  color: #355f4c;
+  font-size: 9px;
+  font-weight: 780;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.studio-clients-alert.is-success {
+  color: #355f4c;
+  background: #f2f8f4;
+  border-color: rgba(53, 95, 76, 0.2);
+}
+
+.studio-client-care-heading-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.studio-client-care-heading-actions > span {
+  padding: 5px 8px;
+  color: var(--studio-muted);
+  background: rgba(117, 103, 106, 0.08);
+  border-radius: 999px;
+  font-size: 7px;
+  font-weight: 760;
+  text-transform: uppercase;
+}
+
+.studio-client-care-heading-actions > span.is-on_track {
+  color: #355f4c;
+  background: rgba(53, 95, 76, 0.1);
+}
+
+.studio-client-care-heading-actions > span.is-attention {
+  color: #8e483f;
+  background: rgba(142, 72, 63, 0.1);
+}
+
+.studio-client-text-button {
+  min-height: 30px;
+  padding: 0 10px;
+  color: var(--studio-plum);
+  background: transparent;
+  border: 1px solid var(--studio-border);
+  border-radius: 999px;
+  font: inherit;
+  font-size: 8px;
+  font-weight: 720;
+  cursor: pointer;
+}
+
+.studio-client-text-button:hover {
+  background: var(--studio-surface-strong);
+  border-color: rgba(181, 138, 69, 0.34);
+}
+
+.studio-client-care-form,
+.studio-client-action-form {
+  display: grid;
+  gap: 12px;
+}
+
+.studio-client-care-form {
+  padding-top: 14px;
+}
+
+.studio-client-care-form > label,
+.studio-client-action-form > label,
+.studio-client-care-form-grid label,
+.studio-client-action-form-grid label {
+  min-width: 0;
+  display: grid;
+  gap: 6px;
+}
+
+.studio-client-care-form label > span,
+.studio-client-action-form label > span {
+  color: var(--studio-muted);
+  font-size: 7px;
+  font-weight: 760;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.studio-client-care-form input,
+.studio-client-care-form select,
+.studio-client-care-form textarea,
+.studio-client-action-form input,
+.studio-client-action-form select,
+.studio-client-action-form textarea {
+  width: 100%;
+  min-width: 0;
+  padding: 10px 11px;
+  color: var(--studio-ink);
+  background: var(--studio-surface-strong);
+  border: 1px solid var(--studio-border);
+  border-radius: 10px;
+  font: inherit;
+  font-size: 10px;
+}
+
+.studio-client-care-form input,
+.studio-client-care-form select,
+.studio-client-action-form input,
+.studio-client-action-form select {
+  min-height: 40px;
+}
+
+.studio-client-care-form textarea,
+.studio-client-action-form textarea {
+  resize: vertical;
+  line-height: 1.5;
+}
+
+.studio-client-care-form input:focus,
+.studio-client-care-form select:focus,
+.studio-client-care-form textarea:focus,
+.studio-client-action-form input:focus,
+.studio-client-action-form select:focus,
+.studio-client-action-form textarea:focus {
+  border-color: rgba(181, 138, 69, 0.62);
+  outline: 3px solid rgba(181, 138, 69, 0.12);
+}
+
+.studio-client-care-form-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.studio-client-care-form label.is-private {
+  padding: 11px;
+  background: rgba(76, 38, 49, 0.035);
+  border: 1px dashed rgba(76, 38, 49, 0.18);
+  border-radius: 11px;
+}
+
+.studio-client-form-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-top: 3px;
+}
+
+.studio-client-form-actions > span {
+  max-width: 360px;
+  color: var(--studio-muted);
+  font-size: 8px;
+  line-height: 1.45;
+}
+
+.studio-client-form-actions > div {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.studio-client-actions-workspace > header {
+  align-items: center;
+}
+
+.studio-client-action-form {
+  margin: 12px;
+  padding: 14px;
+  background: rgba(181, 138, 69, 0.045);
+  border: 1px solid rgba(181, 138, 69, 0.18);
+  border-radius: 12px;
+}
+
+.studio-client-action-form.is-inline {
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  border: 0;
+}
+
+.studio-client-action-form-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.studio-client-action-form-heading h4 {
+  margin: 4px 0 0;
+}
+
+.studio-client-action-form-heading > span {
+  max-width: 230px;
+  color: var(--studio-muted);
+  font-size: 8px;
+  line-height: 1.45;
+  text-align: right;
+}
+
+.studio-client-action-form-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.studio-client-action-list > article.is-status-cancelled {
+  opacity: 0.7;
+}
+
+.studio-client-action-list > article.is-status-completed {
+  background: rgba(53, 95, 76, 0.035);
+}
+
+.studio-client-action-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 6px;
+  margin-top: 12px;
+  padding-top: 11px;
+  border-top: 1px solid var(--studio-border);
+}
+
+.studio-client-action-buttons button {
+  min-height: 31px;
+  padding: 0 10px;
+  color: var(--studio-plum);
+  background: transparent;
+  border: 1px solid var(--studio-border);
+  border-radius: 999px;
+  font: inherit;
+  font-size: 8px;
+  font-weight: 710;
+  cursor: pointer;
+}
+
+.studio-client-action-buttons button:hover {
+  background: rgba(181, 138, 69, 0.08);
+  border-color: rgba(181, 138, 69, 0.32);
+}
+
+.studio-client-action-buttons button.is-quiet {
+  color: var(--studio-muted);
+}
+
+.studio-client-action-buttons button:disabled,
+.studio-client-text-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.studio-client-dialog-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 110;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(41, 24, 30, 0.48);
+  backdrop-filter: blur(4px);
+}
+
+.studio-client-dialog {
+  width: min(100%, 470px);
+  display: grid;
+  gap: 12px;
+  padding: 24px;
+  background: var(--studio-surface-strong);
+  border: 1px solid rgba(181, 138, 69, 0.28);
+  border-radius: var(--studio-radius-md);
+  box-shadow: 0 28px 80px rgba(41, 24, 30, 0.2);
+}
+
+.studio-client-dialog h2 {
+  margin: 0;
+  font-family: "Cormorant Garamond", serif;
+  font-size: 30px;
+  font-weight: 580;
+  line-height: 1.05;
+}
+
+.studio-client-dialog > p:not(.studio-v2-eyebrow) {
+  margin: 0;
+  color: var(--studio-ink);
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.studio-client-dialog > small {
+  color: var(--studio-muted);
+  font-size: 9px;
+  line-height: 1.5;
+}
+
+.studio-client-dialog > div {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+@media (max-width: 1180px) {
+  .studio-client-action-form-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .studio-clients-actions-note,
+  .studio-client-care-card > header,
+  .studio-client-care-heading-actions,
+  .studio-client-form-actions,
+  .studio-client-action-form-heading,
+  .studio-client-dialog > div {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .studio-client-care-heading-actions {
+    justify-content: flex-start;
+  }
+
+  .studio-client-care-form-grid,
+  .studio-client-action-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .studio-client-form-actions > div,
+  .studio-client-dialog > div {
+    width: 100%;
+  }
+
+  .studio-client-form-actions .studio-v2-button,
+  .studio-client-dialog .studio-v2-button {
+    flex: 1 1 0;
+  }
+
+  .studio-client-action-form-heading > span {
+    max-width: none;
+    text-align: left;
+  }
+
+  .studio-client-action-buttons {
+    justify-content: flex-start;
+  }
+}
+
+/* PHASE 56D.2 CLIENT CARE ACTIONS END */
