@@ -7,6 +7,7 @@ import StudioShell from './StudioShell.jsx'
 import StudioMore from './pages/StudioMore.jsx'
 import StudioClients from './pages/StudioClients.jsx'
 import StudioPipeline from './pages/StudioPipeline.jsx'
+import StudioSessions from './pages/StudioSessions.jsx'
 import StudioToday from './pages/StudioToday.jsx'
 import StudioWorkspacePage from './pages/StudioWorkspacePage.jsx'
 import './studio.css'
@@ -19,10 +20,7 @@ export default function StudioApp() {
         <Route path="today" element={<StudioToday />} />
         <Route path="pipeline" element={<StudioPipeline />} />
         <Route path="clients" element={<StudioClients />} />
-        <Route
-          path="sessions"
-          element={<StudioWorkspacePage workspaceId="sessions" />}
-        />
+        <Route path="sessions" element={<StudioSessions />} />
         <Route
           path="inbox"
           element={<StudioWorkspacePage workspaceId="inbox" />}
