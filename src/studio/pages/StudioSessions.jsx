@@ -1,10 +1,22 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react'
 import { Link } from 'react-router-dom'
 import {
   getAdminSessionChangeRequests,
   getAdminSessionFollowThrough,
   getAdminSessionReadiness,
+  getMyTeamAccess,
+  reviewAdminSessionChangeRequest,
+  updateAdminBookingStatus,
 } from '../../lib/nativeApi'
+
+const SessionsActionContext = createContext(null)
 
 const modes = [
   ['upcoming', 'Upcoming'],
@@ -263,11 +275,218 @@ function TeamPanel({ members }) {
   )
 }
 
+
+function SessionStatusActions({ mode, session }) {
+  const actions = useContext(SessionsActionContext)
+  if (!actions) return null
+
+  const {
+    busyAction,
+    canManageSessions,
+    requestBookingStatus,
+  } = actions
+
+  const currentStatus = session.status || 'requested'
+  const isPast = mode === 'follow-through'
+
+  const nextAction = currentStatus === 'requested'
+    ? { status: 'approved', label: 'Approve request' }
+    : currentStatus === 'approved'
+      ? { status: 'confirmed', label: 'Mark confirmed' }
+      : currentStatus === 'confirmed'
+        ? { status: 'completed', label: 'Complete session' }
+        : null
+
+  const canClose = ['requested', 'approved', 'confirmed'].includes(currentStatus)
+  const isBusy = busyAction === `booking:${session.id}`
+
+  return (
+    <section className="studio-session-action-panel">
+      <div>
+        <p className="studio-v2-eyebrow">Session actions</p>
+        <h3>{canManageSessions ? 'Move the session forward' : 'View-only access'}</h3>
+        <p>
+          {canManageSessions
+            ? 'Status changes use the existing secured booking workflow and preserve private Studio notes.'
+            : 'Your Studio role can review this session but cannot change its status.'}
+        </p>
+      </div>
+
+      {canManageSessions && (
+        <div className="studio-session-action-buttons">
+          {nextAction && (
+            <button
+              className="studio-v2-button is-primary"
+              disabled={isBusy}
+              onClick={() => requestBookingStatus(session, nextAction.status)}
+              type="button"
+            >
+              {nextAction.label}
+            </button>
+          )}
+
+          {isPast && canClose && (
+            <button
+              className="studio-v2-button is-secondary"
+              disabled={isBusy}
+              onClick={() => requestBookingStatus(session, 'no_show')}
+              type="button"
+            >
+              Mark no-show
+            </button>
+          )}
+
+          {canClose && (
+            <button
+              className="studio-session-danger-button"
+              disabled={isBusy}
+              onClick={() => requestBookingStatus(session, 'cancelled')}
+              type="button"
+            >
+              Cancel session
+            </button>
+          )}
+        </div>
+      )}
+    </section>
+  )
+}
+
+function SessionConfirmDialog({
+  busy,
+  confirmation,
+  onCancel,
+  onConfirm,
+}) {
+  if (!confirmation) return null
+
+  return (
+    <div className="studio-session-dialog-scrim">
+      <section
+        aria-labelledby="studio-session-confirm-title"
+        aria-modal="true"
+        className="studio-session-dialog"
+        role="dialog"
+      >
+        <p className="studio-v2-eyebrow">Confirm session change</p>
+        <h2 id="studio-session-confirm-title">{confirmation.title}</h2>
+        <p>{confirmation.message}</p>
+        <small>{confirmation.detail}</small>
+
+        <div>
+          <button
+            className="studio-v2-button is-secondary"
+            disabled={busy}
+            onClick={onCancel}
+            type="button"
+          >
+            Keep current state
+          </button>
+
+          <button
+            className={confirmation.tone === 'danger'
+              ? 'studio-session-dialog-danger'
+              : 'studio-v2-button is-primary'}
+            disabled={busy}
+            onClick={onConfirm}
+            type="button"
+          >
+            {busy ? 'Saving...' : confirmation.confirmLabel}
+          </button>
+        </div>
+      </section>
+    </div>
+  )
+}
+
+function ChangeRequestActions({ request }) {
+  const actions = useContext(SessionsActionContext)
+  if (!actions) return null
+
+  const {
+    busyAction,
+    canManageSessions,
+    requestChangeDecision,
+    reviewNotes,
+    setReviewNote,
+  } = actions
+
+  if (request.status !== 'pending') {
+    return (
+      <aside className="studio-session-legacy-action-note">
+        <strong>Review complete</strong>
+        <span>
+          This request is retained in session history with its reviewer and private note.
+        </span>
+        <Link to="/admin/session-change-requests">Open Legacy review</Link>
+      </aside>
+    )
+  }
+
+  if (!canManageSessions) {
+    return (
+      <aside className="studio-session-legacy-action-note">
+        <strong>View-only access</strong>
+        <span>
+          A Sessions manager must approve or decline this client request.
+        </span>
+        <Link to="/admin/session-change-requests">Open Legacy review</Link>
+      </aside>
+    )
+  }
+
+  const isBusy = busyAction === `change:${request.id}`
+
+  return (
+    <section className="studio-session-change-actions">
+      <div>
+        <p className="studio-v2-eyebrow">Protected review</p>
+        <h3>Decide the client request</h3>
+        <p>
+          Approval applies the requested booking change. Declining leaves the
+          existing booking unchanged.
+        </p>
+      </div>
+
+      <label>
+        <span>Private reviewer note</span>
+        <textarea
+          onChange={(event) => setReviewNote(request.id, event.target.value)}
+          placeholder="Add internal context for this decision."
+          rows="3"
+          value={reviewNotes[request.id] || ''}
+        />
+      </label>
+
+      <div className="studio-session-change-action-buttons">
+        <button
+          className="studio-v2-button is-primary"
+          disabled={isBusy}
+          onClick={() => requestChangeDecision(request, 'approved')}
+          type="button"
+        >
+          Approve request
+        </button>
+
+        <button
+          className="studio-session-danger-button"
+          disabled={isBusy}
+          onClick={() => requestChangeDecision(request, 'declined')}
+          type="button"
+        >
+          Decline request
+        </button>
+      </div>
+    </section>
+  )
+}
+
 function UpcomingDetail({ session }) {
   return (
     <>
       <SessionHeader session={session} eyebrow="Upcoming session" />
       <SignalHero eyebrow="Preparation signal" signal={session.readiness} />
+      <SessionStatusActions mode="upcoming" session={session} />
       <section className="studio-session-facts">
         <DetailFact label="Session" value={session.appointmentTypeName} />
         <DetailFact label="Starts" value={formatDateTime(session.startsAt)} />
@@ -308,6 +527,7 @@ function FollowThroughDetail({ session }) {
     <>
       <SessionHeader session={session} eyebrow="Recent session" />
       <SignalHero eyebrow="Follow-through signal" signal={session.followThrough} />
+      <SessionStatusActions mode="follow-through" session={session} />
       <section className="studio-session-facts">
         <DetailFact label="Session" value={session.appointmentTypeName} />
         <DetailFact label="Occurred" value={formatDateTime(session.startsAt)} />
@@ -395,11 +615,7 @@ function ChangeDetail({ request }) {
           </dl>
         </article>
       </div>
-      <aside className="studio-session-legacy-action-note">
-        <strong>Read-only in New Studio</strong>
-        <span>Approve or decline this request from Legacy review until protected Session actions are enabled in the next phase.</span>
-        <Link to="/admin/session-change-requests">Open Legacy review</Link>
-      </aside>
+      <ChangeRequestActions request={request} />
     </>
   )
 }
@@ -414,19 +630,31 @@ export default function StudioSessions() {
   const [selectedId, setSelectedId] = useState('')
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [message, setMessage] = useState('')
+  const [teamAccess, setTeamAccess] = useState(null)
+  const [busyAction, setBusyAction] = useState('')
+  const [confirmation, setConfirmation] = useState(null)
+  const [reviewNotes, setReviewNotes] = useState({})
 
   const loadSessions = useCallback(async ({ preserveSelection = true } = {}) => {
     setLoading(true)
     setError('')
     try {
-      const [readinessResult, followResult, changeResult] = await Promise.all([
+      const [
+        readinessResult,
+        followResult,
+        changeResult,
+        accessResult,
+      ] = await Promise.all([
         getAdminSessionReadiness(30),
         getAdminSessionFollowThrough(30),
         getAdminSessionChangeRequests(),
+        getMyTeamAccess(),
       ])
       setReadiness(readinessResult)
       setFollowThrough(followResult)
       setChangeRequests(changeResult.requests || [])
+      setTeamAccess(accessResult)
       if (!preserveSelection) {
         setSelectedId(
           readinessResult.sessions?.[0]?.id
@@ -501,6 +729,152 @@ export default function StudioSessions() {
     setSelectedId('')
   }
 
+  const canManageSessions = teamAccess?.permissions?.sessions === 'manage'
+
+  function setReviewNote(requestId, value) {
+    setReviewNotes((current) => ({
+      ...current,
+      [requestId]: value,
+    }))
+  }
+
+  function requestBookingStatus(session, targetStatus) {
+    const clientName = session.clientName || 'This client'
+    const startsAt = formatDateTime(session.startsAt)
+
+    const details = {
+      approved: {
+        title: `Approve ${clientName}'s session request?`,
+        message: `This moves the booking from ${label(session.status)} to Approved.`,
+        detail: 'The secured booking workflow will re-evaluate booking communications and may start configured onboarding for a linked client.',
+        confirmLabel: 'Approve request',
+        tone: 'normal',
+      },
+      confirmed: {
+        title: `Mark ${clientName}'s session confirmed?`,
+        message: `This confirms the ${startsAt} session.`,
+        detail: 'The secured booking workflow will re-evaluate booking communications and configured onboarding.',
+        confirmLabel: 'Mark confirmed',
+        tone: 'normal',
+      },
+      completed: {
+        title: `Complete ${clientName}'s session?`,
+        message: `This records the ${startsAt} appointment as completed.`,
+        detail: 'Use this only after the session has occurred. Existing private booking notes are preserved.',
+        confirmLabel: 'Complete session',
+        tone: 'normal',
+      },
+      cancelled: {
+        title: `Cancel ${clientName}'s session?`,
+        message: `This removes the ${startsAt} appointment from the active session workflow.`,
+        detail: 'The booking remains in history. The secured communication workflow will also re-evaluate the session.',
+        confirmLabel: 'Cancel session',
+        tone: 'danger',
+      },
+      no_show: {
+        title: `Mark ${clientName}'s session as a no-show?`,
+        message: `This closes the ${startsAt} appointment as a no-show.`,
+        detail: 'Use this only when the appointment was missed. Existing private booking notes are preserved.',
+        confirmLabel: 'Mark no-show',
+        tone: 'danger',
+      },
+    }
+
+    const copy = details[targetStatus]
+    if (!copy) return
+
+    setConfirmation({
+      kind: 'booking',
+      session,
+      targetStatus,
+      ...copy,
+    })
+  }
+
+  function requestChangeDecision(request, decision) {
+    const name = changeClientName(request)
+    const approving = decision === 'approved'
+    const isCancellation = request.request_type === 'cancel'
+
+    setConfirmation({
+      kind: 'change',
+      request,
+      decision,
+      title: approving
+        ? `Approve ${name}'s ${isCancellation ? 'cancellation' : 'reschedule'} request?`
+        : `Decline ${name}'s ${isCancellation ? 'cancellation' : 'reschedule'} request?`,
+      message: approving
+        ? isCancellation
+          ? 'Approval will cancel the connected booking.'
+          : `Approval will move the booking to ${formatDateTime(request.requested_starts_at)}.`
+        : 'Declining records the review decision and leaves the current booking unchanged.',
+      detail: 'The reviewer identity, decision time, and private reviewer note remain in session history.',
+      confirmLabel: approving ? 'Approve request' : 'Decline request',
+      tone: approving ? 'normal' : 'danger',
+    })
+  }
+
+  async function executeConfirmation() {
+    if (!confirmation) return
+
+    setError('')
+    setMessage('')
+
+    try {
+      if (confirmation.kind === 'booking') {
+        const session = confirmation.session
+        setBusyAction(`booking:${session.id}`)
+
+        await updateAdminBookingStatus(session.id, {
+          status: confirmation.targetStatus,
+          adminNotes: session.adminNotes || '',
+        })
+
+        setConfirmation(null)
+        await loadSessions()
+        setMessage('Session status updated.')
+      } else {
+        const request = confirmation.request
+        setBusyAction(`change:${request.id}`)
+
+        await reviewAdminSessionChangeRequest(request.id, {
+          decision: confirmation.decision,
+          reviewerNotes: reviewNotes[request.id] || '',
+        })
+
+        setConfirmation(null)
+        await loadSessions()
+        setMessage('Session change request reviewed.')
+      }
+    } catch (actionError) {
+      setError(actionError.message || 'Unable to update this session.')
+    } finally {
+      setBusyAction('')
+    }
+  }
+
+  useEffect(() => {
+    if (!confirmation) return undefined
+
+    function handleEscape(event) {
+      if (event.key === 'Escape' && !busyAction) {
+        setConfirmation(null)
+      }
+    }
+
+    window.addEventListener('keydown', handleEscape)
+    return () => window.removeEventListener('keydown', handleEscape)
+  }, [busyAction, confirmation])
+
+  const actionContext = {
+    busyAction,
+    canManageSessions,
+    requestBookingStatus,
+    requestChangeDecision,
+    reviewNotes,
+    setReviewNote,
+  }
+
   return (
     <div className="studio-v2-page studio-sessions-page">
       <header className="studio-v2-page-header">
@@ -515,12 +889,17 @@ export default function StudioSessions() {
         </div>
       </header>
 
-      <aside className="studio-sessions-readonly-note">
-        <strong>Real session data connected</strong>
-        <span>This first Sessions pass is intentionally read-only. Booking decisions and change-request actions stay in Legacy Sessions until this workspace is visually verified.</span>
+      <aside className="studio-sessions-readonly-note is-protected">
+        <strong>{canManageSessions ? 'Protected session actions enabled' : 'Real session data connected'}</strong>
+        <span>
+          {canManageSessions
+            ? 'Booking status changes and client change-request decisions now use the existing secured Sessions APIs.'
+            : 'Your current Studio role can review Sessions data but cannot perform protected session actions.'}
+        </span>
       </aside>
 
       {error && <div className="studio-sessions-alert is-error" role="alert">{error}</div>}
+      {message && <div className="studio-sessions-alert is-success" role="status">{message}</div>}
 
       <section className="studio-sessions-metrics" aria-label="Session attention summary">
         <article><span>Upcoming 30 days</span><strong>{readiness?.summary?.total || 0}</strong></article>
@@ -571,6 +950,7 @@ export default function StudioSessions() {
         </section>
 
         <section className="studio-session-detail" aria-label="Selected session">
+          <SessionsActionContext.Provider value={actionContext}>
           {!selectedRecord ? (
             <div className="studio-sessions-empty is-detail"><strong>No session selected</strong><span>Select a record to review preparation, client context, or follow-through.</span></div>
           ) : mode === 'upcoming' ? (
@@ -580,8 +960,18 @@ export default function StudioSessions() {
           ) : (
             <ChangeDetail request={selectedRecord} />
           )}
+          </SessionsActionContext.Provider>
         </section>
       </div>
+
+      <SessionConfirmDialog
+        busy={Boolean(busyAction)}
+        confirmation={confirmation}
+        onCancel={() => {
+          if (!busyAction) setConfirmation(null)
+        }}
+        onConfirm={executeConfirmation}
+      />
     </div>
   )
 }

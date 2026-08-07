@@ -3236,3 +3236,197 @@ body.studio-v2-mode {
 }
 
 /* PHASE 56E.1R EMPTY STATE END */
+/* PHASE 56E.2 PROTECTED SESSION ACTIONS START */
+
+.studio-sessions-readonly-note.is-protected {
+  background: rgba(53, 95, 76, 0.07);
+  border-color: rgba(53, 95, 76, 0.2);
+}
+
+.studio-sessions-readonly-note.is-protected strong {
+  color: #355f4c;
+}
+
+.studio-sessions-alert.is-success {
+  color: #355f4c;
+  background: #f2f8f4;
+  border-color: rgba(53, 95, 76, 0.2);
+}
+
+.studio-session-action-panel {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 14px 22px;
+  background: rgba(53, 95, 76, 0.035);
+  border-bottom: 1px solid var(--studio-border);
+}
+
+.studio-session-action-panel h3,
+.studio-session-change-actions h3 {
+  margin: 4px 0 3px;
+  font-family: "Cormorant Garamond", serif;
+  font-size: 21px;
+  font-weight: 580;
+}
+
+.studio-session-action-panel > div:first-child > p:last-child,
+.studio-session-change-actions > div:first-child > p:last-child {
+  max-width: 600px;
+  margin: 0;
+  color: var(--studio-muted);
+  font-size: 8px;
+  line-height: 1.5;
+}
+
+.studio-session-action-buttons,
+.studio-session-change-action-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 7px;
+}
+
+.studio-session-danger-button,
+.studio-session-dialog-danger {
+  min-height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 14px;
+  color: #7f3038;
+  background: rgba(255, 253, 250, 0.76);
+  border: 1px solid rgba(127, 48, 56, 0.24);
+  border-radius: 999px;
+  font: inherit;
+  font-size: 9px;
+  font-weight: 720;
+  cursor: pointer;
+}
+
+.studio-session-danger-button:hover,
+.studio-session-dialog-danger:hover {
+  background: rgba(127, 48, 56, 0.07);
+  border-color: rgba(127, 48, 56, 0.4);
+}
+
+.studio-session-danger-button:disabled,
+.studio-session-dialog-danger:disabled {
+  cursor: wait;
+  opacity: 0.55;
+}
+
+.studio-session-change-actions {
+  display: grid;
+  gap: 13px;
+  margin: 12px 18px 18px;
+  padding: 16px;
+  background: rgba(181, 138, 69, 0.045);
+  border: 1px solid rgba(181, 138, 69, 0.2);
+  border-radius: 14px;
+}
+
+.studio-session-change-actions label {
+  display: grid;
+  gap: 6px;
+}
+
+.studio-session-change-actions label > span {
+  color: var(--studio-muted);
+  font-size: 7px;
+  font-weight: 760;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.studio-session-change-actions textarea {
+  width: 100%;
+  min-width: 0;
+  resize: vertical;
+  padding: 10px 11px;
+  color: var(--studio-ink);
+  background: var(--studio-surface-strong);
+  border: 1px solid var(--studio-border);
+  border-radius: 10px;
+  font: inherit;
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+.studio-session-change-actions textarea:focus {
+  border-color: rgba(181, 138, 69, 0.62);
+  outline: 3px solid rgba(181, 138, 69, 0.12);
+}
+
+.studio-session-dialog-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(41, 24, 30, 0.5);
+  backdrop-filter: blur(4px);
+}
+
+.studio-session-dialog {
+  width: min(100%, 500px);
+  display: grid;
+  gap: 12px;
+  padding: 24px;
+  background: var(--studio-surface-strong);
+  border: 1px solid rgba(181, 138, 69, 0.28);
+  border-radius: var(--studio-radius-md);
+  box-shadow: 0 28px 80px rgba(41, 24, 30, 0.22);
+}
+
+.studio-session-dialog h2 {
+  margin: 0;
+  font-family: "Cormorant Garamond", serif;
+  font-size: 30px;
+  font-weight: 580;
+  line-height: 1.06;
+}
+
+.studio-session-dialog > p:not(.studio-v2-eyebrow) {
+  margin: 0;
+  color: var(--studio-ink);
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.studio-session-dialog > small {
+  color: var(--studio-muted);
+  font-size: 9px;
+  line-height: 1.5;
+}
+
+.studio-session-dialog > div {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+@media (max-width: 760px) {
+  .studio-session-action-panel {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .studio-session-action-buttons,
+  .studio-session-change-action-buttons,
+  .studio-session-dialog > div {
+    justify-content: stretch;
+    flex-direction: column;
+  }
+
+  .studio-session-action-buttons > *,
+  .studio-session-change-action-buttons > *,
+  .studio-session-dialog > div > * {
+    width: 100%;
+  }
+}
+
+/* PHASE 56E.2 PROTECTED SESSION ACTIONS END */

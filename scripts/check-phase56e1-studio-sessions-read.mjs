@@ -20,8 +20,8 @@ for (const name of ['getAdminSessionReadiness', 'getAdminSessionFollowThrough', 
   assert(api.includes(`export async function ${name}`), `Missing existing API contract: ${name}`)
 }
 
-for (const forbidden of ['updateAdminBookingStatus', 'welcomeBookingIntoClientCircle', 'reviewAdminSessionChangeRequest', 'createAdminAppointmentType', 'updateAdminAppointmentType', 'createAdminAvailabilityBlock', 'updateAdminAvailabilityBlock']) {
-  assert(!sessions.includes(forbidden), `Phase 56E.1 must remain read-only: ${forbidden}`)
+for (const forbidden of ['welcomeBookingIntoClientCircle', 'createAdminAppointmentType', 'updateAdminAppointmentType', 'createAdminAvailabilityBlock', 'updateAdminAvailabilityBlock']) {
+  assert(!sessions.includes(forbidden), `Sessions foundation scope expanded unexpectedly: ${forbidden}`)
 }
 
 for (const capability of ['Upcoming', 'Follow-through', 'Change requests', 'Upcoming 30 days', 'Decision needed', 'Preparation signal', 'Follow-through signal', 'Client readiness', 'Studio attention', 'Session record', 'Continuity', 'Legacy Sessions', 'Legacy review', 'Real session data connected']) {
@@ -40,4 +40,4 @@ assert(!sessions.includes('AdminFrame') && !sessions.includes('AdminFreshUI.css'
 assert(css.includes('PHASE 56E.1 SESSIONS START') && css.includes('.studio-sessions-layout') && css.includes('.studio-session-signal-hero') && css.includes('.studio-session-detail-grid') && css.includes('.studio-session-legacy-action-note') && css.includes('PHASE 56E.1 SESSIONS END'), 'Sessions styles are incomplete.')
 assert(css.includes('PHASE 56D.2 CLIENT CARE ACTIONS END') && css.includes('PHASE 56D.1R JOURNEY EMPTY END') && css.includes('PHASE 56C.2 ACTIONS END'), 'Previously verified New Studio styles must remain intact.')
 
-console.log('Phase 56E.1 real-data Sessions audit passed (upcoming readiness, follow-through, change requests, search, attention filters, Client 360 links, Legacy fallbacks, isolation, read-only safeguards, and responsive behavior).')
+console.log('Phase 56E.1 Sessions foundation regression audit passed (upcoming readiness, follow-through, change requests, search, attention filters, Client 360 links, Legacy fallbacks, isolation, and responsive behavior).')
