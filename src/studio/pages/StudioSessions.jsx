@@ -654,7 +654,7 @@ export default function StudioSessions() {
       setReadiness(readinessResult)
       setFollowThrough(followResult)
       setChangeRequests(changeResult.requests || [])
-      setTeamAccess(accessResult)
+      setTeamAccess(accessResult.access || null)
       if (!preserveSelection) {
         setSelectedId(
           readinessResult.sessions?.[0]?.id

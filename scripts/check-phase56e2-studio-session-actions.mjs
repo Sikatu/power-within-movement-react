@@ -54,8 +54,11 @@ assert(
 )
 
 assert(
-  sessions.includes("teamAccess?.permissions?.sessions === 'manage'"),
-  'New Studio must gate protected Sessions controls by sessions:manage.',
+  routes.includes("router.get('/team/my-access', requireAdmin")
+    && routes.includes('access: await getTeamAccessForUser(req.user)')
+    && sessions.includes('setTeamAccess(accessResult.access || null)')
+    && sessions.includes("teamAccess?.permissions?.sessions === 'manage'"),
+  'New Studio must unwrap /team/my-access and gate protected Sessions controls by sessions:manage.',
 )
 
 for (const item of [
