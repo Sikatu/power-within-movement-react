@@ -78,26 +78,9 @@ function SiteHeader() {
               </NavLink>
             </li>
           ))}
-          <li className="site-nav-mobile-portal">
-            <NavLink
-              to="/client-portal/login"
-              onClick={closeMenu}
-              onMouseEnter={() => preloadPublicRoute('/client-portal/login')}
-              onFocus={() => preloadPublicRoute('/client-portal/login')}
-              onTouchStart={() => preloadPublicRoute('/client-portal/login')}
-            >Client Portal</NavLink>
-          </li>
         </ul>
 
         <div className="site-header-actions">
-          <NavLink
-            className="portal-link"
-            to="/client-portal/login"
-            aria-label="Client portal login"
-            onMouseEnter={() => preloadPublicRoute('/client-portal/login')}
-            onFocus={() => preloadPublicRoute('/client-portal/login')}
-            onTouchStart={() => preloadPublicRoute('/client-portal/login')}
-          >K</NavLink>
           <button
             className="menu-button"
             type="button"

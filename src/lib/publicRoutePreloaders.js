@@ -14,7 +14,6 @@ const publicRouteLoaders = {
   '/teens': () => import('../pages/TeenPrograms.jsx'),
   '/privacy-policy': () => import('../pages/PrivacyPolicy.jsx'),
   '/terms-and-conditions': () => import('../pages/TermsAndConditions.jsx'),
-  '/client-portal/login': () => import('../pages/ClientPortalLogin.jsx'),
 }
 
 const pendingLoads = new Map()
