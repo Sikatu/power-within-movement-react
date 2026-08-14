@@ -24,12 +24,12 @@ const listeners = [
 ]
 
 const conversationTopics = [
-  'Teen self-esteem and confidence',
-  'Mother-daughter communication',
-  'Identity, values, and voice',
-  'Body image and beauty pressure',
-  'Friendship, belonging, and comparison',
-  'Confidence through seasons of change',
+  'Women’s confidence and self-trust',
+  'Wellness, energy, and intentional living',
+  'Personal presence, color, style, and beauty',
+  'Motherhood and meaningful family connection',
+  'Identity and seasons of change',
+  'Transformation in beauty and image work',
 ]
 
 function Podcast() {
@@ -37,8 +37,8 @@ function Podcast() {
     <main id="main-content" className="podcast-page">
       <section className="podcast-hero section-shell">
         <p className="eyebrow">Raising Her Confidence</p>
-        <h1>Conversations for confidence, connection, and the girls we are helping grow.</h1>
-        <p>A podcast from Kim Mittelstadt and Power Within Collective for mothers, mentors, and women who care deeply about confidence, identity, communication, and self-worth.</p>
+        <h1>Confidence, wellness, style, and personal presence for the woman you are becoming.</h1>
+        <p>A podcast from Kim Mittelstadt and Power Within Collective for women navigating confidence, identity, motherhood, personal presence, and new seasons of life.</p>
       </section>
 
       <section className="podcast-intro section-shell">
@@ -48,9 +48,9 @@ function Podcast() {
         </div>
         <div>
           <p className="eyebrow">The Podcast</p>
-          <h2>Raising confidence starts with the conversations we are willing to have.</h2>
-          <p>Raising Her Confidence supports mothers, mentors, and women who want to help girls grow with stronger self-worth, clearer identity, healthier communication, and deeper confidence.</p>
-          <p>Each conversation is part of the larger Power Within movement: helping women and girls feel seen, understood, supported, and more connected to who they are becoming.</p>
+          <h2>Confidence becomes clearer when the inner life and the way you show up begin to align.</h2>
+          <p>Raising Her Confidence explores confidence, wellness, identity, color, style, beauty, and personal presence for women who want to feel more grounded, visible, and connected to themselves.</p>
+          <p>Alongside conversations for mothers and families, the podcast also speaks to women in transition and beauty and image professionals who believe confidence and personal presence can support deeper transformation.</p>
           <div className="podcast-platform-links">
             {podcastLinks.map((link) => (
               <a className={`button ${link.primary ? 'button-primary' : 'button-secondary'}`} href={link.href} target="_blank" rel="noreferrer" key={link.label}>{link.label}</a>
