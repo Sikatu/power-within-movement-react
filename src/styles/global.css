@@ -76,7 +76,7 @@ p {
 }
 
 :where(a, button, input, textarea, select, summary):focus-visible {
-  outline: 3px solid rgba(125, 64, 81, 0.55);
+  outline: 3px solid rgba(202, 126, 136, 0.72);
   outline-offset: 3px;
 }
 
@@ -121,22 +121,22 @@ p {
 .button-primary {
   background: var(--gradient-burgundy);
   box-shadow: var(--button-shadow);
-  color: #f7ede7;
+  color: var(--pwc-ivory);
 }
 
 .button-primary:hover {
-  color: #f7ede7;
+  color: var(--pwc-ivory);
   opacity: 0.92;
 }
 
 .button-secondary {
-  border-color: rgba(124, 81, 75, 0.28);
-  background: rgba(255, 255, 255, 0.55);
+  border-color: rgba(92, 71, 74, 0.28);
+  background: rgba(251, 248, 243, 0.72);
   color: var(--color-burgundy);
 }
 
 .button-secondary:hover {
-  border-color: rgba(181, 136, 77, 0.52);
+  border-color: rgba(202, 126, 136, 0.62);
   color: var(--color-burgundy);
 }
 
@@ -153,14 +153,14 @@ p {
   padding: 11px 18px;
   border-radius: 999px;
   background: var(--color-burgundy);
-  color: #fff;
+  color: var(--pwc-ivory);
   font-size: 12px;
   font-weight: 700;
   transform: translateY(-160%);
 }
 
 .skip-link:focus {
-  color: #fff;
+  color: var(--pwc-ivory);
   transform: translateY(0);
 }
 
@@ -228,8 +228,8 @@ p {
   min-height: 100vh;
   padding: clamp(28px, 7vw, 72px);
   background:
-    radial-gradient(circle at 82% 8%, rgba(226, 195, 184, 0.34), transparent 30%),
-    #f7f2ec;
+    radial-gradient(circle at 82% 8%, rgba(235, 198, 190, 0.42), transparent 30%),
+    var(--pwc-ivory);
   color: var(--color-heading);
   display: grid;
   place-items: center;
@@ -238,10 +238,10 @@ p {
 .route-loading__card {
   width: min(100%, 520px);
   padding: clamp(30px, 6vw, 52px);
-  border: 1px solid rgba(124, 81, 75, 0.14);
+  border: 1px solid rgba(92, 71, 74, 0.14);
   border-radius: 30px;
-  background: rgba(255, 252, 249, 0.94);
-  box-shadow: 0 28px 80px rgba(62, 35, 43, 0.16);
+  background: rgba(255, 253, 251, 0.94);
+  box-shadow: 0 28px 80px rgba(92, 71, 74, 0.15);
   text-align: center;
   backdrop-filter: blur(18px);
 }
@@ -250,9 +250,9 @@ p {
   width: 58px;
   height: 58px;
   margin: 0 auto 18px;
-  border: 1px solid rgba(181, 136, 77, 0.32);
+  border: 1px solid rgba(202, 126, 136, 0.34);
   border-radius: 18px;
-  background: rgba(181, 136, 77, 0.12);
+  background: rgba(235, 198, 190, 0.42);
   color: var(--color-burgundy);
   display: grid;
   place-items: center;
@@ -288,7 +288,7 @@ p {
 .route-loading__lines span {
   height: 9px;
   border-radius: 999px;
-  background: linear-gradient(90deg, rgba(124, 81, 75, 0.07), rgba(181, 136, 77, 0.22), rgba(124, 81, 75, 0.07));
+  background: linear-gradient(90deg, rgba(92, 71, 74, 0.07), rgba(216, 142, 101, 0.26), rgba(92, 71, 74, 0.07));
   background-size: 220% 100%;
   animation: route-loading-shimmer 1.3s linear infinite;
 }

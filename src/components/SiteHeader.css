@@ -2,8 +2,8 @@
   position: sticky;
   z-index: 1000;
   top: 0;
-  border-bottom: 1px solid rgba(124, 81, 75, 0.12);
-  background: rgba(249, 242, 236, 0.85);
+  border-bottom: 1px solid rgba(92, 71, 74, 0.12);
+  background: rgba(251, 248, 243, 0.9);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
 }
@@ -189,7 +189,7 @@
     height: calc(100dvh - 59px);
     padding: 24px var(--page-gutter) 40px;
     overflow-y: auto;
-    background: rgba(247, 242, 236, 0.99);
+    background: rgba(251, 248, 243, 0.99);
     opacity: 0;
     pointer-events: none;
     transform: translateY(-12px);
