@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import heroImage from '../assets/images/hero.webp'
 import storyImage from '../assets/images/story.webp'
-import recognitionImage from '../assets/images/experiences-private-guidance.webp'
+import recognitionImage from '../assets/images/power-within-group-presentation.webp'
 import { publicLinks } from '../config/publicLinks.js'
 import './Home.css'
 
@@ -246,7 +246,7 @@ function Home() {
           <div className="home-recognition-visual">
             <img
               src={recognitionImage}
-              alt="A thoughtful private guidance experience"
+              alt="A Power Within gathering with a facilitator speaking to a group"
             />
           </div>
         </div>
