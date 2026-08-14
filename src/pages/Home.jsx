@@ -9,32 +9,32 @@ const layers = [
   {
     number: '01',
     title: 'Confidence',
-    text: 'A steadier sense of self that does not have to be performed for anyone else.',
+    text: 'Confidence grows when your inner sense of self and the way you show up begin supporting one another.',
   },
   {
     number: '02',
     title: 'Energy',
-    text: 'The foundation that supports how you live, lead, care, recover, and show up.',
+    text: 'The physical and emotional capacity that shapes how you live, care, lead, recover, and engage with life.',
   },
   {
     number: '03',
     title: 'Wellness',
-    text: 'The daily practices and choices that help you feel supported from the inside out.',
+    text: 'The practices and support that help you feel grounded, resourced, and cared for from the inside out.',
   },
   {
     number: '04',
     title: 'Identity',
-    text: 'An honest recognition of who you are now, not only who you have needed to be.',
+    text: 'A clearer relationship with who you are becoming, beyond the roles and expectations you have carried.',
   },
   {
     number: '05',
     title: 'Personal Presence',
-    text: 'How your inner clarity becomes visible in the way you move, communicate, and present yourself.',
+    text: 'The way your confidence, identity, energy, and self-awareness become visible in how you move through the world.',
   },
   {
     number: '06',
     title: 'Lifestyle',
-    text: 'The rhythms, relationships, environments, and choices that shape the life you are creating now.',
+    text: 'The rhythms, environments, relationships, and choices that support the life you want to inhabit now.',
   },
 ]
 
@@ -42,27 +42,27 @@ const fiveRs = [
   {
     number: '01',
     title: 'Regulate',
-    text: 'Create enough steadiness to notice what you need and how you want to move forward.',
+    text: 'Create enough clarity and steadiness to decide how you want to move through life and show up now.',
   },
   {
     number: '02',
     title: 'Restore',
-    text: 'Rebuild the energy, confidence, and personal foundation you have been giving from.',
+    text: 'Rebuild the energy, confidence, and personal foundation that allow you to give from a more supported place.',
   },
   {
     number: '03',
     title: 'Reconnect',
-    text: 'Come back into relationship with the woman you have become, internally and externally.',
+    text: 'Realign your inner experience and outer expression with the woman you have become.',
   },
   {
     number: '04',
     title: 'Reclaim',
-    text: 'Strengthen your confidence, personal presence, voice, and sense of self.',
+    text: 'Strengthen your confidence, personal presence, voice, and relationship with your own sense of self.',
   },
   {
     number: '05',
     title: 'Reflect',
-    text: 'Let your outer life express your identity, energy, values, and evolution more truthfully.',
+    text: 'Allow your outer life to communicate your identity, energy, values, and evolution more authentically.',
   },
 ]
 
@@ -70,14 +70,14 @@ const beginOptions = [
   {
     number: '01',
     title: 'Start with Clarity',
-    text: 'A focused one-hour conversation to name what no longer feels aligned and identify a thoughtful next step across confidence, wellness, style, and personal presence.',
+    text: 'A one-hour whole-person conversation to identify what no longer feels aligned and begin mapping a more intentional path forward across confidence, wellness, style, and personal presence.',
     action: 'Book a Clarity Session',
     to: '/contact',
   },
   {
     number: '02',
     title: 'Radiance Reclaimed',
-    text: 'A deeper whole-person experience for the woman ready to reconnect with herself in a more intentional, integrated, and elevated way.',
+    text: 'A transformational experience for the woman ready to reconnect confidence, wellness, style, and personal presence in a more intentional and integrated way.',
     action: 'Explore Radiance Reclaimed',
     to: '/radiance-reclaimed',
   },
@@ -165,9 +165,10 @@ function Home() {
             <p className="eyebrow">The Whole Woman</p>
             <h2>It is layered.</h2>
             <p>
-              The work here considers the whole woman rather than treating
-              confidence, wellness, identity, style, and personal presence as
-              unrelated concerns.
+              This work considers the whole woman rather than isolating one
+              concern while everything else is left untouched. Confidence,
+              energy, wellness, identity, personal presence, and lifestyle
+              continuously influence one another.
             </p>
           </header>
 
@@ -186,10 +187,11 @@ function Home() {
       <section className="home-framework section-shell">
         <header className="section-heading">
           <p className="eyebrow">The 5Rs</p>
-          <h2>A framework for bringing your inner and outer life back into alignment.</h2>
+          <h2>A framework for creating greater alignment from the inside out.</h2>
           <p>
-            Each step creates room for greater clarity, self-possession, and
-            intention in the way you live and present yourself.
+            Lasting change becomes possible when confidence, wellness,
+            identity, and personal presence begin supporting one another
+            instead of pulling in different directions.
           </p>
         </header>
 
@@ -207,7 +209,7 @@ function Home() {
       <section className="home-begin section-shell">
         <header className="section-heading">
           <p className="eyebrow">Where Would You Like to Begin?</p>
-          <h2>Choose the doorway that fits the season you are in.</h2>
+          <h2>Begin with the kind of support this season is asking for.</h2>
         </header>
 
         <div className="begin-grid">
@@ -229,19 +231,26 @@ function Home() {
           <div className="home-recognition-copy">
             <p className="eyebrow">A New Season</p>
             <h2>You might be exactly who we're talking about.</h2>
+
             <p>
-              You have handled real responsibilities, cared for people, adapted,
-              led, worked, and kept moving. Capability is not the question.
+              You are capable. You have handled complexity, family, work,
+              care, leadership, and real responsibility. You are not here
+              because you need rescuing or because someone needs to convince
+              you of your worth.
             </p>
+
             <p>
-              What may be calling for your attention now is the part of you that
-              wants to feel current and fully present again, rather than simply
-              continuing to manage an older version of yourself.
+              After years spent adapting to what life required, you may be
+              looking for a way back into yourself — a way to feel current,
+              settled, alive, and genuinely present in your own life again.
             </p>
+
             <p>
-              You are not looking to be fixed. You are looking for a more honest
-              way to inhabit the life and identity that are yours now.
+              You are not looking for a formula or another polished version
+              of who you used to be. You are looking for an expression of
+              yourself that feels honest for the woman you are now.
             </p>
+
             <Link className="button button-secondary" to="/experiences">
               Explore Experiences
             </Link>
@@ -259,11 +268,17 @@ function Home() {
       <section className="home-closing">
         <div className="home-closing-inner section-shell">
           <p className="eyebrow">The Invitation</p>
-          <h2>Let your outer life become a more truthful expression of who you are now.</h2>
+
+          <h2>
+            Let your outer life become a more truthful expression of who you
+            are now.
+          </h2>
+
           <p>
-            You have spent a long time doing what was required. Your next step
-            can be less about performing well and more about living with
-            intention, presence, and congruence.
+            You have spent a long time doing what was responsible, capable,
+            and required. This season can be less about maintaining an older
+            version of yourself and more about choosing what feels honest,
+            current, and fully yours.
           </p>
 
           <div className="home-closing-actions">
