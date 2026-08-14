@@ -1,5 +1,5 @@
 import { lazy, Suspense, useEffect } from 'react'
-import { BrowserRouter, Route, Routes, useLocation } from 'react-router-dom'
+import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import SiteFooter from './components/SiteFooter.jsx'
 import SiteHeader from './components/SiteHeader.jsx'
 import Home from './pages/Home.jsx'
@@ -21,6 +21,10 @@ const Resources = lazy(() => import('./pages/Resources.jsx'))
 const SignatureExperiencePage = lazy(() => import('./pages/SignatureExperiencePage.jsx'))
 const TeenPrograms = lazy(() => import('./pages/TeenPrograms.jsx'))
 const TermsAndConditions = lazy(() => import('./pages/TermsAndConditions.jsx'))
+
+const siteOrigin = 'https://www.powerwithinmovement.com'
+const siteName = 'Power Within Collective'
+const themeColor = '#fbf8f3'
 
 const routeMetadata = {
   '/': {
@@ -78,10 +82,11 @@ const routeMetadata = {
   '/power-within-professional': {
     title: 'Image Consultant & Beauty Professional Training | Power Within Professional',
     description: 'Professional education for beauty, image, style, and wellness professionals who want to turn their expertise into a premium transformation-centered client experience.',
+    canonicalPath: '/professionals',
   },
   '/podcast': {
-    title: 'Raising Her Confidence Podcast | Teen Confidence & Mother-Daughter Conversations',
-    description: 'A podcast for mothers, mentors, and adults supporting girls through confidence, identity, emotional wellness, self-expression, and presence.',
+    title: 'Raising Her Confidence Podcast | Confidence, Wellness & Personal Presence',
+    description: 'Raising Her Confidence explores confidence, wellness, identity, motherhood, color, style, beauty, and personal presence for women navigating new seasons of life.',
   },
   '/teen-programs': {
     title: 'Teen Confidence Programs for Girls | Power Within Collective',
@@ -90,6 +95,7 @@ const routeMetadata = {
   '/teens': {
     title: 'Teen Confidence Programs for Girls | Power Within Collective',
     description: 'Supportive teen confidence programs for girls and young women building identity, emotional awareness, self-expression, and grounded self-trust.',
+    canonicalPath: '/teen-programs',
   },
   '/about': {
     title: 'About Kim Mittelstadt | Power Within Collective',
@@ -98,7 +104,8 @@ const routeMetadata = {
   '/faq': {
     title: 'Frequently Asked Questions | Power Within Collective',
     description: 'Answers to common questions about Power Within Collective experiences, confidence and personal presence work, professional education, and getting started.',
-  },  '/contact': {
+  },
+  '/contact': {
     title: 'Contact Power Within Collective | Private Consultations & Speaking',
     description: 'Contact Power Within Collective about private consultations, color analysis, personal style guidance, Radiance Reclaimed, professional education, speaking, podcast, or collaboration.',
   },
@@ -113,11 +120,37 @@ const routeMetadata = {
 }
 
 function resolveRouteMetadata(pathname) {
-  return routeMetadata[pathname]
-    || {
-      title: 'Power Within Collective',
-      description: 'A thoughtful whole-person experience for confidence, style, personal presence, and self-recognition.',
+  const metadata = routeMetadata[pathname]
+
+  if (metadata) {
+    return {
+      ...metadata,
+      canonicalPath: metadata.canonicalPath || pathname,
+      robots: 'index,follow',
     }
+  }
+
+  return {
+    title: 'Page Not Found | Power Within Collective',
+    description: 'The page you requested could not be found. Explore Power Within Collective experiences, resources, programs, and ways to connect.',
+    canonicalPath: null,
+    robots: 'noindex,follow',
+  }
+}
+
+function upsertMeta(selector, attributes) {
+  let element = document.head.querySelector(selector)
+
+  if (!element) {
+    element = document.createElement('meta')
+    document.head.append(element)
+  }
+
+  Object.entries(attributes).forEach(([name, value]) => {
+    element.setAttribute(name, value)
+  })
+
+  return element
 }
 
 function RouteMetadata() {
@@ -125,24 +158,87 @@ function RouteMetadata() {
 
   useEffect(() => {
     const metadata = resolveRouteMetadata(pathname)
-    const themeColor = '#faf3ec'
-    let themeColorMeta = document.querySelector('meta[name="theme-color"]')
-
-    if (!themeColorMeta) {
-      themeColorMeta = document.createElement('meta')
-      themeColorMeta.setAttribute('name', 'theme-color')
-      document.head.append(themeColorMeta)
-    }
+    const canonicalUrl = metadata.canonicalPath
+      ? `${siteOrigin}${metadata.canonicalPath}`
+      : null
 
     document.title = metadata.title
-    document.querySelector('meta[name="description"]')?.setAttribute('content', metadata.description)
-    themeColorMeta.setAttribute('content', themeColor)
+
+    upsertMeta('meta[name="description"]', {
+      name: 'description',
+      content: metadata.description,
+    })
+
+    upsertMeta('meta[name="theme-color"]', {
+      name: 'theme-color',
+      content: themeColor,
+    })
+
+    upsertMeta('meta[name="robots"]', {
+      name: 'robots',
+      content: metadata.robots,
+    })
+
+    upsertMeta('meta[property="og:type"]', {
+      property: 'og:type',
+      content: 'website',
+    })
+
+    upsertMeta('meta[property="og:site_name"]', {
+      property: 'og:site_name',
+      content: siteName,
+    })
+
+    upsertMeta('meta[property="og:title"]', {
+      property: 'og:title',
+      content: metadata.title,
+    })
+
+    upsertMeta('meta[property="og:description"]', {
+      property: 'og:description',
+      content: metadata.description,
+    })
+
+    upsertMeta('meta[name="twitter:card"]', {
+      name: 'twitter:card',
+      content: 'summary',
+    })
+
+    upsertMeta('meta[name="twitter:title"]', {
+      name: 'twitter:title',
+      content: metadata.title,
+    })
+
+    upsertMeta('meta[name="twitter:description"]', {
+      name: 'twitter:description',
+      content: metadata.description,
+    })
+
+    let canonicalLink = document.head.querySelector('link[rel="canonical"]')
+
+    if (canonicalUrl) {
+      if (!canonicalLink) {
+        canonicalLink = document.createElement('link')
+        canonicalLink.setAttribute('rel', 'canonical')
+        document.head.append(canonicalLink)
+      }
+
+      canonicalLink.setAttribute('href', canonicalUrl)
+
+      upsertMeta('meta[property="og:url"]', {
+        property: 'og:url',
+        content: canonicalUrl,
+      })
+    } else {
+      canonicalLink?.remove()
+      document.head.querySelector('meta[property="og:url"]')?.remove()
+    }
+
     document.body.dataset.pwcRoute = pathname
   }, [pathname])
 
   return null
 }
-
 function RouteAnnouncer() {
   const { pathname } = useLocation()
   const metadata = resolveRouteMetadata(pathname)
@@ -262,7 +358,7 @@ function AppShell() {
           <Route path="/professionals" element={<Professionals />} />
           <Route
             path="/power-within-professional"
-            element={<Professionals />}
+            element={<Navigate to="/professionals" replace />}
           />
 
           <Route path="/podcast" element={<Podcast />} />
@@ -272,7 +368,7 @@ function AppShell() {
             element={<TeenPrograms />}
           />
 
-          <Route path="/teens" element={<TeenPrograms />} />
+          <Route path="/teens" element={<Navigate to="/teen-programs" replace />} />
 
           <Route path="/about" element={<About />} />
           <Route path="/faq" element={<FAQ />} />
