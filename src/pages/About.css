@@ -38,7 +38,7 @@
 .about-founder-image > span {
   position: absolute;
   inset: 20px -20px -20px 20px;
-  border: 1px solid rgba(200, 169, 106, 0.4);
+  border: 1px solid rgba(202, 126, 136, 0.34);
   border-radius: 26px;
 }
 
@@ -47,7 +47,7 @@
   width: 100%;
   aspect-ratio: 4 / 4.8;
   border-radius: 26px;
-  box-shadow: 0 50px 90px -50px rgba(58, 37, 40, 0.55);
+  box-shadow: var(--feature-shadow);
   object-fit: cover;
 }
 
@@ -102,7 +102,7 @@
 
 .about-belief blockquote p {
   margin: 0 0 16px;
-  color: #fdf6f0;
+  color: var(--pwc-ivory);
   font-family: var(--font-display);
   font-size: clamp(26px, 3vw, 34px);
   font-style: italic;
@@ -152,7 +152,7 @@
   padding: 26px;
   border: 1px solid var(--color-border);
   border-radius: 22px;
-  background: rgba(255, 252, 249, 0.8);
+  background: rgba(251, 248, 243, 0.8);
   box-shadow: var(--card-shadow);
 }
 
@@ -337,11 +337,11 @@
   }
 
   .about-closing h2 {
-    color: #fdf6f0;
+    color: var(--pwc-ivory);
   }
 
   .about-closing > p:not(.eyebrow) {
-    color: rgba(233, 217, 200, 0.72);
+    color: rgba(251, 248, 243, 0.74);
     font-size: 12.5px;
   }
 
@@ -360,9 +360,9 @@
   }
 
   .about-closing .button-secondary {
-    border-color: rgba(233, 217, 200, 0.35);
+    border-color: rgba(235, 198, 190, 0.38);
     background: transparent;
-    color: #e9d9c8;
+    color: var(--pwc-blush);
   }
 }
 
