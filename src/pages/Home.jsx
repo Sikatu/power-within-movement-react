@@ -1,8 +1,7 @@
-import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import heroImage from '../assets/images/hero.webp'
 import storyImage from '../assets/images/story.webp'
-import { subscribePublicNewsletter } from '../lib/nativeApi'
+import { publicLinks } from '../config/publicLinks.js'
 import './Home.css'
 
 const layers = [
@@ -51,27 +50,6 @@ const faqs = [
 ]
 
 function Home() {
-  const [newsletterState, setNewsletterState] = useState({ status: 'idle', message: '' })
-
-  const joinNewsletter = async (event) => {
-    event.preventDefault()
-    const form = event.currentTarget
-    const data = new FormData(form)
-    setNewsletterState({ status: 'joining', message: '' })
-
-    try {
-      const response = await subscribePublicNewsletter({
-        email: data.get('email'),
-        consent: data.get('consent') === 'yes',
-        website: data.get('website') || '',
-      })
-      form.reset()
-      setNewsletterState({ status: 'success', message: response.message || 'Thank you — you are on the list.' })
-    } catch (error) {
-      setNewsletterState({ status: 'error', message: error.message || 'We could not save your preference. Please try again.' })
-    }
-  }
-
   return (
     <main id="main-content" className="home-page">
       <section className="home-hero section-shell">
@@ -164,20 +142,14 @@ function Home() {
           <p className="eyebrow">Stay Connected</p>
           <h2>Notes for the woman in a new season.</h2>
           <p>Receive thoughtful reflections on congruence, Personal Presence, color, style, confidence, and the quiet work of returning to yourself.</p>
-          <form onSubmit={joinNewsletter}>
-            <div className="newsletter-entry-row">
-              <label className="sr-only" htmlFor="newsletter-email">Email address</label>
-              <input id="newsletter-email" name="email" type="email" autoComplete="email" placeholder="Enter your email" required />
-              <button type="submit" disabled={newsletterState.status === 'joining'}>{newsletterState.status === 'joining' ? 'Joining…' : 'Join the List'}</button>
-            </div>
-            <label className="newsletter-consent">
-              <input name="consent" type="checkbox" value="yes" required />
-              <span>I agree to receive thoughtful Power Within Collective newsletter emails. I can unsubscribe at any time.</span>
-            </label>
-            <label className="newsletter-honeypot" aria-hidden="true">Website<input name="website" type="text" tabIndex="-1" autoComplete="off" /></label>
-          </form>
-          {newsletterState.status === 'success' && <p className="newsletter-success" role="status">{newsletterState.message}</p>}
-          {newsletterState.status === 'error' && <p className="newsletter-error" role="alert">{newsletterState.message}</p>}
+          <a
+            className="button button-primary"
+            href={publicLinks.newsletter}
+            target="_blank"
+            rel="noreferrer"
+          >
+            Join the Newsletter
+          </a>
         </div>
       </section>
 

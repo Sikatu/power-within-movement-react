@@ -1,9 +1,9 @@
 import { useMemo } from 'react'
 import { useLocation } from 'react-router-dom'
 import contactImage from '../assets/images/contact.webp'
+import { publicLinks } from '../config/publicLinks.js'
 import './Contact.css'
 
-const FLODESK_CONTACT_URL = 'https://powerwithinmovement.myflodesk.com/contact'
 
 const contactContexts = {
   clarity: {
@@ -114,7 +114,7 @@ function Contact() {
 
           <a
             className="button button-primary contact-flodesk-button"
-            href={FLODESK_CONTACT_URL}
+            href={publicLinks.contact}
             target="_blank"
             rel="noreferrer"
           >
