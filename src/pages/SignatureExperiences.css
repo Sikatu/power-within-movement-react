@@ -36,7 +36,7 @@
   min-height: 40px;
   align-items: center;
   padding: 0 18px;
-  border: 1px solid rgba(124, 81, 75, 0.25);
+  border: 1px solid rgba(202, 126, 136, 0.28);
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.55);
   color: var(--color-burgundy);
@@ -55,21 +55,21 @@
 .signature-experience-nav a.is-featured {
   border-color: transparent;
   background: var(--gradient-burgundy);
-  color: #f7ede7;
+  color: var(--pwc-ivory);
 }
 
 .signature-experience-nav a.is-featured:hover,
 .signature-experience-nav a.is-featured.is-active {
   border-color: transparent;
   background: var(--gradient-burgundy);
-  color: #f7ede7;
+  color: var(--pwc-ivory);
   opacity: 0.92;
 }
 
 .signature-service {
   padding-top: 44px;
   padding-bottom: 64px;
-  border-top: 1px solid rgba(124, 81, 75, 0.1);
+  border-top: 1px solid rgba(92, 71, 74, 0.10);
 }
 
 .signature-service-heading {
@@ -107,7 +107,7 @@
 .signature-image-frame > span {
   position: absolute;
   inset: 18px -18px -18px 18px;
-  border: 1px solid rgba(200, 169, 106, 0.4);
+  border: 1px solid rgba(202, 126, 136, 0.34);
   border-radius: 24px;
 }
 
@@ -116,7 +116,7 @@
   width: 100%;
   aspect-ratio: 4 / 3.6;
   border-radius: 24px;
-  box-shadow: 0 50px 90px -50px rgba(58, 37, 40, 0.55);
+  box-shadow: var(--feature-shadow);
   object-fit: cover;
 }
 
@@ -218,7 +218,7 @@
 
 .signature-includes-grid aside {
   padding: 30px 32px;
-  border: 1px solid rgba(200, 169, 106, 0.32);
+  border: 1px solid rgba(202, 126, 136, 0.30);
   border-radius: 22px;
   background: rgba(255, 252, 249, 0.8);
   box-shadow: var(--card-shadow);
@@ -238,7 +238,7 @@
 .signature-includes-grid aside li {
   position: relative;
   padding: 10px 0 10px 19px;
-  border-top: 1px solid rgba(124, 81, 75, 0.1);
+  border-top: 1px solid rgba(92, 71, 74, 0.10);
   color: var(--color-body);
   font-size: 13px;
   line-height: 1.6;
@@ -285,7 +285,7 @@
 
 .radiance-intro h2 {
   margin: 0 0 16px;
-  color: #fdf6f0;
+  color: var(--pwc-ivory);
   font-size: clamp(32px, 3.6vw, 44px);
   line-height: 1.1;
 }
@@ -293,7 +293,7 @@
 .radiance-intro > p:not(.eyebrow) {
   max-width: 640px;
   margin: 0 auto 26px;
-  color: rgba(233, 217, 200, 0.75);
+  color: rgba(251, 248, 243, 0.78);
   font-size: 14.5px;
   line-height: 1.8;
 }
@@ -335,7 +335,7 @@
 .radiance-story-grid h3,
 .radiance-guided-grid h3 {
   margin: 0 0 14px;
-  color: #fdf6f0;
+  color: var(--pwc-ivory);
   font-size: 32px;
   line-height: 1.12;
 }
@@ -343,7 +343,7 @@
 .radiance-story-grid > div > p:not(.eyebrow),
 .radiance-guided-grid > div > p:not(.eyebrow) {
   margin: 0 0 12px;
-  color: rgba(233, 217, 200, 0.75);
+  color: rgba(251, 248, 243, 0.78);
   font-size: 14px;
   line-height: 1.8;
 }
@@ -351,7 +351,7 @@
 .radiance-story-grid > div > p:last-child,
 .radiance-guided-grid > div > p:last-child {
   margin-bottom: 0;
-  color: rgba(233, 217, 200, 0.65);
+  color: rgba(251, 248, 243, 0.68);
 }
 
 .radiance-fit,
@@ -372,14 +372,14 @@
 
 .radiance-section-heading h3 {
   margin: 0 0 10px;
-  color: #fdf6f0;
+  color: var(--pwc-ivory);
   font-size: 30px;
   line-height: 1.15;
 }
 
 .radiance-section-heading > p:not(.eyebrow) {
   margin: 0;
-  color: rgba(233, 217, 200, 0.65);
+  color: rgba(251, 248, 243, 0.68);
   font-size: 13.5px;
   line-height: 1.75;
 }
@@ -392,9 +392,9 @@
 
 .radiance-card-grid article {
   padding: 26px 24px;
-  border: 1px solid rgba(200, 169, 106, 0.22);
+  border: 1px solid rgba(202, 126, 136, 0.24);
   border-radius: 20px;
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(251, 248, 243, 0.05);
 }
 
 .radiance-card-grid article > span {
@@ -408,14 +408,14 @@
 
 .radiance-card-grid h4 {
   margin: 0 0 8px;
-  color: #fdf6f0;
+  color: var(--pwc-ivory);
   font-size: 21px;
   line-height: 1.25;
 }
 
 .radiance-card-grid p {
   margin: 0;
-  color: rgba(233, 217, 200, 0.65);
+  color: rgba(251, 248, 243, 0.68);
   font-size: 12.5px;
   line-height: 1.7;
 }
@@ -434,9 +434,9 @@
   gap: 20px;
   align-items: center;
   padding: 22px 28px;
-  border: 1px solid rgba(200, 169, 106, 0.22);
+  border: 1px solid rgba(202, 126, 136, 0.24);
   border-radius: 18px;
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(251, 248, 243, 0.05);
 }
 
 .radiance-chapters article > span {
@@ -448,13 +448,13 @@
 
 .radiance-chapters h4 {
   margin: 0 0 4px;
-  color: #fdf6f0;
+  color: var(--pwc-ivory);
   font-size: 22px;
 }
 
 .radiance-chapters p {
   margin: 0;
-  color: rgba(233, 217, 200, 0.65);
+  color: rgba(251, 248, 243, 0.68);
   font-size: 13px;
   line-height: 1.65;
 }
@@ -467,7 +467,7 @@
 
 .radiance-quote p {
   margin: 0 0 12px;
-  color: #fdf6f0;
+  color: var(--pwc-ivory);
   font-family: var(--font-display);
   font-size: clamp(24px, 2.8vw, 30px);
   font-style: italic;
@@ -506,7 +506,7 @@
 
 .radiance-begin h3 {
   margin: 0 0 14px;
-  color: #fdf6f0;
+  color: var(--pwc-ivory);
   font-size: 30px;
   line-height: 1.15;
 }
@@ -514,7 +514,7 @@
 .radiance-begin > p:not(.eyebrow) {
   max-width: 600px;
   margin: 0 auto 26px;
-  color: rgba(233, 217, 200, 0.7);
+  color: rgba(251, 248, 243, 0.72);
   font-size: 13.5px;
   line-height: 1.8;
 }
@@ -527,13 +527,13 @@
 }
 
 .radiance-outline-button {
-  border-color: rgba(233, 217, 200, 0.35);
-  color: #e9d9c8;
+  border-color: rgba(235, 198, 190, 0.38);
+  color: var(--pwc-blush);
 }
 
 .radiance-outline-button:hover {
-  border-color: rgba(233, 217, 200, 0.7);
-  color: #fdf6f0;
+  border-color: rgba(251, 248, 243, 0.72);
+  color: var(--pwc-ivory);
 }
 
 @media (max-width: 820px) {
