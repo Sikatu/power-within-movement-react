@@ -462,8 +462,31 @@
 }
 
 .home-connect {
+  position: relative;
+  isolation: isolate;
   padding-top: 92px;
   padding-bottom: 96px;
+}
+
+.home-connect::before {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  border: 1px solid rgba(92, 71, 74, 0.06);
+  border-radius: 32px;
+  background:
+    linear-gradient(
+      rgba(251, 248, 243, 0.84),
+      rgba(251, 248, 243, 0.84)
+    ),
+    url('../assets/images/power-within-watercolor.webp') center / cover no-repeat;
+  content: '';
+  pointer-events: none;
+}
+
+.home-connect > * {
+  position: relative;
+  z-index: 1;
 }
 
 .home-connect-grid {
