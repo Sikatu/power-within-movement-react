@@ -11,7 +11,7 @@ const beginCards = [
   },
   {
     number: '02',
-    title: 'Power Shift Clarity Session',
+    title: 'Clarity Session',
     text: 'A focused whole-person conversation to name what has shifted, locate the gap, and create direction for the next aligned step.',
   },
   {
@@ -180,9 +180,9 @@ function Experiences() {
             <aside className="experiences-consultation-card">
               <img src={consultationImage} alt="Notebook, color swatches, and consultation details for a personal presence session" />
               <p>Not sure which appointment is right for you?</p>
-              <h3>Start with a complimentary Personal Presence Consultation.</h3>
-              <span>No charge, no obligation.</span>
-              <Link to="/contact">Schedule Complimentary Consultation</Link>
+              <h3>Start with a Clarity Session.</h3>
+              <span>A thoughtful first step for finding the right direction.</span>
+              <Link to="/contact">Book a Clarity Session</Link>
             </aside>
           </div>
 
