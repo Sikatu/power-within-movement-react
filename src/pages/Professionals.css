@@ -46,7 +46,7 @@
 .professionals-image-frame > span {
   position: absolute;
   inset: 20px -20px -20px 20px;
-  border: 1px solid rgba(200, 169, 106, 0.4);
+  border: 1px solid rgba(202, 126, 136, 0.34);
   border-radius: 26px;
 }
 
@@ -55,7 +55,7 @@
   width: 100%;
   aspect-ratio: 4 / 4.4;
   border-radius: 26px;
-  box-shadow: 0 50px 90px -50px rgba(58, 37, 40, 0.55);
+  box-shadow: var(--feature-shadow);
   object-fit: cover;
 }
 
@@ -85,9 +85,9 @@
 
 .professionals-trust-grid article {
   padding: 16px 18px;
-  border: 1px solid rgba(200, 169, 106, 0.3);
+  border: 1px solid rgba(202, 126, 136, 0.28);
   border-radius: 14px;
-  background: rgba(255, 252, 249, 0.75);
+  background: rgba(251, 248, 243, 0.75);
 }
 
 .professionals-trust-grid span {
@@ -145,7 +145,7 @@
 .professionals-method article,
 .professionals-wellness > article:not(:first-child) {
   border: 1px solid var(--color-border);
-  background: rgba(255, 252, 249, 0.8);
+  background: rgba(251, 248, 243, 0.8);
   box-shadow: var(--card-shadow);
 }
 
@@ -169,9 +169,9 @@
 
 .professionals-ready-panel {
   padding: 32px 36px;
-  border: 1px solid rgba(200, 169, 106, 0.32);
+  border: 1px solid rgba(202, 126, 136, 0.30);
   border-radius: 22px;
-  background: rgba(255, 252, 249, 0.8);
+  background: rgba(251, 248, 243, 0.8);
 }
 
 .professionals-ready-panel h3 {
@@ -229,14 +229,14 @@
 
 .professionals-gap-band h2 {
   margin: 0 0 16px;
-  color: #fdf6f0;
+  color: var(--pwc-ivory);
   font-size: clamp(26px, 3vw, 34px);
   line-height: 1.2;
 }
 
 .professionals-gap-band p:not(.eyebrow) {
   margin: 0 0 12px;
-  color: rgba(233, 217, 200, 0.75);
+  color: rgba(251, 248, 243, 0.78);
   font-size: 14px;
   line-height: 1.8;
 }
@@ -253,7 +253,7 @@
   overflow: hidden;
   border: 1px solid var(--color-border);
   border-radius: 22px;
-  background: rgba(255, 252, 249, 0.8);
+  background: rgba(251, 248, 243, 0.8);
   box-shadow: var(--card-shadow);
 }
 
@@ -286,7 +286,7 @@
   padding: 12px 18px 12px 37px;
   border: 1px solid var(--color-border);
   border-radius: 13px;
-  background: rgba(255, 252, 249, 0.75);
+  background: rgba(251, 248, 243, 0.75);
   color: var(--color-burgundy);
   font-size: 12.5px;
   font-weight: 600;
@@ -394,7 +394,7 @@
   width: 100%;
   aspect-ratio: 4 / 4.2;
   border-radius: 24px;
-  box-shadow: 0 40px 80px -50px rgba(58, 37, 40, 0.5);
+  box-shadow: var(--feature-shadow);
   object-fit: cover;
 }
 
@@ -428,7 +428,7 @@
 }
 
 .professionals-wellness h2 {
-  color: #fdf6f0;
+  color: var(--pwc-ivory);
   font-size: 25px;
 }
 
@@ -444,7 +444,7 @@
 }
 
 .professionals-wellness > article:first-child p:not(.eyebrow) {
-  color: rgba(233, 217, 200, 0.75);
+  color: rgba(251, 248, 243, 0.78);
   font-size: 13px;
   line-height: 1.75;
 }
@@ -635,11 +635,11 @@
   }
 
   .professionals-closing h2 {
-    color: #fdf6f0;
+    color: var(--pwc-ivory);
   }
 
   .professionals-closing > p:not(.eyebrow) {
-    color: rgba(233, 217, 200, 0.72);
+    color: rgba(251, 248, 243, 0.74);
     font-size: 12.5px;
   }
 
