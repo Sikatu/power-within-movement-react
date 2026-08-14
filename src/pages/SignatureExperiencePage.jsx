@@ -62,7 +62,7 @@ function SignatureExperiencePage({ experienceKey, activePath }) {
             <ul>
               {experience.listItems.map((item) => <li key={item}>{item}</li>)}
             </ul>
-            <Link className="button button-primary" to={`/contact?interest=${experience.contactInterest}`}>{experience.cta}</Link>
+            <Link className="button button-primary" to="/contact">{experience.cta}</Link>
           </aside>
         </div>
       </section>

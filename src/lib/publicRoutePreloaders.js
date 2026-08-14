@@ -1,5 +1,6 @@
 const publicRouteLoaders = {
   '/about': () => import('../pages/About.jsx'),
+  '/faq': () => import('../pages/FAQ.jsx'),
   '/contact': () => import('../pages/Contact.jsx'),
   '/experiences': () => import('../pages/Experiences.jsx'),
   '/color-analysis': () => import('../pages/SignatureExperiencePage.jsx'),

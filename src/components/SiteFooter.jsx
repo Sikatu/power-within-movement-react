@@ -35,7 +35,7 @@ function SiteFooter() {
           <h3>Explore</h3>
           <Link to="/">Home</Link>
           <Link to="/experiences">Experiences</Link>
-          <Link to="/resources">The Vault</Link>
+          <Link to="/resources">Resources</Link>
           <Link to="/professionals">Professionals</Link>
           <Link to="/podcast">Podcast</Link>
           <Link to="/teen-programs">Teen Programs</Link>
@@ -59,8 +59,8 @@ function SiteFooter() {
           >
             Newsletter
           </a>
-          <Link to="/contact?interest=speaking">Book Kim to Speak</Link>
-          <Link to="/#faq">FAQ</Link>
+          <Link to="/contact">Book Kim to Speak</Link>
+          <Link to="/faq">FAQ</Link>
           <Link to="/privacy-policy">Privacy Policy</Link>
           <Link to="/terms-and-conditions">Terms &amp; Conditions</Link>
         </div>

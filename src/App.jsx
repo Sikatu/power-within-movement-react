@@ -9,6 +9,7 @@ import NotFound from './pages/NotFound.jsx'
 // portal experiences only when someone visits them. The shared Suspense boundary
 // already provides a branded, accessible loading state during route transitions.
 const About = lazy(() => import('./pages/About.jsx'))
+const FAQ = lazy(() => import('./pages/FAQ.jsx'))
 const Contact = lazy(() => import('./pages/Contact.jsx'))
 const Experiences = lazy(() => import('./pages/Experiences.jsx'))
 const Podcast = lazy(() => import('./pages/Podcast.jsx'))
@@ -94,7 +95,10 @@ const routeMetadata = {
     title: 'About Kim Mittelstadt | Power Within Collective',
     description: 'Learn about Kim Mittelstadt, founder of Power Within Collective, and the whole-person foundation behind her confidence, style, beauty, and transformation work.',
   },
-  '/contact': {
+  '/faq': {
+    title: 'Frequently Asked Questions | Power Within Collective',
+    description: 'Answers to common questions about Power Within Collective experiences, confidence and personal presence work, professional education, and getting started.',
+  },  '/contact': {
     title: 'Contact Power Within Collective | Private Consultations & Speaking',
     description: 'Contact Power Within Collective about private consultations, color analysis, personal style guidance, Radiance Reclaimed, professional education, speaking, podcast, or collaboration.',
   },
@@ -271,6 +275,7 @@ function AppShell() {
           <Route path="/teens" element={<TeenPrograms />} />
 
           <Route path="/about" element={<About />} />
+          <Route path="/faq" element={<FAQ />} />
           <Route path="/contact" element={<ContactRoute />} />
 
           <Route

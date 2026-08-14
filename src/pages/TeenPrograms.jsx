@@ -16,7 +16,7 @@ const focusCards = [
 ]
 
 const pathways = [
-  { number: '01', title: 'Teen Confidence Support', text: 'For teen girls who need steadier language, confidence support, and a place to be seen clearly.', action: 'Start a conversation', to: '/contact?interest=teen' },
+  { number: '01', title: 'Teen Confidence Support', text: 'For teen girls who need steadier language, confidence support, and a place to be seen clearly.', action: 'Start a conversation', to: '/contact' },
   { number: '02', title: 'Mother-Daughter Conversations', text: 'For mothers who want warmer, braver conversations without adding pressure or shame.', action: 'Explore the resource', to: '/resources#100-conversation-starters' },
   { number: '03', title: 'Raising Her Confidence Podcast', text: 'For ongoing conversations around confidence, connection, teen self-esteem, and identity.', action: 'Listen to the podcast', to: '/podcast' },
 ]
@@ -102,7 +102,7 @@ function TeenPrograms() {
         <h2>Support her confidence with steadier conversations.</h2>
         <p>Reach out to begin a conversation about teen confidence, mother-daughter connection, resources, or the next right support.</p>
         <div>
-          <Link className="button button-primary" to="/contact?interest=teen">Ask About Teen Support</Link>
+          <Link className="button button-primary" to="/contact">Ask About Teen Support</Link>
           <Link className="button button-secondary" to="/podcast">Listen to the Podcast</Link>
         </div>
       </section>

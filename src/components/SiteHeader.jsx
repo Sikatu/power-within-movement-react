@@ -7,11 +7,12 @@ import './SiteHeader.css'
 const navigation = [
   { label: 'Home', to: '/' },
   { label: 'Experiences', to: '/experiences', relatedPaths: ['/color-analysis', '/style-analysis', '/blend-cosmetics', '/radiance-reclaimed'] },
-  { label: 'The Vault', to: '/resources' },
+  { label: 'Resources', to: '/resources' },
   { label: 'Professionals', to: '/professionals', relatedPaths: ['/power-within-professional'] },
-  { label: 'Podcast', to: '/podcast' },
   { label: 'Teen Programs', to: '/teen-programs', relatedPaths: ['/teens'] },
+  { label: 'Podcast', to: '/podcast' },
   { label: 'About', to: '/about' },
+  { label: 'FAQ', to: '/faq' },
   { label: 'Contact', to: '/contact' },
 ]
 

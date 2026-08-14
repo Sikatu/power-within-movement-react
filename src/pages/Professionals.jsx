@@ -66,7 +66,7 @@ function Professionals() {
         <h1>The future of beauty is not just service. It is transformation.</h1>
         <p>A guided professional development experience for beauty and image professionals ready to turn their expertise into a premium, transformation-centered client experience.</p>
         <div>
-          <Link className="button button-primary" to="/contact?interest=professionals">Book a Professional Signature Experience Call</Link>
+          <Link className="button button-primary" to="/contact">Book a Professional Signature Experience Call</Link>
           <a className="button button-secondary" href="#signature-method">Explore the Method</a>
         </div>
       </section>
@@ -202,7 +202,7 @@ function Professionals() {
         <h2>For the professional ready to grow in depth, identity, standards, and client transformation.</h2>
         <p>Power Within Professional™ is not for professionals looking for quick marketing tricks, discount strategies, or another list of services to add to an already full menu.</p>
         <p>The future of beauty is not just service. It is transformation. And the professional who understands that will be the one women trust with more than the appointment.</p>
-        <Link className="button button-primary" to="/contact?interest=professionals">Book a Professional Signature Experience Call</Link>
+        <Link className="button button-primary" to="/contact">Book a Professional Signature Experience Call</Link>
       </section>
     </main>
   )
