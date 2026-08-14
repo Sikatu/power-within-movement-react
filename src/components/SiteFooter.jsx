@@ -3,6 +3,7 @@ import instagramIcon from '../assets/images/icons/instagram.webp'
 import spotifyIcon from '../assets/images/icons/spotify.webp'
 import youtubeIcon from '../assets/images/icons/youtube.webp'
 import logo from '../assets/images/logo.webp'
+import { publicLinks } from '../config/publicLinks.js'
 import './SiteFooter.css'
 
 const socialLinks = [
@@ -44,8 +45,20 @@ function SiteFooter() {
 
         <div className="footer-column">
           <h3>Resources</h3>
-          <Link to="/resources#100-conversation-starters">100 Conversation Starters</Link>
-          <Link to="/#newsletter">Newsletter</Link>
+          <a
+            href={publicLinks.conversationStarters}
+            target="_blank"
+            rel="noreferrer"
+          >
+            100 Conversation Starters
+          </a>
+          <a
+            href={publicLinks.newsletter}
+            target="_blank"
+            rel="noreferrer"
+          >
+            Newsletter
+          </a>
           <Link to="/contact?interest=speaking">Book Kim to Speak</Link>
           <Link to="/#faq">FAQ</Link>
           <Link to="/privacy-policy">Privacy Policy</Link>
@@ -55,7 +68,14 @@ function SiteFooter() {
         <div className="footer-connect">
           <h3>Stay Connected</h3>
           <p>Meaningful conversations. Helpful resources. Delivered with care.</p>
-          <Link className="footer-newsletter-button" to="/#newsletter">Join the Newsletter</Link>
+          <a
+            className="footer-newsletter-button"
+            href={publicLinks.newsletter}
+            target="_blank"
+            rel="noreferrer"
+          >
+            Join the Newsletter
+          </a>
         </div>
       </div>
 

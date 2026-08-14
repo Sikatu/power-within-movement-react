@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import conversationStartersImage from '../assets/images/100-conversation-starters.webp'
 import vaultImage from '../assets/images/vault-reflection-journal.webp'
 import { resourceArticleSummaries } from '../data/resourceArticles.js'
+import { publicLinks } from '../config/publicLinks.js'
 import './Resources.css'
 
 const vaultContents = [
@@ -77,7 +78,14 @@ function Resources() {
             <p>A curated preview of The Vault™ created to open warmer conversations, clearer reflection, and more honest self-recognition.</p>
             <p>For women, families, facilitators, and communities who want connection to feel thoughtful instead of forced.</p>
             <div>
-              <Link className="button vault-gold-button" to="/contact?resource=100-conversation-starters">Request the Download</Link>
+              <a
+                className="button vault-gold-button"
+                href={publicLinks.conversationStarters}
+                target="_blank"
+                rel="noreferrer"
+              >
+                Request the Download
+              </a>
               <Link className="button vault-dark-outline" to="/contact">Ask About The Vault™</Link>
             </div>
           </div>
