@@ -60,7 +60,7 @@ export const signatureExperiences = {
     ],
     listEyebrow: 'Wardrobe Clarity',
     listTitle: 'Personal style creates greater confidence in the way you show up.',
-    listText: 'For women seeking a more integrated wardrobe experience, the Virtual Closet Upgrade provides outfit organization, styling recommendations, and wardrobe visibility in one streamlined space.',
+    listText: 'Your personalized style direction becomes a practical reference for silhouettes, wardrobe structure, styling choices, and more intentional outfit building.',
     listCardTitle: 'Inside Your Personalized Style Direction',
     listItems: [
       'Personalized style guidance aligned with lifestyle and personality',
