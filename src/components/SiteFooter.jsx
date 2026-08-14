@@ -2,7 +2,6 @@ import { Link } from 'react-router-dom'
 import instagramIcon from '../assets/images/icons/instagram.webp'
 import spotifyIcon from '../assets/images/icons/spotify.webp'
 import youtubeIcon from '../assets/images/icons/youtube.webp'
-import logo from '../assets/images/logo.webp'
 import { publicLinks } from '../config/publicLinks.js'
 import './SiteFooter.css'
 
@@ -19,7 +18,7 @@ function SiteFooter() {
     <footer className="site-footer">
       <div className="site-footer-grid">
         <div className="footer-brand">
-          <img className="footer-logo" src={logo} alt="Power Within Collective logo" />
+          <img className="footer-logo" src="/favicon.webp" alt="" />
           <h2>Power Within Collective</h2>
           <p>Personal Presence, congruence, confidence, and self-recognition for women in a new season.</p>
           <div className="footer-socials">

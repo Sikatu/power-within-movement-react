@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
-import logo from '../assets/images/logo.webp'
+import logo from '../assets/images/power-within-collective-logo.png'
 import { preloadPrimaryPublicRoutes, preloadPublicRoute } from '../lib/publicRoutePreloaders.js'
 import './SiteHeader.css'
 
@@ -57,10 +57,13 @@ function SiteHeader() {
   return (
     <header className="site-header">
       <nav className="site-navigation" aria-label="Primary navigation">
-        <NavLink className="site-brand" to="/" onClick={closeMenu}>
+        <NavLink
+          className="site-brand"
+          to="/"
+          onClick={closeMenu}
+          aria-label="Power Within Collective home"
+        >
           <img src={logo} alt="" />
-          <span className="site-brand-full">Power Within Collective</span>
-          <span className="site-brand-short">Power Within</span>
         </NavLink>
 
         <ul id="primary-navigation" className={`site-nav-links${isOpen ? ' is-open' : ''}`}>
