@@ -22,7 +22,7 @@ const team = [
     number: '03',
     name: 'Dr. Kenny Mittelstadt',
     image: kennyImage,
-    text: 'Root Cause Functional Medicine Practitioner with a systems-based view of energy, hormones, stress, digestion, and cellular health.',
+    text: 'Functional Medicine Practitioner with a systems-based view of energy, hormones, stress, digestion, and cellular health.',
   },
 ]
 
