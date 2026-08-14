@@ -94,27 +94,22 @@ function Home() {
             <span> Now it's time to come alive for yourself.</span>
           </h1>
           <p className="home-hero-lead">
-            Transformational experiences for women in a new season, bringing
-            confidence, wellness, identity, style, and personal presence into
-            one more integrated way of living.
+            Transformational experiences designed for women who are ready to
+            stop performing their lives and start inhabiting them.
           </p>
 
           <div className="home-hero-actions">
             <Link className="button button-primary" to="/experiences">
               Explore Experiences
             </Link>
-            <Link className="button button-secondary" to="/contact">
-              Book a Clarity Session
-            </Link>
             <Link className="button button-text" to="/professionals">
               For Professionals
             </Link>
           </div>
 
-          <div className="home-focus-tags" aria-label="Power Within focus areas">
-            <span>Confidence</span>
-            <span>Wellness</span>
-            <span>Personal Presence</span>
+          <div className="home-focus-tags" aria-label="Power Within audiences">
+            <span>For women in a new season.</span>
+            <span>For beauty professionals ready to lead differently.</span>
           </div>
         </div>
 
@@ -138,19 +133,28 @@ function Home() {
 
         <div className="home-story-copy">
           <p className="eyebrow">Personal Presence</p>
-          <h2>Let the way you show up reflect the woman you are now.</h2>
+          <h2>
+            Personal presence begins when the outside finally reflects the
+            woman you've become.
+          </h2>
+
           <p>
-            Responsibilities change. Priorities shift. Sometimes the life you
-            built keeps moving while your sense of self quietly evolves beyond it.
+            Your responsibilities have changed. Your priorities have shifted.
+            And somewhere along the way, the way you show up stopped reflecting
+            who you've actually become.
           </p>
+
           <p>
-            Confidence, wellness, style, and personal presence are connected.
-            When they begin supporting one another, the way you move through
-            everyday life can feel clearer, more current, and more intentional.
+            Most women in this season don't need more information, a better
+            morning routine, or someone to tell them they're enough. What they
+            need is to close the gap between the life they're living and the
+            life that finally feels true.
           </p>
+
           <p>
-            This work is about reducing the distance between the woman you have
-            become and the way your life expresses her.
+            Confidence. Wellness. Personal presence. Style. These aren't
+            separate problems. They're different expressions of one life.
+            When they begin working together, something durable shifts.
           </p>
         </div>
       </section>
@@ -265,9 +269,6 @@ function Home() {
           <div className="home-closing-actions">
             <Link className="button button-primary" to="/experiences">
               Explore Experiences
-            </Link>
-            <Link className="button button-secondary" to="/contact">
-              Book a Clarity Session
             </Link>
           </div>
         </div>
