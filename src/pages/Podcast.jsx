@@ -5,9 +5,9 @@ import vaultImage from '../assets/images/vault.webp'
 import './Podcast.css'
 
 const podcastLinks = [
-  { label: 'Apple Podcasts', href: 'https://podcasts.apple.com/us/podcast/raising-her-confidence-build-connection-teen-self-esteem/id1827158418', primary: true },
+  { label: 'Apple Podcasts', href: 'https://podcasts.apple.com/us/podcast/raising-her-confidence-confidence-wellness-style-personal/id1827158418', primary: true },
   { label: 'Spotify', href: 'https://open.spotify.com/show/4ml9p7e5NLrUVqrd9HxnqT' },
-  { label: 'YouTube', href: 'https://www.youtube.com/@PowerWithinCollective' },
+  { label: 'YouTube', href: 'https://www.youtube.com/@RaisingHerConfidence' },
 ]
 
 const themes = [

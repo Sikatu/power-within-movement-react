@@ -7,7 +7,7 @@ import './SiteFooter.css'
 
 const socialLinks = [
   { label: 'Instagram', href: 'https://www.instagram.com/powerwithin_collective/', icon: instagramIcon },
-  { label: 'YouTube', href: 'https://www.youtube.com/@PowerWithinCollective', icon: youtubeIcon },
+  { label: 'YouTube', href: 'https://www.youtube.com/@RaisingHerConfidence', icon: youtubeIcon },
   { label: 'Spotify', href: 'https://open.spotify.com/show/4ml9p7e5NLrUVqrd9HxnqT', icon: spotifyIcon },
   { label: 'Facebook', href: 'https://www.facebook.com/powerwithincollective', text: 'f' },
   { label: 'LinkedIn', href: 'https://www.linkedin.com/in/kimmittelstadt/', text: 'in' },
