@@ -22,7 +22,7 @@ const SignatureExperiencePage = lazy(() => import('./pages/SignatureExperiencePa
 const TeenPrograms = lazy(() => import('./pages/TeenPrograms.jsx'))
 const TermsAndConditions = lazy(() => import('./pages/TermsAndConditions.jsx'))
 
-const siteOrigin = 'https://www.powerwithinmovement.com'
+const siteOrigin = 'https://www.kimmittelstadt.com'
 const siteName = 'Power Within Collective'
 const themeColor = '#fbf8f3'
 

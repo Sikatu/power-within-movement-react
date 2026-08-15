@@ -19,8 +19,10 @@ const requiredAppTokens = [
   "const TermsAndConditions = lazy(() => import('./pages/TermsAndConditions.jsx'))",
   "'/privacy-policy': {",
   "'/terms-and-conditions': {",
-  '<Route path="/privacy-policy" element={<PrivacyPolicy />} />',
-  '<Route path="/terms-and-conditions" element={<TermsAndConditions />} />',
+  'path="/privacy-policy"',
+  'element={<PrivacyPolicy />}',
+  'path="/terms-and-conditions"',
+  'element={<TermsAndConditions />}',
 ]
 const requiredPublicPaths = [
   '/',

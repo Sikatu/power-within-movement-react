@@ -4,4 +4,4 @@ Disallow: /api/
 Disallow: /admin/
 Disallow: /client-portal/
 
-Sitemap: https://www.powerwithinmovement.com/sitemap.xml
+Sitemap: https://www.kimmittelstadt.com/sitemap.xml
