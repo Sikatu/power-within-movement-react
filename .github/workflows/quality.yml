@@ -1,9 +1,11 @@
-name: Code quality
+name: Public website quality
 
 on:
   pull_request:
   push:
-    branches: [main]
+    branches:
+      - main
+      - launch/public-flodesk-only
 
 permissions:
   contents: read
@@ -22,32 +24,25 @@ jobs:
         with:
           node-version: 22
           cache: npm
-          cache-dependency-path: |
-            package-lock.json
-            server/package-lock.json
+          cache-dependency-path: package-lock.json
 
-      - name: Install frontend dependencies
+      - name: Install dependencies
         run: npm ci
 
-      - name: Install backend dependencies
-        run: npm --prefix server ci
+      - name: Check encoding
+        run: npm run check:encoding
 
-      - name: Lint frontend and backend
+      - name: Lint public source
         run: npm run lint
 
-      - name: Run security regression tests
-        run: npm test
-
-      - name: Build production frontend
+      - name: Build production website
         run: npm run build
 
-      - name: Smoke-check backend
-        run: npm --prefix server run smoke
+      - name: Validate public release boundaries
+        run: npm run public:check
 
-      - name: Test dependency audit policy
-        run: node --test scripts/audit-production.test.mjs
+      - name: Run production policy tests
+        run: npm test
 
       - name: Audit production dependencies
-        run: |
-          node scripts/audit-production.mjs
-          node scripts/audit-production.mjs --prefix server
+        run: npm run audit:production
