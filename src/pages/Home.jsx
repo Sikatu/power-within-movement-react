@@ -5,81 +5,61 @@ import recognitionImage from '../assets/images/power-within-group-presentation.w
 import { publicLinks } from '../config/publicLinks.js'
 import './Home.css'
 
-const layers = [
+const presenceDoors = [
   {
     number: '01',
-    title: 'Confidence',
-    text: 'Confidence grows when your inner sense of self and the way you show up begin supporting one another.',
+    title: 'Color + Beauty',
+    text: 'Understand the colors, makeup, and beauty choices that help you feel current, polished, and recognizably yourself.',
   },
   {
     number: '02',
-    title: 'Energy',
-    text: 'The physical and emotional capacity that shapes how you live, care, lead, recover, and engage with life.',
+    title: 'Style + Wardrobe',
+    text: 'Create a wardrobe direction that fits your body, lifestyle, priorities, and the chapter you are actually living now.',
   },
   {
     number: '03',
-    title: 'Wellness',
-    text: 'The practices and support that help you feel grounded, resourced, and cared for from the inside out.',
-  },
-  {
-    number: '04',
-    title: 'Identity',
-    text: 'A clearer relationship with who you are becoming, beyond the roles and expectations you have carried.',
-  },
-  {
-    number: '05',
-    title: 'Personal Presence',
-    text: 'The way your confidence, identity, energy, and self-awareness become visible in how you move through the world.',
-  },
-  {
-    number: '06',
-    title: 'Lifestyle',
-    text: 'The rhythms, environments, relationships, and choices that support the life you want to inhabit now.',
+    title: 'Presence + Choice',
+    text: 'Bring your confidence, voice, self-expression, and everyday choices into closer alignment with who you are now.',
   },
 ]
 
-const fiveRs = [
+const signatureMovement = [
   {
     number: '01',
-    title: 'Regulate',
-    text: 'Create enough clarity and steadiness to decide how you want to move through life and show up now.',
+    title: 'Recognize',
+    text: 'See clearly what has changed, what still feels true, and where your visible life no longer reflects the woman you are now.',
   },
   {
     number: '02',
-    title: 'Restore',
-    text: 'Rebuild the energy, confidence, and personal foundation that allow you to give from a more supported place.',
+    title: 'Reclaim',
+    text: 'Keep what still belongs to you while releasing habits, expectations, and expressions that belong to an earlier chapter.',
   },
   {
     number: '03',
-    title: 'Reconnect',
-    text: 'Realign your inner experience and outer expression with the woman you have become.',
+    title: 'Radiate',
+    text: 'Bring the woman you are now forward through color, beauty, style, voice, confidence, and personal presence.',
   },
   {
     number: '04',
-    title: 'Reclaim',
-    text: 'Strengthen your confidence, personal presence, voice, and relationship with your own sense of self.',
-  },
-  {
-    number: '05',
-    title: 'Reflect',
-    text: 'Allow your outer life to communicate your identity, energy, values, and evolution more authentically.',
+    title: 'Remain',
+    text: 'Build practical ways to stay connected to yourself as your life, body, priorities, and possibilities continue to evolve.',
   },
 ]
 
 const beginOptions = [
   {
     number: '01',
-    title: 'Start with Clarity',
-    text: 'A one-hour whole-person conversation to identify what no longer feels aligned and begin mapping a more intentional path forward across confidence, wellness, style, and personal presence.',
-    action: 'Book a Clarity Session',
-    to: '/contact',
+    title: 'Radiance Reclaimed Retreats',
+    text: 'The signature Personal Presence retreat for women entering a new chapter, bringing reflection together with color, beauty, style, self-expression, and practical next-step integration.',
+    action: 'Explore Radiance Reclaimed Retreats',
+    to: '/radiance-reclaimed',
   },
   {
     number: '02',
-    title: 'Radiance Reclaimed',
-    text: 'A transformational experience for the woman ready to reconnect confidence, wellness, style, and personal presence in a more intentional and integrated way.',
-    action: 'Explore Radiance Reclaimed',
-    to: '/radiance-reclaimed',
+    title: 'Private Personal Presence Experiences',
+    text: 'One-to-one guidance around color, beauty, style, wardrobe, confidence, and the visible questions that arise when life has changed faster than the way you show up.',
+    action: 'Explore Private Experiences',
+    to: '/experiences',
   },
 ]
 
@@ -89,28 +69,38 @@ function Home() {
       <section className="home-hero section-shell">
         <div className="home-hero-copy">
           <p className="eyebrow">Power Within Collective</p>
+
           <h1>
-            You've lived capably for everyone else.
-            <span> Now it's time to come alive for yourself.</span>
+            You have changed.
+            <span> Has the way you show up changed with you?</span>
           </h1>
+
           <p className="home-hero-lead">
-            Transformational experiences designed for women who are ready to
-            stop performing their lives and start inhabiting them.
+            Personal Presence for women 45+ entering a new chapter, bringing
+            color, beauty, style, self-expression, and everyday choices back
+            into conversation with who you are now.
           </p>
 
           <div className="home-hero-actions">
-            <Link className="button button-primary" to="/experiences">
-              Explore Experiences
+            <Link
+              className="button button-primary"
+              to="/radiance-reclaimed"
+            >
+              Explore Radiance Reclaimed&trade;
             </Link>
-            <Link className="button button-text" to="/professionals">
-              For Professionals
+
+            <Link
+              className="button button-text"
+              to="/experiences"
+            >
+              Private Personal Presence&trade;
             </Link>
           </div>
 
-          <div className="home-focus-tags" aria-label="Power Within audiences">
-            <span>For women in a new season.</span>
-            <span>For beauty professionals ready to lead differently.</span>
-          </div>
+          <p className="home-audience-note">
+            For women in midlife and beyond who want to feel current,
+            expressive, and recognizable again.
+          </p>
         </div>
 
         <div className="home-hero-visual">
@@ -132,29 +122,26 @@ function Home() {
         </div>
 
         <div className="home-story-copy">
-          <p className="eyebrow">Personal Presence</p>
-          <h2>
-            Personal presence begins when the outside finally reflects the
-            woman you've become.
-          </h2>
+          <p className="eyebrow">Personal Presence&trade;</p>
+
+          <h2>The woman you are now deserves to be visible.</h2>
 
           <p>
-            Your responsibilities have changed. Your priorities have shifted.
-            And somewhere along the way, the way you show up stopped reflecting
-            who you've actually become.
+            Life can change faster than the way we dress, choose, or show up.
+            A wardrobe that once made sense can begin to feel disconnected.
+            The same can happen with color, hair, makeup, routines, or the way
+            you enter a room.
           </p>
 
           <p>
-            Most women in this season don't need more information, a better
-            morning routine, or someone to tell them they're enough. What they
-            need is to close the gap between the life they're living and the
-            life that finally feels true.
+            Personal Presence brings those visible questions into one
+            practical conversation with identity, confidence, lifestyle,
+            voice, and self-expression.
           </p>
 
           <p>
-            Confidence. Wellness. Personal presence. Style. These aren't
-            separate problems. They're different expressions of one life.
-            When they begin working together, something durable shifts.
+            The goal is not a younger version of you. It is a more current
+            and recognizable one.
           </p>
         </div>
       </section>
@@ -162,22 +149,21 @@ function Home() {
       <section className="home-layers">
         <div className="section-shell">
           <header className="section-heading">
-            <p className="eyebrow">The Whole Woman</p>
-            <h2>It is layered.</h2>
+            <p className="eyebrow">Personal Presence, Practically</p>
+            <h2>Start where the disconnect is visible.</h2>
             <p>
-              This work considers the whole woman rather than isolating one
-              concern while everything else is left untouched. Confidence,
-              energy, wellness, identity, personal presence, and lifestyle
-              continuously influence one another.
+              You may arrive with a color, wardrobe, beauty, or confidence
+              question. The direction becomes useful when the answer fits
+              your real body, real lifestyle, and real chapter.
             </p>
           </header>
 
           <div className="layer-grid">
-            {layers.map((layer) => (
-              <article key={layer.title}>
-                <span>{layer.number}</span>
-                <h3>{layer.title}</h3>
-                <p>{layer.text}</p>
+            {presenceDoors.map((door) => (
+              <article key={door.title}>
+                <span>{door.number}</span>
+                <h3>{door.title}</h3>
+                <p>{door.text}</p>
               </article>
             ))}
           </div>
@@ -186,17 +172,16 @@ function Home() {
 
       <section className="home-framework section-shell">
         <header className="section-heading">
-          <p className="eyebrow">The 5Rs</p>
-          <h2>A framework for creating greater alignment from the inside out.</h2>
+          <p className="eyebrow">Radiance Reclaimed&trade;</p>
+          <h2>Recognize. Reclaim. Radiate. Remain.</h2>
           <p>
-            Lasting change becomes possible when confidence, wellness,
-            identity, and personal presence begin supporting one another
-            instead of pulling in different directions.
+            A signature movement for turning self-recognition into visible,
+            practical choices that can continue with you as life evolves.
           </p>
         </header>
 
         <div className="framework-grid">
-          {fiveRs.map((item) => (
+          {signatureMovement.map((item) => (
             <article key={item.title}>
               <span>{item.number}</span>
               <h3>{item.title}</h3>
@@ -208,8 +193,8 @@ function Home() {
 
       <section className="home-begin section-shell">
         <header className="section-heading">
-          <p className="eyebrow">Where Would You Like to Begin?</p>
-          <h2>Begin with the kind of support this season is asking for.</h2>
+          <p className="eyebrow">Ways to Work Together</p>
+          <h2>One signature invitation. One private pathway.</h2>
         </header>
 
         <div className="begin-grid">
@@ -229,30 +214,33 @@ function Home() {
       <section className="home-recognition">
         <div className="home-recognition-grid section-shell">
           <div className="home-recognition-copy">
-            <p className="eyebrow">A New Season</p>
-            <h2>You might be exactly who we're talking about.</h2>
+            <p className="eyebrow">A New Chapter</p>
+
+            <h2>You are not starting over. You are choosing what stays.</h2>
 
             <p>
-              You are capable. You have handled complexity, family, work,
-              care, leadership, and real responsibility. You are not here
-              because you need rescuing or because someone needs to convince
-              you of your worth.
+              You have already lived enough life to know that change does not
+              require throwing everything away. Experience, relationships,
+              wisdom, and the parts of yourself that still fit get to come
+              forward with you.
             </p>
 
             <p>
-              After years spent adapting to what life required, you may be
-              looking for a way back into yourself — a way to feel current,
-              settled, alive, and genuinely present in your own life again.
+              Maybe your body, work, family, relationships, priorities, or
+              sense of self have shifted. The clothes, beauty routines, or
+              habits that once worked may simply belong to an earlier chapter.
             </p>
 
             <p>
-              You are not looking for a formula or another polished version
-              of who you used to be. You are looking for an expression of
-              yourself that feels honest for the woman you are now.
+              The goal is to feel current, not trendy; visible, not exposed;
+              recognizable, not reinvented.
             </p>
 
-            <Link className="button button-secondary" to="/experiences">
-              Explore Experiences
+            <Link
+              className="button button-secondary"
+              to="/radiance-reclaimed"
+            >
+              Explore Radiance Reclaimed&trade;
             </Link>
           </div>
 
@@ -269,21 +257,20 @@ function Home() {
         <div className="home-closing-inner section-shell">
           <p className="eyebrow">The Invitation</p>
 
-          <h2>
-            Let your outer life become a more truthful expression of who you
-            are now.
-          </h2>
+          <h2>Current, not trendy. Recognizable, not reinvented.</h2>
 
           <p>
-            You have spent a long time doing what was responsible, capable,
-            and required. This season can be less about maintaining an older
-            version of yourself and more about choosing what feels honest,
-            current, and fully yours.
+            Radiance is not youth. It is the aliveness that becomes visible
+            when the way you look, live, choose, and show up feels more like
+            you again.
           </p>
 
           <div className="home-closing-actions">
-            <Link className="button button-primary" to="/experiences">
-              Explore Experiences
+            <Link
+              className="button button-primary"
+              to="/radiance-reclaimed"
+            >
+              Explore Radiance Reclaimed&trade;
             </Link>
           </div>
         </div>
@@ -295,24 +282,25 @@ function Home() {
       >
         <header className="section-heading">
           <p className="eyebrow">Stay Connected</p>
-          <h2>Thoughtful resources for the season you are in.</h2>
+          <h2>Useful ideas for the chapter you are in.</h2>
         </header>
 
         <div className="home-connect-grid">
           <article className="home-connect-card home-connect-card-newsletter">
             <span>01</span>
-            <h3>Notes for the woman in a new season.</h3>
+            <h3>The Power Within Edit</h3>
             <p>
-              Reflections on confidence, wellness, style, identity, personal
-              presence, and the quieter work of returning to yourself.
+              Thoughtful notes on Personal Presence, color, beauty, style,
+              confidence, self-expression, and choosing what comes next.
             </p>
+
             <a
               className="button button-secondary"
               href={publicLinks.newsletter}
               target="_blank"
               rel="noreferrer"
             >
-              Join the Newsletter
+              Join The Power Within Edit
             </a>
           </article>
 
@@ -323,6 +311,7 @@ function Home() {
               A free resource created to open more meaningful conversations,
               reflection, connection, and curiosity.
             </p>
+
             <a
               className="button button-secondary"
               href={publicLinks.conversationStarters}

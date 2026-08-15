@@ -28,12 +28,12 @@ const themeColor = '#fbf8f3'
 
 const routeMetadata = {
   '/': {
-    title: 'Power Within Collective | Confidence, Style & Personal Presence',
-    description: 'Power Within Collective helps women in a new season align confidence, color, style, and personal presence with who they are now.',
+    title: 'Power Within Collective | Personal Presence for Women 45+',
+    description: 'Personal Presence for women 45+ entering a new chapter, connecting color, beauty, style, confidence, self-expression, and intentional next-chapter choices.',
   },
   '/experiences': {
-    title: 'Confidence, Style & Image Experiences | Power Within Collective',
-    description: 'Explore private confidence coaching, personal style guidance, color analysis, beauty direction, Radiance Reclaimed, and whole-person transformation experiences.',
+    title: 'Private Personal Presence Experiences | Power Within Collective',
+    description: 'Explore private Personal Presence guidance through color analysis, beauty direction, style, wardrobe, confidence, and practical next-chapter expression.',
   },
   '/color-analysis': {
     title: 'Color Analysis Consultation for Women | Power Within Collective',
@@ -48,8 +48,8 @@ const routeMetadata = {
     description: 'A personalized makeup and beauty direction consultation designed around undertones, product choices, application, natural confidence, and everyday polish.',
   },
   '/radiance-reclaimed': {
-    title: 'Women’s Confidence & Presence Coaching | Radiance Reclaimed',
-    description: 'A private confidence and presence coaching experience for women ready for whole-person transformation, self-trust, image alignment, and renewed identity.',
+    title: 'Radiance Reclaimed Retreats | Personal Presence for Women 45+',
+    description: 'Explore Radiance Reclaimed, an intimate Personal Presence retreat for women entering a new chapter through color, beauty, style, reflection, self-expression, and practical integration.',
   },
   '/resources': {
     title: 'Confidence, Style & Self-Reflection Resources | Power Within Collective',
@@ -72,8 +72,8 @@ const routeMetadata = {
     description: 'Learn how personal style, color, wardrobe direction, and image alignment can help women rebuild confidence and self-trust.',
   },
   '/resources/confidence-coaching-for-women': {
-    title: 'Confidence Coaching for Women | Power Within Collective',
-    description: 'Confidence coaching for women in a new season of life, with support for identity, presence, image alignment, self-trust, and transformation.',
+    title: 'Confidence & Personal Presence for Women | Power Within Collective',
+    description: 'Explore how self-recognition, Personal Presence, color, style, and practical next-chapter choices can support confidence for women in midlife and beyond.',
   },
   '/professionals': {
     title: 'Image Consultant & Beauty Professional Training | Power Within Professional',
@@ -99,15 +99,15 @@ const routeMetadata = {
   },
   '/about': {
     title: 'About Kim Mittelstadt | Power Within Collective',
-    description: 'Learn about Kim Mittelstadt, founder of Power Within Collective, and the whole-person foundation behind her confidence, style, beauty, and transformation work.',
+    description: 'Meet Kim Mittelstadt and the nearly four decades of beauty, image, color, teaching, speaking, coaching, and women-centered experience behind Power Within Collective.',
   },
   '/faq': {
     title: 'Frequently Asked Questions | Power Within Collective',
     description: 'Answers to common questions about Power Within Collective experiences, confidence and personal presence work, professional education, and getting started.',
   },
   '/contact': {
-    title: 'Contact Power Within Collective | Private Consultations & Speaking',
-    description: 'Contact Power Within Collective about private consultations, color analysis, personal style guidance, Radiance Reclaimed, professional education, speaking, podcast, or collaboration.',
+    title: 'Contact Power Within Collective | Personal Presence & Radiance',
+    description: 'Start a conversation about Radiance Reclaimed, private Personal Presence experiences, color, style, beauty direction, speaking, professional education, or collaboration.',
   },
   '/privacy-policy': {
     title: 'Privacy Policy | Power Within Collective',

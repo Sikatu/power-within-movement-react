@@ -104,15 +104,3 @@ export const signatureExperiences = {
     contactInterest: 'makeup-lesson',
   },
 }
-
-export const radianceFitCards = [
-  { number: '01', title: 'The Woman in Transition', text: 'Navigating a divorce, an empty nest, a career change, or a season that no longer matches who she has become.' },
-  { number: '02', title: 'The Woman Who Has “Done the Work”', text: 'She has read the books and tried the routines. Real progress has been made, yet something still feels incomplete or disconnected.' },
-  { number: '03', title: 'The Woman Ready to Stop Managing and Start Living', text: 'Done performing composure. Ready to actually inhabit her life, not just maintain it from the outside.' },
-]
-
-export const radianceChapters = [
-  { number: '01', title: 'Personal Sessions', text: 'Six personal, intentionally paced sessions designed to allow real-life integration between conversations.' },
-  { number: '02', title: 'Whole-Person Alignment', text: 'Personal color, style, wellness, confidence, and presence are addressed together — not as separate problems.' },
-  { number: '03', title: 'Tailored Support', text: 'Resources, guidance, and support are shaped around your season, your identity, and what this transition is asking of you.' },
-]

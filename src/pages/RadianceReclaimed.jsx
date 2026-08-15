@@ -1,47 +1,128 @@
 import { Link } from 'react-router-dom'
-import SignatureExperienceNav from '../components/SignatureExperienceNav.jsx'
 import privateGuidanceImage from '../assets/images/experiences-private-guidance.webp'
 import radianceImage from '../assets/images/radiance.webp'
-import { radianceChapters, radianceFitCards } from '../data/signatureExperiences.js'
 import './SignatureExperiences.css'
+
+const retreatFit = [
+  {
+    number: '01',
+    title: 'A Woman in a New Chapter',
+    text: 'Life, body, roles, priorities, relationships, work, or identity have shifted, and she wants the way she shows up to feel current again.',
+  },
+  {
+    number: '02',
+    title: 'A Woman Whose Outside Has Not Caught Up',
+    text: 'Her wardrobe, beauty choices, or visible expression still make sense on paper, but no longer feel fully recognizable in real life.',
+  },
+  {
+    number: '03',
+    title: 'A Woman Ready for Practical Expression',
+    text: 'She wants more than inspiration. She wants useful direction she can carry into color, beauty, style, choices, and everyday presence.',
+  },
+]
+
+const signatureMovement = [
+  {
+    number: '01',
+    title: 'Recognize',
+    text: 'See who you are now, what has changed, and what the current chapter is asking you to notice.',
+  },
+  {
+    number: '02',
+    title: 'Reclaim',
+    text: 'Keep what still belongs, release what no longer fits, and reconnect with expression, pleasure, confidence, and choice.',
+  },
+  {
+    number: '03',
+    title: 'Radiate',
+    text: 'Bring that woman forward through intentional color, beauty, style, voice, self-expression, and Personal Presence.',
+  },
+  {
+    number: '04',
+    title: 'Remain',
+    text: 'Leave with practical ways to stay connected to yourself as your life continues to evolve.',
+  },
+]
 
 function RadianceReclaimed() {
   return (
     <main id="main-content" className="signature-page radiance-page">
       <section className="signature-family-hero section-shell">
-        <p className="eyebrow">Signature Experiences</p>
-        <h1>Four doorways. One integrated return.</h1>
-        <p>Color, style, makeup, and the whole-person experience — each designed to help the outside finally reflect the woman you have become.</p>
-        <SignatureExperienceNav activePath="/radiance-reclaimed" />
+        <p className="eyebrow">Radiance Reclaimed&trade; Retreats</p>
+
+        <h1>
+          A Personal Presence retreat for the woman entering a new chapter.
+        </h1>
+
+        <p>
+          Recognize who you are now and bring that woman forward through
+          intentional color, beauty, style, reflection, self-expression,
+          connection, and practical next-chapter choices.
+        </p>
       </section>
 
       <section className="radiance-experience">
         <div className="section-shell">
           <header className="radiance-intro">
-            <p className="eyebrow">Radiance Reclaimed™</p>
-            <h2>A personal, high-touch experience for the woman ready to inhabit the life that fits who she has become.</h2>
-            <p>This is not about becoming someone new. It is about returning to the woman who was always there — more whole, more deliberate, and more willing to inhabit her own life without apology.</p>
-            <Link className="button radiance-gold-button" to="/contact">Apply for Radiance Reclaimed™</Link>
+            <p className="eyebrow">The Signature Experience</p>
+
+            <h2>Recognize who you are now. Bring that woman forward.</h2>
+
+            <p>
+              Radiance Reclaimed is an intimate Personal Presence retreat for
+              women who have changed and want the way they look, live, choose,
+              and show up to feel recognizable again.
+            </p>
+
+            <Link
+              className="button radiance-gold-button"
+              to="/contact?interest=radiance"
+            >
+              Start a Radiance Reclaimed&trade; Conversation
+            </Link>
           </header>
 
           <div className="radiance-story-grid">
-            <img src={radianceImage} alt="Radiance Reclaimed" />
+            <img
+              src={radianceImage}
+              alt="Radiance Reclaimed Personal Presence experience"
+            />
+
             <div>
-              <p className="eyebrow">The Return</p>
-              <h3>Radiance is not a beauty concept.</h3>
-              <p>It is what becomes visible when a woman stops dimming herself to make others comfortable. What arrives when she stops pouring from an empty vessel.</p>
-              <p>Radiance Reclaimed™ was designed for the woman who is done with partial answers and ready to bring confidence, wellness, personal presence, color, style, and identity into one integrated conversation.</p>
+              <p className="eyebrow">Reclaimed Radiance</p>
+
+              <h3>Radiance is not youth. It is aliveness and presence.</h3>
+
+              <p>
+                This is not a generic mindset retreat, fashion workshop, spa
+                weekend, or promise to become a different woman.
+              </p>
+
+              <p>
+                Color, beauty, style, self-expression, reflection, and
+                practical choices come together so the outside can become a
+                more truthful expression of the woman you are now.
+              </p>
             </div>
           </div>
 
           <section className="radiance-fit">
             <header className="radiance-section-heading">
-              <p className="eyebrow">Who This Is For</p>
-              <h3>This is not for every woman. It is for the one who is ready.</h3>
-              <p>Radiance Reclaimed™ is a private, application-only experience for women who sense they are ready for something more integrated than another fix.</p>
+              <p className="eyebrow">Who It Is For</p>
+
+              <h3>
+                For the woman who does not need reinvention. She needs
+                recognition and direction.
+              </h3>
+
+              <p>
+                The retreat is designed for mature women who want beauty and
+                depth, but also want the experience to land in real life.
+              </p>
             </header>
+
             <div className="radiance-card-grid">
-              {radianceFitCards.map((card) => (
+              {retreatFit.map((card) => (
                 <article key={card.title}>
                   <span>{card.number}</span>
                   <h4>{card.title}</h4>
@@ -53,14 +134,22 @@ function RadianceReclaimed() {
 
           <section className="radiance-process">
             <header className="radiance-section-heading">
-              <p className="eyebrow">Inside the Experience</p>
-              <h3>Six sessions. One integrated process.</h3>
-              <p>Radiance Reclaimed™ moves through three intentional phases — personal, whole-person, and forward-facing — so change has room to actually take hold.</p>
+              <p className="eyebrow">The Signature Movement</p>
+
+              <h3>Recognize. Reclaim. Radiate. Remain.</h3>
+
+              <p>
+                The experience moves from recognition into practical visible
+                expression, then into choices that can continue after the
+                retreat itself.
+              </p>
             </header>
+
             <div className="radiance-chapters">
-              {radianceChapters.map((chapter) => (
+              {signatureMovement.map((chapter) => (
                 <article key={chapter.title}>
                   <span>{chapter.number}</span>
+
                   <div>
                     <h4>{chapter.title}</h4>
                     <p>{chapter.text}</p>
@@ -71,27 +160,61 @@ function RadianceReclaimed() {
           </section>
 
           <blockquote className="radiance-quote">
-            <p>“You do not need to become someone new. You need permission to stop abandoning who you already are.”</p>
-            <cite>Power Within Collective™</cite>
+            <p>
+              You are not starting over. You are returning to yourself.
+            </p>
+            <cite>Power Within Collective&trade;</cite>
           </blockquote>
 
           <div className="radiance-guided-grid">
             <div>
-              <p className="eyebrow">A Private, Guided Process</p>
-              <h3>Paced for real integration, not rushed transformation.</h3>
-              <p>Radiance Reclaimed™ is intentionally spaced so insight has time to become practice, and practice has time to become identity.</p>
-              <p>You are guided personally through color, style, wellness, confidence, and presence — not as separate services, but as one integrated return to yourself.</p>
+              <p className="eyebrow">Inside the Retreat</p>
+
+              <h3>Intimate, beautiful, useful, and grounded in real life.</h3>
+
+              <p>
+                Expect space for reflection and connection alongside visible
+                Personal Presence application through color, beauty, style,
+                self-expression, and the choices shaping your next chapter.
+              </p>
+
+              <p>
+                The experience is designed to feel elevated without becoming
+                performative, therapeutic, or disconnected from everyday life.
+              </p>
             </div>
-            <img src={privateGuidanceImage} alt="Private, guided Radiance Reclaimed session" />
+
+            <img
+              src={privateGuidanceImage}
+              alt="Personal Presence guidance in an intimate setting"
+            />
           </div>
 
           <section className="radiance-begin">
             <p className="eyebrow">How to Begin</p>
-            <h3>Radiance Reclaimed™ is offered by application only.</h3>
-            <p>If there appears to be alignment, you will be invited into a guided conversation — not a sales call, but a genuine exploration of where you are, what you are navigating, and whether this experience is the right fit.</p>
+
+            <h3>Explore first. Begin the conversation when it feels relevant.</h3>
+
+            <p>
+              You do not need to arrive with the perfect explanation. Share
+              what is changing, what no longer feels current, and what you
+              would like to understand more clearly.
+            </p>
+
             <div>
-              <Link className="button radiance-gold-button" to="/contact">Apply for Radiance Reclaimed™</Link>
-              <Link className="button radiance-outline-button" to="/experiences">Explore Other Experiences</Link>
+              <Link
+                className="button radiance-gold-button"
+                to="/contact?interest=radiance"
+              >
+                Start a Radiance Reclaimed&trade; Conversation
+              </Link>
+
+              <Link
+                className="button radiance-outline-button"
+                to="/experiences"
+              >
+                Explore Private Personal Presence
+              </Link>
             </div>
           </section>
         </div>
