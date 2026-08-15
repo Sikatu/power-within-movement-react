@@ -5,9 +5,9 @@ import SiteHeader from './components/SiteHeader.jsx'
 import Home from './pages/Home.jsx'
 import NotFound from './pages/NotFound.jsx'
 
-// Keep the home route instant, while loading secondary public and authenticated
-// portal experiences only when someone visits them. The shared Suspense boundary
-// already provides a branded, accessible loading state during route transitions.
+// Keep the home route instant, while loading secondary public experiences only
+// when someone visits them. The shared Suspense boundary already provides a
+// branded, accessible loading state during route transitions.
 const About = lazy(() => import('./pages/About.jsx'))
 const FAQ = lazy(() => import('./pages/FAQ.jsx'))
 const Contact = lazy(() => import('./pages/Contact.jsx'))
@@ -48,7 +48,7 @@ const routeMetadata = {
     description: 'A personalized makeup and beauty direction consultation designed around undertones, product choices, application, natural confidence, and everyday polish.',
   },
   '/radiance-reclaimed': {
-    title: 'Women’s Confidence & Presence Coaching | Radiance Reclaimed',
+    title: 'Womenâ€™s Confidence & Presence Coaching | Radiance Reclaimed',
     description: 'A private confidence and presence coaching experience for women ready for whole-person transformation, self-trust, image alignment, and renewed identity.',
   },
   '/resources': {
@@ -288,7 +288,7 @@ function RouteLoadingFallback() {
       <div className="route-loading__card">
         <span className="route-loading__mark" aria-hidden="true">PW</span>
         <p>Power Within Collective</p>
-        <h1>Opening this experience…</h1>
+        <h1>Opening this experienceâ€¦</h1>
         <div className="route-loading__lines" aria-hidden="true">
           <span />
           <span />

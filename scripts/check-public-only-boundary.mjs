@@ -62,6 +62,7 @@ const forbiddenContent = [
   "server/package.json",
   "Express backend",
   "PostgreSQL backend",
+  "portal experiences",
 ];
 
 for (const file of tracked) {
