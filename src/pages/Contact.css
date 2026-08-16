@@ -21,8 +21,8 @@
   max-width: 650px;
   margin: 0 auto;
   color: var(--color-muted);
-  font-size: 15px;
-  line-height: 1.8;
+  font-size: 17px;
+  line-height: 1.78;
 }
 
 .contact-handoff {
@@ -75,8 +75,8 @@
   max-width: 590px;
   margin: 0 0 16px;
   color: var(--color-muted);
-  font-size: 14px;
-  line-height: 1.8;
+  font-size: 16px;
+  line-height: 1.76;
 }
 
 .contact-flodesk-button {
@@ -90,8 +90,8 @@
   display: block;
   margin-top: 14px;
   color: var(--color-muted);
-  font-size: 11px;
-  line-height: 1.55;
+  font-size: 12.5px;
+  line-height: 1.6;
 }
 
 .contact-reassurance {
@@ -111,8 +111,8 @@
   max-width: 680px;
   margin: 0 auto;
   color: var(--color-muted);
-  font-size: 14px;
-  line-height: 1.8;
+  font-size: 16px;
+  line-height: 1.78;
 }
 
 @media (max-width: 900px) {
@@ -142,7 +142,8 @@
   }
 
   .contact-hero > p:not(.eyebrow) {
-    font-size: 13.5px;
+    font-size: 16px;
+    line-height: 1.72;
   }
 
   .contact-handoff {
