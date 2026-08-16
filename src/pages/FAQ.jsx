@@ -24,7 +24,7 @@ const faqs = [
   },
   {
     question: 'How do I contact Power Within Collective?',
-    answer: 'Use the Contact page to begin. From there, you will be guided to the private Power Within Collective contact form.',
+    answer: 'Use the Contact page to begin. From there, you will be guided to the Power Within Collective contact form.',
   },
 ]
 

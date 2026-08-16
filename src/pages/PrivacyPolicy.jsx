@@ -7,7 +7,7 @@ const sections = [
   },
   {
     title: 'How We Use Your Information',
-    body: 'Information may be used to deliver services, process payments, communicate with you, send requested updates, protect private accounts, and improve the website and client experience.',
+    body: 'Information may be used to deliver services, process payments, communicate with you, send requested updates, protect personal information, and improve the website and client experience.',
   },
   {
     title: 'Third-Party Services',
@@ -15,7 +15,7 @@ const sections = [
   },
   {
     title: 'Cookies & Tracking',
-    body: 'The website may use cookies or similar technologies to provide secure sessions, remember preferences, improve functionality, and understand site usage.',
+    body: 'The website may use cookies or similar technologies to remember preferences, support website functionality, and understand site usage.',
   },
   {
     title: 'Your Rights & Choices',

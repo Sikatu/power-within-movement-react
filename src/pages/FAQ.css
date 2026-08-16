@@ -19,8 +19,8 @@
   max-width: 620px;
   margin: 0 auto;
   color: var(--color-muted);
-  font-size: 15px;
-  line-height: 1.8;
+  font-size: 17px;
+  line-height: 1.78;
 }
 
 .faq-content {
@@ -57,8 +57,8 @@
   max-width: 720px;
   margin: 0;
   color: var(--color-muted);
-  font-size: 14px;
-  line-height: 1.8;
+  font-size: 16px;
+  line-height: 1.78;
 }
 
 .faq-closing {
@@ -78,8 +78,8 @@
   max-width: 650px;
   margin: 0 auto 24px;
   color: var(--color-muted);
-  font-size: 14px;
-  line-height: 1.8;
+  font-size: 16px;
+  line-height: 1.78;
 }
 
 @media (max-width: 820px) {
