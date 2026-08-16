@@ -1,282 +1,318 @@
 import { Link } from 'react-router-dom'
+import privateGuidanceImage from '../assets/images/experiences-private-guidance.webp'
+import colorImage from '../assets/images/color-analysis-swatches-session.webp'
+import styleImage from '../assets/images/style-analysis-wardrobe-guidance.webp'
+import makeupImage from '../assets/images/blend-cosmetics-makeup-direction.webp'
 import consultationImage from '../assets/images/consultation-detail.webp'
-import experiencesImage from '../assets/images/experiences-private-guidance.webp'
 import './Experiences.css'
 
-const beginCards = [
+const pathways = [
   {
     number: '01',
-    title: 'Radiance Reclaimed',
-    text: 'For the woman ready to stop performing her life and start inhabiting it with congruence, aliveness, and visible presence.',
+    eyebrow: 'Color + Beauty',
+    title: 'See yourself more clearly in color, makeup, and beauty choices.',
+    text: 'For women who want practical direction around personal color, undertones, makeup, hair direction, and beauty choices that feel current and repeatable.',
+    image: colorImage,
+    alt: 'Personal color analysis and palette guidance',
+    actions: [
+      {
+        label: 'Explore Color Analysis',
+        to: '/color-analysis',
+      },
+      {
+        label: 'Explore Makeup Direction',
+        to: '/blend-cosmetics',
+      },
+    ],
   },
   {
     number: '02',
-    title: 'Clarity Session',
-    text: 'A focused whole-person conversation to name what has shifted, locate the gap, and create direction for the next aligned step.',
-  },
-  {
-    number: '03',
-    title: 'Personalized Appointments',
-    text: 'For women who want beauty, color, style, or makeup guidance without committing to a deeper coaching experience.',
-  },
-]
-
-const appointmentOptions = [
-  {
-    number: '01',
-    title: 'Makeup Confidence Lesson',
-    investment: '$350',
-    time: '90 minutes',
-    bestFor: 'A simple, flattering makeup routine taught step by step.',
-    description: 'A focused beauty appointment for the woman who wants her makeup to feel natural, current, and easy to repeat.',
-    included: ['Undertone and shade direction', 'Product and application guidance', 'A polished everyday routine'],
-    thinking: 'I want to look like myself, just more pulled together.',
-    to: '/blend-cosmetics',
-    action: 'Explore Makeup Direction',
-  },
-  {
-    number: '02',
-    title: 'Beauty & Color Refresh',
-    investment: '$497',
-    time: '2 hours',
-    bestFor: 'Makeup, color, and hair direction.',
-    description: 'A refined refresh for women who want clearer direction around color, beauty choices, and what naturally supports their features.',
-    included: ['Personal color guidance', 'Makeup shade and hair color direction', 'A more cohesive beauty picture'],
-    thinking: 'I know something feels off, but I am not sure if it is color, makeup, or hair.',
-    to: '/color-analysis',
-    action: 'Explore Color Alignment',
-  },
-  {
-    number: '03',
-    title: 'Personal Presence Refresh',
-    investment: '$697',
-    time: '2.5–3 hours',
-    bestFor: 'Beauty, color, style, proportion, and a 30-day plan.',
-    description: 'A grounded reset for the woman whose body, lifestyle, or season of life has changed and wants practical direction.',
-    included: ['Beauty, color, and style direction', 'Body shape and proportion guidance', 'A focused 30-day presence plan'],
-    thinking: 'I need someone to help me see what works for who I am now.',
-    to: '/style-analysis',
-    action: 'Explore Style Alignment',
-  },
-  {
-    number: '04',
-    title: 'The Signature Day',
-    investment: '$1,597 intro / $1,997',
-    time: 'Two sessions, up to 6 hours',
-    bestFor: 'Deep whole-person analysis across beauty, color, style, and personal presence.',
-    description: 'An immersive appointment experience for the woman ready for deeper clarity across how she looks, feels, and shows up.',
-    included: ['Beauty, color, style, and body analysis', 'Personal presence and wardrobe direction', 'A deeper integration plan for moving forward'],
-    thinking: 'I have been guessing for a long time, and I am ready to understand what works and why.',
-    to: '/contact',
-    action: 'Get in Touch',
+    eyebrow: 'Style + Wardrobe',
+    title: 'Dress the body and life you are living now.',
+    text: 'For women whose body, lifestyle, priorities, or sense of style have changed and who want clearer direction around proportion, silhouettes, wardrobe structure, and everyday confidence.',
+    image: styleImage,
+    alt: 'Personal style and wardrobe guidance',
+    actions: [
+      {
+        label: 'Explore Style + Body Analysis',
+        to: '/style-analysis',
+      },
+    ],
   },
 ]
 
-const coverCards = [
-  {
-    title: 'Color Analysis',
-    text: 'Personalized color direction for tones, neutrals, makeup shades, hair direction, and accent colors that naturally support your features and presence.',
-    to: '/color-analysis',
-  },
-  {
-    title: 'Style & Body Analysis',
-    text: 'Guidance around personal style, body shape, proportion, silhouettes, wardrobe structure, and confidence in this season of life.',
-    to: '/style-analysis',
-  },
-  {
-    title: 'Makeup Lesson & Direction',
-    text: 'A personal beauty experience focused on makeup, undertones, product direction, application, and a polished routine that feels repeatable.',
-    to: '/blend-cosmetics',
-  },
-]
-
-const chooseGuides = [
-  {
-    title: 'Choose the Makeup Confidence Lesson if:',
-    points: ['Your main goal is learning a makeup routine that works for your face.', 'You feel overwhelmed or confused about products.', 'You want someone to teach you step by step.'],
-  },
-  {
-    title: 'Choose the Beauty & Color Refresh if:',
-    points: ['You want makeup help plus practical color and hair color direction.', 'You are unsure whether warm, cool, or neutral tones suit you best.', 'You want a more cohesive beauty picture without a full style appointment.'],
-  },
-  {
-    title: 'Choose the Personal Presence Refresh if:',
-    points: ['You want a meaningful reset across beauty, color, style, and presence.', 'Your body, lifestyle, or season of life has changed.', 'You need practical guidance without a full intensive analysis.'],
-  },
-  {
-    title: 'Choose The Signature Day if:',
-    points: ['You want deeper clarity, not just direction.', 'Your wardrobe, body, or personal presence feels significantly out of alignment.', 'You have been guessing for a long time and are ready to understand what works and why.'],
-  },
+const integratedSignals = [
+  'The question is bigger than one outfit, palette, or makeup routine.',
+  'Color, beauty, wardrobe, confidence, and lifestyle all feel connected.',
+  'You want someone to help you see what works for the woman you are now.',
 ]
 
 function Experiences() {
   return (
-    <main id="main-content" className="experiences-page">
-      <section className="experiences-hero section-shell">
-        <p className="eyebrow">Experiences</p>
-        <h1>This is not a makeover. It is a return.</h1>
-        <p>Experiences for women who want confidence, color, beauty, style, and personal presence to feel connected again.</p>
-        <div className="experiences-mobile-actions">
-          <a className="button button-primary" href="#appointment-services">Explore Appointment Options</a>
-          <Link className="button button-secondary" to="/contact">Get in Touch</Link>
-        </div>
-      </section>
+    <main id="main-content" className="presence-page">
+      <section className="pp-hero">
+        <div className="section-shell pp-hero-grid">
+          <div className="pp-hero-copy">
+            <p className="eyebrow">
+              Private Personal Presence&trade;
+            </p>
 
-      <section className="experiences-intro section-shell">
-        <div className="experiences-feature-copy">
-          <p className="eyebrow">Ways to Begin</p>
-          <h2>Every experience begins with the same question: what no longer feels aligned?</h2>
-          <p>Confidence, energy, identity, wellness, color, style, and presence are not separate problems. They are connected expressions of one life, one body, one season, and one woman becoming more honest with herself.</p>
-        </div>
-        <img src={experiencesImage} alt="Private guidance consultation for confidence, image, and personal presence" />
-      </section>
+            <h1>
+              Practical guidance for the woman
+              <span> you are now.</span>
+            </h1>
 
-      <section className="experiences-begin section-shell">
-        <div className="experiences-begin-grid">
-          {beginCards.map((card) => (
-            <article key={card.title}>
-              <span>{card.number}</span>
-              <h3>{card.title}</h3>
-              <p>{card.text}</p>
-            </article>
-          ))}
-        </div>
+            <p className="pp-hero-lead">
+              One-to-one experiences for the visible questions that arise
+              when life has changed faster than the way you dress, choose,
+              or show up.
+            </p>
 
-        <div className="experiences-mobile-overview">
-          <p className="eyebrow">Ways to Begin</p>
-          <h2>Choose the level of guidance that fits this season.</h2>
-          <div>
-            {appointmentOptions.map((option) => (
-              <article key={option.title}>
-                <span>{option.number}</span>
-                <h3>{option.title}</h3>
-                <p>{option.investment} · {option.time}. {option.bestFor}</p>
-              </article>
-            ))}
-          </div>
-        </div>
-      </section>
+            <div className="pp-hero-actions">
+              <a
+                className="button button-primary"
+                href="#private-pathways"
+              >
+                Explore Private Pathways
+              </a>
 
-      <section className="experiences-story section-shell">
-        <p className="eyebrow">Beauty With Meaning</p>
-        <h2>Sometimes the first doorway is practical: a better color, a softer makeup routine, a clearer silhouette, a way to feel like yourself again.</h2>
-        <p>These appointment experiences make space for that. They are precise, personal, and confidence-building, without asking you to become someone else.</p>
-      </section>
-
-      <section className="experiences-appointments-dark">
-        <div className="section-shell">
-          <div className="experiences-appointment-intro">
-            <div>
-              <p className="eyebrow">Personalized Appointments</p>
-              <h2>Beauty, Color &amp; Personal Presence Appointments</h2>
-              <p className="experiences-appointment-lead">Practical guidance for women who are ready to feel more confident, current, and connected to themselves again.</p>
-              <p>You do not always need a complete overhaul. Sometimes you need a grounded eye, an honest conversation, and clear direction around what supports your face, coloring, body, style, and season of life.</p>
-              <div>
-                <a className="button experiences-gold-button" href="#appointment-services">Explore Appointment Options</a>
-                <Link className="button experiences-dark-outline" to="/contact">Get in Touch</Link>
-              </div>
+              <Link
+                className="button button-text"
+                to="/radiance-reclaimed"
+              >
+                Looking for something deeper?
+                <span aria-hidden="true"> &rarr;</span>
+              </Link>
             </div>
 
-            <aside className="experiences-consultation-card">
-              <img src={consultationImage} alt="Notebook, color swatches, and consultation details for a personal presence session" />
-              <p>Not sure which appointment is right for you?</p>
-              <h3>Start with a Clarity Session.</h3>
-              <span>A thoughtful first step for finding the right direction.</span>
-              <Link to="/contact">Book a Clarity Session</Link>
-            </aside>
+            <p className="pp-hero-note">
+              Color. Beauty. Style. Wardrobe. Confidence. Personal Presence.
+            </p>
           </div>
 
-          <div className="experiences-glance-heading">
-            <p className="eyebrow">At a Glance</p>
-            <h2>Choose the level of guidance that fits this season.</h2>
-          </div>
-          <div className="experiences-glance-grid">
-            {appointmentOptions.map((option) => (
-              <article key={option.title}>
-                <span>{option.number}</span>
-                <h3>{option.title}</h3>
-                <dl>
-                  <div><dt>Investment</dt><dd>{option.investment}</dd></div>
-                  <div><dt>Time</dt><dd>{option.time}</dd></div>
-                  <div><dt>Best for</dt><dd>{option.bestFor}</dd></div>
-                </dl>
-              </article>
-            ))}
+          <div className="pp-hero-visual">
+            <span aria-hidden="true" />
+
+            <img
+              src={privateGuidanceImage}
+              alt="Private Personal Presence guidance"
+            />
           </div>
         </div>
       </section>
 
-      <section className="experiences-cover section-shell">
-        <header className="experiences-section-heading">
-          <p className="eyebrow">What We Cover</p>
-          <h2>A curated overview of beauty, color, style, and presence.</h2>
+      <section className="pp-context">
+        <div className="section-shell pp-context-grid">
+          <div>
+            <p className="eyebrow">A Practical Place to Begin</p>
+
+            <h2>
+              Sometimes the first question is visible.
+              <span> That does not make it superficial.</span>
+            </h2>
+          </div>
+
+          <div className="pp-context-copy">
+            <p>
+              A wardrobe can stop making sense. Makeup can begin to feel
+              dated or complicated. Colors that once worked can feel less
+              certain. A changing body can make familiar silhouettes harder
+              to trust.
+            </p>
+
+            <p>
+              Private Personal Presence starts with the question you can
+              actually see, then considers the body, lifestyle, priorities,
+              confidence, and chapter around it.
+            </p>
+
+            <p>
+              You do not need to overhaul everything. You need direction that
+              is useful, personal, and recognizable.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section
+        id="private-pathways"
+        className="pp-pathways section-shell scroll-target"
+      >
+        <header className="pp-section-heading">
+          <p className="eyebrow">Two Focused Doors</p>
+
+          <h2>Start with the part that feels most visible right now.</h2>
+
+          <p>
+            Each pathway is focused enough to be practical while still
+            considering the woman, body, lifestyle, and season around the
+            question.
+          </p>
         </header>
-        <div className="experiences-cover-grid">
-          {coverCards.map((card) => (
-            <Link to={card.to} key={card.title}>
-              <h3>{card.title}</h3>
-              <p>{card.text}</p>
-              <strong>Explore <span aria-hidden="true">→</span></strong>
+
+        <div className="pp-pathway-list">
+          {pathways.map((pathway) => (
+            <article
+              className="pp-pathway"
+              key={pathway.title}
+            >
+              <div className="pp-pathway-image">
+                <img
+                  src={pathway.image}
+                  alt={pathway.alt}
+                />
+              </div>
+
+              <div className="pp-pathway-copy">
+                <div className="pp-pathway-meta">
+                  <span>{pathway.number}</span>
+                  <p>{pathway.eyebrow}</p>
+                </div>
+
+                <h3>{pathway.title}</h3>
+                <p>{pathway.text}</p>
+
+                <div className="pp-pathway-actions">
+                  {pathway.actions.map((action) => (
+                    <Link
+                      key={action.to}
+                      to={action.to}
+                    >
+                      {action.label}
+                      <span aria-hidden="true"> &rarr;</span>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="pp-integrated">
+        <div className="section-shell pp-integrated-grid">
+          <div className="pp-integrated-copy">
+            <p className="eyebrow">
+              Integrated Personal Presence
+            </p>
+
+            <h2>
+              When the question crosses more than one category.
+            </h2>
+
+            <p>
+              Sometimes you already know the issue is not only color, only
+              makeup, or only wardrobe. Several visible pieces have shifted
+              at once, and you want one thoughtful conversation around how
+              they fit together.
+            </p>
+
+            <ul>
+              {integratedSignals.map((signal) => (
+                <li key={signal}>{signal}</li>
+              ))}
+            </ul>
+
+            <Link
+              className="button pp-integrated-button"
+              to="/contact"
+            >
+              Start a Private Personal Presence Conversation
             </Link>
-          ))}
+          </div>
+
+          <div className="pp-integrated-visual">
+            <img
+              src={consultationImage}
+              alt="Personal Presence consultation materials"
+            />
+
+            <div>
+              <p>Not sure which focused pathway fits?</p>
+              <strong>
+                You do not need to diagnose the problem before reaching out.
+              </strong>
+            </div>
+          </div>
         </div>
       </section>
 
-      <section id="appointment-services" className="experiences-services section-shell scroll-target">
-        <header className="experiences-section-heading">
-          <p className="eyebrow">Appointment Experiences</p>
-          <h2>Clear, personal direction without pressure to become someone else.</h2>
-        </header>
-        <div className="experiences-service-grid">
-          {appointmentOptions.map((option) => (
-            <article key={option.title}>
-              <span className="experiences-service-number">{option.number}</span>
-              <h3>{option.title}</h3>
-              <p>{option.description}</p>
-              <dl>
-                <div><dt>Investment</dt><dd>{option.investment}</dd></div>
-                <div><dt>Time</dt><dd>{option.time}</dd></div>
-              </dl>
-              <h4>What is included</h4>
-              <ul>
-                {option.included.map((item) => <li key={item}>{item}</li>)}
-              </ul>
-              <blockquote>
-                <h4>She might be thinking</h4>
-                <p>“{option.thinking}”</p>
-              </blockquote>
-              <p className="experiences-best-for"><strong>Best for:</strong> {option.bestFor}</p>
-              <Link className="button button-primary" to={option.to}>{option.action}</Link>
-            </article>
-          ))}
+      <section className="pp-beauty section-shell">
+        <div className="pp-beauty-visual">
+          <img
+            src={makeupImage}
+            alt="Personal makeup and beauty direction"
+          />
+        </div>
+
+        <div className="pp-beauty-copy">
+          <p className="eyebrow">Beauty With Meaning</p>
+
+          <h2>
+            Looking current should still feel like looking like yourself.
+          </h2>
+
+          <p>
+            Personal Presence does not ask you to become trendier, younger,
+            or more polished for someone else's approval.
+          </p>
+
+          <p>
+            The work is to understand which visible choices support your
+            features, body, lifestyle, confidence, and expression so getting
+            dressed or ready becomes clearer rather than more complicated.
+          </p>
         </div>
       </section>
 
-      <section className="experiences-choose section-shell">
-        <header className="experiences-section-heading">
-          <p className="eyebrow">How to Choose</p>
-          <h2>Start with what feels most true right now.</h2>
-        </header>
-        <div className="experiences-choose-grid">
-          {chooseGuides.map((guide) => (
-            <article key={guide.title}>
-              <h3>{guide.title}</h3>
-              <ul>
-                {guide.points.map((point) => <li key={point}>{point}</li>)}
-              </ul>
-            </article>
-          ))}
+      <section className="pp-radiance">
+        <div className="section-shell pp-radiance-inner">
+          <p className="eyebrow">
+            The Signature Experience
+          </p>
+
+          <h2>
+            When the question is deeper than how you look.
+          </h2>
+
+          <p>
+            Radiance Reclaimed&trade; brings reflection, color, beauty,
+            style, self-expression, connection, and practical integration
+            into one intimate Personal Presence retreat for women entering
+            a new chapter.
+          </p>
+
+          <Link
+            className="button pp-radiance-button"
+            to="/radiance-reclaimed"
+          >
+            Explore Radiance Reclaimed&trade;
+          </Link>
         </div>
       </section>
 
-      <section className="experiences-closing section-shell">
-        <p className="eyebrow">Ready for Something Deeper?</p>
-        <h2>Radiance Reclaimed addresses the whole woman, not just how she looks.</h2>
-        <p>An appointment can help you feel more confident in how you show up. But if you are sensing something deeper, a gap between who you are becoming and how you are living, Radiance Reclaimed addresses the whole woman, not just how she looks.</p>
-        <Link className="button button-primary" to="/radiance-reclaimed">Learn About Radiance Reclaimed</Link>
-        <div>
-          <p>This is not about becoming someone new.</p>
-          <p>It is about showing up as the woman you already are.</p>
+      <section className="pp-final">
+        <div className="section-shell pp-final-grid">
+          <div>
+            <p className="eyebrow">A Simple Next Step</p>
+
+            <h2>You do not have to know which door is right yet.</h2>
+          </div>
+
+          <div>
+            <p>
+              If you know what you want, explore the focused experience that
+              matches it. If you do not, begin with a conversation about what
+              has changed and what no longer feels current.
+            </p>
+
+            <Link
+              className="button button-primary"
+              to="/contact"
+            >
+              Start a Conversation
+            </Link>
+          </div>
         </div>
       </section>
     </main>
