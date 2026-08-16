@@ -135,7 +135,7 @@ function SiteFooter() {
             The Power Within Edit
           </a>
 
-          <Link to="/contact">
+          <Link to="/contact?interest=speaking">
             Book Kim to Speak
           </Link>
 
