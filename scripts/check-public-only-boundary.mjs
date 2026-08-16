@@ -16,6 +16,7 @@ const forbiddenPaths = [
   /^server\//i,
   /^src\/pages\/admin\//i,
   /^src\/components\/admin\//i,
+  /^src\/styles\/Admin/i,
   /ClientPortal/i,
   /NotificationCenter/i,
   /^\.env\.local\.example$/i,

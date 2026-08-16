@@ -1,19 +1,56 @@
 import { useEffect, useState } from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
 import logo from '../assets/images/power-within-collective-logo.png'
-import { preloadPrimaryPublicRoutes, preloadPublicRoute } from '../lib/publicRoutePreloaders.js'
+import {
+  preloadPrimaryPublicRoutes,
+  preloadPublicRoute,
+} from '../lib/publicRoutePreloaders.js'
 import './SiteHeader.css'
 
-const navigation = [
-  { label: 'Home', to: '/' },
-  { label: 'Experiences', to: '/experiences', relatedPaths: ['/color-analysis', '/style-analysis', '/blend-cosmetics', '/radiance-reclaimed'] },
-  { label: 'Resources', to: '/resources' },
-  { label: 'Professionals', to: '/professionals', relatedPaths: ['/power-within-professional'] },
-  { label: 'Teen Programs', to: '/teen-programs', relatedPaths: ['/teens'] },
-  { label: 'Podcast', to: '/podcast' },
-  { label: 'About', to: '/about' },
-  { label: 'FAQ', to: '/faq' },
-  { label: 'Contact', to: '/contact' },
+const primaryNavigation = [
+  {
+    label: 'Radiance Reclaimed',
+    to: '/radiance-reclaimed',
+  },
+  {
+    label: 'Personal Presence',
+    to: '/experiences',
+    relatedPaths: [
+      '/color-analysis',
+      '/style-analysis',
+      '/blend-cosmetics',
+    ],
+  },
+  {
+    label: 'About Kim',
+    to: '/about',
+  },
+  {
+    label: 'Resources',
+    to: '/resources',
+    matchPrefix: true,
+  },
+]
+
+const secondaryNavigation = [
+  {
+    label: 'For Professionals',
+    to: '/professionals',
+    relatedPaths: ['/power-within-professional'],
+  },
+  {
+    label: 'Podcast',
+    to: '/podcast',
+  },
+  {
+    label: 'Teen & Family',
+    to: '/teen-programs',
+    relatedPaths: ['/teens'],
+  },
+  {
+    label: 'FAQ',
+    to: '/faq',
+  },
 ]
 
 function SiteHeader() {
@@ -24,8 +61,11 @@ function SiteHeader() {
     if (!isOpen) return undefined
 
     const previousOverflow = document.body.style.overflow
+
     const closeOnEscape = (event) => {
-      if (event.key === 'Escape') setIsOpen(false)
+      if (event.key === 'Escape') {
+        setIsOpen(false)
+      }
     }
 
     document.body.style.overflow = 'hidden'
@@ -39,9 +79,11 @@ function SiteHeader() {
 
   useEffect(() => {
     const preload = () => preloadPrimaryPublicRoutes()
-    const idleId = typeof window.requestIdleCallback === 'function'
-      ? window.requestIdleCallback(preload, { timeout: 2500 })
-      : window.setTimeout(preload, 1800)
+
+    const idleId =
+      typeof window.requestIdleCallback === 'function'
+        ? window.requestIdleCallback(preload, { timeout: 2500 })
+        : window.setTimeout(preload, 1800)
 
     return () => {
       if (typeof window.cancelIdleCallback === 'function') {
@@ -54,37 +96,98 @@ function SiteHeader() {
 
   const closeMenu = () => setIsOpen(false)
 
+  const linkClass = (item, isActive) => {
+    const relatedActive = item.relatedPaths?.some(
+      (path) => pathname === path || pathname.startsWith(`${path}/`),
+    )
+
+    const prefixActive =
+      item.matchPrefix &&
+      pathname !== '/' &&
+      pathname.startsWith(`${item.to}/`)
+
+    return isActive || relatedActive || prefixActive
+      ? 'is-active'
+      : undefined
+  }
+
+  const renderLink = (item) => (
+    <NavLink
+      key={item.to}
+      to={item.to}
+      onClick={closeMenu}
+      onMouseEnter={() => preloadPublicRoute(item.to)}
+      onFocus={() => preloadPublicRoute(item.to)}
+      onTouchStart={() => preloadPublicRoute(item.to)}
+      className={({ isActive }) => linkClass(item, isActive)}
+    >
+      {item.label}
+    </NavLink>
+  )
+
   return (
     <header className="site-header">
-      <nav className="site-navigation" aria-label="Primary navigation">
+      <nav
+        className="site-navigation"
+        aria-label="Primary navigation"
+      >
         <NavLink
           className="site-brand"
           to="/"
           onClick={closeMenu}
           aria-label="Power Within Collective home"
         >
-          <img src={logo} alt="" />
+          <img
+            src={logo}
+            alt=""
+          />
         </NavLink>
 
-        <ul id="primary-navigation" className={`site-nav-links${isOpen ? ' is-open' : ''}`}>
-          {navigation.map((item) => (
-            <li key={item.to}>
-              <NavLink
-                to={item.to}
-                end={item.to === '/'}
-                onClick={closeMenu}
-                onMouseEnter={() => preloadPublicRoute(item.to)}
-                onFocus={() => preloadPublicRoute(item.to)}
-                onTouchStart={() => preloadPublicRoute(item.to)}
-                className={({ isActive }) => (isActive || item.relatedPaths?.includes(pathname) ? 'is-active' : undefined)}
-              >
-                {item.label}
-              </NavLink>
-            </li>
-          ))}
-        </ul>
+        <div
+          id="primary-navigation"
+          className={`site-nav-panel${isOpen ? ' is-open' : ''}`}
+        >
+          <ul className="site-nav-links">
+            {primaryNavigation.map((item) => (
+              <li key={item.to}>
+                {renderLink(item)}
+              </li>
+            ))}
+          </ul>
+
+          <div className="site-nav-secondary-wrap">
+            <p>More from Power Within</p>
+
+            <ul
+              className="site-nav-secondary"
+              aria-label="More from Power Within"
+            >
+              {secondaryNavigation.map((item) => (
+                <li key={item.to}>
+                  {renderLink(item)}
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <NavLink
+            className="site-nav-mobile-cta"
+            to="/contact"
+            onClick={closeMenu}
+          >
+            Start a Conversation
+          </NavLink>
+        </div>
 
         <div className="site-header-actions">
+          <NavLink
+            className="site-header-cta"
+            to="/contact"
+            onClick={closeMenu}
+          >
+            Start a Conversation
+          </NavLink>
+
           <button
             className="menu-button"
             type="button"
