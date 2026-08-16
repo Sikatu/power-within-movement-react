@@ -5,132 +5,254 @@ import { resourceArticleSummaries } from '../data/resourceArticles.js'
 import { publicLinks } from '../config/publicLinks.js'
 import './Resources.css'
 
-const vaultContents = [
-  { number: '01', title: 'Confidence and personal presence resources', text: 'Tools for understanding and inhabiting the kind of presence that does not require performance.' },
-  { number: '02', title: 'Wellness and intentional living guidance', text: 'Practical support for the physical and daily foundations that make everything else possible.' },
-  { number: '03', title: 'Style, image, and color education', text: 'Honest, intelligent tools for external expression that reflects an internal truth.' },
-  { number: '04', title: 'Reflection tools for clarity and self-leadership', text: 'Frameworks and prompts that give a more precise language for what you are actually experiencing.' },
-  { number: '05', title: 'Ongoing workshops, teachings, and audio sessions', text: 'Depth delivered in formats that fit into a real life.' },
-  { number: '06', title: 'Seasonal resources designed for continued growth', text: 'Because who you are in this chapter is not who you will be in the next.' },
-]
+const featuredArticle =
+  resourceArticleSummaries.find(
+    (article) =>
+      article.slug === 'rebuild-confidence-through-personal-style',
+  ) ?? resourceArticleSummaries[0]
 
-const longReturnPoints = [
-  'Curated resources and teachings updated regularly so what you find here stays current with where women actually are.',
-  'Ongoing workshops, audio sessions, and guided support that go further than surface-level inspiration.',
-  'A private, intentional environment free from the noise of social media and the pressure to perform.',
-  'Content designed to support continued confidence, clarity, and personal evolution, not just a single breakthrough.',
-]
+const supportingArticles =
+  resourceArticleSummaries.filter(
+    (article) => article.slug !== featuredArticle.slug,
+  )
 
 function Resources() {
   return (
-    <main id="main-content" className="vault-page">
-      <section className="vault-hero section-shell">
-        <p className="eyebrow">Resources</p>
-        <h1><span>Not more information. </span>A more intentional place to return to yourself.</h1>
-        <p>The Vault™ is a curated resource environment for women who want substance, reflection, and practical support for the long return.</p>
-        <div className="vault-mobile-actions">
-          <Link className="button button-primary" to="/contact">Enter the Vault</Link>
-          <a className="button button-secondary" href="#100-conversation-starters">Free Resources</a>
-        </div>
-      </section>
+    <main id="main-content" className="resources-page">
+      <section className="resources-hero">
+        <div className="section-shell resources-hero-grid">
+          <div className="resources-hero-copy">
+            <p className="eyebrow">Resources</p>
 
-      <section className="vault-intro section-shell">
-        <div className="vault-image-frame">
-          <span aria-hidden="true" />
-          <img src={vaultImage} alt="The Vault resource environment" />
-        </div>
-        <div className="vault-intro-copy">
-          <p className="eyebrow">The Vault™</p>
-          <h2>Most women are not struggling because they lack information.</h2>
-          <p>They are struggling because the information they have has not been given the space to become something real.</p>
-          <p>The Vault™ is a curated resource environment built for women who are ready to go deeper, past the inspiration that evaporates, past the advice that does not account for a life as complex as theirs, into the kind of thinking and tools that actually hold.</p>
-          <p>This is not a content library. It is a place to return to, consistently, intentionally, and at whatever pace your season allows.</p>
-          <div>
-            <Link className="button button-primary" to="/contact">Enter the Vault</Link>
-            <a className="button button-secondary" href="#100-conversation-starters">Free Resources</a>
-          </div>
-        </div>
-      </section>
+            <h1>The Vault&trade;</h1>
 
-      <section className="vault-inside section-shell">
-        <header className="vault-section-heading">
-          <p className="eyebrow">Inside the Vault™</p>
-          <h2>Everything here is chosen with one question in mind.</h2>
-          <p>Does this help a woman become more herself, or does it ask her to perform a version of herself?</p>
-        </header>
-        <div className="vault-content-grid">
-          {vaultContents.map((item) => (
-            <article key={item.title}>
-              <span>{item.number}</span>
-              <h3>{item.title}</h3>
-              <p>{item.text}</p>
-            </article>
-          ))}
-        </div>
-      </section>
+            <p className="resources-hero-thesis">
+              Not more content.
+              <span> More substance.</span>
+            </p>
 
-      <section id="100-conversation-starters" className="vault-preview section-shell scroll-target">
-        <article>
-          <img src={conversationStartersImage} alt="100 Conversation Starters resource preview" />
-          <div>
-            <p className="eyebrow">Vault Preview</p>
-            <h2>100 Conversation Starters</h2>
-            <p>A curated preview of The Vault™ created to open warmer conversations, clearer reflection, and more honest self-recognition.</p>
-            <p>For women, families, facilitators, and communities who want connection to feel thoughtful instead of forced.</p>
-            <div>
+            <p className="resources-hero-lead">
+              A public collection of thoughtful resources for
+              confidence, color, style, reflection, and Personal
+              Presence&trade;&mdash;created to be useful in the chapter
+              you are actually living.
+            </p>
+
+            <div className="resources-hero-actions">
               <a
-                className="button vault-gold-button"
+                className="button button-primary"
+                href="#guides"
+              >
+                Browse the Guides
+              </a>
+
+              <a
+                className="button button-text"
                 href={publicLinks.conversationStarters}
                 target="_blank"
                 rel="noreferrer"
               >
-                Request the Download
+                Get 100 Conversation Starters
+                <span aria-hidden="true"> &rarr;</span>
               </a>
-              <Link className="button vault-dark-outline" to="/contact">Ask About The Vault™</Link>
             </div>
+
+            <p className="resources-hero-note">
+              Free tools. Editorial guides. The Power Within Edit.
+            </p>
           </div>
-        </article>
-      </section>
 
-      <section className="vault-long-return section-shell">
-        <div>
-          <p className="eyebrow">Designed for the Long Return</p>
-          <h2>Real transformation is not an event. It is a direction.</h2>
-          <p>It is one you orient toward again and again, in different seasons, with different questions. The Vault™ is built to meet you there.</p>
-        </div>
-        <aside>
-          <ul>
-            {longReturnPoints.map((point) => <li key={point}>{point}</li>)}
-          </ul>
-        </aside>
-      </section>
+          <div className="resources-hero-visual">
+            <span aria-hidden="true" />
 
-      <section className="vault-why section-shell">
-        <p className="eyebrow">Why the Vault Exists</p>
-        <h2>The personal development world has given women more content than they can consume and less substance than they need.</h2>
-        <p>Most of it speaks to the beginning of a journey, the awakening, the pivot, the fresh start. Very little of it is built for the woman who has already done significant work on herself and is navigating something more complex: how to continue becoming more herself without discarding what she has already built.</p>
-        <p>The Vault™ was created to fill that gap. A space designed to support the way you think, live, lead, and show up. Not who you were. Who you are becoming.</p>
-        <div>
-          <Link className="button button-primary" to="/contact">Enter the Vault</Link>
-          <a className="button button-secondary" href="#100-conversation-starters">Free Resources</a>
+            <img
+              src={vaultImage}
+              alt="Reflection journal and thoughtful resources"
+            />
+          </div>
         </div>
       </section>
 
-      <section className="vault-guides section-shell">
-        <header className="vault-section-heading">
+      <section
+        id="100-conversation-starters"
+        className="resources-free section-shell scroll-target"
+      >
+        <div className="resources-free-visual">
+          <img
+            src={conversationStartersImage}
+            alt="100 Conversation Starters free resource"
+          />
+        </div>
+
+        <div className="resources-free-copy">
+          <p className="eyebrow">A Free Resource</p>
+
+          <h2>100 Conversation Starters</h2>
+
+          <p className="resources-free-lead">
+            A thoughtful set of prompts created to open more
+            meaningful conversations, reflection, connection,
+            and curiosity.
+          </p>
+
+          <p>
+            Use them with family, friends, a group, or simply as
+            prompts for your own reflection when you want a better
+            question than &ldquo;How are you?&rdquo;
+          </p>
+
+          <a
+            className="button button-primary"
+            href={publicLinks.conversationStarters}
+            target="_blank"
+            rel="noreferrer"
+          >
+            Get the Free Resource
+          </a>
+        </div>
+      </section>
+
+      <section className="resources-edit">
+        <div className="section-shell resources-edit-grid">
+          <div>
+            <p className="eyebrow">Stay Connected</p>
+
+            <h2>The Power Within Edit</h2>
+          </div>
+
+          <div className="resources-edit-copy">
+            <p>
+              Thoughtful notes on Personal Presence, color, beauty,
+              style, confidence, self-expression, and choosing what
+              comes next.
+            </p>
+
+            <a
+              className="button resources-edit-button"
+              href={publicLinks.newsletter}
+              target="_blank"
+              rel="noreferrer"
+            >
+              Join The Power Within Edit
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <section
+        id="guides"
+        className="resources-library section-shell scroll-target"
+      >
+        <header className="resources-library-heading">
           <p className="eyebrow">Guides &amp; Reflections</p>
-          <h2>Thoughtful resources for confidence, color, style, and presence.</h2>
-          <p>Begin with these foundational guides, then move toward the private experience that fits the season you are in.</p>
+
+          <h2>Read what is useful now.</h2>
+
+          <p>
+            These public guides turn common questions about color,
+            style, confidence, and presence into clearer language
+            and practical direction.
+          </p>
         </header>
-        <div className="vault-guide-grid">
-          {resourceArticleSummaries.map((article) => (
-            <Link to={`/resources/${article.slug}`} key={article.slug}>
-              <span>{article.category}</span>
-              <h3>{article.title}</h3>
-              <p>{article.summary}</p>
-              <strong>Read the Guide <span aria-hidden="true">→</span></strong>
+
+        <div className="resources-library-grid">
+          <Link
+            className="resources-featured-article"
+            to={'/resources/' + featuredArticle.slug}
+          >
+            <div className="resources-featured-meta">
+              <span>01</span>
+              <p>{featuredArticle.category}</p>
+            </div>
+
+            <h3>{featuredArticle.title}</h3>
+
+            <p>{featuredArticle.summary}</p>
+
+            <strong>
+              Read the Guide
+              <span aria-hidden="true"> &rarr;</span>
+            </strong>
+          </Link>
+
+          <div className="resources-article-list">
+            {supportingArticles.map((article, index) => (
+              <Link
+                to={'/resources/' + article.slug}
+                key={article.slug}
+              >
+                <span>
+                  {String(index + 2).padStart(2, '0')}
+                </span>
+
+                <div>
+                  <p>{article.category}</p>
+                  <h3>{article.title}</h3>
+                  <small>{article.summary}</small>
+                </div>
+
+                <strong aria-hidden="true">&rarr;</strong>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="resources-definition">
+        <div className="section-shell resources-definition-grid">
+          <div>
+            <p className="eyebrow">Why The Vault&trade; Exists</p>
+
+            <h2>A quieter place for clarity and reflection.</h2>
+          </div>
+
+          <div>
+            <p>
+              There is already more information available than most
+              people can use. The purpose of The Vault is not to add
+              noise. It is to gather useful ideas and tools that can
+              help a woman think more clearly about the life, body,
+              choices, and chapter she is actually in.
+            </p>
+
+            <p>
+              Come for one useful question. Return when another one
+              becomes relevant.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section className="resources-next">
+        <div className="section-shell resources-next-inner">
+          <p className="eyebrow">When You Want It to Be Personal</p>
+
+          <h2>
+            A resource can clarify the question.
+            Personal guidance can help you work with the answer.
+          </h2>
+
+          <p>
+            Explore one-to-one Personal Presence guidance when the
+            question becomes specific to your color, beauty, wardrobe,
+            confidence, or the chapter you are navigating.
+          </p>
+
+          <div className="resources-next-actions">
+            <Link
+              className="button button-primary"
+              to="/experiences"
+            >
+              Explore Personal Presence
             </Link>
-          ))}
+
+            <Link
+              className="button button-secondary"
+              to="/radiance-reclaimed"
+            >
+              Explore Radiance Reclaimed&trade;
+            </Link>
+          </div>
         </div>
       </section>
     </main>
