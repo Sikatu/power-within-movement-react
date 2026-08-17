@@ -92,7 +92,7 @@ function Podcast() {
 
           <h1>
             Conversations for the woman you are becoming
-            <span>&mdash;and the confidence you are shaping around you.</span>
+            <span>and the confidence you are shaping around you.</span>
           </h1>
 
           <p className="podcast-hero-lead">
@@ -260,7 +260,7 @@ function Podcast() {
           <p>
             Conversations around comparison, beauty pressure,
             communication, belonging, identity, and self-trust
-            remain an important part of the show&mdash;without asking
+            remain an important part of the show, without asking
             them to carry the entire definition of it.
           </p>
 
