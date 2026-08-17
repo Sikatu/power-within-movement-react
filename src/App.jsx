@@ -89,12 +89,12 @@ const routeMetadata = {
     description: 'Raising Her Confidence explores confidence, wellness, identity, motherhood, color, style, beauty, and personal presence for women navigating new seasons of life.',
   },
   '/teen-programs': {
-    title: 'Teen Confidence Programs for Girls | Power Within Collective',
-    description: 'Supportive teen confidence programs for girls and young women building identity, emotional awareness, self-expression, and grounded self-trust.',
+    title: 'Teen + Family Confidence Support for Girls | Power Within Collective',
+    description: 'Teen + Family support for girls, young women, mothers, and mentors, centered on identity, body confidence, self-expression, connection, and grounded self-trust.',
   },
   '/teens': {
-    title: 'Teen Confidence Programs for Girls | Power Within Collective',
-    description: 'Supportive teen confidence programs for girls and young women building identity, emotional awareness, self-expression, and grounded self-trust.',
+    title: 'Teen + Family Confidence Support for Girls | Power Within Collective',
+    description: 'Teen + Family support for girls, young women, mothers, and mentors, centered on identity, body confidence, self-expression, connection, and grounded self-trust.',
     canonicalPath: '/teen-programs',
   },
   '/about': {
