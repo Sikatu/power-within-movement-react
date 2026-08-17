@@ -1,10 +1,7 @@
 import { useEffect, useState } from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
 import logo from '../assets/images/power-within-collective-logo.png'
-import {
-  preloadPrimaryPublicRoutes,
-  preloadPublicRoute,
-} from '../lib/publicRoutePreloaders.js'
+import { preloadPublicRoute } from '../lib/publicRoutePreloaders.js'
 import './SiteHeader.css'
 
 const primaryNavigation = [
@@ -78,19 +75,85 @@ function SiteHeader() {
   }, [isOpen])
 
   useEffect(() => {
-    const preload = () => preloadPrimaryPublicRoutes()
+    const connection =
+      navigator.connection ||
+      navigator.mozConnection ||
+      navigator.webkitConnection
 
-    const idleId =
-      typeof window.requestIdleCallback === 'function'
-        ? window.requestIdleCallback(preload, { timeout: 2500 })
-        : window.setTimeout(preload, 1800)
+    if (
+      connection?.saveData ||
+      ['slow-2g', '2g'].includes(connection?.effectiveType)
+    ) {
+      return undefined
+    }
+
+    const priorityPaths = [
+      '/radiance-reclaimed',
+      '/experiences',
+      '/resources',
+      '/contact',
+    ]
+
+    const timerIds = []
+    let idleId = null
+    let scheduled = false
+
+    const preloadInSequence = () => {
+      priorityPaths.forEach((path, index) => {
+        const timerId = window.setTimeout(() => {
+          preloadPublicRoute(path)
+        }, index * 300)
+
+        timerIds.push(timerId)
+      })
+    }
+
+    const schedulePreload = () => {
+      if (scheduled) return
+      scheduled = true
+
+      if (typeof window.requestIdleCallback === 'function') {
+        idleId = window.requestIdleCallback(
+          preloadInSequence,
+          { timeout: 3000 },
+        )
+      } else {
+        idleId = window.setTimeout(
+          preloadInSequence,
+          1200,
+        )
+      }
+    }
+
+    if (document.readyState === 'complete') {
+      schedulePreload()
+    } else {
+      window.addEventListener(
+        'load',
+        schedulePreload,
+        { once: true },
+      )
+    }
 
     return () => {
-      if (typeof window.cancelIdleCallback === 'function') {
-        window.cancelIdleCallback(idleId)
-      } else {
-        window.clearTimeout(idleId)
+      window.removeEventListener(
+        'load',
+        schedulePreload,
+      )
+
+      if (idleId !== null) {
+        if (
+          typeof window.cancelIdleCallback === 'function'
+        ) {
+          window.cancelIdleCallback(idleId)
+        } else {
+          window.clearTimeout(idleId)
+        }
       }
+
+      timerIds.forEach((timerId) => {
+        window.clearTimeout(timerId)
+      })
     }
   }, [])
 
