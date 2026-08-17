@@ -921,3 +921,33 @@
     animation: none;
   }
 }
+/* ========================================================
+   ACCESSIBILITY CONTRAST - PHASE 57.6V14
+   ======================================================== */
+
+.home-hero h1 span {
+  color: #b86b76;
+}
+
+.home-layers .eyebrow,
+.home-layers .section-heading > p:last-child:not(.eyebrow),
+.home-layers .layer-grid article > span,
+.home-layers .layer-grid p {
+  color: #3a2e30;
+}
+
+.framework-grid article > span {
+  color: #978487;
+}
+
+.begin-grid > a:first-child > span:first-child {
+  color: rgba(251, 248, 243, 0.68);
+}
+
+.home-recognition-copy .eyebrow {
+  color: #704a4e;
+}
+
+.home-recognition-copy p:not(.eyebrow) {
+  color: #624f52;
+}
