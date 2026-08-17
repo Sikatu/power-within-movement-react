@@ -849,3 +849,137 @@
     font-size: 36px;
   }
 }
+/* ========================================================
+   PROFESSIONAL PATHWAY REFINEMENT - PHASE 3.14C
+   ======================================================== */
+
+.professionals-hero-method-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 4px;
+  border-bottom: 1px solid var(--color-burgundy);
+  color: var(--color-burgundy);
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.4;
+  text-decoration: none;
+}
+
+.professionals-hero-method-link:hover {
+  border-color: var(--color-heading);
+  color: var(--color-heading);
+}
+
+.professionals-pathways {
+  padding-bottom: clamp(96px, 9vw, 136px);
+}
+
+.professionals-pathways-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.professionals-pathway-card {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 100%;
+  padding: clamp(28px, 3vw, 38px);
+  border: 1px solid var(--color-border);
+  border-radius: 26px;
+  background: var(--pwc-ivory);
+  box-shadow: 0 18px 48px rgba(85, 57, 59, 0.08);
+}
+
+.professionals-pathway-card:nth-child(1) {
+  background: rgba(235, 198, 190, 0.34);
+}
+
+.professionals-pathway-card:nth-child(2) {
+  background: rgba(150, 160, 134, 0.17);
+}
+
+.professionals-pathway-card-head {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 34px;
+}
+
+.professionals-pathway-card-head > span {
+  color: var(--color-heading);
+  font-family: var(--font-display);
+  font-size: 22px;
+  line-height: 1;
+}
+
+.professionals-pathway-card-head .eyebrow {
+  margin: 0;
+  color: var(--color-burgundy);
+  text-align: right;
+}
+
+.professionals-pathway-card h3 {
+  margin: 0 0 18px;
+  color: var(--color-heading);
+  font-size: clamp(29px, 2.8vw, 38px);
+  line-height: 1.05;
+}
+
+.professionals-pathway-card > p {
+  margin: 0 0 28px;
+  color: var(--color-body);
+  font-size: 16px;
+  line-height: 1.72;
+}
+
+.professionals-pathway-card .button {
+  align-self: flex-start;
+  margin-top: auto;
+}
+
+.professionals-pathway-status {
+  align-self: flex-start;
+  margin-top: auto;
+  padding-top: 18px;
+  border-top: 1px solid var(--color-border);
+  color: var(--color-burgundy);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+@media (max-width: 900px) {
+  .professionals-pathways-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .professionals-pathway-card {
+    min-height: auto;
+  }
+}
+
+@media (max-width: 820px) {
+  .professionals-hero-method-link {
+    width: 100%;
+    justify-content: center;
+    padding: 12px 4px;
+  }
+
+  .professionals-pathways {
+    padding: 0 22px 84px;
+  }
+
+  .professionals-pathway-card {
+    padding: 28px 24px;
+    border-radius: 22px;
+  }
+
+  .professionals-pathway-card .button {
+    width: 100%;
+  }
+}

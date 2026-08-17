@@ -95,6 +95,34 @@ const workItems = [
   'Designed to elevate, not add more services',
 ]
 
+const pathwayCards = [
+  {
+    number: '01',
+    eyebrow: 'Entry Point',
+    title: 'Professional Signature Experience Call',
+    text:
+      'A focused first conversation to clarify where your client experience, positioning, language, or professional direction is ready for greater depth.',
+    action: 'Book a Professional Signature Experience Call',
+    to: '/contact?interest=professionals',
+  },
+  {
+    number: '02',
+    eyebrow: 'Training Path',
+    title: 'Power Within Professional\u2122 Training',
+    text:
+      'A deeper guided pathway for professionals ready to build their signature experience, client journey, positioning, standards, and implementation with more structure.',
+    status: 'Future pathway',
+  },
+  {
+    number: '03',
+    eyebrow: 'Professional Tools',
+    title: 'Supporting Tools + Future ColorLab',
+    text:
+      'Professional resources and future ColorLab opportunities designed to support stronger consultations, practical implementation, and an elevated client experience.',
+    status: 'Supporting pathway',
+  },
+]
+
 function Professionals() {
   return (
     <main id="main-content" className="professionals-page">
@@ -120,14 +148,14 @@ function Professionals() {
                 className="button button-primary"
                 to="/contact?interest=professionals"
               >
-                Start a Professional Conversation
+                Book a Professional Signature Experience Call
               </Link>
 
               <a
-                className="button button-secondary"
+                className="professionals-hero-method-link"
                 href="#signature-method"
               >
-                Explore the Method
+                See How the Method Works
               </a>
             </div>
           </div>
@@ -386,6 +414,50 @@ function Professionals() {
         />
       </section>
 
+      <section className="professionals-pathways section-shell">
+        <header className="professionals-section-heading">
+          <p className="eyebrow">Professional Pathways</p>
+
+          <h2>One clear place to begin, with room to grow.</h2>
+
+          <p>
+            Start with the Signature Experience Call. Deeper training and
+            professional tools can follow only when they support the work you
+            are actually building.
+          </p>
+        </header>
+
+        <div className="professionals-pathways-grid">
+          {pathwayCards.map((card) => (
+            <article
+              className="professionals-pathway-card"
+              key={card.title}
+            >
+              <div className="professionals-pathway-card-head">
+                <span>{card.number}</span>
+                <p className="eyebrow">{card.eyebrow}</p>
+              </div>
+
+              <h3>{card.title}</h3>
+              <p>{card.text}</p>
+
+              {card.action ? (
+                <Link
+                  className="button button-primary"
+                  to={card.to}
+                >
+                  {card.action}
+                </Link>
+              ) : (
+                <span className="professionals-pathway-status">
+                  {card.status}
+                </span>
+              )}
+            </article>
+          ))}
+        </div>
+      </section>
+
       <section className="professionals-wellness">
         <div className="section-shell">
           <header className="professionals-section-heading">
@@ -466,7 +538,7 @@ function Professionals() {
           className="button button-primary"
           to="/contact?interest=professionals"
         >
-          Start a Professional Conversation
+          Book a Professional Signature Experience Call
         </Link>
       </section>
     </main>

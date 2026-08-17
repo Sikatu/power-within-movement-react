@@ -46,13 +46,13 @@ const contactExperiences = {
   },
   professionals: {
     eyebrow: 'Power Within Professional\u2122',
-    title: 'Begin the conversation about the professional experience you want to build.',
+    title: 'Begin with the professional experience you are ready to build more intentionally.',
     intro:
       'Share where your current client experience, positioning, signature offer, language, standards, or professional direction feels ready for greater depth.',
-    handoffTitle: 'Start a Professional Signature Experience conversation.',
+    handoffTitle: 'Book a Professional Signature Experience Call.',
     handoffText:
-      'Use the private contact form to tell us about your work, the clients you serve, and what you want your professional experience to communicate more clearly.',
-    action: 'Request a Professional Conversation',
+      'Use the private contact form to tell us about your work, the clients you serve, and where greater clarity, structure, or depth would help. Your message is the first step in arranging the call.',
+    action: 'Request the Signature Experience Call',
   },
   teens: {
     eyebrow: 'Teen + Family Support',
