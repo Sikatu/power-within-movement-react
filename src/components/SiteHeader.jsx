@@ -203,6 +203,8 @@ function SiteHeader() {
           <img
             src={logo}
             alt=""
+            width="398"
+            height="198"
           />
         </NavLink>
 

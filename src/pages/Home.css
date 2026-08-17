@@ -914,3 +914,10 @@
     border-radius: 18px;
   }
 }
+/* Mobile critical paint: render the hero immediately. */
+@media (max-width: 820px) {
+  .home-hero-copy,
+  .home-hero-visual {
+    animation: none;
+  }
+}
