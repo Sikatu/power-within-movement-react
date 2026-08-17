@@ -34,7 +34,7 @@ function Resources() {
             <p className="resources-hero-lead">
               A public collection of thoughtful resources for
               confidence, color, style, reflection, and Personal
-              Presence&trade;&mdash;created to be useful in the chapter
+              Presence&trade;. Created to be useful in the chapter
               you are actually living.
             </p>
 
