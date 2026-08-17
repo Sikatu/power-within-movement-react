@@ -108,6 +108,9 @@ function Home() {
           <img
             src={heroImage}
             alt="Woman in a calm and confident Power Within setting"
+            loading="eager"
+            fetchPriority="high"
+            decoding="async"
           />
         </div>
       </section>
@@ -117,6 +120,9 @@ function Home() {
           <img
             src={storyImage}
             alt="Women having a thoughtful conversation"
+            loading="lazy"
+            fetchPriority="low"
+            decoding="async"
           />
           <span aria-hidden="true" />
         </div>
@@ -248,6 +254,9 @@ function Home() {
             <img
               src={recognitionImage}
               alt="A Power Within gathering with a facilitator speaking to a group"
+              loading="lazy"
+              fetchPriority="low"
+              decoding="async"
             />
           </div>
         </div>
