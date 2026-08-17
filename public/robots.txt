@@ -1,7 +1,4 @@
 User-agent: *
 Allow: /
-Disallow: /api/
-Disallow: /admin/
-Disallow: /client-portal/
 
 Sitemap: https://www.kimmittelstadt.com/sitemap.xml

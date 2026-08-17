@@ -2,14 +2,26 @@ import { Link } from 'react-router-dom'
 import { experienceNavigation } from '../data/signatureExperiences.js'
 
 function SignatureExperienceNav({ activePath }) {
+  const focusedExperiences =
+    experienceNavigation.filter(
+      (item) => !item.featured,
+    )
+
   return (
-    <nav className="signature-experience-nav" aria-label="Signature experiences">
-      {experienceNavigation.map((item) => {
+    <nav
+      className="focused-experience-nav"
+      aria-label="Focused Personal Presence experiences"
+    >
+      {focusedExperiences.map((item) => {
         const isActive = item.to === activePath
-        const classNames = [item.featured ? 'is-featured' : '', isActive ? 'is-active' : ''].filter(Boolean).join(' ')
 
         return (
-          <Link className={classNames || undefined} to={item.to} key={item.to} aria-current={isActive ? 'page' : undefined}>
+          <Link
+            className={isActive ? 'is-active' : undefined}
+            to={item.to}
+            key={item.to}
+            aria-current={isActive ? 'page' : undefined}
+          >
             {item.label}
           </Link>
         )

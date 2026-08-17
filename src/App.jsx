@@ -2,105 +2,15 @@ import { lazy, Suspense, useEffect } from 'react'
 import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import SiteFooter from './components/SiteFooter.jsx'
 import SiteHeader from './components/SiteHeader.jsx'
-import AdminDeveloperRouteGuard from './components/admin/AdminDeveloperRouteGuard.jsx'
-import AdminConfirmProvider from './components/admin/AdminConfirmProvider.jsx'
-import AdminErrorBoundary from './components/admin/AdminErrorBoundary.jsx'
-import AdminOwnerRouteGuard from './components/admin/AdminOwnerRouteGuard.jsx'
-import AdminRouteGuard from './components/admin/AdminRouteGuard.jsx'
-import {
-  loadAdminAssetVault,
-  loadAdminAudience,
-  loadAdminActivityCenter,
-  loadAdminAttentionQueue,
-  loadAdminCapacityCenter,
-  loadAdminClientMomentum,
-  loadAdminClientCoverage,
-  loadAdminSessionReadiness,
-  loadAdminSessionFollowThrough,
-  loadAdminDailyBrief,
-  loadAdminWeekPlanner,
-  loadAdminAuditLog,
-  loadAdminAutomationStudio,
-  loadAdminChangePassword,
-  loadAdminCircleCommunity,
-  loadAdminClient360,
-  loadAdminClients,
-  loadAdminDashboard,
-  loadAdminDeveloperOperations,
-  loadAdminEncouragements,
-  loadAdminFounderAvailability,
-  loadAdminFounderCalendar,
-  loadAdminFoundersView,
-  loadAdminInbox,
-  loadAdminLeadPipeline,
-  loadAdminLearningLibrary,
-  loadAdminLogin,
-  loadAdminMailStudio,
-  loadAdminLetters,
-  loadAdminMembershipCircle,
-  loadAdminOnboardingStudio,
-  loadAdminOperationsCenter,
-  loadAdminScheduler,
-  loadAdminSessionChangeRequests,
-  loadAdminStudioProfile,
-  loadAdminTeamManagement,
-} from './components/admin/adminRoutePreloaders.js'
 import Home from './pages/Home.jsx'
 import NotFound from './pages/NotFound.jsx'
 
-const AdminAssetVault = lazy(loadAdminAssetVault)
-const AdminAudience = lazy(loadAdminAudience)
-const AdminActivityCenter = lazy(loadAdminActivityCenter)
-const AdminAttentionQueue = lazy(loadAdminAttentionQueue)
-const AdminCapacityCenter = lazy(loadAdminCapacityCenter)
-const AdminClientMomentum = lazy(loadAdminClientMomentum)
-const AdminClientCoverage = lazy(loadAdminClientCoverage)
-const AdminSessionReadiness = lazy(loadAdminSessionReadiness)
-const AdminSessionFollowThrough = lazy(loadAdminSessionFollowThrough)
-const AdminDailyBrief = lazy(loadAdminDailyBrief)
-const AdminWeekPlanner = lazy(loadAdminWeekPlanner)
-const AdminAuditLog = lazy(loadAdminAuditLog)
-const AdminAutomationStudio = lazy(loadAdminAutomationStudio)
-const AdminChangePassword = lazy(loadAdminChangePassword)
-const AdminCircleCommunity = lazy(loadAdminCircleCommunity)
-const AdminClient360 = lazy(loadAdminClient360)
-const AdminClients = lazy(loadAdminClients)
-const AdminDashboard = lazy(loadAdminDashboard)
-const AdminDeveloperOperations = lazy(loadAdminDeveloperOperations)
-const AdminEncouragements = lazy(loadAdminEncouragements)
-const AdminFounderAvailability = lazy(loadAdminFounderAvailability)
-const AdminFounderCalendar = lazy(loadAdminFounderCalendar)
-const AdminFoundersView = lazy(loadAdminFoundersView)
-const AdminInbox = lazy(loadAdminInbox)
-const AdminLeadPipeline = lazy(loadAdminLeadPipeline)
-const AdminLearningLibrary = lazy(loadAdminLearningLibrary)
-const AdminLogin = lazy(loadAdminLogin)
-const AdminMailStudio = lazy(loadAdminMailStudio)
-const AdminLetters = lazy(loadAdminLetters)
-const AdminMembershipCircle = lazy(loadAdminMembershipCircle)
-const AdminOnboardingStudio = lazy(loadAdminOnboardingStudio)
-const AdminOperationsCenter = lazy(loadAdminOperationsCenter)
-const AdminScheduler = lazy(loadAdminScheduler)
-const AdminSessionChangeRequests = lazy(loadAdminSessionChangeRequests)
-const AdminStudioProfile = lazy(loadAdminStudioProfile)
-const AdminTeamManagement = lazy(loadAdminTeamManagement)
-
-// Keep the home route instant, while loading secondary public and authenticated
-// portal experiences only when someone visits them. The shared Suspense boundary
-// already provides a branded, accessible loading state during route transitions.
+// Keep the home route instant, while loading secondary public experiences only
+// when someone visits them. The shared Suspense boundary already provides a
+// branded, accessible loading state during route transitions.
 const About = lazy(() => import('./pages/About.jsx'))
+const FAQ = lazy(() => import('./pages/FAQ.jsx'))
 const Contact = lazy(() => import('./pages/Contact.jsx'))
-const ClientPortalInvite = lazy(() => import('./pages/ClientPortalInvite.jsx'))
-const ClientPortalLogin = lazy(() => import('./pages/ClientPortalLogin.jsx'))
-const ClientPortalAccount = lazy(() => import('./pages/ClientPortalAccount.jsx'))
-const ClientPortalDashboard = lazy(() => import('./pages/ClientPortalDashboard.jsx'))
-const ClientPortalCircle = lazy(() => import('./pages/ClientPortalCircle.jsx'))
-const ClientPortalJourney = lazy(() => import('./pages/ClientPortalJourney.jsx'))
-const ClientPortalLearning = lazy(() => import('./pages/ClientPortalLearning.jsx'))
-const ClientPortalMembership = lazy(() => import('./pages/ClientPortalMembership.jsx'))
-const ClientPortalMessages = lazy(() => import('./pages/ClientPortalMessages.jsx'))
-const ClientPortalResources = lazy(() => import('./pages/ClientPortalResources.jsx'))
-const ClientPortalSessions = lazy(() => import('./pages/ClientPortalSessions.jsx'))
 const Experiences = lazy(() => import('./pages/Experiences.jsx'))
 const Podcast = lazy(() => import('./pages/Podcast.jsx'))
 const PrivacyPolicy = lazy(() => import('./pages/PrivacyPolicy.jsx'))
@@ -112,14 +22,18 @@ const SignatureExperiencePage = lazy(() => import('./pages/SignatureExperiencePa
 const TeenPrograms = lazy(() => import('./pages/TeenPrograms.jsx'))
 const TermsAndConditions = lazy(() => import('./pages/TermsAndConditions.jsx'))
 
+const siteOrigin = 'https://www.kimmittelstadt.com'
+const siteName = 'Power Within Collective'
+const themeColor = '#fbf8f3'
+
 const routeMetadata = {
   '/': {
-    title: 'Power Within Collective | Confidence, Style & Personal Presence',
-    description: 'Power Within Collective helps women in a new season align confidence, color, style, and personal presence with who they are now.',
+    title: 'Power Within Collective | Personal Presence for Women 45+',
+    description: 'Personal Presence for women 45+ entering a new chapter, connecting color, beauty, style, confidence, self-expression, and intentional next-chapter choices.',
   },
   '/experiences': {
-    title: 'Confidence, Style & Image Experiences | Power Within Collective',
-    description: 'Explore private confidence coaching, personal style guidance, color analysis, beauty direction, Radiance Reclaimed, and whole-person transformation experiences.',
+    title: 'Private Personal Presence Experiences | Power Within Collective',
+    description: 'Explore private Personal Presence guidance through color analysis, beauty direction, style, wardrobe, confidence, and practical next-chapter expression.',
   },
   '/color-analysis': {
     title: 'Color Analysis Consultation for Women | Power Within Collective',
@@ -134,8 +48,8 @@ const routeMetadata = {
     description: 'A personalized makeup and beauty direction consultation designed around undertones, product choices, application, natural confidence, and everyday polish.',
   },
   '/radiance-reclaimed': {
-    title: 'Women’s Confidence & Presence Coaching | Radiance Reclaimed',
-    description: 'A private confidence and presence coaching experience for women ready for whole-person transformation, self-trust, image alignment, and renewed identity.',
+    title: 'Radiance Reclaimed Retreats | Personal Presence for Women 45+',
+    description: 'Explore Radiance Reclaimed, an intimate Personal Presence retreat for women entering a new chapter through color, beauty, style, reflection, self-expression, and practical integration.',
   },
   '/resources': {
     title: 'Confidence, Style & Self-Reflection Resources | Power Within Collective',
@@ -158,8 +72,8 @@ const routeMetadata = {
     description: 'Learn how personal style, color, wardrobe direction, and image alignment can help women rebuild confidence and self-trust.',
   },
   '/resources/confidence-coaching-for-women': {
-    title: 'Confidence Coaching for Women | Power Within Collective',
-    description: 'Confidence coaching for women in a new season of life, with support for identity, presence, image alignment, self-trust, and transformation.',
+    title: 'Confidence & Personal Presence for Women | Power Within Collective',
+    description: 'Explore how self-recognition, Personal Presence, color, style, and practical next-chapter choices can support confidence for women in midlife and beyond.',
   },
   '/professionals': {
     title: 'Image Consultant & Beauty Professional Training | Power Within Professional',
@@ -168,26 +82,32 @@ const routeMetadata = {
   '/power-within-professional': {
     title: 'Image Consultant & Beauty Professional Training | Power Within Professional',
     description: 'Professional education for beauty, image, style, and wellness professionals who want to turn their expertise into a premium transformation-centered client experience.',
+    canonicalPath: '/professionals',
   },
   '/podcast': {
-    title: 'Raising Her Confidence Podcast | Teen Confidence & Mother-Daughter Conversations',
-    description: 'A podcast for mothers, mentors, and adults supporting girls through confidence, identity, emotional wellness, self-expression, and presence.',
+    title: 'Raising Her Confidence Podcast | Confidence, Wellness & Personal Presence',
+    description: 'Raising Her Confidence explores confidence, wellness, identity, motherhood, color, style, beauty, and personal presence for women navigating new seasons of life.',
   },
   '/teen-programs': {
-    title: 'Teen Confidence Programs for Girls | Power Within Collective',
-    description: 'Supportive teen confidence programs for girls and young women building identity, emotional awareness, self-expression, and grounded self-trust.',
+    title: 'Teen + Family Confidence Support for Girls | Power Within Collective',
+    description: 'Teen + Family support for girls, young women, mothers, and mentors, centered on identity, body confidence, self-expression, connection, and grounded self-trust.',
   },
   '/teens': {
-    title: 'Teen Confidence Programs for Girls | Power Within Collective',
-    description: 'Supportive teen confidence programs for girls and young women building identity, emotional awareness, self-expression, and grounded self-trust.',
+    title: 'Teen + Family Confidence Support for Girls | Power Within Collective',
+    description: 'Teen + Family support for girls, young women, mothers, and mentors, centered on identity, body confidence, self-expression, connection, and grounded self-trust.',
+    canonicalPath: '/teen-programs',
   },
   '/about': {
     title: 'About Kim Mittelstadt | Power Within Collective',
-    description: 'Learn about Kim Mittelstadt, founder of Power Within Collective, and the whole-person foundation behind her confidence, style, beauty, and transformation work.',
+    description: 'Meet Kim Mittelstadt and the nearly four decades of beauty, image, color, teaching, speaking, coaching, and women-centered experience behind Power Within Collective.',
+  },
+  '/faq': {
+    title: 'Frequently Asked Questions | Power Within Collective',
+    description: 'Answers to common questions about Power Within Collective experiences, confidence and personal presence work, professional education, and getting started.',
   },
   '/contact': {
-    title: 'Contact Power Within Collective | Private Consultations & Speaking',
-    description: 'Contact Power Within Collective about private consultations, color analysis, personal style guidance, Radiance Reclaimed, professional education, speaking, podcast, or collaboration.',
+    title: 'Contact Power Within Collective | Personal Presence & Radiance',
+    description: 'Start a conversation about Radiance Reclaimed, private Personal Presence experiences, color, style, beauty direction, speaking, professional education, or collaboration.',
   },
   '/privacy-policy': {
     title: 'Privacy Policy | Power Within Collective',
@@ -197,214 +117,40 @@ const routeMetadata = {
     title: 'Terms & Conditions | Power Within Collective',
     description: 'Review the terms governing use of the Power Within Collective website, content, resources, and brand materials.',
   },
-  '/client-portal/login': {
-    title: 'Client Portal Login | Power Within Collective',
-    description: 'Secure client portal access for Power Within Collective clients.',
-  },
-  '/client-portal/invite': {
-    title: 'Set Up Your Client Portal | Power Within Collective',
-    description: 'Accept your private Power Within Collective client portal invitation and create secure access.',
-  },
-  '/client-portal/home': {
-    title: 'My Client Portal | Power Within Collective',
-    description: 'Private client notes, resources, reminders, session history, and care records from Power Within Collective.',
-  },
-  '/client-portal/account': {
-    title: 'My Account | Power Within Collective',
-    description: 'Private profile, onboarding, and security settings for the Power Within Collective client portal.',
-  },
-  '/client-portal/journey': {
-    title: 'My Journey | Power Within Collective',
-    description: 'Private shared reflections, follow-ups, and care history from Power Within Collective.',
-  },
-  '/client-portal/resources': {
-    title: 'My Resources | Power Within Collective',
-    description: 'A private library of guides, worksheets, videos, links, reminders, and notes selected for your care.',
-  },
-  '/client-portal/learning': {
-    title: 'Learning Library | Power Within Collective',
-    description: 'Private guided courses, lessons, reflections, and learning progress selected for your Power Within journey.',
-  },
-  '/client-portal/membership': {
-    title: 'My Membership | Power Within Collective',
-    description: 'Active membership benefits, resources, learning, announcements, and renewal information.',
-  },
-  '/client-portal/sessions': {
-    title: 'My Sessions | Power Within Collective',
-    description: 'Book and manage private Power Within Collective client sessions.',
-  },
-  '/client-portal/circle': {
-    title: 'The Circle | Power Within Collective',
-    description: 'A private Power Within Collective community for member reflection, encouragement, and conversation.',
-  },
-  '/client-portal/messages': {
-    title: 'Private Messages | Power Within Collective',
-    description: 'Secure private client communication with the Power Within Collective team.',
-  },
-  '/admin/login': {
-    title: 'The Studio Login | Power Within Collective',
-    description: 'Private access to The Studio, Founder’s View, and Developer Operations.',
-  },
-  '/admin/dashboard': {
-    title: 'Today | The Studio',
-    description: 'A clear daily workspace for priorities, client care, sessions, and next actions.',
-  },
-  '/admin/change-password': {
-    title: 'Secure Account Setup | Power Within Collective',
-    description: 'Create a permanent password for private Power Within Collective workspace access.',
-  },
-  '/admin/assets': {
-    title: 'Asset Vault | The Studio',
-    description: 'Upload, organize, version, and assign protected resources across Power Within Collective.',
-  },
-  '/admin/clients': {
-    title: 'Client Circle | The Studio',
-    description: 'Manage client profiles, care records, portal access, and private resources.',
-  },
-  '/admin/client-360': {
-    title: 'Client 360 | The Studio',
-    description: 'A complete operational view of a Power Within Collective client journey.',
-  },
-  '/admin/scheduler': {
-    title: 'Sessions & Calendar | The Studio',
-    description: 'Manage appointments, availability, and private client sessions.',
-  },
-  '/admin/session-changes': {
-    title: 'Session Changes | The Studio',
-    description: 'Review client cancellation and rescheduling requests.',
-  },
-  '/admin/inbox': {
-    title: 'Messages | The Studio',
-    description: 'Manage private client conversations, replies, and internal care notes.',
-  },
-  '/admin/email-studio': {
-    title: 'Mail Studio | The Studio',
-    description: 'Prepare and deliver thoughtful client communications.',
-  },
-  '/admin/letters': {
-    title: 'Letters & Broadcasts | The Studio',
-    description: 'Design, test, schedule, send, and analyze consent-aware Power Within letters.',
-  },
-  '/admin/audience': {
-    title: 'Newsletter Audience | The Studio',
-    description: 'Manage consent-aware newsletter recipients, segments, imports, and suppression protections.',
-  },
-  '/admin/leads': {
-    title: 'Leads & Intake | The Studio',
-    description: 'Manage inquiries, follow-ups, consultations, and client intake.',
-  },
-  '/admin/automations': {
-    title: 'Automation Studio | The Studio',
-    description: 'Manage client communication and care workflow automations.',
-  },
-  '/admin/onboarding': {
-    title: 'Booking & Onboarding | The Studio',
-    description: 'Manage booking flows, intake forms, and client onboarding.',
-  },
-  '/admin/courses': {
-    title: 'Learning Library | The Studio',
-    description: 'Manage private courses, lessons, resources, and client learning access.',
-  },
-  '/admin/memberships': {
-    title: 'Membership Circle | The Studio',
-    description: 'Manage membership plans, enrollments, resources, and announcements.',
-  },
-  '/admin/circle': {
-    title: 'The Circle Community | The Studio',
-    description: 'Create and moderate the private Power Within Collective community.',
-  },
-  '/admin/encouragements': {
-    title: 'Client Messages | The Studio',
-    description: 'Draft, schedule, and publish encouragements and portal announcements.',
-  },
-  '/admin/operations': {
-    title: 'Studio Operations Center | Power Within Collective',
-    description: 'Choose a clear Studio Operations lane for planning, client care, session continuity, or accountable history.',
-  },
-  '/admin/brief': {
-    title: 'Today | The Studio',
-    description: 'A clear daily workspace for priorities, client care, sessions, and next actions.',
-  },
-  '/admin/week': {
-    title: 'Studio Week Planner | Power Within Collective',
-    description: 'Balance scheduled sessions and accountable client-care work across a clear role-aware seven-day Studio plan.',
-  },
-  '/admin/capacity': {
-    title: 'Studio Capacity | Power Within Collective',
-    description: 'Balance role-aware team workload, accountable client care, upcoming sessions, and configured Studio capacity.',
-  },
-  '/admin/momentum': {
-    title: 'Client Momentum | Power Within Collective',
-    description: 'Review role-aware care momentum across active clients, recent touchpoints, accountable actions, sessions, and conversations.',
-  },
-  '/admin/coverage': {
-    title: 'Studio Coverage & Handoffs | Power Within Collective',
-    description: 'Review role-aware client ownership, team availability, backup coverage, active care pressure, and approaching sessions.',
-  },
-  '/admin/readiness': {
-    title: 'Session Readiness | Power Within Collective',
-    description: 'Prepare role-aware upcoming sessions with booking decisions, intake, onboarding, care actions, conversations, ownership, and confirmations in one view.',
-  },
-  '/admin/follow-through': {
-    title: 'Session Follow-Through | Power Within Collective',
-    description: 'Review role-aware recently completed and missed sessions, documentation, care actions, messages, resources, and next-session continuity.',
-  },
-  '/admin/activity': {
-    title: 'Studio Activity Center | The Studio',
-    description: 'Review role-aware notifications, priority updates, and recent operational activity across The Studio.',
-  },
-  '/admin/attention': {
-    title: 'Studio Attention Queue | The Studio',
-    description: 'Coordinate lead follow-ups and client care actions with clear ownership, priority, due dates, and completion tracking.',
-  },
-  '/admin/audit-log': {
-    title: 'Activity Journal | The Studio',
-    description: 'Review protected operational activity across The Studio.',
-  },
-  '/admin/team': {
-    title: 'Staff & Team Management | Power Within Collective',
-    description: 'Manage team roles, permissions, assignments, and operational access.',
-  },
-  '/admin/founders-view': {
-    title: 'Founder’s View | Power Within Collective',
-    description: 'Private founder overview for priorities, schedule, and availability.',
-  },
-  '/admin/founders-calendar': {
-    title: 'Founder Calendar | Power Within Collective',
-    description: 'A simplified private calendar for founder sessions and protected time.',
-  },
-  '/admin/founders-availability': {
-    title: 'Protect Your Time | Power Within Collective',
-    description: 'Manage founder availability, weekly hours, and custom date protection.',
-  },
-  '/admin/developer': {
-    title: 'Developer Operations | Power Within Collective',
-    description: 'Unified platform health, errors, security, release, access, and configuration operations.',
-  },
-  '/admin/developer/errors': {
-    title: 'Developer Error Center | Power Within Collective',
-    description: 'Private platform monitoring and error review.',
-  },
-  '/admin/developer/integrity': {
-    title: 'Security & Data Integrity | Power Within Collective',
-    description: 'Developer-only audit of privileged access, staff permissions, request trust, and operational data integrity.',
-  },
-  '/admin/developer/qa': {
-    title: 'Production Release QA | Power Within Collective',
-    description: 'Developer-only real-data contract, latency, and responsive review gate for The Studio.',
-  },
 }
 
 function resolveRouteMetadata(pathname) {
-  return routeMetadata[pathname]
-    || (pathname.startsWith('/client-portal/invite/') ? routeMetadata['/client-portal/invite'] : null)
-    || (pathname.startsWith('/client-portal/messages/') ? routeMetadata['/client-portal/messages'] : null)
-    || (pathname.startsWith('/admin/clients/') ? routeMetadata['/admin/clients'] : null)
-    || (pathname.startsWith('/admin/client-360/') ? routeMetadata['/admin/client-360'] : null)
-    || {
-      title: 'Power Within Collective',
-      description: 'A thoughtful whole-person experience for confidence, style, personal presence, and self-recognition.',
+  const metadata = routeMetadata[pathname]
+
+  if (metadata) {
+    return {
+      ...metadata,
+      canonicalPath: metadata.canonicalPath || pathname,
+      robots: 'index,follow',
     }
+  }
+
+  return {
+    title: 'Page Not Found | Power Within Collective',
+    description: 'The page you requested could not be found. Explore Power Within Collective experiences, resources, programs, and ways to connect.',
+    canonicalPath: null,
+    robots: 'noindex,follow',
+  }
+}
+
+function upsertMeta(selector, attributes) {
+  let element = document.head.querySelector(selector)
+
+  if (!element) {
+    element = document.createElement('meta')
+    document.head.append(element)
+  }
+
+  Object.entries(attributes).forEach(([name, value]) => {
+    element.setAttribute(name, value)
+  })
+
+  return element
 }
 
 function RouteMetadata() {
@@ -412,24 +158,87 @@ function RouteMetadata() {
 
   useEffect(() => {
     const metadata = resolveRouteMetadata(pathname)
-    const themeColor = pathname.startsWith('/admin') ? '#2f2024' : '#faf3ec'
-    let themeColorMeta = document.querySelector('meta[name="theme-color"]')
-
-    if (!themeColorMeta) {
-      themeColorMeta = document.createElement('meta')
-      themeColorMeta.setAttribute('name', 'theme-color')
-      document.head.append(themeColorMeta)
-    }
+    const canonicalUrl = metadata.canonicalPath
+      ? `${siteOrigin}${metadata.canonicalPath}`
+      : null
 
     document.title = metadata.title
-    document.querySelector('meta[name="description"]')?.setAttribute('content', metadata.description)
-    themeColorMeta.setAttribute('content', themeColor)
+
+    upsertMeta('meta[name="description"]', {
+      name: 'description',
+      content: metadata.description,
+    })
+
+    upsertMeta('meta[name="theme-color"]', {
+      name: 'theme-color',
+      content: themeColor,
+    })
+
+    upsertMeta('meta[name="robots"]', {
+      name: 'robots',
+      content: metadata.robots,
+    })
+
+    upsertMeta('meta[property="og:type"]', {
+      property: 'og:type',
+      content: 'website',
+    })
+
+    upsertMeta('meta[property="og:site_name"]', {
+      property: 'og:site_name',
+      content: siteName,
+    })
+
+    upsertMeta('meta[property="og:title"]', {
+      property: 'og:title',
+      content: metadata.title,
+    })
+
+    upsertMeta('meta[property="og:description"]', {
+      property: 'og:description',
+      content: metadata.description,
+    })
+
+    upsertMeta('meta[name="twitter:card"]', {
+      name: 'twitter:card',
+      content: 'summary',
+    })
+
+    upsertMeta('meta[name="twitter:title"]', {
+      name: 'twitter:title',
+      content: metadata.title,
+    })
+
+    upsertMeta('meta[name="twitter:description"]', {
+      name: 'twitter:description',
+      content: metadata.description,
+    })
+
+    let canonicalLink = document.head.querySelector('link[rel="canonical"]')
+
+    if (canonicalUrl) {
+      if (!canonicalLink) {
+        canonicalLink = document.createElement('link')
+        canonicalLink.setAttribute('rel', 'canonical')
+        document.head.append(canonicalLink)
+      }
+
+      canonicalLink.setAttribute('href', canonicalUrl)
+
+      upsertMeta('meta[property="og:url"]', {
+        property: 'og:url',
+        content: canonicalUrl,
+      })
+    } else {
+      canonicalLink?.remove()
+      document.head.querySelector('meta[property="og:url"]')?.remove()
+    }
+
     document.body.dataset.pwcRoute = pathname
   }, [pathname])
 
   return null
 }
-
 function RouteAnnouncer() {
   const { pathname } = useLocation()
   const metadata = resolveRouteMetadata(pathname)
@@ -445,10 +254,6 @@ function ScrollManager() {
   const { hash, pathname } = useLocation()
 
   useEffect(() => {
-    const framedAdminRoute = pathname.startsWith('/admin/')
-      && !['/admin/login', '/admin/change-password'].includes(pathname)
-
-    if (framedAdminRoute) return
 
     if (hash) {
       const target = document.getElementById(hash.slice(1))
@@ -471,19 +276,19 @@ function ContactRoute() {
 }
 
 
-function RouteLoadingFallback({ internal }) {
+function RouteLoadingFallback() {
   return (
     <main
       id="main-content"
-      className={`route-loading${internal ? ' is-admin' : ''}`}
+      className="route-loading"
       tabIndex={-1}
       aria-live="polite"
       aria-busy="true"
     >
       <div className="route-loading__card">
         <span className="route-loading__mark" aria-hidden="true">PW</span>
-        <p>{internal ? 'Power Within · The Studio' : 'Power Within Collective'}</p>
-        <h1>{internal ? 'Opening your private workspace…' : 'Opening this experience…'}</h1>
+        <p>Power Within Collective</p>
+        <h1>Opening this experience…</h1>
         <div className="route-loading__lines" aria-hidden="true">
           <span />
           <span />
@@ -495,103 +300,98 @@ function RouteLoadingFallback({ internal }) {
 }
 
 function AppShell() {
-  const { pathname } = useLocation()
-  const isInternalRoute = pathname.startsWith('/admin')
-
   return (
     <>
       <ScrollManager />
       <RouteMetadata />
       <RouteAnnouncer />
-      <a className="skip-link" href="#main-content">Skip to content</a>
-      {!isInternalRoute && <SiteHeader />}
-      <AdminErrorBoundary resetKey={pathname} internal={isInternalRoute}>
-        <Suspense fallback={<RouteLoadingFallback internal={isInternalRoute} />}>
-          <AdminConfirmProvider>
-          <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/experiences" element={<Experiences />} />
-        <Route path="/color-analysis" element={<SignatureExperiencePage experienceKey="color" activePath="/color-analysis" />} />
-        <Route path="/style-analysis" element={<SignatureExperiencePage experienceKey="style" activePath="/style-analysis" />} />
-        <Route path="/blend-cosmetics" element={<SignatureExperiencePage experienceKey="makeup" activePath="/blend-cosmetics" />} />
-        <Route path="/radiance-reclaimed" element={<RadianceReclaimed />} />
-        <Route path="/resources" element={<Resources />} />
-        <Route path="/resources/:slug" element={<ResourceArticle />} />
-        <Route path="/professionals" element={<Professionals />} />
-        <Route path="/power-within-professional" element={<Professionals />} />
-        <Route path="/podcast" element={<Podcast />} />
-        <Route path="/teen-programs" element={<TeenPrograms />} />
-        <Route path="/teens" element={<TeenPrograms />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/contact" element={<ContactRoute />} />
-        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-        <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
-        <Route path="/client-portal" element={<Navigate to="/client-portal/login" replace />} />
-        <Route path="/client-portal/login" element={<ClientPortalLogin />} />
-        <Route path="/client-portal/invite/:token" element={<ClientPortalInvite />} />
-        <Route path="/client-portal/dashboard" element={<Navigate to="/client-portal/home" replace />} />
-        <Route path="/client-portal/home" element={<ClientPortalDashboard />} />
-        <Route path="/client-portal/account" element={<ClientPortalAccount />} />
-        <Route path="/client-portal/journey" element={<ClientPortalJourney />} />
-        <Route path="/client-portal/resources" element={<ClientPortalResources />} />
-        <Route path="/client-portal/learning" element={<ClientPortalLearning />} />
-        <Route path="/client-portal/membership" element={<ClientPortalMembership />} />
-        <Route path="/client-portal/circle" element={<ClientPortalCircle />} />
-        <Route path="/client-portal/sessions" element={<ClientPortalSessions />} />
-        <Route path="/client-portal/messages" element={<ClientPortalMessages />} />
-        <Route path="/client-portal/messages/:conversationId" element={<ClientPortalMessages />} />
-        <Route path="/admin" element={<Navigate to="/admin/login" replace />} />
-        <Route path="/admin/login" element={<AdminLogin />} />
-        <Route path="/admin/change-password" element={<AdminChangePassword />} />
-        <Route path="/admin/dashboard" element={<AdminRouteGuard><AdminDashboard /></AdminRouteGuard>} />
-        <Route path="/admin/assets" element={<AdminRouteGuard><AdminAssetVault /></AdminRouteGuard>} />
-        <Route path="/admin/developer" element={<AdminDeveloperRouteGuard><AdminDeveloperOperations /></AdminDeveloperRouteGuard>} />
-        <Route path="/admin/developer/errors" element={<AdminDeveloperRouteGuard><AdminDeveloperOperations /></AdminDeveloperRouteGuard>} />
-        <Route path="/admin/developer/integrity" element={<AdminDeveloperRouteGuard><AdminDeveloperOperations /></AdminDeveloperRouteGuard>} />
-        <Route path="/admin/developer/qa" element={<AdminDeveloperRouteGuard><AdminDeveloperOperations /></AdminDeveloperRouteGuard>} />
-        <Route path="/admin/team" element={<AdminDeveloperRouteGuard><AdminTeamManagement /></AdminDeveloperRouteGuard>} />
-        <Route path="/admin/founders-view" element={<AdminOwnerRouteGuard><AdminFoundersView /></AdminOwnerRouteGuard>} />
-        <Route path="/admin/founders-calendar" element={<AdminOwnerRouteGuard><AdminFounderCalendar /></AdminOwnerRouteGuard>} />
-        <Route path="/admin/founders-availability" element={<AdminOwnerRouteGuard><AdminFounderAvailability /></AdminOwnerRouteGuard>} />
-        <Route path="/admin/leads" element={<AdminRouteGuard><AdminLeadPipeline /></AdminRouteGuard>} />
-        <Route path="/admin/client-360/:clientId" element={<AdminRouteGuard><AdminClient360 /></AdminRouteGuard>} />
-        <Route path="/admin/clients" element={<AdminRouteGuard><AdminClients /></AdminRouteGuard>} />
-        <Route path="/admin/clients/:clientId" element={<AdminRouteGuard><AdminClients /></AdminRouteGuard>} />
-        <Route path="/admin/clients/:clientId/:section" element={<AdminRouteGuard><AdminClients /></AdminRouteGuard>} />
-        <Route path="/admin/scheduler" element={<AdminRouteGuard><AdminScheduler /></AdminRouteGuard>} />
-        <Route path="/admin/session-changes" element={<AdminRouteGuard><AdminSessionChangeRequests /></AdminRouteGuard>} />
-        <Route path="/admin/studio-profile" element={<AdminRouteGuard><AdminStudioProfile /></AdminRouteGuard>} />
-        <Route path="/admin/inbox" element={<AdminRouteGuard><AdminInbox /></AdminRouteGuard>} />
-        <Route path="/admin/email-studio" element={<AdminRouteGuard><AdminMailStudio /></AdminRouteGuard>} />
-        <Route path="/admin/letters" element={<AdminRouteGuard><AdminLetters /></AdminRouteGuard>} />
-        <Route path="/admin/audience" element={<AdminRouteGuard><AdminAudience /></AdminRouteGuard>} />
-        <Route path="/admin/automations" element={<AdminRouteGuard><AdminAutomationStudio /></AdminRouteGuard>} />
-        <Route path="/admin/onboarding" element={<AdminRouteGuard><AdminOnboardingStudio /></AdminRouteGuard>} />
-        <Route path="/admin/courses" element={<AdminRouteGuard><AdminLearningLibrary /></AdminRouteGuard>} />
-        <Route path="/admin/memberships" element={<AdminRouteGuard><AdminMembershipCircle /></AdminRouteGuard>} />
-        <Route path="/admin/circle" element={<AdminRouteGuard><AdminCircleCommunity /></AdminRouteGuard>} />
-        <Route path="/admin/encouragements" element={<AdminRouteGuard><AdminEncouragements /></AdminRouteGuard>} />
-        <Route path="/admin/operations" element={<AdminRouteGuard><AdminOperationsCenter /></AdminRouteGuard>} />
-        <Route path="/admin/brief" element={<AdminRouteGuard><AdminDailyBrief /></AdminRouteGuard>} />
-        <Route path="/admin/week" element={<AdminRouteGuard><AdminWeekPlanner /></AdminRouteGuard>} />
-        <Route path="/admin/capacity" element={<AdminRouteGuard><AdminCapacityCenter /></AdminRouteGuard>} />
-        <Route path="/admin/momentum" element={<AdminRouteGuard><AdminClientMomentum /></AdminRouteGuard>} />
-        <Route path="/admin/coverage" element={<AdminRouteGuard><AdminClientCoverage /></AdminRouteGuard>} />
-        <Route path="/admin/readiness" element={<AdminRouteGuard><AdminSessionReadiness /></AdminRouteGuard>} />
-        <Route path="/admin/follow-through" element={<AdminRouteGuard><AdminSessionFollowThrough /></AdminRouteGuard>} />
-        <Route path="/admin/activity" element={<AdminRouteGuard><AdminActivityCenter /></AdminRouteGuard>} />
-        <Route path="/admin/attention" element={<AdminRouteGuard><AdminAttentionQueue /></AdminRouteGuard>} />
-        <Route path="/admin/audit-log" element={<AdminRouteGuard><AdminAuditLog /></AdminRouteGuard>} />
-        <Route path="*" element={<NotFound />} />
-          </Routes>
-          </AdminConfirmProvider>
-        </Suspense>
-      </AdminErrorBoundary>
-      {!isInternalRoute && <SiteFooter />}
+
+      <a className="skip-link" href="#main-content">
+        Skip to content
+      </a>
+
+      <SiteHeader />
+
+      <Suspense fallback={<RouteLoadingFallback />}>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/experiences" element={<Experiences />} />
+
+          <Route
+            path="/color-analysis"
+            element={
+              <SignatureExperiencePage
+                experienceKey="color"
+                activePath="/color-analysis"
+              />
+            }
+          />
+
+          <Route
+            path="/style-analysis"
+            element={
+              <SignatureExperiencePage
+                experienceKey="style"
+                activePath="/style-analysis"
+              />
+            }
+          />
+
+          <Route
+            path="/blend-cosmetics"
+            element={
+              <SignatureExperiencePage
+                experienceKey="makeup"
+                activePath="/blend-cosmetics"
+              />
+            }
+          />
+
+          <Route
+            path="/radiance-reclaimed"
+            element={<RadianceReclaimed />}
+          />
+
+          <Route path="/resources" element={<Resources />} />
+          <Route path="/resources/:slug" element={<ResourceArticle />} />
+
+          <Route path="/professionals" element={<Professionals />} />
+          <Route
+            path="/power-within-professional"
+            element={<Navigate to="/professionals" replace />}
+          />
+
+          <Route path="/podcast" element={<Podcast />} />
+
+          <Route
+            path="/teen-programs"
+            element={<TeenPrograms />}
+          />
+
+          <Route path="/teens" element={<Navigate to="/teen-programs" replace />} />
+
+          <Route path="/about" element={<About />} />
+          <Route path="/faq" element={<FAQ />} />
+          <Route path="/contact" element={<ContactRoute />} />
+
+          <Route
+            path="/privacy-policy"
+            element={<PrivacyPolicy />}
+          />
+
+          <Route
+            path="/terms-and-conditions"
+            element={<TermsAndConditions />}
+          />
+
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </Suspense>
+
+      <SiteFooter />
     </>
   )
 }
-
 function App() {
   return (
     <BrowserRouter>

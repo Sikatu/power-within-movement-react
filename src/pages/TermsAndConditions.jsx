@@ -3,7 +3,7 @@ import './Legal.css'
 const sections = [
   {
     title: 'Website Use',
-    body: 'These terms apply to your use of this website and the public content made available through it. Private client, member, Founder, Studio, and Developer areas may also be governed by separate service or access agreements.',
+    body: 'These terms apply to your use of this website and the public content made available through it.',
   },
   {
     title: 'Intellectual Property',

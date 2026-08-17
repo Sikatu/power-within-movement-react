@@ -4,8 +4,8 @@ import styleImage from '../assets/images/style-analysis-wardrobe-guidance.webp'
 
 export const experienceNavigation = [
   { label: 'Color Analysis', to: '/color-analysis' },
-  { label: 'Style & Body Analysis', to: '/style-analysis' },
-  { label: 'Makeup Lesson & Direction', to: '/blend-cosmetics' },
+  { label: 'Style + Body Analysis', to: '/style-analysis' },
+  { label: 'Makeup + Beauty Direction', to: '/blend-cosmetics' },
   { label: 'Radiance Reclaimed™', to: '/radiance-reclaimed', featured: true },
 ]
 
@@ -43,7 +43,7 @@ export const signatureExperiences = {
   },
   style: {
     anchor: 'style-analysis',
-    eyebrow: 'Style & Body Analysis',
+    eyebrow: 'Style + Body Analysis',
     title: 'Personal Style Analysis and Wardrobe Guidance',
     lead: 'Refining your personal style with greater confidence, clarity, and intention.',
     image: styleImage,
@@ -60,7 +60,7 @@ export const signatureExperiences = {
     ],
     listEyebrow: 'Wardrobe Clarity',
     listTitle: 'Personal style creates greater confidence in the way you show up.',
-    listText: 'For women seeking a more integrated wardrobe experience, the Virtual Closet Upgrade provides outfit organization, styling recommendations, and wardrobe visibility in one streamlined space.',
+    listText: 'Your personalized style direction becomes a practical reference for silhouettes, wardrobe structure, styling choices, and more intentional outfit building.',
     listCardTitle: 'Inside Your Personalized Style Direction',
     listItems: [
       'Personalized style guidance aligned with lifestyle and personality',
@@ -75,7 +75,7 @@ export const signatureExperiences = {
   },
   makeup: {
     anchor: 'makeup-direction',
-    eyebrow: 'Makeup Lesson & Direction',
+    eyebrow: 'Makeup + Beauty Direction',
     title: 'Makeup and Beauty Direction for Natural Confidence',
     lead: 'Makeup direction designed to feel polished, effortless, and naturally aligned with you.',
     image: makeupImage,
@@ -90,29 +90,18 @@ export const signatureExperiences = {
       { number: '02', title: 'Personalized Selection', text: 'You receive product and shade direction that works with your natural coloring instead of working against it.' },
       { number: '03', title: 'Signature Finish', text: 'You learn an application approach that feels polished, effortless, current, and repeatable.' },
     ],
-    listEyebrow: 'For Clients & Professionals',
-    listTitle: 'Beauty direction with clarity, confidence, and ease.',
-    listText: 'Support for women refining their own routine and professionals guiding clients with more confidence and color clarity.',
-    listCardTitle: 'Support May Include',
+    listEyebrow: 'Beauty + Confidence',
+    listTitle: 'Beauty direction you can actually repeat.',
+    listText: 'A practical beauty direction for shades, products, technique, and an everyday finish that feels polished, current, and naturally connected to your coloring.',
+    listCardTitle: 'Inside Your Personalized Beauty Direction',
     listItems: [
-      'Curated cosmetic selections aligned to the personal color palette',
-      'In-studio product access for ongoing use',
-      'Training and support for image consultants and beauty professionals',
-      'Guidance in developing or offering professional cosmetic lines with confidence and clarity',
+      'Shade direction aligned with your natural coloring and undertones',
+      'Product guidance that supports the finish you want to create',
+      'Application techniques designed to feel clear and repeatable',
+      'A polished everyday routine that still feels like you',
+      'Greater confidence connecting makeup choices with color and personal presence',
     ],
     cta: 'Reserve Your Makeup Direction',
     contactInterest: 'makeup-lesson',
   },
 }
-
-export const radianceFitCards = [
-  { number: '01', title: 'The Woman in Transition', text: 'Navigating a divorce, an empty nest, a career change, or a season that no longer matches who she has become.' },
-  { number: '02', title: 'The Woman Who Has “Done the Work”', text: 'She has read the books and tried the routines. Real progress has been made, yet something still feels incomplete or disconnected.' },
-  { number: '03', title: 'The Woman Ready to Stop Managing and Start Living', text: 'Done performing composure. Ready to actually inhabit her life, not just maintain it from the outside.' },
-]
-
-export const radianceChapters = [
-  { number: '01', title: 'Personal Sessions', text: 'Six personal, intentionally paced sessions designed to allow real-life integration between conversations.' },
-  { number: '02', title: 'Whole-Person Alignment', text: 'Personal color, style, wellness, confidence, and presence are addressed together — not as separate problems.' },
-  { number: '03', title: 'Tailored Support', text: 'Resources, guidance, and support are shaped around your season, your identity, and what this transition is asking of you.' },
-]
